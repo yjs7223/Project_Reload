@@ -8,6 +8,17 @@ public class Project_Reload : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{ 
+			"Core", 
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"HeadMountedDisplay", 
+			"BaseClassModule",
+            "PlayerModule",
+            "AnimationModule",
+            "AIClassModule"
+        });
 	}
 }

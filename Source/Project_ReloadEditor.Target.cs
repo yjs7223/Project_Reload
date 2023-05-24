@@ -10,5 +10,9 @@ public class Project_ReloadEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("Project_Reload");
-	}
+        ExtraModuleNames.Add("BaseClassModule");
+        ExtraModuleNames.Add("PlayerModule");
+        ExtraModuleNames.Add("AnimationModule");
+        ExtraModuleNames.Add("AIClassModule");
+    }
 }

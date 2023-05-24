@@ -10,5 +10,9 @@ public class Project_ReloadTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("Project_Reload");
-	}
+        ExtraModuleNames.Add("BaseClassModule");
+        ExtraModuleNames.Add("PlayerModule");
+        ExtraModuleNames.Add("AnimationModule");
+        ExtraModuleNames.Add("AIClassModule");
+    }
 }
