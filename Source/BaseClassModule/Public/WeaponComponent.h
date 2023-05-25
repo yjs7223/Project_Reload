@@ -25,6 +25,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
+		ABaseCharacter* GetCharacter();
+
+	UFUNCTION(BlueprintCallable)
 		void SetAmmo(int p_ammo);
 
 	UFUNCTION(BlueprintCallable)
@@ -34,25 +37,38 @@ public:
 	//UFUNCTION(BlueprintCallable)
 		virtual void Fire();
 
+		void StartFire();
+		void StopFire();
+
+		void StartReload();
+
+		void StartAim();
+		void StopAim();
+
 public:
-	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int maxAmmo;
 
-	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int curAmmo;
 		
-	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isFire;
 
-	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isReload;
 
-	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isHit;
 
-	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isAim;
 
-	UPROPERTY(BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;
+
+
+protected:
+	UPROPERTY()
+		class ABaseCharacter* owner;
 };

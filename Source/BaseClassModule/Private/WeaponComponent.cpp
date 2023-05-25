@@ -2,6 +2,8 @@
 
 
 #include "WeaponComponent.h"
+#include "Components/InputComponent.h"
+#include "BaseCharacter.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -10,6 +12,12 @@ UWeaponComponent::UWeaponComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_weapon(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
+	if (sk_weapon.Succeeded())
+	{
+		WeaponMesh->SetSkeletalMesh(sk_weapon.Object);
+	}
 	// ...
 }
 
@@ -18,7 +26,7 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	owner = GetOwner<ABaseCharacter>();
 	// ...
 	
 }
@@ -31,6 +39,17 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	// ...
 }
+
+//void UWeaponComponent::bindInput(UInputComponent* PlayerInputComponent)
+//{
+//	return;
+//}
+
+ABaseCharacter* UWeaponComponent::GetCharacter()
+{
+	return owner;
+}
+
 
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
@@ -68,6 +87,32 @@ void UWeaponComponent::ReloadAmmo()
 
 void UWeaponComponent::Fire()
 {
+	//fire
 	return;
+}
+
+void UWeaponComponent::StartFire()
+{
+	isFire = true;
+}
+
+void UWeaponComponent::StopFire()
+{
+	isFire = false;
+}
+
+void UWeaponComponent::StartReload()
+{
+	isReload = true;
+}
+
+void UWeaponComponent::StartAim()
+{
+	isAim = true;
+}
+
+void UWeaponComponent::StopAim()
+{
+	isAim = false;
 }
 

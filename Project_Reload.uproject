@@ -22,7 +22,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"BaseClassModule"
 			]
 		},
 		{

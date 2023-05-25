@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Input.h"
 #include "StatComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class BASECLASSMODULE_API UStatComponent : public UActorComponent
+class BASECLASSMODULE_API UStatComponent : public UActorComponent, public IInput
 {
 	GENERATED_BODY()
 
@@ -23,6 +24,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	virtual void bindInput(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
+		ABaseCharacter* GetCharacter();
 
 	//Default HP Setting
 	UFUNCTION(BlueprintCallable)
@@ -37,20 +43,24 @@ public:
 		void Attacked(float p_damage);
 public:
 	//maximum hp
-	UPROPERTY(BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		float maxHP;
 
 	//now hp
-	UPROPERTY(BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		float curHP;
 
 	//When Character is attacked   isAttacked = true
-	UPROPERTY(BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isAttacked;
 
 	//When Character's currentHP <= 0  isDie = true
-	UPROPERTY(BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isDie;
 
+
+protected:
+	UPROPERTY()
+		class ABaseCharacter* owner;
 
 };

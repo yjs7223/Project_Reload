@@ -2,6 +2,8 @@
 
 
 #include "StatComponent.h"
+#include "BaseCharacter.h"
+#include "Components/InputComponent.h"
 
 // Sets default values for this component's properties
 UStatComponent::UStatComponent()
@@ -30,6 +32,16 @@ void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UStatComponent::bindInput(UInputComponent* PlayerInputComponent)
+{
+	return;
+}
+
+ABaseCharacter* UStatComponent::GetCharacter()
+{
+	return owner;
 }
 
 void UStatComponent::SetHP(float p_HP)
