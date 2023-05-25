@@ -31,7 +31,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"BaseClassModule"
 			]
 		},
 		{
@@ -39,7 +40,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"BaseClassModule"
 			]
 		}
 	],
