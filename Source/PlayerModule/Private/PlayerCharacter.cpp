@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "PlayerMoveComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -14,9 +15,10 @@ APlayerCharacter::APlayerCharacter()
 	FollowSpringArm->TargetArmLength = 120.f;
 	FollowSpringArm->SocketOffset = FVector(0, 60, 80);
 
-
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(FollowSpringArm, USpringArmComponent::SocketName);
+
+	playerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMoveComp"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -31,3 +33,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	playerMove->bindInput(PlayerInputComponent);
+}
+

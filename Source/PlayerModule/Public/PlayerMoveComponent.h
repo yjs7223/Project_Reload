@@ -28,10 +28,32 @@ public:
 
 	virtual void bindInput(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+		void MoveForward(float value);
+
+	UFUNCTION()
+		void MoveRight(float value);
+
+	UFUNCTION(BlueprintCallable)
+		void PlayerMoving(float DeltaTime);
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class ABaseCharacter* owner;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
 		float moveSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
+		FVector moveVec;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
+		bool isMove;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
+		FRotator mTargetRotate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
+		FVector mMoveDirect;
 
 
 
