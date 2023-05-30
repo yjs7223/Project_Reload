@@ -24,4 +24,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAICharacterMoveComponent* AIMovement;
 };

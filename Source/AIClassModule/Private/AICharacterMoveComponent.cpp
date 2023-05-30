@@ -4,6 +4,8 @@
 #include "AICharacterMoveComponent.h"
 #include "ST_Move.h"
 #include "UObject/ConstructorHelpers.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AICharacter.h"
 
 // Sets default values for this component's properties
 UAICharacterMoveComponent::UAICharacterMoveComponent()
@@ -15,7 +17,7 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 	timeDeltaTime = 0.0;
 	lerpDeltaTime = 0.0;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MoveDataObject(TEXT("/Game/AWS/DT_Move"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MoveDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Move.DT_Move'"));
 	if (DT_MoveDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
@@ -30,6 +32,8 @@ void UAICharacterMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SetEnemy("RifleMan");
+	AI_Move = true;
+	Move_Attack = true;
 	// ...
 	
 }
@@ -51,6 +55,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 			}
 			lerpDeltaTime = timeDeltaTime * 0.2;
 			Move_Speed = FMath::Lerp(100, m_SpdNomal, lerpDeltaTime);
+			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		}
 		else if (Move_Attack)
 		{
@@ -61,6 +66,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 			}
 			lerpDeltaTime = timeDeltaTime * 0.5;
 			Move_Speed = FMath::Lerp(100, m_SpdAttack, lerpDeltaTime);
+			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		}
 		else if (Move_Hit)
 		{
@@ -71,12 +77,14 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 			}
 			lerpDeltaTime = timeDeltaTime * 0.5;
 			Move_Speed = FMath::Lerp(100, m_SpdHit, lerpDeltaTime);
+			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		}
 		else
 		{
 			Move_Speed = 100;
 			timeDeltaTime = 0;
 			lerpDeltaTime = 0;
+			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		}
 	}
 	// ...

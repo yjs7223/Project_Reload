@@ -8,7 +8,7 @@
 #include "ST_Move.generated.h"
 
 USTRUCT(BlueprintType)
-struct AICLASSMODULE_API FST_Move : public FTableRowBase
+struct FST_Move : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
@@ -22,4 +22,10 @@ public:
 		float Spd_Attack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Spd_Hit;
+};
+
+UCLASS()
+class AICLASSMODULE_API UST_Move2: public UObject
+{
+	GENERATED_BODY()
 };
