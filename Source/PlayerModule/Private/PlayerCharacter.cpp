@@ -6,9 +6,17 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "PlayerMoveComponent.h"
+#include "PlayerWeaponComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Mannequin/Mesh/SKM_Mannequin.SKM_Mannequin'"));
+	if (sk_asset.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(sk_asset.Object);
+	}
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+
 	FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
 	FollowSpringArm->SetupAttachment(RootComponent);
 	FollowSpringArm->bUsePawnControlRotation = true;
@@ -19,6 +27,9 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->SetupAttachment(FollowSpringArm, USpringArmComponent::SocketName);
 
 	playerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMoveComp"));
+	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
 }
 
 void APlayerCharacter::BeginPlay()
@@ -38,5 +49,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	playerMove->bindInput(PlayerInputComponent);
+	weapon->bindInput(PlayerInputComponent);
 }
 

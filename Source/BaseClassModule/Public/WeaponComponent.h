@@ -42,8 +42,8 @@ public:
 
 		void StartReload();
 
-		void StartAim();
-		void StopAim();
+		void StartAiming();
+		void StopAiming();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
@@ -62,7 +62,7 @@ public:
 		bool isHit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		bool isAim;
+		bool isAiming;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;

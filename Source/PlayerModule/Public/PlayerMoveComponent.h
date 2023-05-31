@@ -35,7 +35,10 @@ public:
 		void MoveRight(float value);
 
 	UFUNCTION(BlueprintCallable)
-		void PlayerMoving(float DeltaTime);
+		void Moving(float DeltaTime);
+
+	UFUNCTION(BlueprintCallable)
+		void Turning(float DeltaTime);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -43,6 +46,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
 		float moveSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
+		float turnSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
 		FVector moveVec;

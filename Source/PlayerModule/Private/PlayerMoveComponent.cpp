@@ -22,6 +22,8 @@ void UPlayerMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<APlayerCharacter>();
+	moveSpeed = 100.0f;
+	turnSpeed = 0.05f;
 	// ...
 	
 }
@@ -31,8 +33,8 @@ void UPlayerMoveComponent::BeginPlay()
 void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	PlayerMoving(DeltaTime);
-
+	Moving(DeltaTime);
+	Turning(DeltaTime);
 	// ...
 }
 
@@ -41,42 +43,30 @@ void UPlayerMoveComponent::bindInput(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveForward", this, &UPlayerMoveComponent::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &UPlayerMoveComponent::MoveRight);
 
-	if (!owner)	owner = GetOwner<APlayerCharacter>();
+	if (!owner) { owner = GetOwner<APlayerCharacter>(); }
 	PlayerInputComponent->BindAxis("Turn", owner, &APlayerCharacter::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", owner, &APlayerCharacter::AddControllerPitchInput);
 }
 
 void UPlayerMoveComponent::MoveForward(float value)
 {
-	/*if ((owner->Controller) && value != 0.0f)
-	{
-		const FRotator rotation = owner->Controller->GetControlRotation();
-		const FRotator yaw = FRotator(0, rotation.Yaw, 0);
-
-		const FVector direction = FRotationMatrix(rotation).GetUnitAxis(EAxis::X);
-		owner->AddMovementInput(direction, value);
-	}*/
 	moveVec.X = value;
 }
 
 void UPlayerMoveComponent::MoveRight(float value)
 {
-	/*if ((owner->Controller) && value != 0.0f)
-	{
-		const FRotator rotation = owner->Controller->GetControlRotation();
-		const FRotator yaw = FRotator(0, rotation.Yaw, 0);
-
-		const FVector direction = FRotationMatrix(rotation).GetUnitAxis(EAxis::Y);
-		owner->AddMovementInput(direction, value);
-	}*/
 	moveVec.Y = value;
 }
 
-void UPlayerMoveComponent::PlayerMoving(float DeltaTime)
+void UPlayerMoveComponent::Moving(float DeltaTime)
 {
 	if (moveVec == FVector::ZeroVector) {
 		isMove = false;
 		return;
+	}
+	else
+	{
+		isMove = true;
 	}
 	FVector tempActorpos = owner->GetActorLocation();
 
@@ -96,3 +86,12 @@ void UPlayerMoveComponent::PlayerMoving(float DeltaTime)
 	owner->GetMovementComponent()->AddInputVector(mMoveDirect * moveSpeed);
 }
 
+void UPlayerMoveComponent::Turning(float DeltaTime)
+{
+	owner->SetActorRelativeRotation(FMath::RInterpTo(owner->GetActorRotation(), mTargetRotate, DeltaTime, turnSpeed));
+	float yawValue = FMath::Abs((owner->GetActorRotation() - mTargetRotate).Yaw);
+	owner->SetActorRelativeRotation(mTargetRotate);
+	/*if (yawValue < 5 || yawValue > 355) {
+		owner->SetActorRelativeRotation(mTargetRotate);
+	}*/
+}

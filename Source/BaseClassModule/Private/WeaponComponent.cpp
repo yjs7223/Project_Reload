@@ -54,7 +54,7 @@ ABaseCharacter* UWeaponComponent::GetCharacter()
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
 	maxAmmo = p_ammo;
-	curAmmo = p_ammo;
+	curAmmo = 30;
 }
 
 void UWeaponComponent::ReloadAmmo()
@@ -106,13 +106,13 @@ void UWeaponComponent::StartReload()
 	isReload = true;
 }
 
-void UWeaponComponent::StartAim()
+void UWeaponComponent::StartAiming()
 {
-	isAim = true;
+	isAiming = true;
 }
 
-void UWeaponComponent::StopAim()
+void UWeaponComponent::StopAiming()
 {
-	isAim = false;
+	isAiming = false;
 }
 
