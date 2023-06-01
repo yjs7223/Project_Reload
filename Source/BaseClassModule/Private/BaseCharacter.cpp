@@ -4,6 +4,7 @@
 #include "BaseCharacter.h"
 #include "StatComponent.h"
 #include "WeaponComponent.h"
+#include "BaseInputComponent.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
@@ -28,6 +29,8 @@ ABaseCharacter::ABaseCharacter()
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
+
+	m_InputComponent = CreateDefaultSubobject<UBaseInputComponent>(TEXT("Inputcomp"));
 
 }
 

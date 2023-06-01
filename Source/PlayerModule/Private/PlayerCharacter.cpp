@@ -8,6 +8,13 @@
 
 APlayerCharacter::APlayerCharacter()
 {
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Mannequin/Mesh/SKM_Mannequin.SKM_Mannequin'"));
+	if (sk_asset.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(sk_asset.Object);
+	}
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+
 	FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
 	FollowSpringArm->SetupAttachment(RootComponent);
 	FollowSpringArm->bUsePawnControlRotation = true;
