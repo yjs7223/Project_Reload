@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+
 #include "AICommender.h"
 #include "AICharacter.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 AAICommender::AAICommender()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	AddIndex = 0;
 
@@ -33,7 +34,7 @@ void AAICommender::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAICharacter::StaticClass(), arrOutActors);
-	if (En_Start)
+	if (state == EState::Start)
 	{
 		for (auto& item : arrOutActors)
 		{
@@ -43,22 +44,26 @@ void AAICommender::Tick(float DeltaTime)
 			List_Suppression.Add(AddIndex, 0.0);
 			AddIndex++;
 		}
-		En_Start = false;
+		state = EState::Play;
 	}
-	for (auto& item : arrOutActors)
+	if (state == EState::Play)
 	{
-		FindIndex = List_Division.Find(item);
-		if (FindIndex != nullptr)
+		for (auto& item : arrOutActors)
 		{
-			
-		}
-		else
-		{
-			if (List_Division.IsEmpty())
+			auto FindIndex = List_Division.Find(item);
+			if (FindIndex != nullptr)
 			{
 
 			}
+			else
+			{
+				if (List_Division.IsEmpty())
+				{
+
+				}
+			}
 		}
 	}
+	
 }
 

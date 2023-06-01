@@ -6,14 +6,32 @@
 #include "GameFramework/Actor.h"
 #include "AICommender.generated.h"
 
+UENUM(BlueprintType)
+enum class ECombat : uint8
+{
+	Patrol 	UMETA(DisplayName = "Patrol"),
+	Alaramed 	UMETA(DisplayName = "Alaramed"),
+	MoveCover 	UMETA(DisplayName = "MoveCover"),
+	Move 	UMETA(DisplayName = "Move"),
+	Attack 	UMETA(DisplayName = "Attack"),
+	InCover 	UMETA(DisplayName = "InCover")
+};
+UENUM(BlueprintType)
+enum class EState : uint8
+{
+	Start 	UMETA(DisplayName = "Start"),
+	Play 	UMETA(DisplayName = "Play"),
+	End 	UMETA(DisplayName = "End")
+};
+
 UCLASS()
 class AICLASSMODULE_API AAICommender : public AActor
 {
 	GENERATED_BODY()
 
-		using KEY = int32;
+		//using KEY = int32;
 
-public:	
+public:
 	// Sets default values for this actor's properties
 	AAICommender();
 
@@ -21,21 +39,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	UENUM(BlueprintType)
-	enum class ECombat : uint8
-	{
-		Patrol 	UMETA(DisplayName = "Patrol"),
-		Alaramed 	UMETA(DisplayName = "Alaramed"),
-		MoveCover 	UMETA(DisplayName = "MoveCover"),
-		Move 	UMETA(DisplayName = "Move"),
-		Attack 	UMETA(DisplayName = "Attack"),
-		InCover 	UMETA(DisplayName = "InCover")
-	};
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<AActor*, int> List_Division;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
@@ -43,16 +52,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
-		TMap<int, FFloat32> List_Suppression;
+		TMap<int, float> List_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TArray<AActor*> arrOutActors;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
-		int* FindIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		bool En_Start;//엔카운터 범위에 들어왔을때
-
-
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+		EState state;
 };
