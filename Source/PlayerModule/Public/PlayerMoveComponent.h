@@ -40,9 +40,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Turning(float DeltaTime);
 
+	void StartRun();
+	void StopRun();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class ABaseCharacter* owner;
+		class APlayerCharacter* owner;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
 		float moveSpeed;
@@ -54,6 +57,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
 		bool isMove;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
+		bool isRun;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
 		FRotator mTargetRotate;

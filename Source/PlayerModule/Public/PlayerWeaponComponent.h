@@ -30,4 +30,60 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void Fire() override;
+
+	void StartAiming();
+
+	void StopAiming();
+
+	void StartFire();
+
+	void StopFire();
+
+	void StartReload();
+
+	UFUNCTION(BlueprintCallable)
+		void AddRecoil();
+
+	UFUNCTION(BlueprintCallable)
+		void Recovery();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class APlayerCharacter* owner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_firerate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_firecount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_turnValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_lookupValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_IturnValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_IlookupValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_dValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector2D m_recoilAmount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector2D m_recoveryAmount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bResetRecoil;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUpdateRecoil;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bAddRecoil;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UCurveVector* recoilcurve;
+
+
+
+
+
+
+	FTimerHandle fHandle;
 };

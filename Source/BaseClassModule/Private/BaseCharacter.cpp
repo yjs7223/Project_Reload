@@ -11,17 +11,17 @@ ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	
-	PrimaryActorTick.bCanEverTick = true;
+	/*PrimaryActorTick.bCanEverTick = true;
 	int a = 5;
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Mannequin/Mesh/SKM_Mannequin.SKM_Mannequin'"));
 	if (sk_asset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(sk_asset.Object);
 	}
-	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));*/
 	//GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
-	GetCapsuleComponent()->SetCapsuleHalfHeight(95);
+	//GetCapsuleComponent()->SetCapsuleHalfHeight(95);
 
 	//Stat = CreateDefaultSubobject<UStatComponent>(TEXT("Statcomp"));
 	//Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weaponcomp"));

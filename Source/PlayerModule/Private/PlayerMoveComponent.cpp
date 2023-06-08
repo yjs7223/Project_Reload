@@ -3,7 +3,9 @@
 
 #include "PlayerMoveComponent.h"
 #include "PlayerCharacter.h"
+#include "PlayerWeaponComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Math/Axis.h"
 
 // Sets default values for this component's properties
@@ -42,6 +44,9 @@ void UPlayerMoveComponent::bindInput(UInputComponent* PlayerInputComponent)
 {
 	PlayerInputComponent->BindAxis("MoveForward", this, &UPlayerMoveComponent::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &UPlayerMoveComponent::MoveRight);
+
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &UPlayerMoveComponent::StartRun);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &UPlayerMoveComponent::StopRun);
 
 	if (!owner) { owner = GetOwner<APlayerCharacter>(); }
 	PlayerInputComponent->BindAxis("Turn", owner, &APlayerCharacter::AddControllerYawInput);
@@ -83,15 +88,38 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 
 	mTargetRotate = targetRotate;
 	mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
-	owner->GetMovementComponent()->AddInputVector(mMoveDirect * moveSpeed);
+	float m_speed = moveSpeed;
+	if (isRun)
+	{
+		m_speed = m_speed * 2.5f;
+	}
+	owner->GetMovementComponent()->AddInputVector(mMoveDirect * m_speed);
 }
 
 void UPlayerMoveComponent::Turning(float DeltaTime)
 {
-	owner->SetActorRelativeRotation(FMath::RInterpTo(owner->GetActorRotation(), mTargetRotate, DeltaTime, turnSpeed));
-	float yawValue = FMath::Abs((owner->GetActorRotation() - mTargetRotate).Yaw);
-	owner->SetActorRelativeRotation(mTargetRotate);
-	/*if (yawValue < 5 || yawValue > 355) {
+	if (owner->weapon->isAiming)
+	{
+		FRotator mrot = owner->GetActorRotation();
+		mrot.Yaw = owner->FollowCamera->GetComponentRotation().Yaw;
+	}
+	else
+	{
+		owner->SetActorRelativeRotation(FMath::RInterpTo(owner->GetActorRotation(), mTargetRotate, DeltaTime, turnSpeed));
+		float yawValue = FMath::Abs((owner->GetActorRotation() - mTargetRotate).Yaw);
 		owner->SetActorRelativeRotation(mTargetRotate);
-	}*/
+		/*if (yawValue < 5 || yawValue > 355) {
+			owner->SetActorRelativeRotation(mTargetRotate);
+		}*/
+	}
+}
+
+void UPlayerMoveComponent::StartRun()
+{
+	isRun = true;
+}
+
+void UPlayerMoveComponent::StopRun()
+{
+	isRun = false;
 }

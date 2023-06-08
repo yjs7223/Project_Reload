@@ -31,8 +31,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPlayerWeaponComponent* weapon;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UStatComponent* stat;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPlayerStatComponent* stat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
