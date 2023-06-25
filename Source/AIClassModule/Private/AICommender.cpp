@@ -53,13 +53,14 @@ void AAICommender::Tick(float DeltaTime)
 			auto FindIndex = List_Division.Find(item);
 			if (FindIndex != nullptr)
 			{
-
+				List_Location.Add(*FindIndex, item->GetActorLocation());
+				List_Suppression.Add(*FindIndex, 0.0);
 			}
 			else
 			{
 				if (List_Division.IsEmpty())
 				{
-
+					state = EState::End;
 				}
 			}
 		}
