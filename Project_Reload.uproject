@@ -23,7 +23,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"BaseClassModule"
+				"BaseClassModule",
+				"CoreUObject"
 			]
 		},
 		{

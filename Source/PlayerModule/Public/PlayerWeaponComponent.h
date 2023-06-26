@@ -7,6 +7,7 @@
 #include "Input.h"
 #include "PlayerWeaponComponent.generated.h"
 
+
 /**
  * 
  */
@@ -41,11 +42,17 @@ public:
 
 	void StartReload();
 
-	UFUNCTION(BlueprintCallable)
-		void AddRecoil();
+	void RecoilTick(float p_deltatime);
 
-	UFUNCTION(BlueprintCallable)
-		void Recovery();
+	void StartRecoil();
+
+	void StopRecoil();
+
+	void StartRecovery();
+
+	float EasingOut(float x);
+	float easeOutExpo(float t, float b, float c, float d);
+	//void StopRcovery();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -55,7 +62,7 @@ public:
 		float m_firerate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_firecount;
+		int m_firecount;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_turnValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -66,24 +73,37 @@ public:
 		float m_IlookupValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_dValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FTimerHandle fHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector2D m_recoilAmount;
+		bool bRecoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector2D m_recoveryAmount;
+		float recoilTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bResetRecoil;
+		float yawRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bUpdateRecoil;
+		float pitchRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bAddRecoil;
+		FVector2D yawRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UCurveVector* recoilcurve;
+		FVector2D pitchRange;
+
+	float pp;
+	float tt;
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator PlayerStartRot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator PlayerNowRot;*/
 
 
-
-
-
-
-	FTimerHandle fHandle;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bRecovery;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float recoveryTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float yawRecoveryValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float pitchRecoveryValue;*/
 };

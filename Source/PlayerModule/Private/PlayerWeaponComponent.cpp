@@ -6,10 +6,11 @@
 #include "Curves/CurveVector.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+//#include "RecoilComponent.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
-
+	//recoil = CreateDefaultSubobject<URecoilHelper>(TEXT("Recoil"));
 }
 
 void UPlayerWeaponComponent::BeginPlay()
@@ -17,13 +18,16 @@ void UPlayerWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<APlayerCharacter>();
 	SetAmmo(300);
-	m_recoilAmount = FVector2D::ZeroVector;
-	m_recoveryAmount = FVector2D::ZeroVector;
 	m_firecount = 0;
 	m_turnValue = 0.f;
 	m_lookupValue = 0.f;
 	m_firerate = 0.2f; 
 	m_dValue = 0.f;
+	recoilTime = 0.0f;
+	yawRange = FVector2D(-0.3f, 0.3f);
+	pitchRange = FVector2D(-0.3f, -1.0f);
+	tt = 0;
+	pp = 0;
 	// ...
 
 }
@@ -33,20 +37,8 @@ void UPlayerWeaponComponent::BeginPlay()
 void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (bAddRecoil)
-	{
-		AddRecoil();
-	}
-	else
-	{
-		//Recovery();
-	}
 
-	if (bResetRecoil)
-	{
-		Recovery();
-	}
-	// ...
+	RecoilTick(DeltaTime);
 }
 
 void UPlayerWeaponComponent::bindInput(UInputComponent* PlayerInputComponent)
@@ -63,12 +55,13 @@ void UPlayerWeaponComponent::bindInput(UInputComponent* PlayerInputComponent)
 void UPlayerWeaponComponent::Fire()
 {
 	//owner
+	// StopRecoil();
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	end = start + (cameraRotation.Vector() * 99999);
-
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
 	FHitResult m_result = FHitResult();
 	FCollisionQueryParams param(NAME_None, true, owner);
 
@@ -95,9 +88,8 @@ void UPlayerWeaponComponent::Fire()
 			isHit = true;
 		}
 	}
-	bAddRecoil = true;
 	m_firecount++;
-
+	StartRecoil();
 }
 
 void UPlayerWeaponComponent::StartAiming()
@@ -115,8 +107,8 @@ void UPlayerWeaponComponent::StopAiming()
 void UPlayerWeaponComponent::StartFire()
 {
 	isFire = true;
+	//PlayerStartRot = owner->GetController()->GetControlRotation();
 	Fire();
-	bResetRecoil = false;
 	owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
 	//Fire();
 }
@@ -125,7 +117,7 @@ void UPlayerWeaponComponent::StopFire()
 {
 	owner->GetWorldTimerManager().ClearTimer(fHandle);
 	isFire = false;
-	bResetRecoil = true;
+	m_firecount = 0;
 }
 
 void UPlayerWeaponComponent::StartReload()
@@ -133,60 +125,87 @@ void UPlayerWeaponComponent::StartReload()
 	isReload = true;
 }
 
-void UPlayerWeaponComponent::AddRecoil()
+void UPlayerWeaponComponent::RecoilTick(float p_deltatime)
 {
-	//m_turnValue = FMath::FRandRange(-2, 2);
-	//m_lookupValue = FMath::FRandRange(-1, -2);
-	if (m_dValue == 0.f)
+	if (bRecoil)
 	{
-		m_turnValue = FMath::FRandRange(-1.0f, 1.0f);
-		m_lookupValue = FMath::FRandRange(-1.f, -2.f);
-		m_IturnValue += m_turnValue;
-		m_IlookupValue += m_lookupValue;
-	}
-	m_dValue += 10.0f * GetWorld()->GetDeltaSeconds();
-	float y = m_turnValue - FMath::Lerp(0.0f, m_turnValue, m_dValue);
-	float p = m_lookupValue - FMath::Lerp(0.0f, m_lookupValue, m_dValue);
-	//FMath::FInterpTo(0.0f, m_lookupValue, GetWorld()->GetDeltaSeconds(), 10.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(m_dValue));
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(m_turnValue));
-	/*if (m_firecount <= 5.0f)
-	{
-		owner->AddControllerYawInput(y * .2f);
-		owner->AddControllerPitchInput(p * .2f);
-	}*/
-	owner->AddControllerYawInput(y * .1f);
-	owner->AddControllerPitchInput(p * .1f);
-	//m_IturnValue += y * .1f;
-	//m_IlookupValue += p * .1f;
-	if (m_dValue >= 1.0f)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("end"));
-		bAddRecoil = false;
-		m_dValue = 0.f;
-	}
-	bUpdateRecoil = true;
+		recoilTime += p_deltatime * 12.0f;
+		float a = recoilTime;
+		float b = easeOutExpo(a, 0, 0.45f, 1.0f);
+		tt += 1;
+		float y = FMath::Lerp(0.0f, yawRecoilValue, b)/tt;	
+		float p = FMath::Lerp(0.0f, pitchRecoilValue, b)/tt;
+		pp += p;
+		owner->AddControllerYawInput(y);
+		owner->AddControllerPitchInput(p);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(pp));
 
-}
+		if (a >= 1)
+		{
+			StopRecoil();
+			recoilTime = 0;
+			pp = 0;
+			tt = 0;
+		}
 
-void UPlayerWeaponComponent::Recovery()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("recovery"));
-	m_dValue += 1.0f * GetWorld()->GetDeltaSeconds();
-	float y = m_IturnValue - FMath::Lerp(0.0f, m_IturnValue, m_dValue); //FMath::FInterpTo(m_IturnValue, 0.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
-	float p = m_IlookupValue - FMath::Lerp(0.0f, m_IlookupValue, m_dValue); //FMath::FInterpTo(m_IlookupValue, 0.0f, GetWorld()->GetDeltaSeconds(), 10.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(y));
-	if (y > 0.0f)
+	}
+	/*else if (bRecovery)
 	{
-		owner->AddControllerYawInput(-(y) * 0.1f);
-		owner->AddControllerPitchInput(-(p) * 0.1f);
+		recoilTime = 0.0f;
+
+		PlayerNowRot = owner->GetController()->GetControlRotation();
+		recoveryTime += p_deltatime * 1.0f;
+		FRotator r = FMath::Lerp<FRotator>(PlayerNowRot, PlayerStartRot, recoveryTime);
+		FRotator yr = FRotator(r.Pitch, PlayerNowRot.Yaw, PlayerNowRot.Roll);
+		owner->Controller->SetControlRotation(yr);
+		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(recoveryTime));
+		
+		if (recoveryTime >= 1.0f)
+		{
+			bRecovery = false;
+			recoveryTime = 1.0f;
+		}
+		if (PlayerNowRot == PlayerStartRot)
+		{
+			bRecovery = false;
+		}
 	}
 	else
 	{
-		bResetRecoil = false;
-		m_IturnValue = 0;
-		m_IlookupValue = 0;
-	}
+		recoveryTime = 0;
+	}*/
 }
+
+void UPlayerWeaponComponent::StartRecoil()
+{
+	bRecoil = true;
+	yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
+	pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoilValue));
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::SanitizeFloat(pitchRecoilValue));
+}
+
+void UPlayerWeaponComponent::StopRecoil()
+{
+	bRecoil = false;
+	//StartRecovery();
+}
+
+void UPlayerWeaponComponent::StartRecovery()
+{
+	//bRecovery = true;
+	//PlayerNowRot = owner->GetController()->GetControlRotation();
+}
+
+float UPlayerWeaponComponent::EasingOut(float Param)
+{
+	return FMath::Sin(-13.f * (PI / 2.f) * (Param + 1)) * FMath::Pow(2.f, -10.f * Param) + 1.f;
+}
+
+float UPlayerWeaponComponent::easeOutExpo(float t, float b, float c, float d)
+{
+	return (t == d) ? b + c : c * (-pow(2, -10 * t / d) + 1) + b;
+}
+
 
 

@@ -43,4 +43,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPlayerMoveComponent* playerMove;
 	
+
 };

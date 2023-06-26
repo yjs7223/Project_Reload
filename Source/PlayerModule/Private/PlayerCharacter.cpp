@@ -8,6 +8,9 @@
 #include "PlayerMoveComponent.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerStatComponent.h"
+#include "RecoilComponent.h"
+
+
 
 APlayerCharacter::APlayerCharacter()
 {
