@@ -6,6 +6,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "PlayerMoveComponent.h"
+#include "PlayerWeaponComponent.h"
+#include "PlayerStatComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -15,6 +17,7 @@ APlayerCharacter::APlayerCharacter()
 		GetMesh()->SetSkeletalMesh(sk_asset.Object);
 	}
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
 	m_FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
 	m_FollowSpringArm->SetupAttachment(RootComponent);
@@ -25,7 +28,13 @@ APlayerCharacter::APlayerCharacter()
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
-	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
+	playerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMoveComp"));
+	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
+	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
+  
+  m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -40,3 +49,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	playerMove->bindInput(PlayerInputComponent);
+	weapon->bindInput(PlayerInputComponent);
+}
+
