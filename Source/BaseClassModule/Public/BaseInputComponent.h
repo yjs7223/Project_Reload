@@ -6,16 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "BaseInputComponent.generated.h"
 
-UENUM(BlueprintType)
-enum class EInputType : uint8
-{
-	None = 0	UMETA(Hidden),
-	Input		UMETA(DisplayName = "Input"),
-	Setting		UMETA(DisplayName = "Setting"),
-	MAX			UMETA(Hidden)
-};
-
-ENUM_CLASS_FLAGS(EInputType)
 
 USTRUCT(BlueprintType)
 struct FInputData
@@ -39,36 +29,15 @@ public:
 	UBaseInputComponent();
 
 protected:
-	
 	virtual void BeginPlay() override;
-
 
 public:
 	FInputData* getInput();
-	void SetInputPtr(TSharedPtr<FInputData> input_ptr);
-
-private:
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void Runing(); 
-	void Crouching();
-	void StartFire();
-	void StopFire();
-	void StartAiming(); 
-	void StopAiming();
-	void StartReload();
-	void CoverInputEvent();
-	void StartPeeking();
-	void StopPeeking();
 
 protected:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Editor)
-	EInputType m_inputType;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	ACharacter* owner;
 
 	bool mCanUnCrouch;
-	TSharedPtr<FInputData> m_inputData;
+	FInputData m_inputData;
 };

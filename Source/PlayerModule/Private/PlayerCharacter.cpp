@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "PlayerMoveComponent.h"
+#include "PlayerInputComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -26,6 +27,7 @@ APlayerCharacter::APlayerCharacter()
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
+	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 }
 
 void APlayerCharacter::BeginPlay()

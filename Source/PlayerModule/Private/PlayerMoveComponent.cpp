@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "BaseInputComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -42,7 +43,6 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UPlayerMoveComponent::Turning(float DeltaTime)
 {
-
 	owner->SetActorRelativeRotation(FMath::RInterpTo(owner->GetActorRotation(), mTargetRotate, DeltaTime, turningspped));
 	float yawValue = FMath::Abs((owner->GetActorRotation() - mTargetRotate).Yaw);
 	if (yawValue < 5 || yawValue > 355) {
@@ -79,6 +79,7 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	if (data->IsRuning) {
 		MoveDirect *= 2;
 		targetRotate = MoveDirect.Rotation();
+
 	}
 	
 	mTargetRotate = targetRotate;

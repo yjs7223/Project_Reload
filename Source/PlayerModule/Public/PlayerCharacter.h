@@ -33,5 +33,11 @@ protected:
 	class USpringArmComponent* m_FollowSpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
+	class UPlayerInputComponent* m_InputComponent;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UPlayerMoveComponent* m_PlayerMove;
+
+
 };
