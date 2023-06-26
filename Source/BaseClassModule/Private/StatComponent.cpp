@@ -34,11 +34,6 @@ void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	// ...
 }
 
-void UStatComponent::bindInput(UInputComponent* PlayerInputComponent)
-{
-	return;
-}
-
 ABaseCharacter* UStatComponent::GetCharacter()
 {
 	return owner;
