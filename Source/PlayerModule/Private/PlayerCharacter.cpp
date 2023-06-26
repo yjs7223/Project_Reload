@@ -8,9 +8,6 @@
 #include "PlayerMoveComponent.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerStatComponent.h"
-#include "RecoilComponent.h"
-
-
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -22,20 +19,22 @@ APlayerCharacter::APlayerCharacter()
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
-	FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
-	FollowSpringArm->SetupAttachment(RootComponent);
-	FollowSpringArm->bUsePawnControlRotation = true;
-	FollowSpringArm->TargetArmLength = 120.f;
-	FollowSpringArm->SocketOffset = FVector(0, 60, 80);
-
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(FollowSpringArm, USpringArmComponent::SocketName);
+	m_FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
+	m_FollowSpringArm->SetupAttachment(RootComponent);
+	m_FollowSpringArm->bUsePawnControlRotation = true;
+	m_FollowSpringArm->TargetArmLength = 120.f;
+	m_FollowSpringArm->SocketOffset = FVector(0, 60, 80);
+	
+	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
 	playerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMoveComp"));
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
+  
+  m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 }
 
 void APlayerCharacter::BeginPlay()

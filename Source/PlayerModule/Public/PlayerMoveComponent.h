@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Input.h"
 #include "PlayerMoveComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PLAYERMODULE_API UPlayerMoveComponent : public UActorComponent, public IInput
+class PLAYERMODULE_API UPlayerMoveComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UPlayerMoveComponent();
 
@@ -21,51 +20,43 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	//function
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual void bindInput(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION()
-		void MoveForward(float value);
-
-	UFUNCTION()
-		void MoveRight(float value);
-
-	UFUNCTION(BlueprintCallable)
-		void Moving(float DeltaTime);
+	
+	
 
 	UFUNCTION(BlueprintCallable)
 		void Turning(float DeltaTime);
+	UFUNCTION(BlueprintCallable)
+		void Turn();
+	UFUNCTION(BlueprintCallable)
+		void Moving(float DeltaTime);
+	UFUNCTION(BlueprintCallable)
+		void SetCanMove(bool canmove);
+	UFUNCTION(BlueprintCallable)
+		void SetCanUnCrouch(bool canCrouch);
+	UFUNCTION(BlueprintCallable)
+		bool IsCanMove();
 
-	void StartRun();
-	void StopRun();
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class APlayerCharacter* owner;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
-		float moveSpeed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
-		float turnSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
-		FVector moveVec;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
-		bool isMove;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
-		bool isRun;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
-		FRotator mTargetRotate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move)
+private:
+	UPROPERTY()
+		ACharacter* owner;
+	UPROPERTY()
 		FVector mMoveDirect;
 
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		FRotator mTargetRotate;
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		bool mCanMove;
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		bool mCanUnCrouch;
 
-
+	UPROPERTY(EditAnywhere, Category = Gameplay)
+		float turningspped;
+	UPROPERTY(EditAnywhere, Category = Gameplay)
+		float movespeed;
 };
