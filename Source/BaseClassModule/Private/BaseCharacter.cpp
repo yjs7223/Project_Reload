@@ -30,7 +30,7 @@ ABaseCharacter::ABaseCharacter()
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
 
-	m_InputComponent = CreateDefaultSubobject<UBaseInputComponent>(TEXT("Inputcomp"));
+	m_InputComponent = CreateDefaultSubobject<UBaseInputComponent>(TEXT("InputComponent"));
 
 }
 

@@ -21,10 +21,10 @@ void UCoverAnimInstance::NativeBeginPlay()
 	mCover = owner->FindComponentByClass<UCoverComponent>();
 	//mWeaponMesh = owner->FindComponentByClass<UWeaponMeshComponent>();
 	mWeapon = owner->FindComponentByClass<UWeaponComponent>();
-	mWeaponMesh = mWeapon->WeaponMesh;
+	if (mWeapon) {
+		mWeaponMesh = mWeapon->WeaponMesh;
+	}
 
-	mRightHandName = TEXT("hand_r_Socket");
-	mLeftHandName = TEXT("hand_l_Socket");
 }
 
 void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)

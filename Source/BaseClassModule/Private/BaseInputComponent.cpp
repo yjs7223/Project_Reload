@@ -3,6 +3,7 @@
 
 #include "BaseInputComponent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 UBaseInputComponent::UBaseInputComponent() : m_inputType(EInputType::None)
@@ -15,7 +16,7 @@ UBaseInputComponent::UBaseInputComponent() : m_inputType(EInputType::None)
 void UBaseInputComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	if (m_inputType == EInputType::Setting) return;
 
 	
@@ -23,25 +24,31 @@ void UBaseInputComponent::BeginPlay()
 	owner = Cast<ACharacter>(GetOwner());
 	TObjectPtr<class UInputComponent> InputComponent = owner->InputComponent;
 	
-	InputComponent->BindAxis("MoveForward", this, &UBaseInputComponent::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &UBaseInputComponent::MoveRight);
+	InputComponent->BindAxis("Move Forward / Backward", this, &UBaseInputComponent::MoveForward);
+	InputComponent->BindAxis("Move Right / Left", this, &UBaseInputComponent::MoveRight);
 
-	InputComponent->BindAxis("Turn", owner, &ACharacter::AddControllerYawInput);
-	InputComponent->BindAxis("LookUp", owner, &ACharacter::AddControllerPitchInput);
+	InputComponent->BindAxis("Turn Right / Left Mouse", owner, &ACharacter::AddControllerYawInput);
+	InputComponent->BindAxis("Look Up / Down Mouse", owner, &ACharacter::AddControllerPitchInput);
+
 	InputComponent->BindAction("Crouch", IE_Pressed, this, &UBaseInputComponent::Crouching);
 
 	InputComponent->BindAction("Fire", IE_Pressed, this, &UBaseInputComponent::StartFire);
 	InputComponent->BindAction("Fire", IE_Released, this, &UBaseInputComponent::StopFire);
 
-	InputComponent->BindAction("Aiming", IE_Pressed, this, &UBaseInputComponent::StartAiming);
-	InputComponent->BindAction("Aiming", IE_Released, this, &UBaseInputComponent::StopAiming);
+	InputComponent->BindAction("Aim", IE_Pressed, this, &UBaseInputComponent::StartAiming);
+	InputComponent->BindAction("Aim", IE_Released, this, &UBaseInputComponent::StopAiming);
 
 	InputComponent->BindAction("Reload", IE_Pressed, this, &UBaseInputComponent::StartReload);
 
 	InputComponent->BindAction("Cover", IE_Pressed, this, &UBaseInputComponent::CoverInputEvent);
 
-	InputComponent->BindAction("Aiming", IE_Pressed, this, &UBaseInputComponent::StartPeeking);
-	InputComponent->BindAction("Aiming", IE_Released, this, &UBaseInputComponent::StopPeeking);
+	InputComponent->BindAction("Aim", IE_Pressed, this, &UBaseInputComponent::StartPeeking);
+	InputComponent->BindAction("Aim", IE_Released, this, &UBaseInputComponent::StopPeeking);
+}
+
+FInputData* UBaseInputComponent::getInput()
+{
+	return m_inputData.Get();
 }
 
 void UBaseInputComponent::SetInputPtr(TSharedPtr<FInputData> input_ptr)
@@ -56,7 +63,7 @@ void UBaseInputComponent::MoveForward(float Value)
 
 void UBaseInputComponent::MoveRight(float Value)
 {
-	m_inputData->movevec.X = Value;
+	m_inputData->movevec.Y = Value;
 }
 
 void UBaseInputComponent::Runing()

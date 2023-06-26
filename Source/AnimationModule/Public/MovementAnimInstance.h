@@ -23,7 +23,8 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		class UPlayerMoveComponent* mPlayerMove;
+		class UBaseInputComponent* m_Input;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		float mMoveSpeed;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)

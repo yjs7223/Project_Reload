@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "PlayerMoveComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -15,15 +16,16 @@ APlayerCharacter::APlayerCharacter()
 	}
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 
-	FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
-	FollowSpringArm->SetupAttachment(RootComponent);
-	FollowSpringArm->bUsePawnControlRotation = true;
-	FollowSpringArm->TargetArmLength = 120.f;
-	FollowSpringArm->SocketOffset = FVector(0, 60, 80);
+	m_FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
+	m_FollowSpringArm->SetupAttachment(RootComponent);
+	m_FollowSpringArm->bUsePawnControlRotation = true;
+	m_FollowSpringArm->TargetArmLength = 120.f;
+	m_FollowSpringArm->SocketOffset = FVector(0, 60, 80);
+	
+	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
-
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(FollowSpringArm, USpringArmComponent::SocketName);
+	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 }
 
 void APlayerCharacter::BeginPlay()

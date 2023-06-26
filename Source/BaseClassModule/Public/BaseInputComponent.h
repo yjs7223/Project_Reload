@@ -17,23 +17,19 @@ enum class EInputType : uint8
 
 ENUM_CLASS_FLAGS(EInputType)
 
-
-
 USTRUCT(BlueprintType)
 struct FInputData
 {
 	GENERATED_USTRUCT_BODY()
-	DECLARE_DELEGATE(CoverInputEvent);
 
 	FVector movevec;
-	uint8 IsRuning	: 1;
-	uint8 IsFire	: 1;
-	uint8 IsAiming	: 1;
-	uint8 IsReload	: 1;
+	uint8 IsRuning : 1;
+	uint8 IsFire : 1;
+	uint8 IsAiming : 1;
+	uint8 IsReload : 1;
 };
 
-
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class BASECLASSMODULE_API UBaseInputComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -48,7 +44,7 @@ protected:
 
 
 public:
-
+	FInputData* getInput();
 	void SetInputPtr(TSharedPtr<FInputData> input_ptr);
 
 private:

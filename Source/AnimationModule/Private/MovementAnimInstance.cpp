@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerMoveComponent.h"
 #include "KismetAnimationLibrary.h"
+#include "BaseInputComponent.h"
 
 
 UMovementAnimInstance::UMovementAnimInstance()
@@ -13,8 +14,8 @@ UMovementAnimInstance::UMovementAnimInstance()
 
 void UMovementAnimInstance::NativeBeginPlay()
 {
-	mPlayerMove = dynamic_cast<UPlayerMoveComponent*>(TryGetPawnOwner()->
-		GetComponentByClass(UPlayerMoveComponent::StaticClass()));
+	m_Input = dynamic_cast<UBaseInputComponent*>(TryGetPawnOwner()->FindComponentByClass<UBaseInputComponent>());
+
 }
 
 void UMovementAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -27,8 +28,8 @@ void UMovementAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsMoving = mMoveSpeed > 0;
 		mIsCrouching = charcter->bIsCrouched;
 	}
-	if (mPlayerMove) {
-		//mIsRuning = mPlayerMove->IsRuning();
+	if (m_Input) {
+		mIsRuning =m_Input->getInput()->IsRuning;
 	}
 }
 
