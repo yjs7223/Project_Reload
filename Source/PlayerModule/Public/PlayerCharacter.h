@@ -39,9 +39,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	class USpringArmComponent* m_FollowSpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
-	class UPlayerInputComponent* m_InputComponent;
-
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UPlayerMoveComponent* m_PlayerMove;
