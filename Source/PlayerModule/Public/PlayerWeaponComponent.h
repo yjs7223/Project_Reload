@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "WeaponComponent.h"
-#include "Input.h"
 #include "PlayerWeaponComponent.generated.h"
 
 
@@ -12,7 +11,7 @@
  * 
  */
 UCLASS()
-class PLAYERMODULE_API UPlayerWeaponComponent : public UWeaponComponent, public IInput
+class PLAYERMODULE_API UPlayerWeaponComponent : public UWeaponComponent
 {
 	GENERATED_BODY()
 public:
@@ -27,19 +26,18 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual void bindInput(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
 		void Fire() override;
-
+	UFUNCTION(BlueprintCallable)
 	void StartAiming();
-
+	UFUNCTION(BlueprintCallable)
 	void StopAiming();
-
+	UFUNCTION(BlueprintCallable)
 	void StartFire();
-
+	UFUNCTION(BlueprintCallable)
 	void StopFire();
-
+	UFUNCTION(BlueprintCallable)
 	void StartReload();
 
 	void RecoilTick(float p_deltatime);
@@ -57,6 +55,9 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class APlayerCharacter* owner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UDataTable* PlayerWeaponData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_firerate;
@@ -91,6 +92,14 @@ public:
 
 	float pp;
 	float tt;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UGameplayStatics* GameStatic;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* MuzzleFireParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* BulletTracerParticle;
 
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FRotator PlayerStartRot;
