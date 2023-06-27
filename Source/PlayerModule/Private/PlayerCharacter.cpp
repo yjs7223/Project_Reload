@@ -8,6 +8,7 @@
 #include "PlayerMoveComponent.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerStatComponent.h"
+#include "PlayerInputComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -35,6 +36,7 @@ APlayerCharacter::APlayerCharacter()
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
   m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
+  m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 }
 
 void APlayerCharacter::BeginPlay()

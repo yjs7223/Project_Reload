@@ -7,6 +7,7 @@
 #include "KismetAnimationLibrary.h"
 #include "BaseInputComponent.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 
 UMovementAnimInstance::UMovementAnimInstance()
 {

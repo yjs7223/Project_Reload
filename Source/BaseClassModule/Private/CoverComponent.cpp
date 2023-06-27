@@ -22,28 +22,12 @@ UCoverComponent::UCoverComponent()
 void UCoverComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	//mCoverWalls.Empty();
-	//Owner = dynamic_cast<ACharacter*>(GetOwner());
-	//ensureMsgf(Owner, TEXT("UCoverComponent::owner is null"));
 
-
-	//IFNULLPAUSERET(mHidingCollider, TEXT("UCoverComponent::HidingCollider is null"));
-	//mHidingCollider->OnComponentBeginOverlap.AddDynamic(this, &UCoverComponent::HidingCollider_OverlapBegin);
-	//mHidingCollider->OnComponentEndOverlap.AddDynamic(this, &UCoverComponent::HidingCollider_OverlapEnd);
-	//mPlayerMove = GETCOMPONENT(UPlayerMoveComponent);
-	//mWeapon = GETCOMPONENT(UWeaponComponent);
-	//IFNULLPAUSERET(mWeapon, TEXT("UCoverComponent::mWeapon is null"));
-	//mIsConerTime = -1.0f;
-	//mConeringAngle = 0.f;
-	//mIsConeringRight = -1;
-	//mIsFaceRight = true;
 }
 
 void UCoverComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	//if (mPlayerMove) {
-	//	mPlayerMove->SetComponentTickEnabled(true);
-	//}
+
 
 }
 
