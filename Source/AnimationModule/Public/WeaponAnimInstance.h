@@ -22,6 +22,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+		class UBaseInputComponent* m_Input;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 		class UWeaponComponent* mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
