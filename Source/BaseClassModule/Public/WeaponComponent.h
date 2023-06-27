@@ -25,9 +25,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-		ABaseCharacter* GetCharacter();
-
-	UFUNCTION(BlueprintCallable)
 		void SetAmmo(int p_ammo);
 
 	UFUNCTION(BlueprintCallable)
@@ -36,14 +33,6 @@ public:
 	// (void Fire() override)
 	//UFUNCTION(BlueprintCallable)
 		virtual void Fire();
-
-		void StartFire();
-		void StopFire();
-
-		void StartReload();
-
-		void StartAim();
-		void StopAim();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
@@ -62,13 +51,8 @@ public:
 		bool isHit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		bool isAim;
+		bool isAiming;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;
-
-
-protected:
-	UPROPERTY()
-		class ABaseCharacter* owner;
 };

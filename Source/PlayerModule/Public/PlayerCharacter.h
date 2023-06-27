@@ -25,6 +25,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPlayerWeaponComponent* weapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPlayerStatComponent* stat;
+    
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	class UCameraComponent* m_FollowCamera;

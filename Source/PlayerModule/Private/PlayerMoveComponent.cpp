@@ -7,6 +7,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
 // Sets default values for this component's properties
 UPlayerMoveComponent::UPlayerMoveComponent()
 {
@@ -105,3 +106,7 @@ bool UPlayerMoveComponent::IsCanMove()
 	return mCanMove;
 }
 
+void UPlayerMoveComponent::StopRun()
+{
+	isRun = false;
+}
