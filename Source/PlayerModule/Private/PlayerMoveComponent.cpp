@@ -106,7 +106,3 @@ bool UPlayerMoveComponent::IsCanMove()
 	return mCanMove;
 }
 
-void UPlayerMoveComponent::StopRun()
-{
-	isRun = false;
-}

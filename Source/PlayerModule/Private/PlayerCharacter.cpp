@@ -29,14 +29,13 @@ APlayerCharacter::APlayerCharacter()
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
-	playerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMoveComp"));
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
-  m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
-  m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
+	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
+	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -52,10 +51,4 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 }
 
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	playerMove->bindInput(PlayerInputComponent);
-	weapon->bindInput(PlayerInputComponent);
-}
 
