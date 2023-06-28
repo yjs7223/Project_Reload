@@ -3,6 +3,8 @@
 
 #include "PlayerInputComponent.h"
 #include "GameFramework/Character.h"
+#include "CoverComponent.h"
+
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -53,7 +55,7 @@ void UPlayerInputComponent::Crouching()
 		owner->Crouch();
 	}
 	else {
-		if (!mCanUnCrouch) return;
+		if (!m_CanUnCrouch) return;
 		owner->UnCrouch();
 	}
 }
@@ -85,6 +87,7 @@ void UPlayerInputComponent::StartReload()
 
 void UPlayerInputComponent::CoverInputEvent()
 {
+	owner->FindComponentByClass<UCoverComponent>()->PlayCover();
 
 	//m_inputData->CoverInputEventDelegate.ExecuteIfBound();
 }

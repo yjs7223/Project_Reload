@@ -22,12 +22,26 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	void PlayCover();
+	void SettingMoveVector(FVector& vector);
+	void TurnCheck(float DeltaTime);
+	void RotateSet();
 
 protected:
+	void StartCover(FHitResult& reslut);
+	void StopCover();
+	FHitResult CheckCoverCollision();
+	void Turning();
 
 private:
 
 private:
+	bool m_IsCover;
+	bool m_IsTurnWait;
+	float m_CoverLimit;
+	float m_TurnTime;
+
+	class ACharacter* owner;
 };

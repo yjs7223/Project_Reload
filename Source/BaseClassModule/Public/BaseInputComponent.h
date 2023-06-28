@@ -34,10 +34,10 @@ protected:
 public:
 	FInputData* getInput();
 
+	bool m_CanUnCrouch;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	ACharacter* owner;
 
-	bool mCanUnCrouch;
 	FInputData m_inputData;
 };
