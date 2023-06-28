@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/PointLightComponent.h"
+//#include "NiagaraComponent.h"
 #include "AICharacter.generated.h"
 
 /**
