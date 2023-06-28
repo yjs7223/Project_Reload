@@ -6,6 +6,7 @@
 #include "BaseInputComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "CoverComponent.h"
 
 
 // Sets default values for this component's properties
@@ -14,7 +15,7 @@ UPlayerMoveComponent::UPlayerMoveComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	mCanUnCrouch = true;
+
 	// ...
 }
 
@@ -27,6 +28,8 @@ void UPlayerMoveComponent::BeginPlay()
 	owner = dynamic_cast<ACharacter*>(GetOwner());
 	ensure(owner);
 
+	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
+	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
 
 	mCanMove = true;
 }
@@ -43,6 +46,10 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UPlayerMoveComponent::Turning(float DeltaTime)
 {
+	if (m_CoverComp) {
+		m_CoverComp->RotateSet();
+		return;
+	}
 	owner->SetActorRelativeRotation(FMath::RInterpTo(owner->GetActorRotation(), mTargetRotate, DeltaTime, turningspped));
 	float yawValue = FMath::Abs((owner->GetActorRotation() - mTargetRotate).Yaw);
 	if (yawValue < 5 || yawValue > 355) {
@@ -59,22 +66,24 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 {
 	FInputData* data = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	if (data->movevec == FVector::ZeroVector) {
+		mMoveDirect = FVector::ZeroVector;
 		data->IsRuning = false;
+
 		return;
 	}
 
-	FVector tempActorpos = owner->GetActorLocation();
-	tempActorpos.Z = 0;
-	data->movevec.Normalize();
+	FVector MoveDirect;
 
-	FVector MoveDirect = owner->Controller->GetControlRotation().RotateVector(data->movevec);
-	FRotator targetRotate;
+	MoveDirect = owner->Controller->GetControlRotation().RotateVector(data->movevec);
+
+	if (m_CoverComp) {
+		m_CoverComp->SettingMoveVector(MoveDirect);
+	}
+
 	MoveDirect.Z = 0;
-	MoveDirect.Normalize();	
+	MoveDirect.Normalize();
 
-	targetRotate = owner->GetActorRotation();
-	targetRotate.Yaw = owner->Controller->GetControlRotation().Yaw;
-	
+	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
 	if (data->IsRuning) {
 		MoveDirect *= 2;

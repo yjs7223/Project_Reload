@@ -5,6 +5,7 @@
 #include "StatComponent.h"
 #include "WeaponComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "CoverComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -14,7 +15,9 @@ ABaseCharacter::ABaseCharacter()
 
 	PrimaryActorTick.bCanEverTick = true;
 
+
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Cyber_Girl/Mesh/SK_Cyber_Girl.SK_Cyber_Girl'"));
+
 	if (sk_asset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(sk_asset.Object);
@@ -30,7 +33,7 @@ ABaseCharacter::ABaseCharacter()
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
-
+	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 
 }
 

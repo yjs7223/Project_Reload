@@ -47,6 +47,8 @@ private:
 		ACharacter* owner;
 	UPROPERTY()
 		FVector mMoveDirect;
+	UPROPERTY()
+		class UCoverComponent* m_CoverComp;
 
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
 		FRotator mTargetRotate;
