@@ -41,7 +41,6 @@ public:
 		bool IsCanMove();
 
 
-
 private:
 	UPROPERTY()
 		ACharacter* owner;
