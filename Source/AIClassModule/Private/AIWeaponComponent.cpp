@@ -15,7 +15,7 @@ UAIWeaponComponent::UAIWeaponComponent()
 void UAIWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = GetOwner<AAICharacter>();
+	//owner = GetOwner<AAICharacter>();
 	// ...
 
 }

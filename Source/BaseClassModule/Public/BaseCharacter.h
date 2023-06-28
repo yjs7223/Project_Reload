@@ -26,6 +26,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
+	class UBaseInputComponent* m_InputComponent;
+
+
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UStatComponent* Stat;
 

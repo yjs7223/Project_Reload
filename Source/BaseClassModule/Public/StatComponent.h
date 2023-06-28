@@ -4,12 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Input.h"
 #include "StatComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class BASECLASSMODULE_API UStatComponent : public UActorComponent, public IInput
+class BASECLASSMODULE_API UStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -25,7 +24,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	virtual void bindInput(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
 		ABaseCharacter* GetCharacter();

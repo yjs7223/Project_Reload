@@ -25,12 +25,23 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* FollowCamera;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPlayerWeaponComponent* weapon;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent* FollowSpringArm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPlayerStatComponent* stat;
+    
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	class UCameraComponent* m_FollowCamera;
 
-	//virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	class USpringArmComponent* m_FollowSpringArm;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
+	class UPlayerMoveComponent* m_PlayerMove;
+
+
 };

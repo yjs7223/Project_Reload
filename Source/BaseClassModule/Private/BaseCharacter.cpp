@@ -11,6 +11,7 @@ ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	
+
 	PrimaryActorTick.bCanEverTick = true;
 
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Cyber_Girl/Mesh/SK_Cyber_Girl.SK_Cyber_Girl'"));
@@ -23,11 +24,13 @@ ABaseCharacter::ABaseCharacter()
 
 	//GetCapsuleComponent()->SetCapsuleHalfHeight(95);
 
+
 	/*Stat = CreateDefaultSubobject<UStatComponent>(TEXT("Statcomp"));
 	Weapon = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weaponcomp"));
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
+
 
 }
 
