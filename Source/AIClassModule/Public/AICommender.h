@@ -44,7 +44,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<AActor*, int> List_Division;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
@@ -72,12 +72,5 @@ public:
 
 
 public:
-	UFUNCTION()
-		ASubEncounterSpace* LevelActiveCheck();
-	UFUNCTION()
-		void ListStartSet(ASubEncounterSpace* sub);
-	UFUNCTION()
-		void ListPlaySet(ASubEncounterSpace* sub);
-	UFUNCTION()
-		void EnemyCheckPoint(AActor* otherActor);
+
 };
