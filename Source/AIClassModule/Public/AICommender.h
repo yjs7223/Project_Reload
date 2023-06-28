@@ -48,9 +48,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<AActor*, int> List_Division;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+		TMap<int, AActor*> List_RDivision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<int, ECombat> List_Combat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<int, FVector> List_Location;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+		TMap<int, FVector> List_ChkLocation; //목표 로케이션은 작업 후
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<int, float> List_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
@@ -61,4 +65,19 @@ public:
 		bool En_Start;//엔카운터 범위에 들어왔을때
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		EState state;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+		class AEncounterSpace* encounter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+		class ASubEncounterSpace* suben;
+
+
+public:
+	UFUNCTION()
+		ASubEncounterSpace* LevelActiveCheck();
+	UFUNCTION()
+		void ListStartSet(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListPlaySet(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void EnemyCheckPoint(AActor* otherActor);
 };

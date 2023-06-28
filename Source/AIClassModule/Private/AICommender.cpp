@@ -4,6 +4,8 @@
 
 #include "AICommender.h"
 #include "AICharacter.h"
+#include "EncounterSpace.h"
+#include "SubEncounterSpace.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 AAICommender::AAICommender()
@@ -18,10 +20,68 @@ AAICommender::AAICommender()
 void AAICommender::BeginPlay()
 {
 	Super::BeginPlay();
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAICharacter::StaticClass(), arrOutActors);
-	for (auto& item : arrOutActors)
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAICharacter::StaticClass(), arrOutActors);
+	/*for (auto& item : arrOutActors)
 	{
 		List_Division.Add(item, AddIndex);
+		List_RDivision.Add(AddIndex, item);
+		List_Combat.Add(AddIndex, ECombat::Patrol);
+		List_Location.Add(AddIndex, item->GetActorLocation());
+		List_Suppression.Add(AddIndex, 0.0);
+		AddIndex++;
+	}*/
+}
+
+// Called every frame
+void AAICommender::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	switch (state)
+	{
+	case EState::Start:
+		if (LevelActiveCheck() != nullptr)
+		{
+			ListStartSet(LevelActiveCheck());
+		}
+		state = EState::Play;
+		break;
+	case EState::Play:
+		if (LevelActiveCheck() != nullptr)
+		{
+			ListPlaySet(LevelActiveCheck());
+		}
+		else state = EState::Start;
+		break;
+	case EState::End:
+
+		break;
+
+	}
+	
+}
+
+ASubEncounterSpace* AAICommender::LevelActiveCheck()
+{
+	if (encounter->LevelActive == true)
+	{
+		for (auto& item : encounter->LevelArray)
+		{
+			if (item->LevelActive == true)
+			{
+				return item;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void AAICommender::ListStartSet(ASubEncounterSpace* sub)
+{
+	for (auto& item : sub->AIArray)
+
+	{
+		List_Division.Add(item, AddIndex);
+		List_RDivision.Add(AddIndex, item);
 		List_Combat.Add(AddIndex, ECombat::Patrol);
 		List_Location.Add(AddIndex, item->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0);
@@ -29,42 +89,24 @@ void AAICommender::BeginPlay()
 	}
 }
 
-// Called every frame
-void AAICommender::Tick(float DeltaTime)
+void AAICommender::ListPlaySet(ASubEncounterSpace* sub)
 {
-	Super::Tick(DeltaTime);
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAICharacter::StaticClass(), arrOutActors);
-	if (state == EState::Start)
+	for (auto& item : sub->AIArray)
 	{
-		for (auto& item : arrOutActors)
+		auto FindActor = List_Division.Find(item); //적이 죽었을땐 ai캐릭터 자체에서 디비전 지우기
+		if (FindActor != nullptr)
 		{
-			List_Division.Add(item, AddIndex);
-			List_Combat.Add(AddIndex, ECombat::Patrol);
-			List_Location.Add(AddIndex, item->GetActorLocation());
-			List_Suppression.Add(AddIndex, 0.0);
-			AddIndex++;
+			List_Location.Add(*FindActor, sub->GetActorLocation());
+			List_Location.Add(*FindActor, sub->GetActorLocation());//목표 위치 설정 후 변수넣기
+			List_Suppression.Add(*FindActor, 0.0); //나중에 서프레션 변수 넣을 예정
 		}
-		state = EState::Play;
-	}
-	if (state == EState::Play)
-	{
-		for (auto& item : arrOutActors)
+		else
 		{
-			auto FindIndex = List_Division.Find(item);
-			if (FindIndex != nullptr)
+			if (List_Division.IsEmpty())
 			{
-				List_Location.Add(*FindIndex, item->GetActorLocation());
-				List_Suppression.Add(*FindIndex, 0.0);
-			}
-			else
-			{
-				if (List_Division.IsEmpty())
-				{
-					state = EState::End;
-				}
+				state = EState::End;
 			}
 		}
 	}
-	
 }
 
