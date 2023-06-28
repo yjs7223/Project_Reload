@@ -26,7 +26,6 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = GetOwner<ABaseCharacter>();
 	// ...
 	
 }
@@ -45,16 +44,10 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //	return;
 //}
 
-ABaseCharacter* UWeaponComponent::GetCharacter()
-{
-	return owner;
-}
-
-
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
 	maxAmmo = p_ammo;
-	curAmmo = p_ammo;
+	curAmmo = 30;
 }
 
 void UWeaponComponent::ReloadAmmo()
@@ -89,30 +82,5 @@ void UWeaponComponent::Fire()
 {
 	//fire
 	return;
-}
-
-void UWeaponComponent::StartFire()
-{
-	isFire = true;
-}
-
-void UWeaponComponent::StopFire()
-{
-	isFire = false;
-}
-
-void UWeaponComponent::StartReload()
-{
-	isReload = true;
-}
-
-void UWeaponComponent::StartAim()
-{
-	isAim = true;
-}
-
-void UWeaponComponent::StopAim()
-{
-	isAim = false;
 }
 

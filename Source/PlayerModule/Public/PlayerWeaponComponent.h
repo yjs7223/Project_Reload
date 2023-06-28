@@ -1,0 +1,118 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "WeaponComponent.h"
+#include "PlayerWeaponComponent.generated.h"
+
+
+/**
+ * 
+ */
+UCLASS()
+class PLAYERMODULE_API UPlayerWeaponComponent : public UWeaponComponent
+{
+	GENERATED_BODY()
+public:
+	// Sets default values for this component's properties
+	UPlayerWeaponComponent();
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+
+	UFUNCTION(BlueprintCallable)
+		void Fire() override;
+	UFUNCTION(BlueprintCallable)
+	void StartAiming();
+	UFUNCTION(BlueprintCallable)
+	void StopAiming();
+	UFUNCTION(BlueprintCallable)
+	void StartFire();
+	UFUNCTION(BlueprintCallable)
+	void StopFire();
+	UFUNCTION(BlueprintCallable)
+	void StartReload();
+
+	void RecoilTick(float p_deltatime);
+
+	void StartRecoil();
+
+	void StopRecoil();
+
+	void StartRecovery();
+
+	float EasingOut(float x);
+	float easeOutExpo(float t, float b, float c, float d);
+	//void StopRcovery();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class APlayerCharacter* owner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UDataTable* PlayerWeaponData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_firerate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int m_firecount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_turnValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_lookupValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_IturnValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_IlookupValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_dValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FTimerHandle fHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bRecoil;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float recoilTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float yawRecoilValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float pitchRecoilValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector2D yawRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector2D pitchRange;
+
+	float pp;
+	float tt;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UGameplayStatics* GameStatic;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* MuzzleFireParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* BulletTracerParticle;
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator PlayerStartRot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator PlayerNowRot;*/
+
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bRecovery;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float recoveryTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float yawRecoveryValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float pitchRecoveryValue;*/
+};

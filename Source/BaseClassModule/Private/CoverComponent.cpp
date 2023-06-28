@@ -2,6 +2,10 @@
 
 
 #include "CoverComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/PawnMovementComponent.h"
+//#include "PlayerMoveComponent.h"
+//#include "WeaponComponent.h"
 
 // Sets default values for this component's properties
 UCoverComponent::UCoverComponent()
@@ -19,16 +23,13 @@ void UCoverComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
 }
-
 
 // Called every frame
 void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+
 }
 

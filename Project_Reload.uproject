@@ -7,7 +7,10 @@
 		{
 			"Name": "Project_Reload",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AIClassModule"
+			]
 		},
 		{
 			"Name": "BaseClassModule",
@@ -23,7 +26,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"BaseClassModule"
+				"BaseClassModule",
+				"CoreUObject"
 			]
 		},
 		{
