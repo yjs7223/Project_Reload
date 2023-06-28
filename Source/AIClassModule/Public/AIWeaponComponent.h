@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
 #include "WeaponComponent.h"
 #include "NiagaraComponent.h"
 #include "AIWeaponComponent.generated.h"
@@ -10,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 {
 	GENERATED_BODY()
@@ -56,7 +57,7 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FHitResult m_result;
 
-	// 빔 나이아가라
+	// 발사체 나이아가라
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UNiagaraSystem* shotFXNiagara;
 	UPROPERTY()
