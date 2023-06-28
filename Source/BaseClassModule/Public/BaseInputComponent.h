@@ -12,10 +12,15 @@ struct FInputData
 {
 	GENERATED_USTRUCT_BODY()
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	FVector movevec;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	uint8 IsRuning : 1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	uint8 IsFire : 1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	uint8 IsAiming : 1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	uint8 IsReload : 1;
 };
 
@@ -39,5 +44,6 @@ protected:
 	ACharacter* owner;
 
 	bool mCanUnCrouch;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	FInputData m_inputData;
 };

@@ -12,7 +12,7 @@
 
 APlayerCharacter::APlayerCharacter()
 {
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Mannequin/Mesh/SKM_Mannequin.SKM_Mannequin'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(sk_asset.Object);
@@ -31,7 +31,7 @@ APlayerCharacter::APlayerCharacter()
 
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
-	FName WeaponSocket(TEXT("hand_rSocket"));
+	FName WeaponSocket(TEXT("hand_r_Socket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
