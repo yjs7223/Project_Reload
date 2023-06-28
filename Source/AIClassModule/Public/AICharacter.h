@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/PointLightComponent.h"
+//#include "NiagaraComponent.h"
 #include "AICharacter.generated.h"
 
 /**
@@ -24,4 +27,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAICharacterMoveComponent* AIMovement;
 };

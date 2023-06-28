@@ -1,0 +1,26 @@
+{
+	"FileVersion": 3,
+	"Version": 4,
+	"VersionName": "1.2.0",
+	"FriendlyName": "AI Cover System",
+	"Description": "A code plugin framework to implement cover mechanics for an AI. Fully procedural and dynamic - set up it only once, and it works everywhere.",
+	"Category": "AI",
+	"CreatedBy": "Fullstag Interactive",
+	"CreatedByURL": "",
+	"DocsURL": "https://drive.google.com/file/d/1JZr2UVmyDutgo7WMjjevGojPvZXnd-sL/view?usp=sharing",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/0966972104ff4e94874096f15cf4f7f5",
+	"SupportURL": "",
+	"EngineVersion": "5.0.0",
+	"CanContainContent": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "AICoverSystem",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		}
+	]
+}

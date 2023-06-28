@@ -12,6 +12,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/Classes/GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/KismetStringLibrary.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -26,10 +27,17 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		MuzzleFireParticle = Fire.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> bullet(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_BulletTracer.P_BulletTracer'"));
-	if (Fire.Succeeded())
+	if (bullet.Succeeded())
 	{
 		BulletTracerParticle = bullet.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> decal(TEXT("MaterialInstanceConstant'/Game/yjs/Impact_Decal2.Impact_Decal2'"));
+	if (decal.Succeeded())
+	{
+		Decal = decal.Object;
+	}
+
+
 }
 
 void UPlayerWeaponComponent::BeginPlay()
@@ -43,9 +51,10 @@ void UPlayerWeaponComponent::BeginPlay()
 	m_firerate = 0.1f; 
 	m_dValue = 0.f;
 	recoilTime = 0.0f;
+	m_spreadPower = 3.0f;
 	yawRange = FVector2D(-0.3f, 0.3f);
 	pitchRange = FVector2D(-0.3f, -1.0f);
-	tt = 0;
+	TickCount = 1;
 	pp = 0;
 	// ...
 
@@ -58,6 +67,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	RecoilTick(DeltaTime);
+	//RecoveryTick(DeltaTime);
 }
 
 void UPlayerWeaponComponent::Fire()
@@ -66,6 +76,9 @@ void UPlayerWeaponComponent::Fire()
 	FRotator cameraRotation;
 	FVector end;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	float spread = m_firecount * m_spreadPower;
+	start.X += FMath::RandRange(-spread, spread);
+	start.Y += FMath::RandRange(-spread, spread);
 	end = start + (cameraRotation.Vector() * 99999);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
 	FHitResult m_result = FHitResult();
@@ -84,11 +97,13 @@ void UPlayerWeaponComponent::Fire()
 		{
 			DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+			SpawnDecal(m_result);
 			isHit = true;
 		}
 		else
 		{
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
+			SpawnDecal(m_result);
 		}
 		GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 	}
@@ -100,6 +115,7 @@ void UPlayerWeaponComponent::Fire()
 		{
 			DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+			SpawnDecal(m_result);
 			isHit = true;
 		}
 		else
@@ -107,6 +123,10 @@ void UPlayerWeaponComponent::Fire()
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		}
 		GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
+	}
+	if(m_firecount < 10)
+	{
+		m_firecount++;
 	}
 	StartRecoil();
 }
@@ -124,12 +144,16 @@ void UPlayerWeaponComponent::StopAiming()
 void UPlayerWeaponComponent::StartFire()
 {
 	Fire();
+	isFire = true;
+	//startRot = owner->GetController()->GetControlRotation();
 	owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
 }
 
 void UPlayerWeaponComponent::StopFire()
 {
 	owner->GetWorldTimerManager().ClearTimer(fHandle);
+	isFire = false;
+	m_firecount = 0;
 }
 
 void UPlayerWeaponComponent::StartReload()
@@ -141,83 +165,97 @@ void UPlayerWeaponComponent::RecoilTick(float p_deltatime)
 {
 	if (bRecoil)
 	{
-		recoilTime += p_deltatime * 12.0f;
-		float a = recoilTime;
-		float b = easeOutExpo(a, 0, 0.45f, 1.0f);
-		tt += 1;
+		recoilTime += p_deltatime * 0.3f;
+		float alpha = easeOutExpo(recoilTime, 0, 1.0f, 1.0f)/m_firerate;
+		TickCount += 1;
 
-		float y = FMath::Lerp(0.0f, yawRecoilValue, b)/tt;	
-		float p = FMath::Lerp(0.0f, pitchRecoilValue, b)/tt;
-		pp += p; 
+		float y = FMath::Lerp(0.0f, yawRecoilValue, alpha)/ TickCount;
+		float p = FMath::Lerp(0.0f, pitchRecoilValue, alpha)/ TickCount;
 		owner->AddControllerYawInput(y);
 		owner->AddControllerPitchInput(p);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(pp));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(alpha));
 
-		if (a >= 1)
+		if (alpha >= 1)
 		{
 			StopRecoil();
 			recoilTime = 0;
-			pp = 0;
-			tt = 0;
+			TickCount = 1;
 		}
 
 	}
-	/*else if (bRecovery)
-	{
-		recoilTime = 0.0f;
-
-		PlayerNowRot = owner->GetController()->GetControlRotation();
-		recoveryTime += p_deltatime * 1.0f;
-		FRotator r = FMath::Lerp<FRotator>(PlayerNowRot, PlayerStartRot, recoveryTime);
-		FRotator yr = FRotator(r.Pitch, PlayerNowRot.Yaw, PlayerNowRot.Roll);
-		owner->Controller->SetControlRotation(yr);
-		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(recoveryTime));
-		
-		if (recoveryTime >= 1.0f)
-		{
-			bRecovery = false;
-			recoveryTime = 1.0f;
-		}
-		if (PlayerNowRot == PlayerStartRot)
-		{
-			bRecovery = false;
-		}
-	}
-	else
-	{
-		recoveryTime = 0;
-	}*/
 }
 
 void UPlayerWeaponComponent::StartRecoil()
 {
+	StopRcovery();
 	bRecoil = true;
 	yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
 	pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoilValue));
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::SanitizeFloat(pitchRecoilValue));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::SanitizeFloat(pitchRecoilValue));
 }
 
 void UPlayerWeaponComponent::StopRecoil()
 {
 	bRecoil = false;
-	//StartRecovery();
+	/*if (!bRecovery && !isFire)
+	{
+		StartRecovery();
+	}*/
+}
+
+void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
+{
+	if (bRecovery)
+	{
+		RecoveryTime += p_deltatime * 2.0f;
+		FRotator nowrot = owner->GetController()->GetControlRotation();
+		FRotator rc = nowrot; //= FMath::Lerp(nowrot, startRot, RecoveryTime);
+		//rc.Yaw = FMath::Lerp(nowrot.Yaw, startRot.Yaw, RecoveryTime)/ TickCount;
+		rc.Pitch = FMath::Lerp(nowrot.Pitch, startRot.Pitch, RecoveryTime);
+		//rc.Roll = FMath::Lerp(nowrot.Roll, startRot.Roll, RecoveryTime);
+		owner->GetController()->SetControlRotation(rc);
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, nowrot.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, startRot.ToString());
+
+		if (nowrot.Pitch == startRot.Pitch)
+		{
+			StopRcovery();
+			RecoveryTime = 0;
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("equal"));
+		}
+		if (RecoveryTime >= 1.0f)
+		{
+			StopRcovery();
+			RecoveryTime = 0;
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("endtimre"));
+		}
+	}
 }
 
 void UPlayerWeaponComponent::StartRecovery()
 {
-	//bRecovery = true;
-	//PlayerNowRot = owner->GetController()->GetControlRotation();
+	bRecovery = true;
 }
 
-float UPlayerWeaponComponent::EasingOut(float Param)
+void UPlayerWeaponComponent::StopRcovery()
 {
-	return FMath::Sin(-13.f * (PI / 2.f) * (Param + 1)) * FMath::Pow(2.f, -10.f * Param) + 1.f;
+	bRecovery = false;
 }
 
 float UPlayerWeaponComponent::easeOutExpo(float t, float b, float c, float d)
 {
 	return (t == d) ? b + c : c * (-pow(2, -10 * t / d) + 1) + b;
+}
+
+void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
+{
+	FVector DecalSize(5.0f, 5.0f, 5.0f);
+	FRotator DecalRotation = result.Normal.Rotation();
+	FVector DecalLocation = result.Location;
+
+	UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("decal_spawn"));
 }
 
 

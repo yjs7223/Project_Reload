@@ -15,7 +15,9 @@ ABaseCharacter::ABaseCharacter()
 
 	PrimaryActorTick.bCanEverTick = true;
 
+
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Cyber_Girl/Mesh/SK_Cyber_Girl.SK_Cyber_Girl'"));
+
 	if (sk_asset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(sk_asset.Object);

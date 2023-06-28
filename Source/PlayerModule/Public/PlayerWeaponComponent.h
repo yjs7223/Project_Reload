@@ -46,11 +46,15 @@ public:
 
 	void StopRecoil();
 
+	void RecoveryTick(float p_deltatime);
+
 	void StartRecovery();
 
-	float EasingOut(float x);
+	void StopRcovery();
+
 	float easeOutExpo(float t, float b, float c, float d);
-	//void StopRcovery();
+
+	void SpawnDecal(FHitResult result);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -58,12 +62,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* PlayerWeaponData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UMaterialInstance* Decal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_firerate;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int m_firecount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float m_spreadPower;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_turnValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -91,7 +98,18 @@ public:
 		FVector2D pitchRange;
 
 	float pp;
-	float tt;
+	float TickCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bRecovery;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float RecoveryTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float yawRecoveryValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float pitchRecoveryValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator startRot;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -101,18 +119,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystem* BulletTracerParticle;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FRotator PlayerStartRot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FRotator PlayerNowRot;*/
-
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bRecovery;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float recoveryTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float yawRecoveryValue;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float pitchRecoveryValue;*/
 };

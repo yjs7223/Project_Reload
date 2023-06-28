@@ -3,8 +3,8 @@
 
 #include "PlayerInputComponent.h"
 #include "GameFramework/Character.h"
+#include "PlayerWeaponComponent.h"
 #include "CoverComponent.h"
-
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -63,21 +63,25 @@ void UPlayerInputComponent::Crouching()
 void UPlayerInputComponent::StartFire()
 {
 	m_inputData.IsFire = true;
+	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartFire();
 }
 
 void UPlayerInputComponent::StopFire()
 {
 	m_inputData.IsFire = false;
+	owner->FindComponentByClass<UPlayerWeaponComponent>()->StopFire();
 }
 
 void UPlayerInputComponent::StartAiming()
 {
 	m_inputData.IsAiming = true;
+	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartAiming();
 }
 
 void UPlayerInputComponent::StopAiming()
 {
 	m_inputData.IsAiming = false;
+	owner->FindComponentByClass<UPlayerWeaponComponent>()->StopAiming();
 }
 
 void UPlayerInputComponent::StartReload()
