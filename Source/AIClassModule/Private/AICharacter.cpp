@@ -2,10 +2,11 @@
 
 
 #include "AICharacter.h"
+#include "AICharacterMoveComponent.h"
 
 AAICharacter::AAICharacter()
 {
-
+	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
 }
 
 void AAICharacter::BeginPlay()
