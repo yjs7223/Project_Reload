@@ -119,4 +119,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystem* BulletTracerParticle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraComponent* shotFXComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraSystem* shotFXNiagara;
+
 };
