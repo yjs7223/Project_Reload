@@ -78,6 +78,6 @@ public:
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void ListPlaySet(ASubEncounterSpace* sub);
-	UFUNCTION()
-		void EnemyCheckPoint(AActor* otherActor);
+	/*UFUNCTION()
+		void EnemyCheckPoint(AActor* otherActor);*/
 };

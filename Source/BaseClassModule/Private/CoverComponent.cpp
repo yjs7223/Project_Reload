@@ -40,7 +40,6 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	RotateSet();
 	TurnCheck(DeltaTime);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::SanitizeFloat(m_TurnTime));
 	if (m_TurnTime > 1.0f) {
 
 		m_TurnTime = 0.0f;

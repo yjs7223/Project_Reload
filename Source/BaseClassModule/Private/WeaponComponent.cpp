@@ -4,6 +4,7 @@
 #include "WeaponComponent.h"
 #include "Components/InputComponent.h"
 #include "BaseCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -35,7 +36,7 @@ void UWeaponComponent::BeginPlay()
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	AimSetting();
 	// ...
 }
 
@@ -82,5 +83,42 @@ void UWeaponComponent::Fire()
 {
 	//fire
 	return;
+}
+
+float UWeaponComponent::getAimYaw()
+{
+	return aimOffset.Yaw;
+}
+
+float UWeaponComponent::getAimPitch()
+{
+	return aimOffset.Pitch;
+}
+
+void UWeaponComponent::AimSetting()
+{
+	FRotator temprot;
+	ACharacter* Owner = GetOwner<ACharacter>();
+	temprot = Owner->GetControlRotation() - Owner->GetActorRotation();
+
+	FRotator cameraRotation;
+	FVector start;
+	Owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	FVector end = start + (cameraRotation.Vector() * 99999);
+
+	FHitResult result;
+	FCollisionQueryParams param(NAME_None, true, GetOwner());
+
+	if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param))
+	{
+		temprot = UKismetMathLibrary::FindLookAtRotation(result.Location, start);
+	}
+	else
+	{
+		temprot = UKismetMathLibrary::FindLookAtRotation(end, start);
+	}
+
+	aimOffset.Pitch = FMath::ClampAngle((Owner->GetControlRotation().Pitch), -90, 90);
+	aimOffset.Yaw = temprot.Yaw;
 }
 
