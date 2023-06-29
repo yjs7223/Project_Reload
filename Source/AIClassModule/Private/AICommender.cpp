@@ -93,12 +93,12 @@ void AAICommender::ListPlaySet(ASubEncounterSpace* sub)
 {
 	for (auto& item : sub->AIArray)
 	{
-		auto FindActor = List_Division.Find(item); //ÀûÀÌ Á×¾úÀ»¶© aiÄ³¸¯ÅÍ ÀÚÃ¼¿¡¼­ µðºñÀü Áö¿ì±â
+		auto FindActor = List_Division.Find(item); //ï¿½ï¿½ï¿½ï¿½ ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ aiÄ³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (FindActor != nullptr)
 		{
 			List_Location.Add(*FindActor, sub->GetActorLocation());
-			List_Location.Add(*FindActor, sub->GetActorLocation());//¸ñÇ¥ À§Ä¡ ¼³Á¤ ÈÄ º¯¼ö³Ö±â
-			List_Suppression.Add(*FindActor, 0.0); //³ªÁß¿¡ ¼­ÇÁ·¹¼Ç º¯¼ö ³ÖÀ» ¿¹Á¤
+			List_Location.Add(*FindActor, sub->GetActorLocation());//ï¿½ï¿½Ç¥ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
+			List_Suppression.Add(*FindActor, 0.0); //ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		}
 		else
 		{

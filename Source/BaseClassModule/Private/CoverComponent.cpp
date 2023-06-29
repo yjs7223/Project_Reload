@@ -10,6 +10,8 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
 
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+
 //#include "PlayerMoveComponent.h"
 //#include "WeaponComponent.h"
 
@@ -41,8 +43,8 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	RotateSet();
 	TurnCheck(DeltaTime);
 	if (m_TurnTime > 1.0f) {
-
 		m_TurnTime = 0.0f;
+		PlayCornering();
 	}
 
 }
@@ -61,7 +63,6 @@ void UCoverComponent::PlayCover()
 	
 	if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params)) {
 		StartCover(result);
-		DrawDebugLine(GetWorld(), start, start + result.Normal * 200, FColor::Blue, false, 100.f);
 	}
 
 }
@@ -95,26 +96,34 @@ void UCoverComponent::TurnCheck(float DeltaTime)
 	}
 }
 
-void UCoverComponent::RotateSet()
+bool UCoverComponent::RotateSet()
 {
-	if (!m_IsCover) return;
+	if (!m_IsCover) return false;
 	UCharacterMovementComponent* movement = owner->GetCharacterMovement();
 
 	FHitResult result;
 	FVector start = owner->GetActorLocation();
-	FVector end = start + (-movement->GetPlaneConstraintNormal() * 1002);
+	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
+	FCollisionQueryParams params(NAME_None, true, owner);
 
-	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, end));
+	GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params);
+	
+	movement->SetPlaneConstraintNormal(result.Normal);
+
+	FVector target = start + (-result.Normal);
+
+	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+	return true;
 }
 
 
 void UCoverComponent::StartCover(FHitResult& reslut)
 {
 	UCharacterMovementComponent* movement = owner->GetCharacterMovement();
-	
+
+	RotateSet();
 
 	movement->SetPlaneConstraintEnabled(true);
-	movement->SetPlaneConstraintNormal(reslut.Normal);
 
 	owner->SetActorLocation(reslut.Location + reslut.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f);
 
@@ -140,4 +149,28 @@ FHitResult UCoverComponent::CheckCoverCollision()
 	//DrawDebugLine(GetWorld(), start, end, FColor::Blue);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params);
 	return result;
+}
+
+void UCoverComponent::PlayCornering()
+{
+	FHitResult result1 = CheckCoverCollision();
+	
+
+	FHitResult result2;
+	FVector start = result1.TraceEnd;
+	FVector end = start + -m_CoverLimit * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	FCollisionQueryParams params(NAME_None, true, owner);
+
+	
+	GetWorld()->LineTraceSingleByChannel(result2, start, end, ECC_Visibility, params);
+
+	if (!result2.bBlockingHit) return;
+
+	FVector targetPoint = result2.Location + owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() + FVector(0.0f, 0.0f, owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()) + result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
+	DrawDebugSphere(GetWorld(), targetPoint, 10.0f, 32, FColor::Magenta, false, 20.0f);
+
+	UCharacterMovementComponent* movement = owner->GetCharacterMovement();
+	movement->SetPlaneConstraintEnabled(false);
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), targetPoint);
+
 }
