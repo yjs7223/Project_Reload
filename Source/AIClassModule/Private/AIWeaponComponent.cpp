@@ -3,21 +3,50 @@
 
 #include "AIWeaponComponent.h"
 #include "AICharacter.h"
+#include "UObject/ConstructorHelpers.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Engine/DataTable.h"
+#include "StatComponent.h"
+#include "ST_AIShot.h"
 #include <Kismet/GameplayStatics.h>
 
 UAIWeaponComponent::UAIWeaponComponent()
-	: recoilMax_Radius(5), recoilMin_Radius(1),
-	recoil_Range(5)
 {
+	// 데이터 테이블 삽입
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Aws/AI_Stat/DT_AiShot.DT_AiShot'"));
+	if (DataTable.Succeeded())
+	{
+		AIShotData = DataTable.Object;
+	}
+
+	// 총구 불꽃 파티클 삽입
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ShotFX(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_RealAssaultRifle_MF.P_AssaultRifle_MF'"));
+	if (DataTable.Succeeded())
+	{
+		shotFX = ShotFX.Object;
+	}
+
+	// 총알 나이아가라 삽입
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ShotFXNiagara(TEXT("NiagaraSystem'/Game/SGJ/NS_BulletProjectile.NS_BulletProjectile'"));
+	if (DataTable.Succeeded())
+	{
+		shotFXNiagara = ShotFXNiagara.Object;
+	}
+	
 }
 
 void UAIWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	//owner = GetOwner<AAICharacter>();
-	// ...
+	owner = GetOwner<AAICharacter>();
 
+	// 현재 데이터에 넣기 (일단 라이플로 고정)
+	curAIShotData = AIShotData->FindRow<FST_AIShott>(TEXT("Rifle"), TEXT(""));
+
+	// 사격 관련 정보 입력
+	recoil_Range = curAIShotData->recoil_Range;
+	recoilMax_Radius = curAIShotData->recoilMax_Radius;
+	recoilMin_Radius = curAIShotData->recoilMin_Radius;
 }
 
 
@@ -29,20 +58,51 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// ...
 }
 
-void UAIWeaponComponent::ShotAI(FVector loc, FRotator rot)
+void UAIWeaponComponent::ShotAI()
 {
-	//bUseControllerRotationYaw = true;
+	//owner->bUseControllerRotationYaw = true;
+	
+	FVector loc;
+	FRotator rot;
+	owner->Controller->GetPlayerViewPoint(loc, rot);
 
 	float x = 0, y = 0;
 
 	x = FMath::RandRange(-recoil_Radius, recoil_Radius);
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
-	FVector start = shotPos;
+	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * 5000);
 	FVector end2 = (rot + FRotator(x, y, 0)).Vector() * recoil_Range;
 	FCollisionQueryParams traceParams;
-	GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams);
+	
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
+	{
+		if (m_result.GetActor()->ActorHasTag("Player"))
+		{
+			//bb->SetValueAsVector(name, hitr.Location);
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : bbb")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : %s"), *hit.GetComponent()->GetName()));
+
+			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+			if (temp) {
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
+				temp->Attacked(shotDamage);
+			}
+			else
+			{
+				if (recoil_Radius >= recoilMin_Radius)
+				{
+					recoil_Radius -= recoilMax_Radius - recoilMin_Radius / shot_MaxCount;
+
+					shot_MaxCount++;
+				}
+			}
+
+		}
+
+		shot = true;
+	}
 
 	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 
@@ -52,52 +112,8 @@ void UAIWeaponComponent::ShotAI(FVector loc, FRotator rot)
 	// 발사체 나이아가라 이펙트 생성
 	shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, rot + FRotator(x, y, 0));
 
-
-	if (!m_result.GetActor())
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : aaa")));
-		return;
-	}
-
 	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);
 
-	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
+	DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
-
-	if (m_result.GetActor()->ActorHasTag("Player"))
-	{
-		//bb->SetValueAsVector(name, hitr.Location);
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : bbb")));
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : %s"), *hit.GetComponent()->GetName()));
-		
-		//auto temp = m_result.GetActor()->GetComponentByClass(StatsCompCls);
-		//if (temp) {
-		//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
-		//	dynamic_cast<UStatsComponent*>(temp)->OnAttacked(shotDamage);
-		//}
-
-		TSet<UActorComponent*> components = m_result.GetActor()->GetComponents();
-		for (UActorComponent* item : components) {
-
-			//if (dynamic_cast<UStatsComponent*>(item)) {
-			//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor2 : %s"), *item->GetName()));
-			//	dynamic_cast<UStatsComponent*>(item)->OnAttacked(shotDamage);
-
-			//	cur_Recoil_X = max_Recoil_Radius;
-			//	cur_Recoil_Y = max_Recoil_Radius;
-			//}
-			//else
-			//{
-			//	if (cur_Recoil_X >= min_Recoil_Radius)
-			//	{
-			//		cur_Recoil_X -= max_Recoil_Radius - min_Recoil_Radius / shot_MaxCount;
-			//		cur_Recoil_Y -= max_Recoil_Radius - min_Recoil_Radius / shot_MaxCount;
-
-			//		shot_MaxCount++;
-			//	}
-			//}
-		}
-	}
-
-	shot = true;
 }

@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "WeaponComponent.h"
+#include "AICharacter.h"
 #include "NiagaraComponent.h"
+#include "ST_AIShot.h"
 #include "AIWeaponComponent.generated.h"
 
 /**
@@ -18,18 +20,24 @@ class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 public :
 	UAIWeaponComponent();
 
+	// AI 캐릭터
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		AAICharacter* owner;
+
 	// 총구 화염 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UParticleSystem* shotFX;
 
-	// 총구 위치
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		FVector shotPos;
-
-
 	// 현재 반동 값
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float recoil_Radius;
+
+	// 최대 사거리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		float shot_MaxRange;
+	// 최소 사거리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		float shot_MinRange;
 
 	// AI의 최대 반동 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -63,6 +71,12 @@ public :
 	UPROPERTY()
 		UNiagaraComponent* shotFXComponent;
 
+	// 무기 반동관련 데이터 테이블
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UDataTable* AIShotData;
+	// 현재 무기 반동관련 데이터 테이블
+	FST_AIShott* curAIShotData;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -73,5 +87,5 @@ public:
 
 	// AI Shot
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAI(FVector loc, FRotator rot);
+		void ShotAI();
 };

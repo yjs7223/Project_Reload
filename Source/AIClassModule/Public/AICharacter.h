@@ -30,4 +30,6 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAICharacterMoveComponent* AIMovement;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponComponent* AIWeapon;
 };
