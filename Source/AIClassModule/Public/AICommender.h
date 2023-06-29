@@ -54,7 +54,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
-		TMap<int, FVector> List_ChkLocation; //¸ñÇ¥ ·ÎÄÉÀÌ¼ÇÀº ÀÛ¾÷ ÈÄ
+		TMap<int, FVector> List_ChkLocation; //ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½ ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		TMap<int, float> List_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
@@ -62,7 +62,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
-		bool En_Start;//¿£Ä«¿îÅÍ ¹üÀ§¿¡ µé¾î¿ÔÀ»¶§
+		bool En_Start;//ï¿½ï¿½Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
 		EState state;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
@@ -72,5 +72,5 @@ public:
 
 
 public:
-
 };
+

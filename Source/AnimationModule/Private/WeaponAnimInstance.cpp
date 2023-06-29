@@ -31,8 +31,8 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsReload = m_Input->getInput()->IsReload;
 	}
 	if (mWeapon) {
-		//mAimYaw = mWeapon->getAimYaw();
-		//mAimPitch = mWeapon->getAimPitch();
+		mAimYaw = mWeapon->getAimYaw();
+		mAimPitch = mWeapon->getAimPitch();
 		
 	}
 	if (mPlayerMove) {

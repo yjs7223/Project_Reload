@@ -13,6 +13,8 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetStringLibrary.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -37,6 +39,12 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		Decal = decal.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx(TEXT("NiagaraSystem'/Game/yjs/NE_BulletProjectile_System.NE_BulletProjectile_System'"));
+	if (fx.Succeeded())
+	{
+		shotFXNiagara = fx.Object;
+	}
+
 
 }
 
@@ -53,7 +61,7 @@ void UPlayerWeaponComponent::BeginPlay()
 	recoilTime = 0.0f;
 	m_spreadPower = 3.0f;
 	yawRange = FVector2D(-0.3f, 0.3f);
-	pitchRange = FVector2D(-0.3f, -1.0f);
+	pitchRange = FVector2D(-0.3f, -0.7f);
 	TickCount = 1;
 	pp = 0;
 	// ...
@@ -86,44 +94,70 @@ void UPlayerWeaponComponent::Fire()
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
-	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
+	//카메라 트레이스
+	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 	{
-		DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
-		end = m_result.Location;
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
+		//카메라에서 발사한 트레이스 적중
+		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
+
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
+		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+		end = m_rot.Vector() * 99999;
+
+		//총구 트레이스
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 		{
-			DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+			//총구트레이스 적중
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
+			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
+
+			end = m_rot.Vector() * 99999;
+			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			SpawnDecal(m_result);
 			isHit = true;
 		}
 		else
 		{
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
+			//총구트레이스 비적중
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			SpawnDecal(m_result);
 		}
-		GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
+		//카메라에서 발사한 트레이스 비적중
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
+
+		//총구 트레이스
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 		{
-			DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
+			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
+
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+			end = m_rot.Vector() * 99999;
+			//m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			SpawnDecal(m_result);
 			isHit = true;
 		}
 		else
 		{
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		}
-		GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
+		//GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 	}
+	//FVector a = WeaponMesh->GetSocketLocation(TEXT("AttachmentSocketBarrelLeft"));
+	//m_rot = UKismetMathLibrary::FindLookAtRotation(a, end);
+	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+	shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, m_rot);
+	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end);
+
 	if(m_firecount < 10)
 	{
 		m_firecount++;
@@ -204,6 +238,7 @@ void UPlayerWeaponComponent::StopRecoil()
 	}*/
 }
 
+//폐기
 void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 {
 	if (bRecovery)

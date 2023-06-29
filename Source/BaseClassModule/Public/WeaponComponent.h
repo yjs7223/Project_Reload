@@ -34,6 +34,11 @@ public:
 	//UFUNCTION(BlueprintCallable)
 		virtual void Fire();
 
+		float getAimYaw();
+		float getAimPitch();
+
+		void AimSetting();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int maxAmmo;
@@ -52,6 +57,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isAiming;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		FRotator aimOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;

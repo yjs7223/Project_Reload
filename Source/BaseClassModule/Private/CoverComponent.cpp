@@ -4,6 +4,14 @@
 #include "CoverComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "BaseInputComponent.h"
+#include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
+
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+
 //#include "PlayerMoveComponent.h"
 //#include "WeaponComponent.h"
 
@@ -22,6 +30,8 @@ UCoverComponent::UCoverComponent()
 void UCoverComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	owner = Cast<ACharacter>(GetOwner());
+	m_IsCover = false;
 
 }
 
@@ -30,6 +40,137 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	RotateSet();
+	TurnCheck(DeltaTime);
+	if (m_TurnTime > 1.0f) {
+		m_TurnTime = 0.0f;
+		PlayCornering();
+	}
 
 }
 
+void UCoverComponent::PlayCover()
+{
+	if (m_IsCover) {
+		StopCover();
+		return;
+	}
+	
+	FHitResult result;
+	FVector start = owner->GetActorLocation();
+	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
+	FCollisionQueryParams params(NAME_None, true, owner);
+	
+	if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params)) {
+		StartCover(result);
+	}
+
+}
+
+void UCoverComponent::SettingMoveVector(FVector& vector)
+{
+	if (!m_IsCover) return;
+
+
+	float value = owner->GetActorRightVector().Dot(vector) > 0 ? 1 : -1;
+
+	m_CoverLimit = value;
+	FHitResult result = CheckCoverCollision();
+	if (result.bBlockingHit) {
+		vector = m_CoverLimit * owner->GetActorRightVector();
+	}
+	else {
+		vector = FVector::ZeroVector;
+		m_IsTurnWait = true;
+	}
+}
+
+void UCoverComponent::TurnCheck(float DeltaTime)
+{
+	if (m_IsTurnWait) {
+		m_IsTurnWait = false;
+		m_TurnTime += DeltaTime;
+	}
+	else {
+		m_TurnTime = 0.0f;
+	}
+}
+
+bool UCoverComponent::RotateSet()
+{
+	if (!m_IsCover) return false;
+	UCharacterMovementComponent* movement = owner->GetCharacterMovement();
+
+	FHitResult result;
+	FVector start = owner->GetActorLocation();
+	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
+	FCollisionQueryParams params(NAME_None, true, owner);
+
+	GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params);
+	
+	movement->SetPlaneConstraintNormal(result.Normal);
+
+	FVector target = start + (-result.Normal);
+
+	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+	return true;
+}
+
+
+void UCoverComponent::StartCover(FHitResult& reslut)
+{
+	UCharacterMovementComponent* movement = owner->GetCharacterMovement();
+
+	RotateSet();
+
+	movement->SetPlaneConstraintEnabled(true);
+
+	owner->SetActorLocation(reslut.Location + reslut.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f);
+
+	m_IsCover = true;
+}
+
+void UCoverComponent::StopCover()
+{
+	UCharacterMovementComponent* movement = owner->GetCharacterMovement();
+	movement->SetPlaneConstraintEnabled(false);
+
+	m_IsCover = false;
+
+}
+
+FHitResult UCoverComponent::CheckCoverCollision()
+{
+	FHitResult result;
+	FVector start = owner->GetActorLocation() + m_CoverLimit * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
+	FCollisionQueryParams params(NAME_None, true, owner);
+
+	//DrawDebugLine(GetWorld(), start, end, FColor::Blue);
+	GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params);
+	return result;
+}
+
+void UCoverComponent::PlayCornering()
+{
+	FHitResult result1 = CheckCoverCollision();
+	
+
+	FHitResult result2;
+	FVector start = result1.TraceEnd;
+	FVector end = start + -m_CoverLimit * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	FCollisionQueryParams params(NAME_None, true, owner);
+
+	
+	GetWorld()->LineTraceSingleByChannel(result2, start, end, ECC_Visibility, params);
+
+	if (!result2.bBlockingHit) return;
+
+	FVector targetPoint = result2.Location + owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() + FVector(0.0f, 0.0f, owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()) + result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
+	DrawDebugSphere(GetWorld(), targetPoint, 10.0f, 32, FColor::Magenta, false, 20.0f);
+
+	UCharacterMovementComponent* movement = owner->GetCharacterMovement();
+	movement->SetPlaneConstraintEnabled(false);
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), targetPoint);
+
+}

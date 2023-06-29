@@ -36,5 +36,6 @@ void AAICommender::BeginPlay()
 void AAICommender::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 }
 

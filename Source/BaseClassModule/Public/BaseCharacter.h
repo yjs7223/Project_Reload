@@ -31,7 +31,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UBaseInputComponent* m_InputComponent;
 
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
+	class UCoverComponent* m_CoverComponent;
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UStatComponent* Stat;
 
