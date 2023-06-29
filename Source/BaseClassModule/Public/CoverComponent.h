@@ -27,14 +27,15 @@ public:
 	void PlayCover();
 	void SettingMoveVector(FVector& vector);
 	void TurnCheck(float DeltaTime);
-	void RotateSet();
+	bool RotateSet();
 
 protected:
 	void StartCover(FHitResult& reslut);
 	void StopCover();
 	FHitResult CheckCoverCollision();
 	void Turning();
-
+	UFUNCTION(BlueprintCallable)
+	void PlayCornering();
 private:
 
 private:

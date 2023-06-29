@@ -7,7 +7,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CoverComponent.h"
-
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 UPlayerMoveComponent::UPlayerMoveComponent()
@@ -46,10 +46,11 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UPlayerMoveComponent::Turning(float DeltaTime)
 {
-	if (m_CoverComp) {
-		m_CoverComp->RotateSet();
+	if (m_CoverComp && m_CoverComp->RotateSet()) {
+		
 		return;
 	}
+
 	owner->SetActorRelativeRotation(FMath::RInterpTo(owner->GetActorRotation(), mTargetRotate, DeltaTime, turningspped));
 	float yawValue = FMath::Abs((owner->GetActorRotation() - mTargetRotate).Yaw);
 	if (yawValue < 5 || yawValue > 355) {
@@ -93,8 +94,15 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	
 	mTargetRotate = targetRotate;
 	
-	mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
+	if (MoveDirect == FVector::ZeroVector) {
+		mMoveDirect = FVector::ZeroVector;
+		owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
+	}
+	else {
+		mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
+	}
 	owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
+
 
 	
 
@@ -114,4 +122,5 @@ bool UPlayerMoveComponent::IsCanMove()
 {
 	return mCanMove;
 }
+
 
