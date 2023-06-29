@@ -30,6 +30,7 @@ void UPlayerMoveComponent::BeginPlay()
 
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
+	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 
 	mCanMove = true;
 }
@@ -40,6 +41,7 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (!mCanMove) return;
+
 	Moving(DeltaTime);
 	Turning(DeltaTime);
 }
@@ -65,17 +67,16 @@ void UPlayerMoveComponent::Turn()
 
 void UPlayerMoveComponent::Moving(float DeltaTime)
 {
-	FInputData* data = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
-	if (data->movevec == FVector::ZeroVector) {
+	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
-		data->IsRuning = false;
+		m_Inputdata->IsRuning = false;
 
 		return;
 	}
 
 	FVector MoveDirect;
 
-	MoveDirect = owner->Controller->GetControlRotation().RotateVector(data->movevec);
+	MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
 
 	if (m_CoverComp) {
 		m_CoverComp->SettingMoveVector(MoveDirect);
@@ -86,7 +87,7 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 
 	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
-	if (data->IsRuning) {
+	if (m_Inputdata->IsRuning) {
 		MoveDirect *= 2;
 		targetRotate = MoveDirect.Rotation();
 

@@ -5,6 +5,7 @@
 #include "Components/InputComponent.h"
 #include "BaseCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CoverComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -101,6 +102,14 @@ void UWeaponComponent::AimSetting()
 	ACharacter* Owner = GetOwner<ACharacter>();
 	temprot = Owner->GetControlRotation() - Owner->GetActorRotation();
 
+	aimOffset.Pitch = FMath::ClampAngle(temprot.Pitch, -90, 90);
+	aimOffset.Yaw = temprot.Yaw;
+	if (aimOffset.Yaw > 180) aimOffset.Yaw -= 360;
+	
+	//추가
+	UCoverComponent* m_CoverComp = GetOwner()->FindComponentByClass<UCoverComponent>();
+	m_CoverComp->AimSetting(aimOffset);
+
 	FRotator cameraRotation;
 	FVector start;
 	Owner->Controller->GetPlayerViewPoint(start, cameraRotation);
@@ -118,7 +127,6 @@ void UWeaponComponent::AimSetting()
 		temprot = UKismetMathLibrary::FindLookAtRotation(end, start);
 	}
 
-	aimOffset.Pitch = FMath::ClampAngle((Owner->GetControlRotation().Pitch), -90, 90);
-	aimOffset.Yaw = temprot.Yaw;
+
 }
 

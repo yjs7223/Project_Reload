@@ -26,23 +26,34 @@ public:
 	
 	void PlayCover();
 	void SettingMoveVector(FVector& vector);
-	void TurnCheck(float DeltaTime);
+	void AimSetting(FRotator& aimOffset);
 	bool RotateSet();
 
+	bool IsCover();
+	bool IsTurnWait();
+	float FaceRight();
+	bool IsCornering();
 protected:
+	void TurnCheck(float DeltaTime);
 	void StartCover(FHitResult& reslut);
 	void StopCover();
 	FHitResult CheckCoverCollision();
 	void Turning();
 	UFUNCTION(BlueprintCallable)
 	void PlayCornering();
+	void StopCornering(float DeltaTim);
+	void PlayingCornering(float DeltaTim);
 private:
 
 private:
+	class UCharacterMovementComponent* m_Movement;
+	struct FInputData* m_Inputdata;
+	class UWeaponComponent* m_Weapon;
 	bool m_IsCover;
 	bool m_IsTurnWait;
-	float m_CoverLimit;
+	bool m_IsCornering;
+	float m_FaceRight;
 	float m_TurnTime;
-
+	FVector m_Turnlookpoint;
 	class ACharacter* owner;
 };
