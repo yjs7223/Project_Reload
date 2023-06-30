@@ -56,6 +56,8 @@ public:
 
 	void SpawnDecal(FHitResult result);
 
+	void PlayRandomShotSound();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class APlayerCharacter* owner;
@@ -64,6 +66,9 @@ public:
 		class UDataTable* PlayerWeaponData;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstance* Decal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FHitResult m_result;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_firerate;
@@ -123,5 +128,14 @@ public:
 		class UNiagaraComponent* shotFXComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraSystem* shotFXNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraComponent* hitFXComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraSystem* hitFXNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundWave*> shotsound;
+
 
 };

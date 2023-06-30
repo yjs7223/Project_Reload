@@ -15,6 +15,8 @@
 #include "Kismet/KismetStringLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Components/DecalComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -28,7 +30,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		MuzzleFireParticle = Fire.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> bullet(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_BulletTracer.P_BulletTracer'"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> bullet(TEXT("ParticleSystem'/Game/yjs/P_BulletTracer.P_BulletTracer'"));
 	if (bullet.Succeeded())
 	{
 		BulletTracerParticle = bullet.Object;
@@ -39,12 +41,38 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		Decal = decal.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx(TEXT("NiagaraSystem'/Game/yjs/NE_BulletProjectile_System.NE_BulletProjectile_System'"));
-	if (fx.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx1(TEXT("NiagaraSystem'/Game/yjs/NS_BulletProjectile.NS_BulletProjectile'"));
+	if (fx1.Succeeded())
 	{
-		shotFXNiagara = fx.Object;
+		shotFXNiagara = fx1.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx2(TEXT("NiagaraSystem'/Game/yjs/NS_BulletHit.NS_BulletHit'"));
+	if (fx2.Succeeded())
+	{
+		hitFXNiagara = fx2.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound1(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-001.burst_rifle-001'"));
+	if (sound1.Succeeded())
+	{
+		shotsound.Add(sound1.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound2(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-002.burst_rifle-002'"));
+	if (sound2.Succeeded())
+	{
+		shotsound.Add(sound2.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound3(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-003.burst_rifle-003'"));
+	if (sound3.Succeeded())
+	{
+		shotsound.Add(sound3.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound4(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-004.burst_rifle-004'"));
+	if (sound4.Succeeded())
+	{
+		shotsound.Add(sound4.Object);
+	}
 
 }
 
@@ -59,8 +87,8 @@ void UPlayerWeaponComponent::BeginPlay()
 	m_firerate = 0.1f; 
 	m_dValue = 0.f;
 	recoilTime = 0.0f;
-	m_spreadPower = 3.0f;
-	yawRange = FVector2D(-0.3f, 0.3f);
+	m_spreadPower = 1.5f;
+	yawRange = FVector2D(-0.2f, 0.2f);
 	pitchRange = FVector2D(-0.3f, -0.7f);
 	TickCount = 1;
 	pp = 0;
@@ -89,7 +117,7 @@ void UPlayerWeaponComponent::Fire()
 	start.Y += FMath::RandRange(-spread, spread);
 	end = start + (cameraRotation.Vector() * 99999);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
-	FHitResult m_result = FHitResult();
+	m_result = FHitResult();
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
@@ -141,7 +169,6 @@ void UPlayerWeaponComponent::Fire()
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 			end = m_rot.Vector() * 99999;
-			//m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			SpawnDecal(m_result);
 			isHit = true;
 		}
@@ -150,13 +177,14 @@ void UPlayerWeaponComponent::Fire()
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		}
-		//GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 	}
-	//FVector a = WeaponMesh->GetSocketLocation(TEXT("AttachmentSocketBarrelLeft"));
-	//m_rot = UKismetMathLibrary::FindLookAtRotation(a, end);
-	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, m_rot);
-	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end);
+
+	start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
+	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, m_rot.GetNormalized());
+	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+	GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
+	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", m_result.Location);
+	PlayRandomShotSound();
 
 	if(m_firecount < 10)
 	{
@@ -289,8 +317,18 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 	FRotator DecalRotation = result.Normal.Rotation();
 	FVector DecalLocation = result.Location;
 
-	UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("decal_spawn"));
+	UDecalComponent* decal = UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
+	if (decal)
+	{
+		decal->SetFadeScreenSize(0.0f);
+	}
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("decal_spawn"));
+}
+
+void UPlayerWeaponComponent::PlayRandomShotSound()
+{
+	int r = FMath::RandRange(0, 3);
+	UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
 }
 
 
