@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "AIController.h"
 #include "AICommender.generated.h"
 
 UENUM(BlueprintType)
@@ -25,7 +25,7 @@ enum class EState : uint8
 };
 
 UCLASS()
-class AICLASSMODULE_API AAICommender : public AActor
+class AICLASSMODULE_API AAICommender : public AAIController
 {
 	GENERATED_BODY()
 
@@ -41,7 +41,8 @@ protected:
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void
+		Tick(float DeltaTime) override;
 
 public:
 
