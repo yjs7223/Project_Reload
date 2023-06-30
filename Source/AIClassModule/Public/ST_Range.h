@@ -19,6 +19,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
 		float Sight_Age;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
+		float LoseSight_Radius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
 		float Sense_Radius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
 		float CoverMax_Radius;
