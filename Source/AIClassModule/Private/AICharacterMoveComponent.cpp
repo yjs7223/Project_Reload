@@ -46,7 +46,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (AI_Move)
 	{
-		if (Move_Normal)//�Ϲݰȱ��϶�
+		if (Move_Normal)//�Ϲݰȱ��϶�
 		{
 			timeDeltaTime += DeltaTime;
 			if (timeDeltaTime >= m_ChangeTime)
