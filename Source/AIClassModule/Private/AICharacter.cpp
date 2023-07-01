@@ -2,11 +2,25 @@
 
 
 #include "AICharacter.h"
+#include "AIWeaponComponent.h"
 #include "AICharacterMoveComponent.h"
 
 AAICharacter::AAICharacter()
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
+	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
+	if (sk_asset.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(sk_asset.Object);
+	}
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+
+	FName WeaponSocket(TEXT("hand_r_Socket"));
+	AIWeapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
+
 }
 
 void AAICharacter::BeginPlay()
