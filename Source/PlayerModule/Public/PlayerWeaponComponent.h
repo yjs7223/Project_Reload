@@ -39,6 +39,8 @@ public:
 	void StopFire();
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
+	void StopReload();
+	void ReloadTick(float Deltatime);
 
 	void RecoilTick(float p_deltatime);
 
@@ -69,6 +71,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FHitResult m_result;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool headhit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool ammoinfinite;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_firerate;
@@ -104,6 +112,8 @@ public:
 
 	float pp;
 	float TickCount;
+	float reloadCount;
+	int reloadvalue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bRecovery;

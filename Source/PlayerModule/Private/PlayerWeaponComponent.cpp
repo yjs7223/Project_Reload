@@ -17,6 +17,8 @@
 #include "NiagaraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "PlayerInputComponent.h"
+#include "StatComponent.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -81,17 +83,21 @@ void UPlayerWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<APlayerCharacter>();
 	SetAmmo(300);
-	m_firecount = 0;
+	m_firecount = 1;
 	m_turnValue = 0.f;
 	m_lookupValue = 0.f;
 	m_firerate = 0.1f; 
 	m_dValue = 0.f;
 	recoilTime = 0.0f;
-	m_spreadPower = 1.5f;
+	m_spreadPower = 5.0f;
 	yawRange = FVector2D(-0.2f, 0.2f);
 	pitchRange = FVector2D(-0.3f, -0.7f);
 	TickCount = 1;
 	pp = 0;
+	headhit = false;
+	reloadCount = 0;
+	reloadvalue = 0;
+	ammoinfinite = false;
 	// ...
 
 }
@@ -103,18 +109,32 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	RecoilTick(DeltaTime);
+	ReloadTick(DeltaTime);
 	//RecoveryTick(DeltaTime);
 }
 
 void UPlayerWeaponComponent::Fire()
 {
+	if (curAmmo <= 0)
+	{
+		StopFire();
+		return;
+	}
+
+	if (!ammoinfinite)
+	{
+		curAmmo--;
+	}
+
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+
 	float spread = m_firecount * m_spreadPower;
 	start.X += FMath::RandRange(-spread, spread);
 	start.Y += FMath::RandRange(-spread, spread);
+
 	end = start + (cameraRotation.Vector() * 99999);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
 	m_result = FHitResult();
@@ -145,7 +165,6 @@ void UPlayerWeaponComponent::Fire()
 			end = m_rot.Vector() * 99999;
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			SpawnDecal(m_result);
-			isHit = true;
 		}
 		else
 		{
@@ -170,7 +189,6 @@ void UPlayerWeaponComponent::Fire()
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 			end = m_rot.Vector() * 99999;
 			SpawnDecal(m_result);
-			isHit = true;
 		}
 		else
 		{
@@ -179,16 +197,43 @@ void UPlayerWeaponComponent::Fire()
 		}
 	}
 
-	start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
-	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, m_rot.GetNormalized());
-	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
-	GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
+	if (m_result.GetActor())
+	{
+		if (m_result.GetActor()->ActorHasTag("Enemy"))
+		{
+			isHit = true;
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+			//USkeletalMeshComponent* sm = m_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+			if (s)
+			{
+				if (m_result.BoneName == "head")
+				{
+					s->Attacked(20.0f);
+					headhit = true;
+					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+				}
+				else
+				{
+					s->Attacked(10.0f);
+				}
+			}
+		}
+		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+	}
+	else
+	{
+		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+	}
+
+	start = WeaponMesh->GetSocketLocation(TEXT("BulletTracerStart"));
+	GameStatic->SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
 	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", m_result.Location);
 	PlayRandomShotSound();
 
-	if(m_firecount < 10)
+	if(m_firecount <= 10)
 	{
-		m_firecount++;
+		m_firecount += 1.0f;
 	}
 	StartRecoil();
 }
@@ -205,6 +250,10 @@ void UPlayerWeaponComponent::StopAiming()
 
 void UPlayerWeaponComponent::StartFire()
 {
+	if(curAmmo <= 0)
+	{ 
+		return;
+	}
 	Fire();
 	isFire = true;
 	//startRot = owner->GetController()->GetControlRotation();
@@ -214,13 +263,69 @@ void UPlayerWeaponComponent::StartFire()
 void UPlayerWeaponComponent::StopFire()
 {
 	owner->GetWorldTimerManager().ClearTimer(fHandle);
+	owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 	isFire = false;
 	m_firecount = 0;
 }
 
 void UPlayerWeaponComponent::StartReload()
 {
+	//ReloadAmmo();
+	if (maxAmmo <= 0)
+	{
+		isReload = false;
+		return;
+	}
+
+	if (curAmmo >= 30)
+	{
+		isReload = false;
+		return;
+	}
+
+	reloadvalue = 30 - curAmmo;
+	if (maxAmmo < reloadvalue)
+	{
+		reloadvalue = maxAmmo;
+		maxAmmo = 0;
+	}
+	else
+	{
+		maxAmmo -= reloadvalue;
+	}
+
+	curAmmo = 0;
 	isReload = true;
+}
+
+void UPlayerWeaponComponent::StopReload()
+{
+	reloadvalue = 0;
+	isReload = false;
+}
+
+void UPlayerWeaponComponent::ReloadTick(float Deltatime)
+{
+	if (isReload)
+	{
+		reloadCount += Deltatime * 30;
+		if (reloadCount >= 1)
+		{
+			curAmmo++;
+			reloadCount = 0;
+		}
+		if (maxAmmo == 0)
+		{
+			if (curAmmo == reloadvalue)
+			{
+				StopReload();
+			}
+		}
+		if (curAmmo == 30)
+		{
+			StopReload();
+		}
+	}
 }
 
 void UPlayerWeaponComponent::RecoilTick(float p_deltatime)

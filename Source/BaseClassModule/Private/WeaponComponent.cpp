@@ -27,6 +27,7 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	isHit = false;
 	// ...
 	
 }
@@ -53,29 +54,19 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 
 void UWeaponComponent::ReloadAmmo()
 {
-	if (maxAmmo <= 0)
-	{
-		return;
-	}
-
-	if (curAmmo >= 30)
-	{
-		return;
-	}
-
-
 	int m_ammo = 0;
 	if (maxAmmo < 30)
 	{
 		m_ammo = maxAmmo;
+		maxAmmo -= m_ammo;
 	}
 	else
 	{
-		m_ammo = 30;
+		m_ammo = 30 - curAmmo;
 		maxAmmo -= m_ammo;
 	}
 
-	isReload = true;
+	isReload = false;
 	curAmmo += m_ammo;
 }
 
