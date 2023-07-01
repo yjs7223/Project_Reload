@@ -17,36 +17,36 @@ struct FST_AIShott : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	// »ç°Ý µô·¹ÀÌ
+	// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float shot_ShootDelay;
 
-	// »ç°Ý ÃÖ´ë »ç°Å¸®
+	// ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Å¸ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float shot_MaxRange;
-	// »ç°Ý ÃÖ¼Ò »ç°Å¸®
+	// ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½ï¿½Å¸ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float shot_MinRange;
 
-	// »ç°Ý ÃÖ´ë µ¥¹ÌÁö
+	// ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float shot_MaxDmg;
-	// »ç°Ý ÃÖ¼Ò µ¥¹ÌÁö
+	// ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float shot_MinDmg;
 
-	// »ç°Ý ÃÖ´ë ¹Ýµ¿
+	// ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ýµï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float recoilMax_Radius;
-	// »ç°Ý ÃÖ¼Ò ¹Ýµ¿
+	// ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½Ýµï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float recoilMin_Radius;
 
-	// »ç°Ý ¹üÀ§ÀÇ ¿ø»Ô ³ôÀÌ
+	// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float recoil_Range;
 
-	// ÃÑ °ø°Ý È½¼ö
+	// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float shot_MaxCount;
 };

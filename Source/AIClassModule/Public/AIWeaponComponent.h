@@ -20,42 +20,42 @@ class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 public :
 	UAIWeaponComponent();
 
-	// AI Ä³¸¯ÅÍ
+	// AI ìºë¦­í„°
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		AAICharacter* owner;
 
-	// ÃÑ±¸ È­¿° ÆÄÆ¼Å¬
+	// ì´êµ¬ ë¶ˆê½ƒ íŒŒí‹°í´
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UParticleSystem* shotFX;
 
-	// ÇöÀç ¹İµ¿ °ª
+	// í˜„ì¬ ì‚¬ê²© ë°˜ë™ ë²”ìœ„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float recoil_Radius;
 
-	// ÃÖ´ë »ç°Å¸®
+	// ìµœëŒ€ ì‚¬ê±°ë¦¬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float shot_MaxRange;
-	// ÃÖ¼Ò »ç°Å¸®
+	// ìµœì†Œ ì‚¬ê±°ë¦¬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float shot_MinRange;
 
-	// AIÀÇ ÃÖ´ë ¹İµ¿ ¹üÀ§
+	// AIì˜ ìµœëŒ€ ë°˜ë™ ë²”ìœ„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float recoilMax_Radius;
-	// AIÀÇ ÃÖ¼Ò ¹İµ¿ ¹üÀ§
+	// AIì˜ ìµœì†Œ ë°˜ë™ ë²”ìœ„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float recoilMin_Radius;
 
-	// AIÀÇ ¹İµ¿ ¿ø»Ô ³ôÀÌ
+	// AIì˜ ë°˜ë™ ì›ë¿” ë†’ì´
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float recoil_Range;
 
-	// AIÀÇ ÃÑ °ø°İ È½¼ö
+	// AIì˜ ì´ ê³µê²© íšŸìˆ˜
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		int shot_MaxCount;
 
 
-	// ¹«±â ½ºÅÈ
+	// ë¬´ê¸° ìŠ¤íƒ¯
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		bool shot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -65,24 +65,22 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FHitResult m_result;
 
-	// ¹ß»çÃ¼ ³ªÀÌ¾Æ°¡¶ó
+	// ì´ì•Œ íš¨ê³¼ ë‚˜ì´ì•„ê°€ë¼
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UNiagaraSystem* shotFXNiagara;
 	UPROPERTY()
 		UNiagaraComponent* shotFXComponent;
 
-	// ¹«±â ¹İµ¿°ü·Ã µ¥ÀÌÅÍ Å×ÀÌºí
+	// ë°ì´í„° í…Œì´ë¸”
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* AIShotData;
-	// ÇöÀç ¹«±â ¹İµ¿°ü·Ã µ¥ÀÌÅÍ Å×ÀÌºí
+	// í˜„ì¬ ë°ì´í„° í…Œì´ë¸”
 	FST_AIShott* curAIShotData;
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// AI Shot

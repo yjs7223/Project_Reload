@@ -12,21 +12,21 @@
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
-	// µ¥ÀÌÅÍ Å×ÀÌºí »ğÀÔ
+	// ë°ì´í„° í…Œì´ë¸” ì‚½ì…
 	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Aws/AI_Stat/DT_AiShot.DT_AiShot'"));
 	if (DataTable.Succeeded())
 	{
 		AIShotData = DataTable.Object;
 	}
 
-	// ÃÑ±¸ ºÒ²É ÆÄÆ¼Å¬ »ğÀÔ
+	// ì´êµ¬ ë¶ˆê½ƒ íŒŒí‹°í´ ì‚½ì…
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> ShotFX(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_RealAssaultRifle_MF.P_AssaultRifle_MF'"));
 	if (DataTable.Succeeded())
 	{
 		shotFX = ShotFX.Object;
 	}
 
-	// ÃÑ¾Ë ³ªÀÌ¾Æ°¡¶ó »ğÀÔ
+	// ì´ì•Œ ë‚˜ì´ì•„ê°€ë¼ ì‚½ì…
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ShotFXNiagara(TEXT("NiagaraSystem'/Game/SGJ/NS_BulletProjectile.NS_BulletProjectile'"));
 	if (DataTable.Succeeded())
 	{
@@ -40,13 +40,13 @@ void UAIWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<AAICharacter>();
 
-	// ÇöÀç µ¥ÀÌÅÍ¿¡ ³Ö±â (ÀÏ´Ü ¶óÀÌÇÃ·Î °íÁ¤)
-	curAIShotData = AIShotData->FindRow<FST_AIShott>(TEXT("Rifle"), TEXT(""));
+	// ë¼ì´í”Œ ë°ì´í„° ê°€ì ¸ì˜¤ê¸°
+	curAIShotData = AIShotData->FindRow<FST_AIShott>("Rifle", TEXT(""));
 
-	// »ç°İ °ü·Ã Á¤º¸ ÀÔ·Â
-	recoil_Range = curAIShotData->recoil_Range;
-	recoilMax_Radius = curAIShotData->recoilMax_Radius;
-	recoilMin_Radius = curAIShotData->recoilMin_Radius;
+	// ê°€ì ¸ì˜¨ ë°ì´í„° ì‚½ì…
+	recoil_Range = (*curAIShotData).recoil_Range;
+	recoilMax_Radius = (*curAIShotData).recoilMax_Radius;
+	recoilMin_Radius = (*curAIShotData).recoilMin_Radius;
 }
 
 
@@ -106,10 +106,10 @@ void UAIWeaponComponent::ShotAI()
 
 	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 
-	// ÃÑ±¸È­¿° ÀÌÆåÆ® »ı¼º
+	// ì´êµ¬ ë¶ˆê½ƒ ìƒì„±
 	UGameplayStatics::SpawnEmitterAtLocation(this, shotFX, start, rot, true);
 
-	// ¹ß»çÃ¼ ³ªÀÌ¾Æ°¡¶ó ÀÌÆåÆ® »ı¼º
+	// ì´ì•Œ ìƒì„±
 	shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, rot + FRotator(x, y, 0));
 
 	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);

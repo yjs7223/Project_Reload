@@ -15,7 +15,7 @@ enum class Spawn_Type : uint8
 UENUM(BlueprintType)
 enum class Enemy_Name : uint8
 {
-	RIFLE = 1, DOG
+	RIFLE , DOG
 };
 
 UCLASS()
@@ -29,23 +29,27 @@ struct FST_Spawner : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	// ½ºÆùÀÇ ¿şÀÌºê ¹æ½Ä
+	// ìƒì„± ì¡°ê±´ íƒ€ì…
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		Spawn_Type spawn_Type;
 
-	// ½ºÆù ¾×ÅÍ »çÀÌÀÇ µô·¹ÀÌ ½Ã°£
+	// ìŠ¤í° ì•¡í„° ì‚¬ì´ì˜ ë”œë ˆì´ ì‹œê°„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float spawn_Delay;
 
-	// °¢ ¿şÀÌºê¸¶´Ù ¼ÒÈ¯ÇÒ À¯´Öµé
+	// ê° ì›¨ì´ë¸Œë§ˆë‹¤ ì†Œí™˜í•  ìœ ë‹›ë“¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<Enemy_Name, int> spawn_Wave;
 
-	// ½ºÆùÀ» ÇÏ±â À§ÇÑ Á¶°Ç
+	// ìŠ¤í° ì¡°ê±´
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float spawn_Condition;
 
-	// À¯´ÖÀÌ »ı¼ºµÉ À§Ä¡
+	// ìœ ë‹›ì´ ìƒì„±ë  ìœ„ì¹˜
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<AActor*> spawn_Spot;
+		TWeakObjectPtr<AActor> spawn_Spot;
+
+	// ë§ˆì§€ë§‰ ì›¨ì´ë¸Œì¸ì§€ í™•ì¸
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool last_Spawn;
 };

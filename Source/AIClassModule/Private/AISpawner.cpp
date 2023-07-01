@@ -2,6 +2,7 @@
 
 
 #include "AISpawner.h"
+#include "AICharacter.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 
 // Sets default values
@@ -10,19 +11,12 @@ AAISpawner::AAISpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// ¼ÒÈ¯ ¸ñ·Ï »ğÀÔ
-	// ¶óÀÌÇÃ
-	static ConstructorHelpers::FObjectFinder<TSubclassOf<APawn>> RifleEnemy(TEXT("Blueprint'/Game/SGJ/BP_AICharacter.BP_AICharacter'"));
-	if (RifleEnemy.Succeeded())
+	// ë°ì´í„° í…Œì´ë¸” ì‚½ì…
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/SGJ/DT_Spawner.DT_Spawner'"));
+	if (DataTable.Succeeded())
 	{
-		enemy_Rifle = RifleEnemy.Object;
+		spawnData = DataTable.Object;
 	}
-	// ÀÚÆø ´ó´óÀÌ (Ãß°¡ ¿¹Á¤)
-	/*static ConstructorHelpers::FObjectFinder<AActor> DogEnemy(TEXT("´ó´óÀÌ ·¡ÆÛ·±½º º¹ºÙ"));
-	if (DogEnemy.Succeeded())
-	{
-		enemy_Dog = DogEnemy;
-	}*/
 }
 
 // Called when the game starts or when spawned
@@ -30,38 +24,112 @@ void AAISpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	curSpawnData = Cast<FST_Spawner>(spawnData);
+	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(curWave), TEXT(""));
 }
 
 // Called every frame
 void AAISpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (check_Overlap && !spawnCheck)
+	{
+		spawn_Timer += DeltaTime;
+		if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+		{
+			SpawnWave();
+			spawn_Timer = 0;
+		}
+	}
 
+	// ë§ˆì§€ë§‰ ì›¨ì´ë¸Œì¸ì§€ í™•ì¸
+	if (spawnCheck)
+	{
+		if ((*curSpawnData).last_Spawn)
+		{
+			check_Overlap = false;
+		}
+		else
+		{
+			switch ((*curSpawnData).spawn_Type)
+			{
+			case Spawn_Type::KILL:
+				if (count_Kill >= (*curSpawnData).spawn_Condition)
+				{
+					// ë‹¤ìŒ ì›¨ì´ë¸Œë¡œ ë„˜ê¸°ê¸°
+					curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(++curWave), TEXT(""));
+					count_Kill = 0;
+				}
+				break;
+			case Spawn_Type::SECONDS:
+				spawn_Timer += DeltaTime;
+				if (spawn_Timer >= (*curSpawnData).spawn_Condition)
+				{
+					// ë‹¤ìŒ ì›¨ì´ë¸Œë¡œ ë„˜ê¸°ê¸°
+					curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(++curWave), TEXT(""));
+					spawn_Timer = 0;
+				}
+				break;
+			}
+		}
+	}
 }
 
 void AAISpawner::SpawnWave()
 {
-	// BT Çüº¯È¯
-	UBehaviorTree* rifleBT = Cast<UBehaviorTree>(enemy_Rifle);
-	//UBehaviorTree* dogBT = Cast<UBehaviorTree>(enemy_Dog);
-
-	// ¶óÀÌÇÃ »ı¼º ¼ö
-	int rifleCount = curSpawnData->spawn_Wave[Enemy_Name::RIFLE];
-	if (rifleCount > 0)
+	// ê¸°ë³¸ ì†Œí™˜ ìœ„ì¹˜
+	AActor* spawn_Pos = (*curSpawnData).spawn_Spot.Get();
+	// ë¼ì´í”Œ
+	if (rifleCount < (*curSpawnData).spawn_Wave[Enemy_Name::RIFLE])
 	{
-		for (int i = 0; i < rifleCount; i++)
+		// í”Œë ˆì´ì–´ì™€ ê°€ê¹ì§€ ì•Šë‹¤ë©´ ì†Œí™˜
+		if ((*curSpawnData).spawn_Spot->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) >= 50)
 		{
-			APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, rifleBT, GetActorLocation());
+			spawn_Pos = (*curSpawnData).spawn_Spot.Get();
 		}
+		else
+		{
+			for (int i = 0; i < spawn_Spots.Num(); i++)
+			{
+				// í”Œë ˆì´ì–´ ê±°ë¦¬ê°€ 50ë³´ë‹¤ í° ìŠ¤í°ìœ„ì¹˜ê°€
+				if (spawn_Spots[i]->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) > 50)
+				{
+					// ì²˜ìŒ ë“¤ì–´ì˜¨ ê±°ë¼ë©´ ì¼ë‹¨ ë„£ê¸°
+					if (spawn_Pos == (*curSpawnData).spawn_Spot.Get())
+					{
+						spawn_Pos = spawn_Spots[i];
+					}
+					// ëˆ„ê°€ ë” ì‘ì€ ì§€ í™•ì¸í•˜ê³  ì‘ì€ ê±¸ë¡œ ë„£ê¸°
+					if (spawn_Pos->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) >
+						spawn_Spots[i]->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()))
+					{
+						spawn_Pos = spawn_Spots[i];
+					}
+				}
+			}
+		}
+
+		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Rifle, spawn_Pos->GetActorLocation());
+		// ìƒì„±ë˜ë©´ì„œ ìì‹ ì„ ìƒì„±í•œ ìŠ¤í¬ë„ˆë¥¼ ì €ì¥í•˜ë„ë¡ í•¨
+		Cast<AAICharacter>(temp)->mySpawner = this;
+		rifleCount++;
 	}
-	// ´ó´óÀÌ »ı¼º ¼ö
+	else
+	{
+		// ìŠ¤í° ì™„ë£Œ
+		spawnCheck = true;
+	}
+
+	spawn_Timer = 0;
+	
+
+	// ëŒ•ëŒ•ì´
 	/*int dogCount = curSpawnData->spawn_Wave[Enemy_Name::DOG];
 	if (dogCount > 0)
 	{
 		for (int i = 0; i < dogCount; i++)
 		{
-			APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, dogBT, GetActorLocation());
+			APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Dog, GetActorLocation());
 		}
 	}*/
 }

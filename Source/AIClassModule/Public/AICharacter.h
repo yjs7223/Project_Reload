@@ -6,6 +6,7 @@
 #include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/PointLightComponent.h"
+#include "AISpawner.h"
 //#include "NiagaraComponent.h"
 #include "AICharacter.generated.h"
 
@@ -19,6 +20,11 @@ class AICLASSMODULE_API AAICharacter : public ABaseCharacter
 public:
 	// Sets default values for this character's properties
 	AAICharacter();
+
+	// 자신의 스포너
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AAISpawner* mySpawner;
+
 
 protected:
 	// Called when the game starts or when spawned

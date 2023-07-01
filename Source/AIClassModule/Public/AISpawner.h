@@ -16,33 +16,53 @@ public:
 	// Sets default values for this actor's properties
 	AAISpawner();
 
-	// ÇöÀç ¿şÀÌºê
+	// í˜„ì¬ ì›¨ì´ë¸Œ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int curWave;
 
-	// ¿şÀÌºê °ü·Ã µ¥ÀÌÅÍ Å×ÀÌºí
+	// ìŠ¤í° ê´€ë ¨ ë°ì´í„° í…Œì´ë¸”
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* spawnData;
-	// ÇöÀç ¿şÀÌºê °ü·Ã µ¥ÀÌÅÍ Å×ÀÌºí
+	// í˜„ì¬ ë°ì´í„° í…Œì´ë¸”
 	FST_Spawner* curSpawnData;
 
-	// ½ºÆ÷³Ê È°¼ºÈ­ »óÅÂ
+	// ìŠ¤í¬ë„ˆ í™œì„±í™” ìƒíƒœ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		bool check_Overlap;
 
-	// ÇÃ·¹ÀÌ¾î°¡ »ç»ìÇÑ ÀûÀÇ ¼ö
+	// í”Œë ˆì´ì–´ê°€ ì‚¬ì‚´í•œ ì ì˜ ìˆ˜
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		int count_Kill;
 
-	// ÇÃ·¹ÀÌ¾î°¡ »ç»ìÇÑ ÀûÀÇ ¼ö
+	// ì›¨ì´ë¸Œ ìƒì„± í›„ ì‹œê°„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		float count_Seconds;
 
-	// ¼ÒÈ¯ °¡´ÉÇÑ ¸ñ·Ï
+	// ìŠ¤í°í•  ì 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		TSubclassOf<APawn> enemy_Rifle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class UBehaviorTree* BT_Rifle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		TSubclassOf<APawn> enemy_Dog;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class UBehaviorTree* BT_Dog;
+	
+	// ë”œë ˆì´ìš©
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		float spawn_Timer;
+
+	// ì´ë²ˆ ì›¨ì´ë¸Œ ì†Œí™˜ ì—¬ë¶€
+	bool spawnCheck;
+
+	// ì´ë²ˆ ì›¨ì´ë¸Œì— ì†Œí™˜ í•œ ìˆ˜
+	int rifleCount;
+	int dogCount;
+
+	// ìŠ¤í¬ë„ˆ ìŠ¤í° ì§€ì ë“¤
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		TArray<AActor*> spawn_Spots;
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,11 +72,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// ÀÌ¹ø ¿şÀÌºê ½ºÆùÇÏ±â
+	// ì›¨ì´ë¸Œ ìŠ¤í°
 	UFUNCTION(BlueprintCallable, Category = "SpawnerSetting")
 		void SpawnWave();
 	
-	// Á¶°Ç ÄÁÆ®·Ñ
 	UFUNCTION(BlueprintCallable, Category = "SpawnerSetting")
 		void WaveControl();
 };
