@@ -46,6 +46,7 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"BaseClassModule",
+				"AIModule",
 				"CoreUObject"
 			]
 		}
