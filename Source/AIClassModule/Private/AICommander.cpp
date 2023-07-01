@@ -2,13 +2,13 @@
 
 
 
-#include "AICommender.h"
+#include "AICommander.h"
 #include "AICharacter.h"
 #include "EncounterSpace.h"
 #include "SubEncounterSpace.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
-AAICommender::AAICommender()
+AAICommander::AAICommander()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -17,7 +17,7 @@ AAICommender::AAICommender()
 }
 
 // Called when the game starts or when spawned
-void AAICommender::BeginPlay()
+void AAICommander::BeginPlay()
 {
 	Super::BeginPlay();
 	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAICharacter::StaticClass(), arrOutActors);
@@ -33,7 +33,7 @@ void AAICommender::BeginPlay()
 }
 
 // Called every frame
-void AAICommender::Tick(float DeltaTime)
+void AAICommander::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

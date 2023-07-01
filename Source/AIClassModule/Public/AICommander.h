@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "AICommender.generated.h"
+#include "AICommander.generated.h"
 
 UENUM(BlueprintType)
 enum class ECombat : uint8
@@ -25,7 +25,7 @@ enum class EState : uint8
 };
 
 UCLASS()
-class AICLASSMODULE_API AAICommender : public AAIController
+class AICLASSMODULE_API AAICommander : public AAIController
 {
 	GENERATED_BODY()
 
@@ -33,7 +33,7 @@ class AICLASSMODULE_API AAICommender : public AAIController
 
 public:
 	// Sets default values for this actor's properties
-	AAICommender();
+	AAICommander();
 
 protected:
 	// Called when the game starts or when spawned
@@ -46,29 +46,29 @@ public:
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, AActor*> List_RDivision;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, ECombat> List_Combat;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_ChkLocation; //��ǥ �����̼��� �۾� ��
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> arrOutActors;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int AddIndex;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool En_Start;//��ī���� ������ ��������
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		EState state;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* encounter;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* suben;
 
 

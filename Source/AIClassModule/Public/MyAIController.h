@@ -30,12 +30,12 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UDataTable* DT_Range;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float m_SightRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float m_SightAngle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		float m_SightAge;
+		float m_SightAge;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float m_SenseRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float DistanceToPlayer = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class APlayerCharacter* character;
+		class APlayerCharacter* m_character;
 private:
 	UPROPERTY()
 		UBlackboardComponent* BlackboardComp;
@@ -81,7 +81,7 @@ private:
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetEnemy(FName EnemyName);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 		void OnPawnDetected(const TArray<AActor*>& DetectedPawns);
 
 };

@@ -40,7 +40,7 @@ void AMyAIController::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
 		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
-		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, AMyAIController::OnPawnDetected);
+		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AMyAIController::OnPawnDetected);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
 		SightConfig->SightRadius = RangeData->Sense_Radius;
 		SightConfig->SightRadius = 360.0f - RangeData->Sight_Angle;
@@ -65,7 +65,7 @@ void AMyAIController::BeginPlay()
 	Super::BeginPlay();
 	SetEnemy("RifleMan");
 
-	if (GetPerceptionComponent != nullptr)
+	if (GetPerceptionComponent() != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ALL Systems Set!"));
 	}
@@ -84,7 +84,7 @@ void AMyAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	//character = Cast<APlayerCharacter>(GetPawn());
+	m_character = Cast<APlayerCharacter>(GetPawn());
 }
 
 FRotator AMyAIController::GetControlRotation() const
