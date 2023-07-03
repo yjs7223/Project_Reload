@@ -71,7 +71,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float DistanceToPlayer = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+<<<<<<< Updated upstream
 		class APlayerCharacter* m_character;
+=======
+		class ABaseCharacter* m_character;
+>>>>>>> Stashed changes
 private:
 	UPROPERTY()
 		UBlackboardComponent* BlackboardComp;

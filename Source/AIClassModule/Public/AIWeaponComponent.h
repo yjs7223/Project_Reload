@@ -75,7 +75,11 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* AIShotData;
 	// 현재 데이터 테이블
+<<<<<<< Updated upstream
 	FST_AIShott* curAIShotData;
+=======
+	struct FST_AIShot* curAIShotData;
+>>>>>>> Stashed changes
 
 protected:
 	virtual void BeginPlay() override;
