@@ -24,15 +24,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBoxComponent* CollisionMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* en;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int LevelNum;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool LevelActive;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> AIArray;
 	
 

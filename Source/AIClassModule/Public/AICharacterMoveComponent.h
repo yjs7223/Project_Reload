@@ -42,7 +42,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float lerpDeltaTime;
 	//에디터에서 만든 데이터 테이블을 저장할 변수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		class UDataTable* DT_Move;
 	//데이터 테이블의 변수를 저장할 변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)

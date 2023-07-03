@@ -6,6 +6,7 @@
 #include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/PointLightComponent.h"
+#include "AISpawner.h"
 //#include "NiagaraComponent.h"
 #include "AICharacter.generated.h"
 
@@ -20,6 +21,11 @@ public:
 	// Sets default values for this character's properties
 	AAICharacter();
 
+	// 자신의 스포너
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AAISpawner* mySpawner;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,4 +36,6 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAICharacterMoveComponent* AIMovement;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponComponent* AIWeapon;
 };
