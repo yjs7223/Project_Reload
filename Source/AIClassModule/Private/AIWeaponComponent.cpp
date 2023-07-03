@@ -41,12 +41,12 @@ void UAIWeaponComponent::BeginPlay()
 	owner = GetOwner<AAICharacter>();
 
 	// 라이플 데이터 가져오기
-	curAIShotData = AIShotData->FindRow<FST_AIShott>("Rifle", TEXT(""));
+	curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle", TEXT(""));
 
 	// 가져온 데이터 삽입
-	recoil_Range = (*curAIShotData).recoil_Range;
-	recoilMax_Radius = (*curAIShotData).recoilMax_Radius;
-	recoilMin_Radius = (*curAIShotData).recoilMin_Radius;
+	recoil_Range = curAIShotData->Recoil_Range;
+	recoilMax_Radius = (*curAIShotData).RecoilMax_Radius;
+	recoilMin_Radius = (*curAIShotData).RecoilMin_Radius;
 }
 
 

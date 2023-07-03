@@ -75,7 +75,7 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* AIShotData;
 	// 현재 데이터 테이블
-	FST_AIShott* curAIShotData;
+	struct FST_AIShot* curAIShotData;
 
 protected:
 	virtual void BeginPlay() override;
