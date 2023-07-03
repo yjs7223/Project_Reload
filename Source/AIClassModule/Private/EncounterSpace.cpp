@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AICommender.h"
+
 #include "EncounterSpace.h"
 #include "SubEncounterSpace.h"
 #include "Components/BoxComponent.h"
+#include "AICommander.h"
 #include "Engine/Engine.h"
 // Sets default values
 AEncounterSpace::AEncounterSpace()
