@@ -240,7 +240,7 @@ void UPlayerWeaponComponent::Fire()
 
 void UPlayerWeaponComponent::StartAiming()
 {
-	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 60.0f;
+	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 90.0f;
 }
 
 void UPlayerWeaponComponent::StopAiming()
