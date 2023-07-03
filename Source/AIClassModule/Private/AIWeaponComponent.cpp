@@ -13,7 +13,7 @@
 UAIWeaponComponent::UAIWeaponComponent()
 {
 	// 데이터 테이블 삽입
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Aws/AI_Stat/DT_AIShot.DT_AIShot'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Aws/AI_Stat/DT_AiShot.DT_AiShot'"));
 	if (DataTable.Succeeded())
 	{
 		AIShotData = DataTable.Object;
@@ -21,14 +21,14 @@ UAIWeaponComponent::UAIWeaponComponent()
 
 	// 총구 불꽃 파티클 삽입
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> ShotFX(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_RealAssaultRifle_MF.P_AssaultRifle_MF'"));
-	if (ShotFX.Succeeded())
+	if (DataTable.Succeeded())
 	{
 		shotFX = ShotFX.Object;
 	}
 
 	// 총알 나이아가라 삽입
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ShotFXNiagara(TEXT("NiagaraSystem'/Game/SGJ/NS_BulletProjectile.NS_BulletProjectile'"));
-	if (ShotFXNiagara.Succeeded())
+	if (DataTable.Succeeded())
 	{
 		shotFXNiagara = ShotFXNiagara.Object;
 	}
@@ -45,18 +45,8 @@ void UAIWeaponComponent::BeginPlay()
 
 	// 가져온 데이터 삽입
 	recoil_Range = curAIShotData->Recoil_Range;
-	recoilMax_Radius = curAIShotData->RecoilMax_Radius;
-	recoilMin_Radius = curAIShotData->RecoilMin_Radius;
-
-	shot_MaxRange = curAIShotData->Shot_MaxRange;
-	shot_MinRange = curAIShotData->Shot_MinRange;
-
-	shot_MaxCount = curAIShotData->Shot_MaxCount;
-
-	shot_Delay = curAIShotData->Shot_ShootDelay;
-
-	shot_MaxDmg = curAIShotData->Shot_MaxDmg;
-	shot_MinDmg = curAIShotData->Shot_MinDmg;
+	recoilMax_Radius = (*curAIShotData).RecoilMax_Radius;
+	recoilMin_Radius = (*curAIShotData).RecoilMin_Radius;
 }
 
 
@@ -65,7 +55,6 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ShotAITimer(DeltaTime);
 	// ...
 }
 
@@ -83,7 +72,7 @@ void UAIWeaponComponent::ShotAI()
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * shot_MaxRange);
+	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * 5000);
 	FVector end2 = (rot + FRotator(x, y, 0)).Vector() * recoil_Range;
 	FCollisionQueryParams traceParams;
 	
@@ -98,7 +87,7 @@ void UAIWeaponComponent::ShotAI()
 			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 			if (temp) {
 				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
-				temp->Attacked( (shot_MaxDmg - shot_MinDmg) / 100 * shot_MaxRange - shot_MinRange);
+				temp->Attacked(shotDamage);
 			}
 			else
 			{
@@ -109,7 +98,10 @@ void UAIWeaponComponent::ShotAI()
 					shot_MaxCount++;
 				}
 			}
+
 		}
+
+		shot = true;
 	}
 
 	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
@@ -124,25 +116,4 @@ void UAIWeaponComponent::ShotAI()
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
-}
-
-void UAIWeaponComponent::ShotAITimer(float m_Time)
-{
-	// 사격상태가 아니면 취소
-	if (!shotState)
-	{
-		return;
-	}
-
-	cur_Shot_Delay += m_Time;
-	if (cur_Shot_Delay >= shot_Delay)
-	{
-		ShotAI();
-		cur_Shot_Delay = 0;
-	}
-}
-
-void UAIWeaponComponent::StartAIShot()
-{
-	shotState = true;
 }

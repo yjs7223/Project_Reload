@@ -20,10 +20,6 @@ class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 public :
 	UAIWeaponComponent();
 
-	// AI 사격 상태
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		bool shotState;
-	
 	// AI 캐릭터
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		AAICharacter* owner;
@@ -58,19 +54,12 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		int shot_MaxCount;
 
-	// 사격 발사 딜레이 시간
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shot_Delay;
-	// -------- 현재 딜레이 시간
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float cur_Shot_Delay;
 
-	// 사격 최대 데미지
+	// 무기 스탯
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shot_MaxDmg;
-	// 사격 최소 데미지
+		bool shot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shot_MinDmg;
+		float shotDamage;
 
 	// Hit Result
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -95,14 +84,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// AI Shot
-	UFUNCTION(BlueprintCallable, Category = "AI_Shot")
+	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ShotAI();
-
-	// AI Shot Timer
-	UFUNCTION(BlueprintCallable, Category = "AI_Shot")
-		void ShotAITimer(float m_Time);
-
-	// Start AI Shot
-	UFUNCTION(BlueprintCallable, Category = "AI_Shot")
-		void StartAIShot();
 };
