@@ -44,22 +44,22 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsCover = mCover->IsCover();
 		mIsFaceRight = mCover->FaceRight() >= 0;
 		mIsCornering = mCover->IsCornering();
-		//mPeekingState = mCover->getPeekingState();
-		//mCoverSootingState = mCover->getCoverSootingState();
+		mPeekingState = mCover->getPeekingState();
+		mCoverSootingState = mCover->getCoverSootingState();
 		mIsConerWait = mCover->IsTurnWait();
 		if (mPeekingState != EPeekingState::None) {
 			mLastPeekingState = mPeekingState;
 		}
 
-		//	mIsPeeking = mLastPeekingState != EPeekingState::None;
-		//	mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
+		mIsPeeking = mLastPeekingState != EPeekingState::None;
+		mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
 	}
 
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
 	}
-	////mIsCoverShooting
+	
 	if (mIsCover && !mIsPeeking && !mIsCoverShooting && (m_Input->getInput()->IsAiming || m_Input->getInput()->IsFire)) {
 		mSpinRotater = FRotator(0, 180, 0);
 	}

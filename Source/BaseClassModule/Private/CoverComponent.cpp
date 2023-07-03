@@ -11,6 +11,7 @@
 #include <Kismet/KismetMathLibrary.h>
 #include "PlayerMovable.h"
 #include "WeaponComponent.h"
+#include "EPeekingState.h"
 
 
 #include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -39,6 +40,11 @@ void UCoverComponent::BeginPlay()
 	m_Movement = owner->GetCharacterMovement();
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
+	UInputComponent* input = owner->FindComponentByClass<UInputComponent>();
+
+	input->BindAction("Aim", IE_Pressed, this, &UCoverComponent::StartPeeking);
+	input->BindAction("Aim", IE_Released, this, &UCoverComponent::StopPeeking);
+
 }
 
 // Called every frame
@@ -49,7 +55,9 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	m_Inputdata->IsRuning = false;
 
 	RotateSet();
+	AimSetting(DeltaTime);
 	TurnCheck(DeltaTime);
+	BeCrouch(DeltaTime);
 
 	if (m_IsCornering) {
 
@@ -66,6 +74,7 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		PlayCornering();
 	}
 
+	CalculateCoverShoot();
 }
 
 void UCoverComponent::PlayCover()
@@ -80,7 +89,7 @@ void UCoverComponent::PlayCover()
 	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
 	FCollisionQueryParams params(NAME_None, true, owner);
 	
-	if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params)) {
+	if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
 		StartCover(result);
 	}
 
@@ -89,7 +98,10 @@ void UCoverComponent::PlayCover()
 void UCoverComponent::SettingMoveVector(FVector& vector)
 {
 	if (!m_IsCover) return;
-
+	if (isPeeking()) {
+		vector = FVector::ZeroVector;
+		return;
+	}
 
 	float value = owner->GetActorRightVector().Dot(vector) > 0 ? 1 : -1;
 
@@ -115,14 +127,15 @@ void UCoverComponent::TurnCheck(float DeltaTime)
 	}
 }
 
-void UCoverComponent::AimSetting(FRotator& aimOffset)
+void UCoverComponent::AimSetting(float DeltaTime)
 {
+	FRotator& aimOffset = m_Weapon->aimOffset;
+
 	if (!m_IsCover) return;
-	//if (isPeeking()) {
-	//	if (!mIsFaceRight) mAimYaw *= -1.0f;
-	//	mWeapon->mAimYaw = mAimYaw;
-	//	return;
-	//}
+	if (isPeeking()) {
+		if (m_FaceRight < 0) aimOffset.Yaw *= -1.0f;
+		return;
+	}
 
 	if (aimOffset.Yaw > 0) {
 		if (m_Inputdata->IsAiming || (m_Inputdata->IsFire && aimOffset.Yaw > 45)) {
@@ -148,7 +161,7 @@ bool UCoverComponent::RotateSet()
 	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
 	FCollisionQueryParams params(NAME_None, true, owner);
 
-	GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params);
+	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 	
 	m_Movement->SetPlaneConstraintNormal(result.Normal);
 
@@ -178,6 +191,79 @@ bool UCoverComponent::IsCornering()
 	return m_IsCornering;
 }
 
+bool UCoverComponent::isPeeking()
+{
+	return mPeekingState != EPeekingState::None;
+}
+
+void UCoverComponent::CalculateCoverShoot()
+{
+	mCoverShootingState = ECoverShootingState::None;
+	FRotator& aimoffset = m_Weapon->aimOffset;
+
+	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
+	FVector upVector = owner->GetActorUpVector() * owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.01f;
+	FVector RightVector = owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
+
+	if (!m_Inputdata->IsFire || FMath::Abs(aimoffset.Yaw) > 45.0f) return;
+	if (m_FaceRight < 0) {
+		aimoffset.Yaw *= -1.0f;
+	}
+	if (owner->GetControlRotation().Vector().Dot(forwardVector.GetSafeNormal()) < 0) return;
+	FVector temppos = owner->GetActorLocation();
+	FVector start;
+	FVector end;
+	FHitResult result;
+	FCollisionQueryParams param(NAME_None, true, GetOwner());
+
+	start = temppos + -RightVector;
+	end = start + forwardVector;
+	result = FHitResult();
+	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
+	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+	if (!result.GetActor()) {
+		DrawDebugLine(GetWorld(), start, end, FColor::Red);
+		mCoverShootingState = ECoverShootingState::Left;
+		return;
+	}
+
+	start = temppos + RightVector;
+	end = start + forwardVector;
+	result = FHitResult();
+	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
+	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+	if (!result.GetActor()) {
+		DrawDebugLine(GetWorld(), start, end, FColor::Red);
+		mCoverShootingState = ECoverShootingState::Right;
+		return;
+	}
+
+	start = temppos + upVector;
+	end = start + forwardVector;
+	result = FHitResult();
+	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
+	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+	if (!result.GetActor()) {
+		DrawDebugLine(GetWorld(), start, end, FColor::Red);
+		mCoverShootingState = ECoverShootingState::Front;
+		return;
+	}
+
+
+	return;
+}
+
+
+ECoverShootingState UCoverComponent::getCoverSootingState()
+{
+	return mCoverShootingState;
+}
+
+EPeekingState UCoverComponent::getPeekingState()
+{
+	return mPeekingState;
+}
+
 
 void UCoverComponent::StartCover(FHitResult& reslut)
 {
@@ -201,7 +287,7 @@ FHitResult UCoverComponent::CheckCoverCollision()
 	FCollisionQueryParams params(NAME_None, true, owner);
 
 	//DrawDebugLine(GetWorld(), start, end, FColor::Blue);
-	GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, params);
+	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 	return result;
 }
 
@@ -214,7 +300,7 @@ void UCoverComponent::PlayCornering()
 	FVector end = start + -m_FaceRight * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	FCollisionQueryParams params(NAME_None, true, owner);
 
-	GetWorld()->LineTraceSingleByChannel(result2, start, end, ECC_Visibility, params);
+	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
 
 	if (!result2.bBlockingHit) return;
 
@@ -252,4 +338,123 @@ void UCoverComponent::PlayingCornering(float DeltaTim)
 {
 	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_Turnlookpoint));
 		
+}
+
+void UCoverComponent::BeCrouch(float deltaTime)
+{
+	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
+	FVector upVector = owner->GetActorUpVector() * owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.01f;
+	FVector RightVector = owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
+
+	FVector start = owner->GetActorLocation() + upVector;
+	FVector end = start + forwardVector;
+	FHitResult result;
+	FCollisionQueryParams param(NAME_None, true, GetOwner());
+	GetWorld()->LineTraceSingleByChannel(
+		result, start, end, ECC_GameTraceChannel5, param);
+	DrawDebugLine(GetWorld(), start, end, FColor::Magenta);
+	if (result.GetActor()) {
+		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
+	}
+	else {
+		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = false;
+		if (!owner->bIsCrouched) {
+			owner->Crouch();
+		}
+	}
+}
+
+void UCoverComponent::StartPeeking()
+{
+	if (!m_IsCover) return; 
+	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 90) return;
+
+
+	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
+	FVector upVector = owner->GetActorUpVector() * owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.01f;
+	FVector RightVector = owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
+
+	FVector temppos = owner->GetActorLocation();
+	FVector start;
+	FVector end;
+	FHitResult result;
+	FCollisionQueryParams param(NAME_None, true, GetOwner());
+	mPeekingState = EPeekingState::None;
+
+	if (m_FaceRight > 0) {
+		start = temppos;
+		end = start + RightVector;
+		GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+		if (result.GetActor()) return;
+
+		start = end;
+		end = start + -upVector * 1.05f;
+		GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+		if (!result.GetActor()) return;
+
+		start = start;
+		end = start + forwardVector;
+		GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+
+		if (!result.GetActor()) {
+			if (owner->bIsCrouched) {
+				mPeekingState |= EPeekingState::LowRightStart;
+			}
+			else {
+				mPeekingState = EPeekingState::HighRightStart;
+			}
+			return;
+		}
+		else {
+			start = temppos + upVector;
+			end = start + forwardVector;
+			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+			if (!result.GetActor()) {
+				mPeekingState = EPeekingState::FrontRightStart;
+				return;
+			}
+		}
+	}
+	else {
+		start = temppos;
+		end = start + -RightVector;
+		GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+		if (result.GetActor()) return;
+
+		start = end;
+		end = start + -upVector * 1.05f;
+		GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+		if (!result.GetActor()) return;
+
+		start = start;
+		end = start + forwardVector;
+		GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+		if (!result.GetActor()) {
+			if (owner->bIsCrouched) {
+				mPeekingState = EPeekingState::LowLeftStart;
+			}
+			else {
+				mPeekingState = EPeekingState::HighLeftStart;
+			}
+			return;
+		}
+		else {
+			start = temppos + upVector;
+			end = start + forwardVector;
+			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+			if (!result.GetActor()) {
+				mPeekingState = EPeekingState::FrontLeftStart;
+				return;
+			}
+		}
+
+	}
+
+	mPeekingState = EPeekingState::None;
+}
+
+void UCoverComponent::StopPeeking()
+{
+	if (!m_IsCover) return;
+	mPeekingState = EPeekingState::None;
 }

@@ -33,8 +33,6 @@ ABaseCharacter::ABaseCharacter()
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
-	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
-
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +41,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
 
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)

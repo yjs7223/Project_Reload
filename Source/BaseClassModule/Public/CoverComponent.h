@@ -23,32 +23,42 @@ protected:
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	void PlayCover();
 	void SettingMoveVector(FVector& vector);
-	void AimSetting(FRotator& aimOffset);
+	void AimSetting(float DeltaTime);
 	bool RotateSet();
 
 	bool IsCover();
 	bool IsTurnWait();
 	float FaceRight();
 	bool IsCornering();
+	bool isPeeking();
+
+	void CalculateCoverShoot();
+	ECoverShootingState getCoverSootingState();
+	EPeekingState getPeekingState();
 protected:
 	void TurnCheck(float DeltaTime);
 	void StartCover(FHitResult& reslut);
 	void StopCover();
 	FHitResult CheckCoverCollision();
-	void Turning();
 	UFUNCTION(BlueprintCallable)
-	void PlayCornering();
+		void PlayCornering();
 	void StopCornering(float DeltaTim);
 	void PlayingCornering(float DeltaTim);
+	void BeCrouch(float deltaTime);
+	void StartPeeking();
+	void StopPeeking();
 private:
+	static const ECollisionChannel traceChanel = ECC_Visibility;
 
 private:
 	class UCharacterMovementComponent* m_Movement;
 	struct FInputData* m_Inputdata;
 	class UWeaponComponent* m_Weapon;
+	enum class ECoverShootingState mCoverShootingState;
+	enum class EPeekingState mPeekingState;
 	bool m_IsCover;
 	bool m_IsTurnWait;
 	bool m_IsCornering;
@@ -56,4 +66,6 @@ private:
 	float m_TurnTime;
 	FVector m_Turnlookpoint;
 	class ACharacter* owner;
+
+
 };

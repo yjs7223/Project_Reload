@@ -105,10 +105,6 @@ void UWeaponComponent::AimSetting()
 	aimOffset.Pitch = FMath::ClampAngle(temprot.Pitch, -90, 90);
 	aimOffset.Yaw = temprot.Yaw;
 	if (aimOffset.Yaw > 180) aimOffset.Yaw -= 360;
-	
-	//추가
-	UCoverComponent* m_CoverComp = GetOwner()->FindComponentByClass<UCoverComponent>();
-	m_CoverComp->AimSetting(aimOffset);
 
 	FRotator cameraRotation;
 	FVector start;
