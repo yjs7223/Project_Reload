@@ -45,7 +45,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"BaseClassModule"
+				"BaseClassModule",
+				"AIModule"
 			]
 		}
 	],
