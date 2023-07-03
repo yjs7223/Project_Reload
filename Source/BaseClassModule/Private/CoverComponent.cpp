@@ -277,6 +277,7 @@ void UCoverComponent::StopCover()
 {
 	m_Movement->SetPlaneConstraintEnabled(false);
 	m_IsCover = false;
+	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 }
 
 FHitResult UCoverComponent::CheckCoverCollision()
@@ -305,7 +306,7 @@ void UCoverComponent::PlayCornering()
 	if (!result2.bBlockingHit) return;
 
 	FVector targetPoint = result2.Location + owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() + result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
-	DrawDebugSphere(GetWorld(), targetPoint, 10.0f, 32, FColor::Magenta, false, 20.0f);
+	
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), targetPoint);
 
 	for (auto& item : owner->GetComponentsByInterface(UPlayerMovable::StaticClass()))
@@ -342,18 +343,26 @@ void UCoverComponent::PlayingCornering(float DeltaTim)
 
 void UCoverComponent::BeCrouch(float deltaTime)
 {
-	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
-	FVector upVector = owner->GetActorUpVector() * owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.01f;
-	FVector RightVector = owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
+	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.01f;
+	FVector upVector = owner->GetActorUpVector() * owner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() * 1.01f;
+	owner->bIsCrouched ? upVector *= 2.0f : upVector;
+	FVector start;
+	FVector end;
 
-	FVector start = owner->GetActorLocation() + upVector;
-	FVector end = start + forwardVector;
+	start = owner->GetActorLocation() + upVector;
+	if (m_Turnlookpoint == FVector::ZeroVector) {
+		end = start + forwardVector;
+	}
+	else { 
+		end = m_Turnlookpoint;
+		end.Z = start.Z;
+	}
 	FHitResult result;
 	FCollisionQueryParams param(NAME_None, true, GetOwner());
 	GetWorld()->LineTraceSingleByChannel(
-		result, start, end, ECC_GameTraceChannel5, param);
-	DrawDebugLine(GetWorld(), start, end, FColor::Magenta);
-	if (result.GetActor()) {
+		result, start, end, traceChanel, param);
+	DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 100.0f);
+	if (result.bBlockingHit) {
 		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	}
 	else {
@@ -367,7 +376,7 @@ void UCoverComponent::BeCrouch(float deltaTime)
 void UCoverComponent::StartPeeking()
 {
 	if (!m_IsCover) return; 
-	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 90) return;
+	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 80) return;
 
 
 	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1f;
