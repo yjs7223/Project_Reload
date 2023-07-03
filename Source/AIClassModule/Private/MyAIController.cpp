@@ -3,12 +3,12 @@
 
 #include "MyAIController.h"
 #include "ST_Range.h"
+#include "BaseCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "PlayerModule/Public/PlayerCharacter.h"
 
 AMyAIController::AMyAIController()
 {
@@ -84,7 +84,7 @@ void AMyAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	m_character = Cast<APlayerCharacter>(GetPawn());
+	m_character = Cast<ABaseCharacter>(GetPawn());
 }
 
 FRotator AMyAIController::GetControlRotation() const
