@@ -26,6 +26,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void InitData();
 
 	UFUNCTION(BlueprintCallable)
 		void Fire() override;
@@ -110,7 +111,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector2D pitchRange;
 
-	float pp;
 	float TickCount;
 	float reloadCount;
 	int reloadvalue;
@@ -143,6 +143,8 @@ public:
 		class UNiagaraComponent* hitFXComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraSystem* hitFXNiagara;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraSystem* headhitFXNiagara;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USoundWave*> shotsound;

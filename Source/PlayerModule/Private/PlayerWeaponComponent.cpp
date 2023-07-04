@@ -19,6 +19,8 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PlayerInputComponent.h"
 #include "StatComponent.h"
+#include "PlayerWeaponData.h"
+
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -54,6 +56,11 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		hitFXNiagara = fx2.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx3(TEXT("NiagaraSystem'/Game/yjs/NS_BulletHeadHit.NS_BulletHeadHit'"));
+	if (fx3.Succeeded())
+	{
+		headhitFXNiagara = fx3.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<USoundWave> sound1(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-001.burst_rifle-001'"));
 	if (sound1.Succeeded())
@@ -81,25 +88,9 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = GetOwner<APlayerCharacter>();
-	SetAmmo(300);
-	m_firecount = 1;
-	m_turnValue = 0.f;
-	m_lookupValue = 0.f;
-	m_firerate = 0.1f; 
-	m_dValue = 0.f;
-	recoilTime = 0.0f;
-	m_spreadPower = 5.0f;
-	yawRange = FVector2D(-0.2f, 0.2f);
-	pitchRange = FVector2D(-0.3f, -0.7f);
-	TickCount = 1;
-	pp = 0;
-	headhit = false;
-	reloadCount = 0;
-	reloadvalue = 0;
-	ammoinfinite = false;
+	InitData();
 	// ...
-
+	//PlayerWeaponData.row
 }
 
 
@@ -111,6 +102,38 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoilTick(DeltaTime);
 	ReloadTick(DeltaTime);
 	//RecoveryTick(DeltaTime);
+}
+
+void UPlayerWeaponComponent::InitData()
+{
+	owner = GetOwner<APlayerCharacter>();
+	if (PlayerWeaponData != nullptr)
+	{
+		TArray<FName> rownames;
+		FPlayerweaponStruct* data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+
+		SetAmmo(data->bullet_Num);
+
+		damage.X = data->max_Damage;
+		damage.Y = data->min_Damage;
+
+		H_damage.X = data->max_H_Damage;
+		H_damage.Y = data->min_H_Damage;
+
+		m_firecount = 0;
+		m_dValue = 0.f;
+		recoilTime = 0.0f;
+		m_spreadPower = 5.0f;
+		yawRange = FVector2D(data->min_Horizontal_Recoil, data->max_Horizontal_Recoil);
+		pitchRange = FVector2D(data->min_vertical_Recoil, data->max_vertical_Recoil);
+		m_firerate = data->fire_Rate;
+		TickCount = 1;
+		headhit = false;
+		reloadCount = 0;
+		reloadvalue = 0;
+		ammoinfinite = false;
+	}
+	// ...
 }
 
 void UPlayerWeaponComponent::Fire()
@@ -207,19 +230,27 @@ void UPlayerWeaponComponent::Fire()
 			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 			if (s)
 			{
+				float d = 0;
 				if (m_result.BoneName == "head")
 				{
-					s->Attacked(20.0f);
+					d = FMath::RandRange(H_damage.X, H_damage.Y);
+					s->Attacked(d);
 					headhit = true;
-					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, headhitFXNiagara, m_result.Location);
 				}
 				else
 				{
-					s->Attacked(10.0f);
+					d = FMath::RandRange(damage.X, damage.Y);
+					s->Attacked(d);
+					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
 				}
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(d));
 			}
 		}
-		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+		else
+		{
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+		}
 	}
 	else
 	{
