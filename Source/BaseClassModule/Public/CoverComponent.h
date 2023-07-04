@@ -38,10 +38,13 @@ public:
 	void CalculateCoverShoot();
 	ECoverShootingState getCoverSootingState();
 	EPeekingState getPeekingState();
+
+
+	UFUNCTION(BlueprintCallable)
+	void StopCover();
 protected:
 	void TurnCheck(float DeltaTime);
 	void StartCover(FHitResult& reslut);
-	void StopCover();
 	FHitResult CheckCoverCollision();
 	UFUNCTION(BlueprintCallable)
 		void PlayCornering();

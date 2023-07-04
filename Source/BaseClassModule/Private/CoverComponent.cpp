@@ -168,6 +168,8 @@ bool UCoverComponent::RotateSet()
 	FVector target = start + (-result.Normal);
 
 	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+	//GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
+	//owner->SetActorLocation(result.Location + result.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f);
 	return true;
 }
 
@@ -361,7 +363,7 @@ void UCoverComponent::BeCrouch(float deltaTime)
 	FCollisionQueryParams param(NAME_None, true, GetOwner());
 	GetWorld()->LineTraceSingleByChannel(
 		result, start, end, traceChanel, param);
-	DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 100.0f);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 100.0f);
 	if (result.bBlockingHit) {
 		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	}
