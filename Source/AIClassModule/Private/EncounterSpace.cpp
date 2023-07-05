@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AICommender.h"
+
 #include "EncounterSpace.h"
 #include "SubEncounterSpace.h"
 #include "Components/BoxComponent.h"
+#include "AICommander.h"
 #include "Engine/Engine.h"
 // Sets default values
 AEncounterSpace::AEncounterSpace()
@@ -130,12 +131,12 @@ void AEncounterSpace::ListTickSet(ASubEncounterSpace* sub)
 {
 	for (auto& item : sub->AIArray)
 	{
-		auto FindActor = aic->List_Division.Find(item); //ÀûÀÌ Á×¾úÀ»¶© aiÄ³¸¯ÅÍ ÀÚÃ¼¿¡¼­ µðºñÀü Áö¿ì±â
+		auto FindActor = aic->List_Division.Find(item); //ï¿½ï¿½ï¿½ï¿½ ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ aiÄ³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (FindActor != nullptr)
 		{
 			aic->List_Location.Add(*FindActor, sub->GetActorLocation());
-			aic->List_Location.Add(*FindActor, sub->GetActorLocation());//¸ñÇ¥ À§Ä¡ ¼³Á¤ ÈÄ º¯¼ö³Ö±â
-			aic->List_Suppression.Add(*FindActor, 0.0); //³ªÁß¿¡ ¼­ÇÁ·¹¼Ç º¯¼ö ³ÖÀ» ¿¹Á¤
+			aic->List_Location.Add(*FindActor, sub->GetActorLocation());//ï¿½ï¿½Ç¥ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
+			aic->List_Suppression.Add(*FindActor, 0.0); //ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		}
 		else
 		{
