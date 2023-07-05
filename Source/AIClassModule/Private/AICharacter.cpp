@@ -4,11 +4,13 @@
 #include "AICharacter.h"
 #include "AIWeaponComponent.h"
 #include "AICharacterMoveComponent.h"
+#include "AIPatrolComponent.h"
 
 AAICharacter::AAICharacter()
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
+	//AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())
