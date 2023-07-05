@@ -27,9 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBoxComponent* CollisionMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AEncounterSpace* en;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int LevelNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool ArrayActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool LevelActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
