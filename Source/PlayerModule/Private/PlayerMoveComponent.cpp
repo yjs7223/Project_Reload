@@ -48,7 +48,7 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	if (!mCanMove) return;
 
 
-	if (IPakurable::Execute_IsRolling(m_PakurComp)) return;
+	if (m_PakurComp && IPakurable::Execute_IsRolling(m_PakurComp)) return;
 	Moving(DeltaTime);
 	Turning(DeltaTime);
 }
