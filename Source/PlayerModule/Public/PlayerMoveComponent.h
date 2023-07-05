@@ -46,6 +46,7 @@ private:
 	ACharacter* owner;
 	FVector mMoveDirect;
 	class UCoverComponent* m_CoverComp;
+	class UActorComponent* m_PakurComp;
 	struct FInputData* m_Inputdata;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
 		FRotator mTargetRotate;

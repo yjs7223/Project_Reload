@@ -7,6 +7,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CoverComponent.h"
+#include "Pakurable.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -31,6 +32,10 @@ void UPlayerMoveComponent::BeginPlay()
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() > 0) {
+		m_PakurComp = pakurArr[0];
+	}
 
 	mCanMove = true;
 }
@@ -42,13 +47,15 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (!mCanMove) return;
 
+
+	if (IPakurable::Execute_IsRolling(m_PakurComp)) return;
 	Moving(DeltaTime);
 	Turning(DeltaTime);
 }
 
 void UPlayerMoveComponent::Turning(float DeltaTime)
 {
-	if (m_CoverComp && m_CoverComp->RotateSet()) {
+	if (m_CoverComp && m_CoverComp->RotateSet(DeltaTime)) {
 		
 		return;
 	}
