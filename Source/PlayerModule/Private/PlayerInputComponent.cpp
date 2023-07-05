@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerWeaponComponent.h"
 #include "CoverComponent.h"
+#include <Kismet/KismetSystemLibrary.h>
 
 void UPlayerInputComponent::BeginPlay()
 {
