@@ -5,6 +5,7 @@
 #include "Components/InputComponent.h"
 #include "BaseCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CoverComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -27,7 +28,6 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	isHit = false;
 	// ...
 	
 }
@@ -54,19 +54,29 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 
 void UWeaponComponent::ReloadAmmo()
 {
+	if (maxAmmo <= 0)
+	{
+		return;
+	}
+
+	if (curAmmo >= 30)
+	{
+		return;
+	}
+
+
 	int m_ammo = 0;
 	if (maxAmmo < 30)
 	{
 		m_ammo = maxAmmo;
-		maxAmmo -= m_ammo;
 	}
 	else
 	{
-		m_ammo = 30 - curAmmo;
+		m_ammo = 30;
 		maxAmmo -= m_ammo;
 	}
 
-	isReload = false;
+	isReload = true;
 	curAmmo += m_ammo;
 }
 
@@ -112,6 +122,7 @@ void UWeaponComponent::AimSetting()
 	{
 		temprot = UKismetMathLibrary::FindLookAtRotation(end, start);
 	}
+
 
 }
 
