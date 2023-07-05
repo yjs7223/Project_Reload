@@ -59,6 +59,13 @@ public:
 		bool isAiming;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		FVector2D damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		FVector2D H_damage;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		FRotator aimOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)

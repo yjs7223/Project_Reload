@@ -24,8 +24,17 @@ public:
 	// 자신의 스포너
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AAISpawner* mySpawner;
+	
 
-
+	//간접 공격 감지 캡슐 매쉬
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UCapsuleComponent* CollisionMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float HitRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float HitHeight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UDataTable* DT_Range;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,4 +47,10 @@ public:
 		class UAICharacterMoveComponent* AIMovement;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAIWeaponComponent* AIWeapon;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIPatrolComponent* AIPatrol;*/
+
+public:
+	UFUNCTION()
+		void SetDataTable(FName EnemyName);
 };

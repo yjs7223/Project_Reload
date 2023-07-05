@@ -13,7 +13,7 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	Move_Speed = 100.0;
+	Move_Speed = 500.0f;
 	timeDeltaTime = 0.0;
 	lerpDeltaTime = 0.0;
 
@@ -31,9 +31,9 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 void UAICharacterMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	SetEnemy("RifleMan");
+	SetEnemy("Rifle_E");
 	AI_Move = true;
-	Move_Attack = true;
+	Move_Normal = true;
 	// ...
 	
 }

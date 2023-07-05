@@ -18,24 +18,24 @@ ASubEncounterSpace::ASubEncounterSpace()
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapBegin);
 	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapEnd);
+
+	LevelActive = false;
 }
 
 // Called when the game starts or when spawned
 void ASubEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
-	if (en->LevelActive == true)
-	{
-		en->LevelArray.Add(this);
-	}
-	
 }
 
 // Called every frame
 void ASubEncounterSpace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	EnemyAICheck();
+	if (LevelActive)
+	{
+		EnemyAICheck();
+	}
 }
 
 void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -57,6 +57,10 @@ void ASubEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 void ASubEncounterSpace::EnemyAICheck()
 {
 	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
+	if (AIArray.IsEmpty())
+	{
+		LevelActive = false;
+	}
 }
 
 
