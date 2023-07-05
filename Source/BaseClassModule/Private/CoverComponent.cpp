@@ -54,7 +54,7 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	if (!m_IsCover) return;
 	m_Inputdata->IsRuning = false;
 
-	RotateSet();
+	RotateSet(DeltaTime);
 	AimSetting(DeltaTime);
 	TurnCheck(DeltaTime);
 	BeCrouch(DeltaTime);
@@ -152,7 +152,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	}
 }
 
-bool UCoverComponent::RotateSet()
+bool UCoverComponent::RotateSet(float DeltaTime)
 {
 	if (!m_IsCover) return false;
 
@@ -166,8 +166,11 @@ bool UCoverComponent::RotateSet()
 	m_Movement->SetPlaneConstraintNormal(result.Normal);
 
 	FVector target = start + (-result.Normal);
+	UKismetSystemLibrary::PrintString(GetWorld(), owner->Controller->GetControlRotation().ToString()) ;
+	auto temp = UKismetMathLibrary::FindLookAtRotation(start, target);
 
-	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+	//owner->Controller->SetControlRotation(owner->Controller->GetControlRotation() + (temp - owner->GetActorRotation()));
+	owner->SetActorRotation(FMath::RInterpConstantTo(owner->GetActorRotation(), temp, DeltaTime, 7.0f));
 	//GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 	//owner->SetActorLocation(result.Location + result.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f);
 	return true;
@@ -269,15 +272,15 @@ EPeekingState UCoverComponent::getPeekingState()
 
 void UCoverComponent::StartCover(FHitResult& reslut)
 {
-	RotateSet();
-	m_Movement->SetPlaneConstraintEnabled(true);
+	RotateSet(0.0f);
+	//m_Movement->SetPlaneConstraintEnabled(true);
 	owner->SetActorLocation(reslut.Location + reslut.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f);
 	m_IsCover = true;
 }
 
 void UCoverComponent::StopCover()
 {
-	m_Movement->SetPlaneConstraintEnabled(false);
+	//m_Movement->SetPlaneConstraintEnabled(false);
 	m_IsCover = false;
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 }
@@ -286,10 +289,10 @@ FHitResult UCoverComponent::CheckCoverCollision()
 {
 	FHitResult result;
 	FVector start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
-	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
+	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
 	FCollisionQueryParams params(NAME_None, true, owner);
 
-	//DrawDebugLine(GetWorld(), start, end, FColor::Blue);
+	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 	return result;
 }
@@ -308,7 +311,7 @@ void UCoverComponent::PlayCornering()
 	if (!result2.bBlockingHit) return;
 
 	FVector targetPoint = result2.Location + owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() + result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
-	
+	DrawDebugSphere(GetWorld(), targetPoint, 10.0f, 32, FColor::Red, false, 100.0f);
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), targetPoint);
 
 	for (auto& item : owner->GetComponentsByInterface(UPlayerMovable::StaticClass()))
@@ -316,7 +319,7 @@ void UCoverComponent::PlayCornering()
 		Cast<IPlayerMovable>(item)->SetCanMove(false);
 	}
 
-	m_Movement->SetPlaneConstraintEnabled(false);
+	//m_Movement->SetPlaneConstraintEnabled(false);
 	m_IsCornering = true;
 	m_Turnlookpoint = targetPoint - result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2;
 
@@ -332,8 +335,9 @@ void UCoverComponent::StopCornering(float DeltaTim)
 		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
 	
-	m_Movement->SetPlaneConstraintEnabled(true);
+	//m_Movement->SetPlaneConstraintEnabled(true);
 	m_IsCornering = false;
+	m_IsTurnWait = false;
 	m_Turnlookpoint = FVector::ZeroVector;
 }
 
@@ -345,7 +349,7 @@ void UCoverComponent::PlayingCornering(float DeltaTim)
 
 void UCoverComponent::BeCrouch(float deltaTime)
 {
-	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.01f;
+	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.01f;
 	FVector upVector = owner->GetActorUpVector() * owner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() * 1.01f;
 	owner->bIsCrouched ? upVector *= 2.0f : upVector;
 	FVector start;

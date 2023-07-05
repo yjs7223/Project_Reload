@@ -55,7 +55,7 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UPlayerMoveComponent::Turning(float DeltaTime)
 {
-	if (m_CoverComp && m_CoverComp->RotateSet()) {
+	if (m_CoverComp && m_CoverComp->RotateSet(DeltaTime)) {
 		
 		return;
 	}

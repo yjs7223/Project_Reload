@@ -27,7 +27,7 @@ public:
 	void PlayCover();
 	void SettingMoveVector(FVector& vector);
 	void AimSetting(float DeltaTime);
-	bool RotateSet();
+	bool RotateSet(float DeltaTime);
 
 	bool IsCover();
 	bool IsTurnWait();
