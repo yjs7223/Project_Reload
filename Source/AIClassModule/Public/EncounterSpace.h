@@ -23,17 +23,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
-		class AAICommender* aic;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICommander* aic;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* subEn;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBoxComponent* CollisionMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool LevelActive;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<class ASubEncounterSpace*> LevelArray;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommender)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int LevelActiveNum;
 
 

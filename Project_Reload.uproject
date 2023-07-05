@@ -9,7 +9,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"AIClassModule"
+				"AIClassModule",
+				"AICoverSystem"
 			]
 		},
 		{
@@ -45,7 +46,10 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"BaseClassModule"
+				"BaseClassModule",
+				"AIModule",
+				"CoreUObject",
+				"AICoverSystem"
 			]
 		}
 	],
