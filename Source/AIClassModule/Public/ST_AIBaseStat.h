@@ -20,6 +20,9 @@ public:
 		float AI_Speed_ShotMove;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIBaseStatDataBase)
 		float AI_Speed_CrouchMove;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIBaseStatDataBase)
+		float AI_Def;
+
 	
 };
 
