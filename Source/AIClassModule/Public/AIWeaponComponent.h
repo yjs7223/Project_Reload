@@ -20,6 +20,10 @@ class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 public :
 	UAIWeaponComponent();
 
+	// AI 사격 상태
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		bool shot_State;
+
 	// AI 캐릭터
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		AAICharacter* owner;
@@ -54,12 +58,24 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		int shot_MaxCount;
 
+	// AI의 현재 공격 횟수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		int cur_Shot_Count;
 
-	// 무기 스탯
+	// 최대 데미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		bool shot;
+		float shot_MaxDmg;
+	// 최소 데미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shotDamage;
+		float shot_MinDmg;
+
+	// 사격 딜레이
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		float shot_Delay;
+
+	// 현재 딜레이 시간
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		float cur_Shot_Delay;
 
 	// Hit Result
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -86,4 +102,13 @@ public:
 	// AI Shot
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ShotAI();
+	// AI Shot Timer
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		void ShotAITimer(float p_Time);
+	// AI Shot Start
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		void ShotAIStart();
+	// AI Shot Stop
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		void ShotAIStop();
 };

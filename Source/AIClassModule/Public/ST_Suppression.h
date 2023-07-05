@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
 		float Sup_Multi;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
-		float Sup_LowInput;
+		float Sup_DecInput;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
 		float Sup_DecPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
@@ -37,6 +37,17 @@ public:
 		float Sup_ShareRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
 		float Sup_ShareTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
+		float Sup_DefaultPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
+		float Sup_MaxPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
+		float Sup_MinPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
+		float Sup_AimPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
+		float Sup_AimDelay;
+
 };
 
 

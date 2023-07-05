@@ -3,12 +3,16 @@
 
 #include "AICharacter.h"
 #include "AIWeaponComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "AICharacterMoveComponent.h"
+#include "AIPatrolComponent.h"
+#include "ST_Range.h"
 
 AAICharacter::AAICharacter()
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
+	//AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())
@@ -21,6 +25,17 @@ AAICharacter::AAICharacter()
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	AIWeapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
 
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
+	if (DT_RangeDataObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
+		DT_Range = DT_RangeDataObject.Object;
+	}
+	SetDataTable("Rifle_E");
+
+	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
+	CollisionMesh->SetCapsuleRadius(HitRadius);
+	CollisionMesh->SetCapsuleHalfHeight(HitHeight);
 }
 
 void AAICharacter::BeginPlay()
@@ -31,4 +46,17 @@ void AAICharacter::BeginPlay()
 void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AAICharacter::SetDataTable(FName EnemyName)
+{
+	FST_Range* RangeData = DT_Range->FindRow<FST_Range>(EnemyName, FString(""));
+	if (RangeData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+
+		HitRadius = RangeData->Sup_HitRadius;
+		HitHeight = RangeData->Sup_HitHeight;
+		
+	}
 }

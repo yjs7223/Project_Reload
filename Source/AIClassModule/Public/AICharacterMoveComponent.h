@@ -32,19 +32,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		bool AI_Move;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Normal; //±âº» ÀÌµ¿½Ã 
+		bool Move_Normal; //ï¿½âº» ï¿½Ìµï¿½ï¿½ï¿½ 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Attack; //ai°¡ °ø°Ý½Ã
+		bool Move_Attack; //aiï¿½ï¿½ ï¿½ï¿½ï¿½Ý½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Hit; //ai°¡ ÇÇ°Ý½Ã
+		bool Move_Hit; //aiï¿½ï¿½ ï¿½Ç°Ý½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float timeDeltaTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float lerpDeltaTime;
-	//¿¡µðÅÍ¿¡¼­ ¸¸µç µ¥ÀÌÅÍ Å×ÀÌºíÀ» ÀúÀåÇÒ º¯¼ö
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		class UDataTable* DT_Move;
-	//µ¥ÀÌÅÍ Å×ÀÌºíÀÇ º¯¼ö¸¦ ÀúÀåÇÒ º¯¼ö
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_ChangeTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
