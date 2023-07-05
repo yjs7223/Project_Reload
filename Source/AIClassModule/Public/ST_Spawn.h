@@ -47,7 +47,9 @@ public:
 
 	// 유닛이 생성될 위치
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TWeakObjectPtr<AActor> spawn_Spot;
+		int spawn_Spot;
+		// 이렇게하면 액터를 넣을 수는 있지만 저장이 안됨
+		//TWeakObjectPtr<AActor> spawn_Spot;
 
 	// 마지막 웨이브인지 확인
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

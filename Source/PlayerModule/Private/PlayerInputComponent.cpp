@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerWeaponComponent.h"
 #include "CoverComponent.h"
+#include <Kismet/KismetSystemLibrary.h>
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -62,8 +63,14 @@ void UPlayerInputComponent::Crouching()
 
 void UPlayerInputComponent::StartFire()
 {
-	m_inputData.IsFire = true;
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartFire();
+	if (!m_inputData.IsReload)
+	{
+		owner->FindComponentByClass<UPlayerWeaponComponent>()->StartFire();
+		if (owner->FindComponentByClass<UPlayerWeaponComponent>()->isFire)
+		{
+			m_inputData.IsFire = true;
+		}
+	}
 }
 
 void UPlayerInputComponent::StopFire()
@@ -86,7 +93,11 @@ void UPlayerInputComponent::StopAiming()
 
 void UPlayerInputComponent::StartReload()
 {
-	m_inputData.IsReload = true;
+	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartReload();
+	if (owner->FindComponentByClass<UPlayerWeaponComponent>()->isReload)
+	{
+		m_inputData.IsReload = true;
+	}
 }
 
 void UPlayerInputComponent::CoverInputEvent()

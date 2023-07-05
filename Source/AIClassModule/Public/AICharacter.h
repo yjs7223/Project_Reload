@@ -47,6 +47,8 @@ public:
 		class UAICharacterMoveComponent* AIMovement;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAIWeaponComponent* AIWeapon;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIPatrolComponent* AIPatrol;*/
 
 public:
 	UFUNCTION()

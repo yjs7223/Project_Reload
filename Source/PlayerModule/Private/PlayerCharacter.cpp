@@ -9,6 +9,7 @@
 #include "PlayerWeaponComponent.h"
 #include "PlayerStatComponent.h"
 #include "PlayerInputComponent.h"
+#include "CoverComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -37,6 +38,10 @@ APlayerCharacter::APlayerCharacter()
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
+
+	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
+
+
 }
 
 void APlayerCharacter::BeginPlay()

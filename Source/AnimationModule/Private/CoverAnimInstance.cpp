@@ -5,6 +5,7 @@
 #include "WeaponComponent.h"
 #include "GameFramework/Character.h"
 #include "CoverComponent.h"
+#include "BaseInputComponent.h"
 //#include "WeaponMeshComponent.h"
 
 
@@ -17,9 +18,9 @@ UCoverAnimInstance::UCoverAnimInstance()
 void UCoverAnimInstance::NativeBeginPlay()
 {
 	ACharacter* owner = Cast<ACharacter>(TryGetPawnOwner());
-	
+
+	m_Input = dynamic_cast<UBaseInputComponent*>(TryGetPawnOwner()->FindComponentByClass<UBaseInputComponent>());
 	mCover = owner->FindComponentByClass<UCoverComponent>();
-	//mWeaponMesh = owner->FindComponentByClass<UWeaponMeshComponent>();
 	mWeapon = owner->FindComponentByClass<UWeaponComponent>();
 	if (mWeapon) {
 		mWeaponMesh = mWeapon->WeaponMesh;
@@ -29,47 +30,50 @@ void UCoverAnimInstance::NativeBeginPlay()
 
 void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	//if (mWeapon) {
-	//	mIsReload = mWeapon->isReloading();
-	//}
-	//if (mCover) {
-	//	mIsCover = mCover->isCovering();
-	//	mIsFaceRight = mCover->isFaceRight();
-	//	mIsCornering = mCover->isCornering();
-	//	mIsFire = mCover->isFire();
-	//	mIsAiming = mCover->isAiming();
-	//	mPeekingState = mCover->getPeekingState();
-	//	mCoverSootingState = mCover->getCoverSootingState();
-	//	mAimYaw = mCover->getAimYaw();
-	//	mAimPitch = mCover->getAimPitch();
-	//	mIsConerWait = mCover->isConerWait();
-	//	if (mPeekingState != EPeekingState::None) {
-	//		mLastPeekingState = mPeekingState;
-	//	}
+	if (m_Input) {
+		FInputData* data = m_Input->getInput();
+		mIsReload = data->IsReload;
+		mIsFire = data->IsFire;
+		mIsAiming = data->IsAiming;
+	}
+	if (mWeapon) {
+		mAimYaw = mWeapon->getAimYaw();
+		mAimPitch = mWeapon->getAimPitch();
+	}
+	if (mCover) {
+		mIsCover = mCover->IsCover();
+		mIsFaceRight = mCover->FaceRight() >= 0;
+		mIsCornering = mCover->IsCornering();
+		mPeekingState = mCover->getPeekingState();
+		mCoverSootingState = mCover->getCoverSootingState();
+		mIsConerWait = mCover->IsTurnWait();
+		if (mPeekingState != EPeekingState::None) {
+			mLastPeekingState = mPeekingState;
+		}
 
+		mIsPeeking = mLastPeekingState != EPeekingState::None;
+		mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
+	}
 
-	//	mIsPeeking = mLastPeekingState != EPeekingState::None;
-	//	mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
-	//}
-	//if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
-	//	mIsCrouching = charcter->bIsCrouched;
-	//	mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
-	//}
-	////mIsCoverShooting
-	//if (mIsCover && !mIsPeeking && !mIsCoverShooting && (mCover->isAiming() || mWeapon->isFire())) {
-	//	mSpinRotater = FRotator(0, 180, 0);
-	//}
-	//else if (mWeapon && mWeapon->isReloading() && mIsFaceRight) {
-	//	mSpinRotater = FRotator(0, 90, 0);
-	//}
-	//else if (mWeapon && mWeapon->isReloading() && !mIsFaceRight) {
-	//	mSpinRotater = FRotator(0, -90, 0);
-	//}
-	//else {
-	//	mSpinRotater = FRotator(0, 0, 0);
-	//}
+	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
+		mIsCrouching = charcter->bIsCrouched;
+		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
+	}
+	
+	if (mIsCover && !mIsPeeking && !mIsCoverShooting && (m_Input->getInput()->IsAiming || m_Input->getInput()->IsFire)) {
+		mSpinRotater = FRotator(0, 180, 0);
+	}
+	else if (mWeapon && m_Input->getInput()->IsReload && mIsFaceRight) {
+		mSpinRotater = FRotator(0, 90, 0);
+	}
+	else if (mWeapon && m_Input->getInput()->IsReload && !mIsFaceRight) {
+		mSpinRotater = FRotator(0, -90, 0);
+	}
+	else {
+		mSpinRotater = FRotator(0, 0, 0);
+	}
 
-	//SetHandleing(DeltaSeconds);
+	SetHandleing(DeltaSeconds);
 }
 
 void UCoverAnimInstance::SetHandleing(float DeltaTime)

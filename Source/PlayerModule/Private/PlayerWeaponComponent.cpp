@@ -15,6 +15,12 @@
 #include "Kismet/KismetStringLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Components/DecalComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "PlayerInputComponent.h"
+#include "StatComponent.h"
+#include "PlayerWeaponData.h"
+
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -28,7 +34,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		MuzzleFireParticle = Fire.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> bullet(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_BulletTracer.P_BulletTracer'"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> bullet(TEXT("ParticleSystem'/Game/yjs/P_BulletTracer.P_BulletTracer'"));
 	if (bullet.Succeeded())
 	{
 		BulletTracerParticle = bullet.Object;
@@ -39,33 +45,52 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		Decal = decal.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx(TEXT("NiagaraSystem'/Game/yjs/NE_BulletProjectile_System.NE_BulletProjectile_System'"));
-	if (fx.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx1(TEXT("NiagaraSystem'/Game/yjs/NS_BulletProjectile.NS_BulletProjectile'"));
+	if (fx1.Succeeded())
 	{
-		shotFXNiagara = fx.Object;
+		shotFXNiagara = fx1.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx2(TEXT("NiagaraSystem'/Game/yjs/NS_BulletHit.NS_BulletHit'"));
+	if (fx2.Succeeded())
+	{
+		hitFXNiagara = fx2.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx3(TEXT("NiagaraSystem'/Game/yjs/NS_BulletHeadHit.NS_BulletHeadHit'"));
+	if (fx3.Succeeded())
+	{
+		headhitFXNiagara = fx3.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound1(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-001.burst_rifle-001'"));
+	if (sound1.Succeeded())
+	{
+		shotsound.Add(sound1.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound2(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-002.burst_rifle-002'"));
+	if (sound2.Succeeded())
+	{
+		shotsound.Add(sound2.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound3(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-003.burst_rifle-003'"));
+	if (sound3.Succeeded())
+	{
+		shotsound.Add(sound3.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<USoundWave> sound4(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-004.burst_rifle-004'"));
+	if (sound4.Succeeded())
+	{
+		shotsound.Add(sound4.Object);
+	}
 
 }
 
 void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = GetOwner<APlayerCharacter>();
-	SetAmmo(300);
-	m_firecount = 0;
-	m_turnValue = 0.f;
-	m_lookupValue = 0.f;
-	m_firerate = 0.1f; 
-	m_dValue = 0.f;
-	recoilTime = 0.0f;
-	m_spreadPower = 3.0f;
-	yawRange = FVector2D(-0.3f, 0.3f);
-	pitchRange = FVector2D(-0.3f, -0.7f);
-	TickCount = 1;
-	pp = 0;
+	InitData();
 	// ...
-
+	//PlayerWeaponData.row
 }
 
 
@@ -75,63 +100,108 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	RecoilTick(DeltaTime);
+	ReloadTick(DeltaTime);
 	//RecoveryTick(DeltaTime);
+}
+
+void UPlayerWeaponComponent::InitData()
+{
+	owner = GetOwner<APlayerCharacter>();
+	if (PlayerWeaponData != nullptr)
+	{
+		TArray<FName> rownames;
+		FPlayerweaponStruct* data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+
+		SetAmmo(data->bullet_Num);
+
+		damage.X = data->max_Damage;
+		damage.Y = data->min_Damage;
+
+		H_damage.X = data->max_H_Damage;
+		H_damage.Y = data->min_H_Damage;
+
+		m_firecount = 0;
+		m_dValue = 0.f;
+		recoilTime = 0.0f;
+		m_spreadPower = 5.0f;
+		yawRange = FVector2D(data->min_Horizontal_Recoil, data->max_Horizontal_Recoil);
+		pitchRange = FVector2D(data->min_vertical_Recoil, data->max_vertical_Recoil);
+		m_firerate = data->fire_Rate;
+		TickCount = 1;
+		headhit = false;
+		reloadCount = 0;
+		reloadvalue = 0;
+		ammoinfinite = false;
+	}
+	// ...
 }
 
 void UPlayerWeaponComponent::Fire()
 {
+	if (curAmmo <= 0)
+	{
+		StopFire();
+		return;
+	}
+
+	if (!ammoinfinite)
+	{
+		curAmmo--;
+	}
+
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+
 	float spread = m_firecount * m_spreadPower;
 	start.X += FMath::RandRange(-spread, spread);
 	start.Y += FMath::RandRange(-spread, spread);
+
 	end = start + (cameraRotation.Vector() * 99999);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
-	FHitResult m_result = FHitResult();
+	m_result = FHitResult();
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
-	//Ä«¸Þ¶ó Æ®·¹ÀÌ½º
+	//Ä«ï¿½Þ¶ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
-		//Ä«¸Þ¶ó¿¡¼­ ¹ß»çÇÑ Æ®·¹ÀÌ½º ÀûÁß
+		//Ä«ï¿½Þ¶ó¿¡¼ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		end = m_rot.Vector() * 99999;
 
-		//ÃÑ±¸ Æ®·¹ÀÌ½º
+		//ï¿½Ñ±ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 		{
-			//ÃÑ±¸Æ®·¹ÀÌ½º ÀûÁß
+			//ï¿½Ñ±ï¿½Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
 			end = m_rot.Vector() * 99999;
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			SpawnDecal(m_result);
-			isHit = true;
 		}
 		else
 		{
-			//ÃÑ±¸Æ®·¹ÀÌ½º ºñÀûÁß
+			//ï¿½Ñ±ï¿½Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			SpawnDecal(m_result);
 		}
 	}
 	else
 	{
-		//Ä«¸Þ¶ó¿¡¼­ ¹ß»çÇÑ Æ®·¹ÀÌ½º ºñÀûÁß
+		//Ä«ï¿½Þ¶ó¿¡¼ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
 
-		//ÃÑ±¸ Æ®·¹ÀÌ½º
+		//ï¿½Ñ±ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
@@ -141,33 +211,67 @@ void UPlayerWeaponComponent::Fire()
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 			end = m_rot.Vector() * 99999;
-			//m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			SpawnDecal(m_result);
-			isHit = true;
 		}
 		else
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		}
-		//GameStatic->SpawnEmitterAttached(BulletTracerParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 	}
-	//FVector a = WeaponMesh->GetSocketLocation(TEXT("AttachmentSocketBarrelLeft"));
-	//m_rot = UKismetMathLibrary::FindLookAtRotation(a, end);
-	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, m_rot);
-	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end);
 
-	if(m_firecount < 10)
+	if (m_result.GetActor())
 	{
-		m_firecount++;
+		if (m_result.GetActor()->ActorHasTag("Enemy"))
+		{
+			isHit = true;
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+			//USkeletalMeshComponent* sm = m_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+			if (s)
+			{
+				float d = 0;
+				if (m_result.BoneName == "head")
+				{
+					d = FMath::RandRange(H_damage.X, H_damage.Y);
+					s->Attacked(d);
+					headhit = true;
+					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, headhitFXNiagara, m_result.Location);
+				}
+				else
+				{
+					d = FMath::RandRange(damage.X, damage.Y);
+					s->Attacked(d);
+					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+				}
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(d));
+			}
+		}
+		else
+		{
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+		}
+	}
+	else
+	{
+		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+	}
+
+	start = WeaponMesh->GetSocketLocation(TEXT("BulletTracerStart"));
+	GameStatic->SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
+	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", m_result.Location);
+	PlayRandomShotSound();
+
+	if(m_firecount <= 10)
+	{
+		m_firecount += 1.0f;
 	}
 	StartRecoil();
 }
 
 void UPlayerWeaponComponent::StartAiming()
 {
-	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 60.0f;
+	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 90.0f;
 }
 
 void UPlayerWeaponComponent::StopAiming()
@@ -177,6 +281,10 @@ void UPlayerWeaponComponent::StopAiming()
 
 void UPlayerWeaponComponent::StartFire()
 {
+	if(curAmmo <= 0)
+	{ 
+		return;
+	}
 	Fire();
 	isFire = true;
 	//startRot = owner->GetController()->GetControlRotation();
@@ -186,13 +294,69 @@ void UPlayerWeaponComponent::StartFire()
 void UPlayerWeaponComponent::StopFire()
 {
 	owner->GetWorldTimerManager().ClearTimer(fHandle);
+	owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 	isFire = false;
 	m_firecount = 0;
 }
 
 void UPlayerWeaponComponent::StartReload()
 {
+	//ReloadAmmo();
+	if (maxAmmo <= 0)
+	{
+		isReload = false;
+		return;
+	}
+
+	if (curAmmo >= 30)
+	{
+		isReload = false;
+		return;
+	}
+
+	reloadvalue = 30 - curAmmo;
+	if (maxAmmo < reloadvalue)
+	{
+		reloadvalue = maxAmmo;
+		maxAmmo = 0;
+	}
+	else
+	{
+		maxAmmo -= reloadvalue;
+	}
+
+	curAmmo = 0;
 	isReload = true;
+}
+
+void UPlayerWeaponComponent::StopReload()
+{
+	reloadvalue = 0;
+	isReload = false;
+}
+
+void UPlayerWeaponComponent::ReloadTick(float Deltatime)
+{
+	if (isReload)
+	{
+		reloadCount += Deltatime * 30;
+		if (reloadCount >= 1)
+		{
+			curAmmo++;
+			reloadCount = 0;
+		}
+		if (maxAmmo == 0)
+		{
+			if (curAmmo == reloadvalue)
+			{
+				StopReload();
+			}
+		}
+		if (curAmmo == 30)
+		{
+			StopReload();
+		}
+	}
 }
 
 void UPlayerWeaponComponent::RecoilTick(float p_deltatime)
@@ -238,7 +402,7 @@ void UPlayerWeaponComponent::StopRecoil()
 	}*/
 }
 
-//Æó±â
+//ï¿½ï¿½ï¿½
 void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 {
 	if (bRecovery)
@@ -289,8 +453,18 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 	FRotator DecalRotation = result.Normal.Rotation();
 	FVector DecalLocation = result.Location;
 
-	UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("decal_spawn"));
+	UDecalComponent* decal = UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
+	if (decal)
+	{
+		decal->SetFadeScreenSize(0.0f);
+	}
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("decal_spawn"));
+}
+
+void UPlayerWeaponComponent::PlayRandomShotSound()
+{
+	int r = FMath::RandRange(0, 3);
+	UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
 }
 
 

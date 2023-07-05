@@ -63,7 +63,6 @@ public:
 	// 스포너 스폰 지점들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		TArray<AActor*> spawn_Spots;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -73,9 +72,18 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// 웨이브 스폰
-	UFUNCTION(BlueprintCallable, Category = "SpawnerSetting")
-		void SpawnWave();
+	void SpawnWave();
 	
-	UFUNCTION(BlueprintCallable, Category = "SpawnerSetting")
-		void WaveControl();
+	// 웨이브 컨트롤
+	void WaveControl(float DeltaTime);
+
+	// 스폰 지점 검사 후 변경
+	int SetSpawnSpot(int m_Spawn_Pos);
+
+	// 다음 웨이브 이동 및 초기화
+	void NextWave();
+
+	// 스포너 활/비활성화
+	UFUNCTION(BlueprintCallable, Category = "Spawner")
+		void SpawnEnable(bool p_flag);
 };
