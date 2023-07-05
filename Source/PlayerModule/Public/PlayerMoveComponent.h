@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PlayerMovable.h"
 #include "PlayerMoveComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PLAYERMODULE_API UPlayerMoveComponent : public UActorComponent
+class PLAYERMODULE_API UPlayerMoveComponent : public UActorComponent, public IPlayerMovable
 {
 	GENERATED_BODY()
 
@@ -34,7 +35,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Moving(float DeltaTime);
 	UFUNCTION(BlueprintCallable)
-		void SetCanMove(bool canmove);
+		virtual	void SetCanMove(bool canmove) override;
 	UFUNCTION(BlueprintCallable)
 		void SetCanUnCrouch(bool canCrouch);
 	UFUNCTION(BlueprintCallable)
@@ -42,13 +43,11 @@ public:
 
 
 private:
-	UPROPERTY()
-		ACharacter* owner;
-	UPROPERTY()
-		FVector mMoveDirect;
-	UPROPERTY()
-		class UCoverComponent* m_CoverComp;
-
+	ACharacter* owner;
+	FVector mMoveDirect;
+	class UCoverComponent* m_CoverComp;
+	class UActorComponent* m_PakurComp;
+	struct FInputData* m_Inputdata;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
 		FRotator mTargetRotate;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)

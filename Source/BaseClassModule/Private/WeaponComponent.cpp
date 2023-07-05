@@ -5,6 +5,7 @@
 #include "Components/InputComponent.h"
 #include "BaseCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CoverComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()

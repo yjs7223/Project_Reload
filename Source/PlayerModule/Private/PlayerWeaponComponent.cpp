@@ -165,23 +165,23 @@ void UPlayerWeaponComponent::Fire()
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
-	//Ä«¸Þ¶ó Æ®·¹ÀÌ½º
+	//Ä«ï¿½Þ¶ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
-		//Ä«¸Þ¶ó¿¡¼­ ¹ß»çÇÑ Æ®·¹ÀÌ½º ÀûÁß
+		//Ä«ï¿½Þ¶ó¿¡¼ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		end = m_rot.Vector() * 99999;
 
-		//ÃÑ±¸ Æ®·¹ÀÌ½º
+		//ï¿½Ñ±ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 		{
-			//ÃÑ±¸Æ®·¹ÀÌ½º ÀûÁß
+			//ï¿½Ñ±ï¿½Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
@@ -191,17 +191,17 @@ void UPlayerWeaponComponent::Fire()
 		}
 		else
 		{
-			//ÃÑ±¸Æ®·¹ÀÌ½º ºñÀûÁß
+			//ï¿½Ñ±ï¿½Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			SpawnDecal(m_result);
 		}
 	}
 	else
 	{
-		//Ä«¸Þ¶ó¿¡¼­ ¹ß»çÇÑ Æ®·¹ÀÌ½º ºñÀûÁß
+		//Ä«ï¿½Þ¶ó¿¡¼ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
 
-		//ÃÑ±¸ Æ®·¹ÀÌ½º
+		//ï¿½Ñ±ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
@@ -402,7 +402,7 @@ void UPlayerWeaponComponent::StopRecoil()
 	}*/
 }
 
-//Æó±â
+//ï¿½ï¿½ï¿½
 void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 {
 	if (bRecovery)
