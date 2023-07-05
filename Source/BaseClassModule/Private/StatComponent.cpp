@@ -62,5 +62,7 @@ void UStatComponent::Attacked(float p_damage)
 	{
 		curHP = 0.0f;
 	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(curHP));
 }
 
