@@ -4,11 +4,12 @@
 #include "EncounterSpace.h"
 #include "SubEncounterSpace.h"
 #include "Components/BoxComponent.h"
+#include "AICommander.h"
 #include "Engine/Engine.h"
 // Sets default values
 AEncounterSpace::AEncounterSpace()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CollisionMesh = CreateDefaultSubobject<UBoxComponent>(FName("C Mesh"));
 	RootComponent = CollisionMesh;
@@ -23,13 +24,61 @@ AEncounterSpace::AEncounterSpace()
 void AEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
 void AEncounterSpace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (LevelActive != false)
+	{
+		if (LevelArrayActive() != nullptr)
+		{
+			subEn = LevelArrayActive();
+			ListTickSet(subEn);
+		}
+		
+	}
+
+}
+
+void AEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
+	{
+		subEn = LevelStartArrayActive();
+		ListStartSet(subEn);
+	}
+
+}
+
+void AEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
+	{
+		LevelActive = false;
+		LevelEndActive();
+	}
+}
+
+ASubEncounterSpace* AEncounterSpace::LevelStartArrayActive()
+{
+	LevelActive = true;
+	LevelActiveNum = 1;
+	for (auto& item : LevelArray)
+	{
+		if (item->LevelNum == 1)
+		{
+			item->LevelActive = true;
+			return item;
+		}
+	}
+	return nullptr;
+}
+
+ASubEncounterSpace* AEncounterSpace::LevelArrayActive()
+{
 	for (auto& item : LevelArray)
 	{
 		if (item->LevelNum == LevelActiveNum)
@@ -40,41 +89,61 @@ void AEncounterSpace::Tick(float DeltaTime)
 				if (LevelArray.Num() < LevelActiveNum)
 				{
 					LevelActive = false;
+					return nullptr;
 				}
 				for (auto& item2 : LevelArray)
 				{
 					if (item2->LevelNum == LevelActiveNum)
 					{
 						item2->LevelActive = true;
+						return item2;
 					}
 				}
 			}
+			else return item;
 		}
+	}
+	return nullptr;
+}
+
+void AEncounterSpace::LevelEndActive()
+{
+	for (auto& item : LevelArray)
+	{
+		item->LevelActive = false;
 	}
 }
 
-void AEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AEncounterSpace::ListStartSet(ASubEncounterSpace* sub)
 {
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
+	for (auto& item : sub->AIArray)
 	{
-		LevelActive = true;
-		LevelActiveNum = 1;
-		for (auto& item : LevelArray)
+		aic->List_Division.Add(item, aic->AddIndex);
+		aic->List_RDivision.Add(aic->AddIndex, item);
+		aic->List_Combat.Add(aic->AddIndex, ECombat::Patrol);
+		aic->List_Location.Add(aic->AddIndex, item->GetActorLocation());
+		aic->List_Suppression.Add(aic->AddIndex, 0.0);
+		aic->AddIndex++;
+	}
+}
+
+void AEncounterSpace::ListTickSet(ASubEncounterSpace* sub)
+{
+	for (auto& item : sub->AIArray)
+	{
+		auto FindActor = aic->List_Division.Find(item); //���� �׾����� aiĳ���� ��ü���� ����� �����
+		if (FindActor != nullptr)
 		{
-			if (item->LevelNum == 1)
+			aic->List_Location.Add(*FindActor, sub->GetActorLocation());
+			aic->List_Location.Add(*FindActor, sub->GetActorLocation());//��ǥ ��ġ ���� �� �����ֱ�
+			aic->List_Suppression.Add(*FindActor, 0.0); //���߿� �������� ���� ���� ����
+		}
+		else
+		{
+			if (aic->List_Division.IsEmpty())
 			{
-				item->LevelActive = true;
+				sub->LevelActive = false;
 			}
 		}
 	}
-	
 }
-
-void AEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
-	{
-		LevelActive = false;
-	}
-}
-
