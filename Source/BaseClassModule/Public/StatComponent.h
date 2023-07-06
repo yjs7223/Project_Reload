@@ -39,6 +39,7 @@ public:
 	//Damage process
 	UFUNCTION(BlueprintCallable)
 		void Attacked(float p_damage);
+		void Attacked(float p_damage, FHitResult result);
 public:
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)

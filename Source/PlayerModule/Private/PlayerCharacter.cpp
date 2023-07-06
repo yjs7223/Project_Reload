@@ -11,6 +11,7 @@
 #include "PlayerInputComponent.h"
 #include "CoverComponent.h"
 
+
 APlayerCharacter::APlayerCharacter()
 {
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
@@ -54,6 +55,26 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
+{
+
+	FName Name_AILineOfSight = FName(TEXT("TestPawnLineOfSight"));
+	FHitResult HitResult;
+	FVector SightTargetLocation = GetMesh()->GetSocketLocation("neck_Socket");
+
+
+	bool hit = GetWorld()->LineTraceSingleByChannel(HitResult, ObserverLocation, SightTargetLocation, ECC_Visibility, FCollisionQueryParams(Name_AILineOfSight, false, IgnoreActor));
+
+	if (!hit || (HitResult.GetActor() && HitResult.GetActor()->IsOwnedBy(this)))
+	{
+		OutSeenLocation = SightTargetLocation;
+		OutSightStrength = 1;
+		return true;
+	}
+	OutSightStrength = 0;
+	return false;
 }
 
 
