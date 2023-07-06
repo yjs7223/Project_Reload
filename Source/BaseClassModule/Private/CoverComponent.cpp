@@ -12,6 +12,7 @@
 #include "PlayerMovable.h"
 #include "WeaponComponent.h"
 #include "EPeekingState.h"
+#include "Camera/CameraComponent.h"
 
 
 #include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -51,6 +52,9 @@ void UCoverComponent::BeginPlay()
 void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	TestFN(DeltaTime);
+
 	if (!m_IsCover) return;
 	m_Inputdata->IsRuning = false;
 
@@ -161,11 +165,12 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	FHitResult result2;
 
 	FVector FinalNormal;
+	FVector FinalLocation;
 	FCollisionQueryParams params(NAME_None, true, owner);
 
 	//FVector start = owner->GetActorLocation();
 	FVector start = owner->GetActorLocation();
-	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
+	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.0f);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 
 	DrawDebugLine(GetWorld(), result.TraceStart, result.TraceEnd, FColor::Black);
@@ -174,7 +179,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	if (!result.bBlockingHit) return;
 
 	start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
-	end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
+	end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.0f);
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
 
 	DrawDebugLine(GetWorld(), result2.TraceStart, result2.TraceEnd, FColor::Green);
@@ -182,28 +187,111 @@ void UCoverComponent::RotateSet(float DeltaTime)
 
 
 	if (result2.bBlockingHit) {
-		if ((result2.TraceEnd - result2.TraceStart).GetSafeNormal().Dot(result2.Normal) == -1.0) {
+		if ((result2.TraceEnd - result2.TraceStart).GetSafeNormal().Dot(result2.Normal) + 1.0 < 0.1) {
+			FinalLocation = result2.Location;
 			FinalNormal = result2.Normal;
 		}
 		else {
 			FHitResult tempResult;
-			start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * 1.5 * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
-			end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
+			start = owner->GetActorLocation();
+			end = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * 1.1 * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
 			GetWorld()->LineTraceSingleByChannel(tempResult, start, end, traceChanel, params);
+			if (tempResult.bBlockingHit) {
+				FinalLocation = tempResult.Location;
+				FinalNormal = tempResult.Normal;
+			}
+			else {
+				start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * 1.1 * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+				end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.0f);
+				GetWorld()->LineTraceSingleByChannel(tempResult, start, end, traceChanel, params);
 
-			DrawDebugLine(GetWorld(), tempResult.TraceStart, tempResult.TraceEnd, FColor::Red);
-			DrawDebugLine(GetWorld(), tempResult.TraceStart, tempResult.TraceStart + tempResult.Normal * 100, FColor::Magenta);
-
-			FinalNormal = tempResult.Normal;
+				FinalLocation = tempResult.Location;
+				FinalNormal = tempResult.Normal;
+			}
 		}
 	}
 	else {
+		FinalLocation = result.Location;
 		FinalNormal = result.Normal;
 	}
+	if (FinalNormal == FVector::ZeroVector) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ERROR FinalNormal is Zero"));
+	}
+	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal);
+	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 6.0f));
 
-	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal));
+	if (owner->GetActorRotation().Vector().Dot(TargetRotation.Vector()) >= 0.999) {
+		m_IsWillPosSetting = true;
+		owner->SetActorRotation(TargetRotation);
+		
+	}
+
+	if (m_IsWillPosSetting) {
+		result;
+		start = owner->GetActorLocation();
+		end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
+		FVector targetPos = result.Location + result.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
+		DrawDebugLine(GetWorld(), start, end, FColor::Emerald);
+		if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
+			owner->SetActorLocation(FMath::VInterpTo(owner->GetActorLocation(), targetPos, DeltaTime, 6.0f));
+			if ((owner->GetActorLocation() - targetPos).SizeSquared() <= 1) {
+				owner->SetActorLocation(targetPos);
+				m_IsWillPosSetting = false;
+			}
+		}
+	}
 
 	return;
+}
+
+void UCoverComponent::TestFN(float DeltaTime)
+{
+	TArray<FHitResult> results;
+	FVector start;
+	FRotator cameraRotation;
+	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	UCameraComponent* camera = owner->FindComponentByClass<UCameraComponent>();
+	float AspectRatio = camera->AspectRatio;
+	float ViewportWidth = 1.0f;
+	float ViewportHeight = 1.0f;
+	if (AspectRatio > 1.0f)
+	{
+		ViewportWidth = AspectRatio;
+	}
+	else
+	{
+		ViewportHeight = 1.0f / AspectRatio;
+	}
+	
+	if(!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
+		start + cameraRotation.Vector() * 200,
+		start + cameraRotation.Vector() * 1000,
+		{  0, ViewportHeight * camera->OrthoWidth * 0.2f, ViewportHeight * camera->OrthoWidth* 0.27f},
+		//{100, 100, 100},
+		cameraRotation,
+		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1),
+		false,
+		{},
+		EDrawDebugTrace::ForOneFrame,
+		results,
+		true
+		)) return;
+
+	for (auto& item : results)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), item.GetActor()->GetName(), true, false, { 0.0f,0.6f ,1.0f ,1.0f }, DeltaTime);
+		DrawDebugSphere(GetWorld(), item.Location, 10, 32, FColor::Blue);
+		DrawDebugSphere(GetWorld(), item.ImpactPoint, 10, 32, FColor::Magenta);
+		DrawDebugLine(GetWorld(), item.Location, item.Location + item.Normal * 100, FColor::Blue);
+		DrawDebugLine(GetWorld(), item.ImpactPoint, item.ImpactPoint + item.ImpactNormal * 100, FColor::Magenta);
+		DrawDebugLine(GetWorld(), item.ImpactPoint, item.ImpactPoint + item.ImpactNormal.Rotation().Quaternion().GetRightVector() * 100, FColor::Magenta);
+		
+		DrawDebugSphere(GetWorld(), item.ImpactPoint + 
+			(item.Location - item.ImpactPoint).ProjectOnTo(item.ImpactNormal.Rotation().Quaternion().GetRightVector()),
+			10, 32, FColor::Green);;
+	}
+
+
 }
 
 bool UCoverComponent::IsCover()

@@ -28,6 +28,7 @@ public:
 	void SettingMoveVector(FVector& vector);
 	void AimSetting(float DeltaTime);
 	void RotateSet(float DeltaTime);
+	void TestFN(float DeltaTime);
 
 	bool IsCover();
 	bool IsTurnWait();
@@ -69,4 +70,6 @@ private:
 	float m_TurnTime;
 	FVector m_Turnlookpoint;
 	class ACharacter* owner;
+
+	bool m_IsWillPosSetting;
 };
