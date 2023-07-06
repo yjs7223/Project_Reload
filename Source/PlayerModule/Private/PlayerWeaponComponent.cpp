@@ -20,6 +20,7 @@
 #include "PlayerInputComponent.h"
 #include "StatComponent.h"
 #include "PlayerWeaponData.h"
+#include "MatineeCameraShake.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -82,6 +83,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		shotsound.Add(sound4.Object);
 	}
+
 
 }
 
@@ -148,7 +150,7 @@ void UPlayerWeaponComponent::Fire()
 	{
 		curAmmo--;
 	}
-
+	PlayCameraShake(1.5f);
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
@@ -465,6 +467,14 @@ void UPlayerWeaponComponent::PlayRandomShotSound()
 {
 	int r = FMath::RandRange(0, 3);
 	UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
+}
+
+void UPlayerWeaponComponent::PlayCameraShake(float scale)
+{
+	if (fireShake != nullptr)
+	{
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(fireShake, scale);
+	}
 }
 
 
