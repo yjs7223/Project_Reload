@@ -61,6 +61,8 @@ public:
 
 	void PlayRandomShotSound();
 
+	void PlayCameraShake(float scale);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class APlayerCharacter* owner;
@@ -149,5 +151,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USoundWave*> shotsound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UMatineeCameraShake> fireShake;
 
 };
