@@ -22,6 +22,7 @@ void UAIPatrolComponent::BeginPlay()
 	Super::BeginPlay();
 
 	owner = Cast<AAICharacter>(GetOwner());
+
 	for (int i = 0; i < patrol_Actor->patrol_Point.Num(); i++)
 	{
 		patrol_Point.Add(GetOwner()->GetActorTransform().TransformPosition(patrol_Actor->patrol_Point[i]));
