@@ -106,7 +106,8 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 	float value = owner->GetActorRightVector().Dot(vector) > 0 ? 1 : -1;
 
 	m_FaceRight = value;
-	FHitResult result = CheckCoverCollision();
+	FHitResult result;
+	CheckCoverCollision(result);
 	if (result.bBlockingHit) {
 		vector = m_FaceRight * owner->GetActorRightVector();
 	}
@@ -154,23 +155,24 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 bool UCoverComponent::RotateSet(float DeltaTime)
 {
-	if (!m_IsCover) return false;
+	if (!m_IsCover || m_IsCornering) return false;
 
 	FHitResult result;
 	FVector start = owner->GetActorLocation();
 	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
+	//FCollisionQueryParams params(NAME_None, true, owner);
+	//FVector start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	//FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
 	FCollisionQueryParams params(NAME_None, true, owner);
 
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 	
-	m_Movement->SetPlaneConstraintNormal(result.Normal);
 
-	FVector target = start + (-result.Normal);
-	UKismetSystemLibrary::PrintString(GetWorld(), owner->Controller->GetControlRotation().ToString()) ;
-	auto temp = UKismetMathLibrary::FindLookAtRotation(start, target);
 
-	//owner->Controller->SetControlRotation(owner->Controller->GetControlRotation() + (temp - owner->GetActorRotation()));
-	owner->SetActorRotation(FMath::RInterpConstantTo(owner->GetActorRotation(), temp, DeltaTime, 7.0f));
+	auto temp = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -result.Normal);
+	DrawDebugLine(GetWorld(), result.TraceStart, result.TraceEnd, FColor::Magenta);
+	owner->SetActorRotation(temp);
+	//owner->SetActorRotation(FMath::RInterpConstantTo(owner->GetActorRotation(), temp, DeltaTime, 0.0f));
 	//GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 	//owner->SetActorLocation(result.Location + result.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f);
 	return true;
@@ -224,7 +226,6 @@ void UCoverComponent::CalculateCoverShoot()
 	start = temppos + -RightVector;
 	end = start + forwardVector;
 	result = FHitResult();
-	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 	if (!result.GetActor()) {
 		DrawDebugLine(GetWorld(), start, end, FColor::Red);
@@ -235,7 +236,6 @@ void UCoverComponent::CalculateCoverShoot()
 	start = temppos + RightVector;
 	end = start + forwardVector;
 	result = FHitResult();
-	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 	if (!result.GetActor()) {
 		DrawDebugLine(GetWorld(), start, end, FColor::Red);
@@ -246,7 +246,6 @@ void UCoverComponent::CalculateCoverShoot()
 	start = temppos + upVector;
 	end = start + forwardVector;
 	result = FHitResult();
-	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 	if (!result.GetActor()) {
 		DrawDebugLine(GetWorld(), start, end, FColor::Red);
@@ -285,21 +284,20 @@ void UCoverComponent::StopCover()
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 }
 
-FHitResult UCoverComponent::CheckCoverCollision()
+void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
 {
-	FHitResult result;
 	FVector start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
 	FCollisionQueryParams params(NAME_None, true, owner);
 
-	DrawDebugLine(GetWorld(), start, end, FColor::Blue);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
-	return result;
+
 }
 
 void UCoverComponent::PlayCornering()
 {
-	FHitResult result1 = CheckCoverCollision();
+	FHitResult result1;
+	CheckCoverCollision(result1);
 
 	FHitResult result2;
 	FVector start = result1.TraceEnd;
@@ -307,10 +305,10 @@ void UCoverComponent::PlayCornering()
 	FCollisionQueryParams params(NAME_None, true, owner);
 
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
-
+	DrawDebugSphere(GetWorld(), end, 10.f, 32, FColor::Cyan, false, 100.0f);
 	if (!result2.bBlockingHit) return;
 
-	FVector targetPoint = result2.Location + owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() + result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
+	FVector targetPoint = result2.Location + result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
 	DrawDebugSphere(GetWorld(), targetPoint, 10.0f, 32, FColor::Red, false, 100.0f);
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), targetPoint);
 
@@ -321,7 +319,7 @@ void UCoverComponent::PlayCornering()
 
 	//m_Movement->SetPlaneConstraintEnabled(false);
 	m_IsCornering = true;
-	m_Turnlookpoint = targetPoint - result2.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2;
+	m_Turnlookpoint = end;
 
 	owner->GetMovementComponent()->AddInputVector( -m_FaceRight * owner->GetActorRightVector());
 }
@@ -349,7 +347,7 @@ void UCoverComponent::PlayingCornering(float DeltaTim)
 
 void UCoverComponent::BeCrouch(float deltaTime)
 {
-	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.01f;
+	FVector forwardVector = owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.01f;
 	FVector upVector = owner->GetActorUpVector() * owner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() * 1.01f;
 	owner->bIsCrouched ? upVector *= 2.0f : upVector;
 	FVector start;
@@ -367,7 +365,7 @@ void UCoverComponent::BeCrouch(float deltaTime)
 	FCollisionQueryParams param(NAME_None, true, GetOwner());
 	GetWorld()->LineTraceSingleByChannel(
 		result, start, end, traceChanel, param);
-	//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 100.0f);
+	//DrawDebugLine(GetWorld(), start + upVector, end + upVector, FColor::Magenta, false, 100.0f);
 	if (result.bBlockingHit) {
 		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	}
