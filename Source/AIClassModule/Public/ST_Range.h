@@ -23,8 +23,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
 		float Sense_Radius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
-		float CoverMax_Radius;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
 		float NCoverMax_Radius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
 		float AimFwd_Radius;
