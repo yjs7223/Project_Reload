@@ -153,29 +153,57 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	}
 }
 
-bool UCoverComponent::RotateSet(float DeltaTime)
+void UCoverComponent::RotateSet(float DeltaTime)
 {
-	if (!m_IsCover || m_IsCornering) return false;
+	if (!m_IsCover || m_IsCornering) return;
 
 	FHitResult result;
-	FVector start = owner->GetActorLocation();
-	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
-	//FCollisionQueryParams params(NAME_None, true, owner);
-	//FVector start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
-	//FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
+	FHitResult result2;
+
+	FVector FinalNormal;
 	FCollisionQueryParams params(NAME_None, true, owner);
 
+	//FVector start = owner->GetActorLocation();
+	FVector start = owner->GetActorLocation();
+	FVector end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
-	
+
+	DrawDebugLine(GetWorld(), result.TraceStart, result.TraceEnd, FColor::Black);
+	DrawDebugLine(GetWorld(), result.TraceStart, result.TraceStart + result.Normal * 100, FColor::Magenta);
+
+	if (!result.bBlockingHit) return;
+
+	start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
+	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
+
+	DrawDebugLine(GetWorld(), result2.TraceStart, result2.TraceEnd, FColor::Green);
+	DrawDebugLine(GetWorld(), result2.TraceStart, result2.TraceStart + result2.Normal * 100, FColor::Magenta);
 
 
-	auto temp = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -result.Normal);
-	DrawDebugLine(GetWorld(), result.TraceStart, result.TraceEnd, FColor::Magenta);
-	owner->SetActorRotation(temp);
-	//owner->SetActorRotation(FMath::RInterpConstantTo(owner->GetActorRotation(), temp, DeltaTime, 0.0f));
-	//GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
-	//owner->SetActorLocation(result.Location + result.Normal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f);
-	return true;
+	if (result2.bBlockingHit) {
+		if ((result2.TraceEnd - result2.TraceStart).GetSafeNormal().Dot(result2.Normal) == -1.0) {
+			FinalNormal = result2.Normal;
+		}
+		else {
+			FHitResult tempResult;
+			start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * 1.5 * owner->GetCapsuleComponent()->GetScaledCapsuleRadius();
+			end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
+			GetWorld()->LineTraceSingleByChannel(tempResult, start, end, traceChanel, params);
+
+			DrawDebugLine(GetWorld(), tempResult.TraceStart, tempResult.TraceEnd, FColor::Red);
+			DrawDebugLine(GetWorld(), tempResult.TraceStart, tempResult.TraceStart + tempResult.Normal * 100, FColor::Magenta);
+
+			FinalNormal = tempResult.Normal;
+		}
+	}
+	else {
+		FinalNormal = result.Normal;
+	}
+
+	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal));
+
+	return;
 }
 
 bool UCoverComponent::IsCover()
