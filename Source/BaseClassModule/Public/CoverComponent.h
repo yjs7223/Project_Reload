@@ -45,7 +45,7 @@ public:
 protected:
 	void TurnCheck(float DeltaTime);
 	void StartCover(FHitResult& reslut);
-	FHitResult CheckCoverCollision();
+	void CheckCoverCollision(OUT FHitResult& result);
 	UFUNCTION(BlueprintCallable)
 		void PlayCornering();
 	void StopCornering(float DeltaTim);
@@ -69,6 +69,4 @@ private:
 	float m_TurnTime;
 	FVector m_Turnlookpoint;
 	class ACharacter* owner;
-
-
 };
