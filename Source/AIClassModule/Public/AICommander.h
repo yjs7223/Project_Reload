@@ -16,13 +16,13 @@ enum class ECombat : uint8
 	Attack 	UMETA(DisplayName = "Attack"),
 	InCover 	UMETA(DisplayName = "InCover")
 };
-UENUM(BlueprintType)
-enum class EState : uint8
-{
-	Start 	UMETA(DisplayName = "Start"),
-	Play 	UMETA(DisplayName = "Play"),
-	End 	UMETA(DisplayName = "End")
-};
+//UENUM(BlueprintType)
+//enum class EState : uint8
+//{
+//	Start 	UMETA(DisplayName = "Start"),
+//	Play 	UMETA(DisplayName = "Play"),
+//	End 	UMETA(DisplayName = "End")
+//};
 
 UCLASS()
 class AICLASSMODULE_API AAICommander : public AAIController
@@ -55,23 +55,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, FVector> List_ChkLocation; //��ǥ �����̼��� �۾� ��
+		TMap<int, FVector> List_ChkLocation; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<AActor*> arrOutActors;
+		TArray<AActor*> EncounterArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool En_Start;//��ī���� ������ ��������
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		EState state;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AEncounterSpace* encounter;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class ASubEncounterSpace* suben;
+		bool MapList_Start;
 
 
 public:
+	UFUNCTION()
+		void ListSet();
+	UFUNCTION()
+		void ListReset(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListStartSet(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListTickSet(ASubEncounterSpace* sub);
 };
 

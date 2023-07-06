@@ -9,19 +9,27 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardData.h"
 
 AMyAIController::AMyAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 	
-	BlackboardComp = Blackboard;
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
 	if (DT_RangeDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBObject(TEXT("BlackboardData'/Game/_sjs/BB_BaseAI.BB_BaseAI'"));
+	if (BBObject.Succeeded())
+		BBAsset = BBObject.Object;
+
+
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/_sjs/BT_BaseAI.BT_BaseAI'"));
+	if (BTObject.Succeeded())
+		BTAsset = BTObject.Object;
 }
 
 void AMyAIController::SetEnemy(FName EnemyName)
@@ -77,7 +85,14 @@ void AMyAIController::BeginPlay()
 
 void AMyAIController::OnPossess(APawn* pPawn)
 {
+	Super::OnPossess(pPawn);
 
+	UBlackboardComponent* BlackboardComp = Blackboard;
+	if (UseBlackboard(BBAsset, BlackboardComp))
+	{
+		if (!RunBehaviorTree(BTAsset))
+			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
+	}
 }
 
 void AMyAIController::Tick(float DeltaSeconds)

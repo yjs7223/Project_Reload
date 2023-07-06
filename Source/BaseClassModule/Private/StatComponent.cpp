@@ -66,3 +66,7 @@ void UStatComponent::Attacked(float p_damage)
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(curHP));
 }
 
+void UStatComponent::Attacked(float p_damage, FHitResult result)
+{
+}
+

@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "Perception/AISightTargetInterface.h"
 #include "PlayerCharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PLAYERMODULE_API APlayerCharacter : public ABaseCharacter
+class PLAYERMODULE_API APlayerCharacter : public ABaseCharacter, public IAISightTargetInterface
 {
 	GENERATED_BODY()
 public:
@@ -24,6 +25,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual bool CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor = nullptr, const bool* bWasVisible = nullptr, int32* UserData = nullptr) const;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
