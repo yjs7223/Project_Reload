@@ -8,12 +8,15 @@
 #include "AIPatrolComponent.h"
 #include "ST_Range.h"
 #include "ST_Suppression.h"
+#include "Animation/AnimInstance.h"
+
 
 AAICharacter::AAICharacter()
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
-	//AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
+	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
+	
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())
@@ -84,4 +87,11 @@ void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 	{
 		
 	}
+}
+
+void AAICharacter::IdleAnim()
+{
+	// 대기부분 아직 만드는중 (애니메이션 받으면 할듯)
+	//PlayAnimMontage(idle_Montage, 1.0f);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
