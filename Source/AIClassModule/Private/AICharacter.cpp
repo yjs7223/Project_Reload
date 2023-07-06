@@ -7,6 +7,7 @@
 #include "AICharacterMoveComponent.h"
 #include "AIPatrolComponent.h"
 #include "ST_Range.h"
+#include "ST_Suppression.h"
 
 AAICharacter::AAICharacter()
 {
@@ -31,11 +32,19 @@ AAICharacter::AAICharacter()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Suppression.DT_Suppression'"));
+	if (DT_SuppressionDataObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
+		DT_Suppression = DT_SuppressionDataObject.Object;
+	}
 	SetDataTable("Rifle_E");
 
 	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
-	CollisionMesh->SetCapsuleRadius(HitRadius);
-	CollisionMesh->SetCapsuleHalfHeight(HitHeight);
+	CollisionMesh->SetCapsuleRadius(sup_HitRadius);
+	CollisionMesh->SetCapsuleHalfHeight(sup_HitHeight);
+
+	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAICharacter::OnOverlapBegin);
 }
 
 void AAICharacter::BeginPlay()
@@ -55,8 +64,24 @@ void AAICharacter::SetDataTable(FName EnemyName)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
 
-		HitRadius = RangeData->Sup_HitRadius;
-		HitHeight = RangeData->Sup_HitHeight;
+		sup_HitRadius = RangeData->Sup_HitRadius;
+		sup_HitHeight = RangeData->Sup_HitHeight;
+	}
+	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
+	if (SuppressionData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+
+		sup_DecInput = SuppressionData->Sup_DecInput;
+		sup_AimPoint = SuppressionData->Sup_AimPoint;
+		sup_AimDelay = SuppressionData->Sup_AimDelay;
+	}
+}
+
+void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Bullet"))
+	{
 		
 	}
 }
