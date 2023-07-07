@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class AICLASSMODULE_API UAIStatComponent : public UStatComponent
 {
 	GENERATED_BODY()
@@ -24,5 +24,12 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable)
+	void Attacked1(float p_damage, FHitResult result) override;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		AActor* IndirectCollision;
+
 
 };
