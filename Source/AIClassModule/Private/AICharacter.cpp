@@ -7,7 +7,7 @@
 #include "AICharacterMoveComponent.h"
 #include "AIPatrolComponent.h"
 #include "ST_Range.h"
-#include "ST_Suppression.h"
+
 
 AAICharacter::AAICharacter()
 {
@@ -32,15 +32,10 @@ AAICharacter::AAICharacter()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Suppression.DT_Suppression'"));
-	if (DT_SuppressionDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
+	
 	SetDataTable("Rifle_E");
 
-	CollisionMesh = CreateAbstractDefaultSubobject<UCapsuleComponent>(FName("CapSule")); //CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
+	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule")); //CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
 	CollisionMesh->SetupAttachment(RootComponent);
 	//RootComponent = CollisionMesh;
 
@@ -72,15 +67,7 @@ void AAICharacter::SetDataTable(FName EnemyName)
 		sup_HitRadius = RangeData->Sup_HitRadius;
 		sup_HitHeight = RangeData->Sup_HitHeight;
 	}
-	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
-	if (SuppressionData)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
-
-		sup_DecInput = SuppressionData->Sup_DecInput;
-		sup_AimPoint = SuppressionData->Sup_AimPoint;
-		sup_AimDelay = SuppressionData->Sup_AimDelay;
-	}
+	
 }
 
 void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

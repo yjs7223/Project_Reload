@@ -41,8 +41,7 @@ public:
 		float sup_AimDelay;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Range;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UDataTable* DT_Suppression;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

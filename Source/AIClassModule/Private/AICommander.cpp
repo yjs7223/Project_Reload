@@ -4,6 +4,7 @@
 
 #include "AICommander.h"
 #include "AICharacter.h"
+#include "AIStatComponent.h"
 #include "EncounterSpace.h"
 #include "SubEncounterSpace.h"
 #include "Kismet/GameplayStatics.h"
@@ -76,7 +77,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		List_RDivision.Add(AddIndex, subAi);
 		List_Combat.Add(AddIndex, ECombat::Patrol);
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
-		List_Suppression.Add(AddIndex, 0.0);
+		List_Suppression.Add(AddIndex, 0.0f);
 		AddIndex++;
 	}
 	MapList_Start = true;
@@ -92,7 +93,7 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AICOMMENDER"));
 			List_Location.Add(*FindActor, ai->GetActorLocation());
-			List_Suppression.Add(*FindActor, 0.0); 
+			List_Suppression.Add(*FindActor, Cast<AAICharacter>(actor)->FindComponentByClass<UAIStatComponent>()->sup_total);
 		}
 		else
 		{

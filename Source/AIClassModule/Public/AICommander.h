@@ -65,6 +65,9 @@ public:
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool MapList_Start;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		AActor* actor;
+	
 
 
 public:
@@ -76,5 +79,6 @@ public:
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void ListTickSet(ASubEncounterSpace* sub);
+
 };
 
