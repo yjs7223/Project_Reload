@@ -27,7 +27,8 @@ public:
 	void PlayCover();
 	void SettingMoveVector(FVector& vector);
 	void AimSetting(float DeltaTime);
-	bool RotateSet(float DeltaTime);
+	void RotateSet(float DeltaTime);
+	void TestFN(float DeltaTime);
 
 	bool IsCover();
 	bool IsTurnWait();
@@ -54,12 +55,13 @@ protected:
 	void StartPeeking();
 	void StopPeeking();
 private:
-	static const ECollisionChannel traceChanel = ECC_Visibility;
+	static const ECollisionChannel traceChanel = ECC_GameTraceChannel1;
 
 private:
 	class UCharacterMovementComponent* m_Movement;
 	struct FInputData* m_Inputdata;
 	class UWeaponComponent* m_Weapon;
+	class UCapsuleComponent* capsule;
 	enum class ECoverShootingState mCoverShootingState;
 	enum class EPeekingState mPeekingState;
 	bool m_IsCover;
@@ -69,4 +71,6 @@ private:
 	float m_TurnTime;
 	FVector m_Turnlookpoint;
 	class ACharacter* owner;
+
+	bool m_IsWillPosSetting;
 };
