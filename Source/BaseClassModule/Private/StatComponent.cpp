@@ -68,11 +68,13 @@ void UStatComponent::Attacked(float p_damage)
 
 void UStatComponent::Attacked(float p_damage, FHitResult result)
 {
+
 	curHP -= p_damage;
 	isAttacked = true;
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
 	}
+
 }
 
