@@ -21,6 +21,7 @@
 #include "StatComponent.h"
 #include "PlayerWeaponData.h"
 #include "MatineeCameraShake.h"
+#include "Field/FieldSystemActor.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -52,7 +53,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		shotFXNiagara = fx1.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx2(TEXT("NiagaraSystem'/Game/yjs/NS_BulletHit.NS_BulletHit'"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx2(TEXT("NiagaraSystem'/Game/Effect/Hit_Effect/Fx_Bullet_Wall_Impact.Fx_Bullet_Wall_Impact'"));
 	if (fx2.Succeeded())
 	{
 		hitFXNiagara = fx2.Object;
@@ -83,7 +84,11 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		shotsound.Add(sound4.Object);
 	}
-
+	static ConstructorHelpers::FObjectFinder<UBlueprint> fActor(TEXT("Blueprint'/Game/Effect/Destruction/Bomb_Bp.Bomb_Bp'"));
+	if (fActor.Succeeded())
+	{
+		fieldActor = fActor.Object;
+	}
 
 }
 
@@ -125,7 +130,7 @@ void UPlayerWeaponComponent::InitData()
 		m_firecount = 0;
 		m_dValue = 0.f;
 		recoilTime = 0.0f;
-		m_spreadPower = 5.0f;
+		m_spreadPower = data->spread_Power;
 		yawRange = FVector2D(data->min_Horizontal_Recoil, data->max_Horizontal_Recoil);
 		pitchRange = FVector2D(data->min_vertical_Recoil, data->max_vertical_Recoil);
 		m_firerate = data->fire_Rate;
@@ -150,16 +155,24 @@ void UPlayerWeaponComponent::Fire()
 	{
 		curAmmo--;
 	}
-	PlayCameraShake(1.5f);
+	PlayCameraShake(1.0f);
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
-
-	float spread = m_firecount * m_spreadPower;
-	start.X += FMath::RandRange(-spread, spread);
-	start.Y += FMath::RandRange(-spread, spread);
-
+	float spread = 0;
+	if (isAiming)
+	{
+		spread = m_firecount * m_spreadPower * 0.5;
+	}
+	else
+	{
+		spread = m_firecount * m_spreadPower;
+	}
+	//start.X += FMath::RandRange(-spread, spread);
+	//start.Y += FMath::RandRange(-spread, spread);
+	cameraRotation.Yaw += FMath::RandRange(-spread, spread);
+	cameraRotation.Pitch += FMath::RandRange(-spread, spread);
 	end = start + (cameraRotation.Vector() * 99999);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
 	m_result = FHitResult();
@@ -236,14 +249,14 @@ void UPlayerWeaponComponent::Fire()
 				if (m_result.BoneName == "head")
 				{
 					d = FMath::RandRange(H_damage.X, H_damage.Y);
-					s->Attacked(d);
+					s->Attacked(d, m_result);
 					headhit = true;
 					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, headhitFXNiagara, m_result.Location);
 				}
 				else
 				{
 					d = FMath::RandRange(damage.X, damage.Y);
-					s->Attacked(d);
+					s->Attacked(d, m_result);
 					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
 				}
 				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(d));
@@ -252,6 +265,10 @@ void UPlayerWeaponComponent::Fire()
 		else
 		{
 			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+			FActorSpawnParameters spawnparam;
+			spawnparam.Owner = owner;
+			TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
+			GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);
 		}
 	}
 	else
@@ -264,9 +281,9 @@ void UPlayerWeaponComponent::Fire()
 	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", m_result.Location);
 	PlayRandomShotSound();
 
-	if(m_firecount <= 10)
+	if(m_firecount < 10)
 	{
-		m_firecount += 1.0f;
+		m_firecount += 1;
 	}
 	StartRecoil();
 }
@@ -274,10 +291,16 @@ void UPlayerWeaponComponent::Fire()
 void UPlayerWeaponComponent::StartAiming()
 {
 	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 90.0f;
+	FVector start;
+	FRotator cameraRotation;
+	FVector end;
+	isAiming = true;
+	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 }
 
 void UPlayerWeaponComponent::StopAiming()
 {
+	isAiming = false;
 	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 120.0f;
 }
 
@@ -298,7 +321,7 @@ void UPlayerWeaponComponent::StopFire()
 	owner->GetWorldTimerManager().ClearTimer(fHandle);
 	owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 	isFire = false;
-	m_firecount = 0;
+	//m_firecount = 0;
 }
 
 void UPlayerWeaponComponent::StartReload()
@@ -368,7 +391,7 @@ void UPlayerWeaponComponent::RecoilTick(float p_deltatime)
 		recoilTime += p_deltatime * 0.3f;
 		float alpha = easeOutExpo(recoilTime, 0, 1.0f, 1.0f)/m_firerate;
 		TickCount += 1;
-
+		recoilAlpha = alpha;
 		float y = FMath::Lerp(0.0f, yawRecoilValue, alpha)/ TickCount;
 		float p = FMath::Lerp(0.0f, pitchRecoilValue, alpha)/ TickCount;
 		owner->AddControllerYawInput(y);
@@ -380,6 +403,7 @@ void UPlayerWeaponComponent::RecoilTick(float p_deltatime)
 			StopRecoil();
 			recoilTime = 0;
 			TickCount = 1;
+			recoilAlpha = 0;
 		}
 
 	}
