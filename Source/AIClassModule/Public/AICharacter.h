@@ -30,11 +30,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UCapsuleComponent* CollisionMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float HitRadius;
+		float sup_HitRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float HitHeight;
+		float sup_HitHeight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_DecInput;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_AimPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_AimDelay;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Range;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -53,4 +60,6 @@ public:
 public:
 	UFUNCTION()
 		void SetDataTable(FName EnemyName);
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

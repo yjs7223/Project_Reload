@@ -20,6 +20,7 @@
 #include "PlayerInputComponent.h"
 #include "StatComponent.h"
 #include "PlayerWeaponData.h"
+#include "MatineeCameraShake.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -82,6 +83,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		shotsound.Add(sound4.Object);
 	}
+
 
 }
 
@@ -148,7 +150,7 @@ void UPlayerWeaponComponent::Fire()
 	{
 		curAmmo--;
 	}
-
+	PlayCameraShake(1.5f);
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
@@ -234,14 +236,14 @@ void UPlayerWeaponComponent::Fire()
 				if (m_result.BoneName == "head")
 				{
 					d = FMath::RandRange(H_damage.X, H_damage.Y);
-					s->Attacked(d);
+					s->Attacked(d,m_result);
 					headhit = true;
 					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, headhitFXNiagara, m_result.Location);
 				}
 				else
 				{
 					d = FMath::RandRange(damage.X, damage.Y);
-					s->Attacked(d);
+					s->Attacked(d, m_result);
 					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
 				}
 				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(d));
@@ -260,7 +262,7 @@ void UPlayerWeaponComponent::Fire()
 	start = WeaponMesh->GetSocketLocation(TEXT("BulletTracerStart"));
 	GameStatic->SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
 	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", m_result.Location);
-	PlayRandomShotSound();
+	//PlayRandomShotSound();
 
 	if(m_firecount <= 10)
 	{
@@ -464,7 +466,15 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 void UPlayerWeaponComponent::PlayRandomShotSound()
 {
 	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
+	//UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
+}
+
+void UPlayerWeaponComponent::PlayCameraShake(float scale)
+{
+	if (fireShake != nullptr)
+	{
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(fireShake, scale);
+	}
 }
 
 

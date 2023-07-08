@@ -8,6 +8,7 @@
 #include "AIPatrolComponent.h"
 #include "ST_Range.h"
 
+
 AAICharacter::AAICharacter()
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
@@ -31,11 +32,19 @@ AAICharacter::AAICharacter()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
+	
 	SetDataTable("Rifle_E");
 
-	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
-	CollisionMesh->SetCapsuleRadius(HitRadius);
-	CollisionMesh->SetCapsuleHalfHeight(HitHeight);
+	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule")); //CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
+	CollisionMesh->SetupAttachment(RootComponent);
+	//RootComponent = CollisionMesh;
+
+	CollisionMesh->SetCapsuleRadius(sup_HitRadius);
+	CollisionMesh->SetCapsuleHalfHeight(sup_HitHeight);
+	//CollisionMesh->SetRelativeLocation(FVector(0, 0, 0));
+	
+	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAICharacter::OnOverlapBegin);
+
 }
 
 void AAICharacter::BeginPlay()
@@ -55,8 +64,13 @@ void AAICharacter::SetDataTable(FName EnemyName)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
 
-		HitRadius = RangeData->Sup_HitRadius;
-		HitHeight = RangeData->Sup_HitHeight;
-		
+		sup_HitRadius = RangeData->Sup_HitRadius;
+		sup_HitHeight = RangeData->Sup_HitHeight;
 	}
+	
+}
+
+void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	
 }
