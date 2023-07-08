@@ -51,4 +51,7 @@ public:
 		float min_vertical_Recoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float fire_Rate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float spread_Power;
 };

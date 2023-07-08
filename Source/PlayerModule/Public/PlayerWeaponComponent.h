@@ -112,6 +112,8 @@ public:
 		FVector2D yawRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector2D pitchRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float recoilAlpha;
 
 	float TickCount;
 	float reloadCount;
@@ -154,4 +156,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UMatineeCameraShake> fireShake;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TObjectPtr<UBlueprint> fieldActor;
 };
