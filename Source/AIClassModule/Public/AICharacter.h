@@ -65,6 +65,8 @@ public:
 		class UAIWeaponComponent* AIWeapon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAIPatrolComponent* AIPatrol;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAISensingComponent* AISensing;
 
 	// 몽타주
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

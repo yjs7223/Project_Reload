@@ -9,6 +9,8 @@
 #include "ST_Range.h"
 #include "ST_Suppression.h"
 #include "Animation/AnimInstance.h"
+#include "Math/UnrealMathUtility.h"
+#include "AISensingComponent.h"
 
 
 AAICharacter::AAICharacter()
@@ -16,6 +18,7 @@ AAICharacter::AAICharacter()
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
+	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
 	
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
@@ -95,3 +98,4 @@ void AAICharacter::IdleAnim()
 	//PlayAnimMontage(idle_Montage, 1.0f);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
+

@@ -88,7 +88,18 @@ void UAIWeaponComponent::ShotAI()
 	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * shot_MaxRange);
 	FVector end2 = (rot + FRotator(x, y, 0)).Vector() * recoil_Range;
 	FCollisionQueryParams traceParams;
+
+	// 조준 방향 체크
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
+	{
+		// AI가 앞을 막고 있을 때 사격 불가능
+		if (m_result.GetActor()->ActorHasTag("Enemy"))
+		{
+			return;
+		}
+	}
 	
+	// 사격 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end2, ECC_Visibility, traceParams))
 	{
 		if (m_result.GetActor()->ActorHasTag("Player"))
@@ -135,7 +146,6 @@ void UAIWeaponComponent::ShotAI()
 	// 총 공격수만큼 사격했다면 사격 상태 해제
 	if (cur_Shot_Count <= 0)
 	{
-		cur_Shot_Count = shot_MaxCount;
 		shot_State = false;
 		recoil_Radius = recoilMax_Radius;
 	}
@@ -168,4 +178,9 @@ void UAIWeaponComponent::ShotAIStop()
 	shot_State = false;
 	cur_Shot_Count = shot_MaxCount;
 	recoil_Radius = recoilMax_Radius;
+}
+
+void UAIWeaponComponent::ReloadAI()
+{
+	cur_Shot_Count = shot_MaxCount;
 }
