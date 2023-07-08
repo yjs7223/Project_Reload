@@ -9,18 +9,23 @@
 #include "AIPatrolComponent.generated.h"
 
 
+UENUM(BlueprintType)
+enum class Patrol_Type : uint8
+{
+	STAY, RETURN, CYCLE
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AICLASSMODULE_API UAIPatrolComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UAIPatrolComponent();
 
-	// 순찰 상태
+	// 타입
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
-		bool patrol_State;
+		Patrol_Type patrol_Type;
 
 	// 액터
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
@@ -30,12 +35,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		AAICharacter* owner;
 
-	// 순찰 지점
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
-		TArray<FVector> patrol_Point;
-	// 현재 순찰 번호
+	// 최대 순찰 번호
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		int patrol_Num;
+
+	// 현재 순찰 번호
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
+		int cur_patrol_Num;
+
 	// 순찰 방향 ( true : 정방향, false : 역방향)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		bool patrol_Dir;
@@ -56,10 +63,7 @@ public:
 	// 목표로 이동
 	void PatrolMove(const FVector Destination);
 
-	// 순찰 활/비활성화
+	// 순찰 번호 넘기기
 	UFUNCTION(BlueprintCallable, Category = "Patrol")
-		void PatrolEnable(bool p_flag);
-
-	// 순찰 돌기
-	void PatrolControl();
+	void SetNextPatrolNum();
 };
