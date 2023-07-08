@@ -7,13 +7,19 @@
 #include "AICharacterMoveComponent.h"
 #include "AIPatrolComponent.h"
 #include "ST_Range.h"
+#include "ST_Suppression.h"
+#include "Animation/AnimInstance.h"
+#include "Math/UnrealMathUtility.h"
+#include "AISensingComponent.h"
 
 
 AAICharacter::AAICharacter()
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
-	//AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
+	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
+	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
+	
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())
@@ -74,3 +80,11 @@ void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 {
 	
 }
+
+void AAICharacter::IdleAnim()
+{
+	// ���κ� ���� ������� (�ִϸ��̼� ������ �ҵ�)
+	//PlayAnimMontage(idle_Montage, 1.0f);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
+}
+

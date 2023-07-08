@@ -111,4 +111,8 @@ public:
 	// AI Shot Stop
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ShotAIStop();
+
+	// AI Reload
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		void ReloadAI();
 };
