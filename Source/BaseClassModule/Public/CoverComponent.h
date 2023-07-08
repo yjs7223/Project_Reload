@@ -55,12 +55,13 @@ protected:
 	void StartPeeking();
 	void StopPeeking();
 private:
-	static const ECollisionChannel traceChanel = ECC_Visibility;
+	static const ECollisionChannel traceChanel = ECC_GameTraceChannel1;
 
 private:
 	class UCharacterMovementComponent* m_Movement;
 	struct FInputData* m_Inputdata;
 	class UWeaponComponent* m_Weapon;
+	class UCapsuleComponent* capsule;
 	enum class ECoverShootingState mCoverShootingState;
 	enum class EPeekingState mPeekingState;
 	bool m_IsCover;
