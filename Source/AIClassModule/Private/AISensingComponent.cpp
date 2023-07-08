@@ -4,6 +4,11 @@
 #include "AISensingComponent.h"
 #include "Engine/DataTable.h"
 #include "ST_Range.h"
+#include "DrawDebugHelpers.h"
+#include "Math/UnrealMathUtility.h"
+#include "Math/Vector.h"
+#include "Math/UnrealMathUtility.h"
+#include "GameFramework/Character.h"
 
 UAISensingComponent::UAISensingComponent()
 {
@@ -37,31 +42,53 @@ void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 }
 
 
-float UAISensingComponent::CalculateSectorArea(float centralAngle, float radius)
+void UAISensingComponent::DrawCircleSector(float Radius, float StartAngle, float EndAngle, int32 NumSegments)
 {
-	float thetaRadians = centralAngle * PI / 180.0f;
-	float area = (thetaRadians / (2 * PI)) * PI * radius * radius;
+	const FVector CharacterLocation = GetOwner()->GetActorLocation();
+	const FVector CharacterForward = GetOwner()->GetActorForwardVector();
+	const FRotator CharacterRotation = CharacterForward.Rotation();
 
-	return area;
+	const float TwoPi = 2 * PI;
+	const float AngleIncrement = (EndAngle - StartAngle) / NumSegments;
+	const float SegmentLength = TwoPi * Radius * (AngleIncrement / 360.0f);
+
+	const FVector StartOffset = FVector(Radius, 0.0f, 0.0f);
+
+	for (int32 i = 0; i < NumSegments; ++i)
+	{
+		const float Angle = StartAngle + (i * AngleIncrement);
+		const FVector Start = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(Angle, FVector::UpVector));
+		const FVector End = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(Angle + AngleIncrement, FVector::UpVector));
+
+		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, -1.0f, 0, 1.0f);
+	}
 }
 
-bool UAISensingComponent::ShotSenseRange()
+
+bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanAngle, FVector FanDirection)
 {
-	// 제일 짧은 후면 감지부터 체크
-	if (CalculateSectorArea(curAIRangeData->AimBwd_Angle, curAIRangeData->AimBwd_Radius))
-	{
-		return true;
-	}
-	// 측면
-	else if (CalculateSectorArea(curAIRangeData->AimSide_Angle, curAIRangeData->AimSide_Radius))
-	{
-		return true;
-	}
-	// 정면
-	else if (CalculateSectorArea(curAIRangeData->AimFwd_Angle, curAIRangeData->AimFwd_Radius))
+	FVector playerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	FVector centerLocation = GetOwner()->GetActorLocation();
+	FVector locationToPlayer = playerLocation - centerLocation;
+
+	float AngleToPlayer = FMath::Acos(FVector::DotProduct(FanDirection, locationToPlayer.GetSafeNormal()));
+
+	if (AngleToPlayer <= FMath::DegreesToRadians(FanAngle) / 2.0f && locationToPlayer.Size2D() <= LocationRadius)
 	{
 		return true;
 	}
 
 	return false;
+}
+
+// 아직 미완성
+bool UAISensingComponent::ShotSenseRange()
+{
+	// 가장 가까운 후면부터 검사
+	if (IsPlayerInsideFanArea(500, 120, FVector::UpVector))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+	}
+
+	return true;
 }
