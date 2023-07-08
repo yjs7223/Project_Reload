@@ -68,5 +68,6 @@ void UStatComponent::Attacked(float p_damage)
 
 void UStatComponent::Attacked(float p_damage, FHitResult result)
 {
+	return;
 }
 
