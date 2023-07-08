@@ -33,7 +33,7 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		if (Time >= sup_DelayTime)
 		{
-			SuppresionPoint();
+			//SuppresionPoint();
 			if (sup_total >= sup_MaxPoint)
 			{
 				sup_total = sup_MaxPoint;
@@ -45,30 +45,32 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	
 }
 
+void UAIStatComponent::Attacked(float p_damage)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
+	sup_Input = p_damage * sup_DecInput;
+}
+
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
-	if (result.GetActor()->ActorHasTag("Enemy"))
+	
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
+	curHP -= p_damage;
+	if (curHP < 0.0f)
 	{
-
-		if (result.GetActor()->FindComponentByClass<UCapsuleComponent>() == Cast<AAICharacter>(IndirectCollision)->CollisionMesh)
-		{
-			
-			if (result.GetActor()->FindComponentByClass<UCapsuleComponent>() == Cast<AAICharacter>(IndirectCollision)->GetRootComponent())
-			{
-				curHP -= p_damage;
-				if (curHP < 0.0f)
-				{
-					curHP = 0.0f;
-				}
-				sup_Input = p_damage;
-				PlayerAtt_ai = true;
-			}
-			else
-			{
-				sup_Input = p_damage * sup_DecInput;
-			}
-		}
+		curHP = 0.0f;
 	}
+	sup_Input = p_damage;
+	PlayerAtt_ai = true;
+
+	
+}
+
+void UAIStatComponent::Attacked(FHitResult result)
+{
+	
+		
+
 }
 
 void UAIStatComponent::SuppresionPoint()

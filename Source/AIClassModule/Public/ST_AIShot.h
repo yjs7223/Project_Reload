@@ -31,7 +31,8 @@ public:
 		float Recoil_Range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIShotDataBase)
 		int Shot_MaxCount;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIShotDataBase)
+		float Shot_Deviation;
 
 };
 

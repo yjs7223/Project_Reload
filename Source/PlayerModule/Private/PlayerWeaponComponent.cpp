@@ -284,7 +284,9 @@ void UPlayerWeaponComponent::Fire()
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
 			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
-			s->Attacked(m_result);
+			float d = 0;
+			d = FMath::RandRange(damage.X, damage.Y);
+			s->Attacked(d);
 		}
 	}
 
