@@ -19,7 +19,11 @@ void UAIPatrolComponent::BeginPlay()
 	Super::BeginPlay();
 
 	owner = Cast<AAICharacter>(GetOwner());
-	patrol_Num = patrol_Actor->patrol_Point.Num() - 1;
+	
+	if (patrol_Actor != nullptr)
+	{
+		patrol_Num = patrol_Actor->patrol_Point.Num() - 1;
+	}
 }
 
 void UAIPatrolComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -34,37 +38,40 @@ void UAIPatrolComponent::PatrolMove(const FVector Destination)
 
 void UAIPatrolComponent::SetNextPatrolNum()
 {
-	// ¹æÇâ Ã¼Å© ÈÄ Á¤/¿ª¹æÇâ ÀÌµ¿
-	switch (patrol_Type)
+	if (patrol_Actor != nullptr)
 	{
-	case Patrol_Type::STAY:
-		// °¡¸¶´Ï
-		break;
-	case Patrol_Type::CYCLE:
-		cur_patrol_Num++;
-		// ³¡ ¹øÈ£±îÁö °¬À» °æ¿ì
-		if (cur_patrol_Num > patrol_Num)
+		// ï¿½ï¿½ï¿½ï¿½ Ã¼Å© ï¿½ï¿½ ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½
+		switch (patrol_Type)
 		{
-			cur_patrol_Num = 0;
-		}
-		break;
-	case Patrol_Type::RETURN:
-		if (patrol_Dir)
-		{
+		case Patrol_Type::STAY:
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			break;
+		case Patrol_Type::CYCLE:
 			cur_patrol_Num++;
-			// ³¡ ¹øÈ£±îÁö °¬À» °æ¿ì
-			if (cur_patrol_Num >= patrol_Num)
+			// ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+			if (cur_patrol_Num > patrol_Num)
 			{
-				patrol_Dir = !patrol_Dir;
+				cur_patrol_Num = 0;
 			}
-		}
-		else if (!patrol_Dir)
-		{
-			cur_patrol_Num--;
-			// Ã¹ ¹øÈ£·Î ´Ù½Ã ¿ÔÀ» °æ¿ì
-			if (cur_patrol_Num == 0)
+			break;
+		case Patrol_Type::RETURN:
+			if (patrol_Dir)
 			{
-				patrol_Dir = !patrol_Dir;
+				cur_patrol_Num++;
+				// ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+				if (cur_patrol_Num >= patrol_Num)
+				{
+					patrol_Dir = !patrol_Dir;
+				}
+			}
+			else if (!patrol_Dir)
+			{
+				cur_patrol_Num--;
+				// Ã¹ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+				if (cur_patrol_Num == 0)
+				{
+					patrol_Dir = !patrol_Dir;
+				}
 			}
 		}
 	}
