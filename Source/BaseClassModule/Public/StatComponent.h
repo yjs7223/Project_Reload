@@ -37,10 +37,8 @@ public:
 		void RecoverHP(float p_HP);
 
 	//Damage process
-		void Attacked(float p_damage);
-
-
-		virtual void Attacked1(float p_damage, FHitResult result);
+	virtual void Attacked(float p_damage);
+	virtual void Attacked(float p_damage, FHitResult result);
 public:
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)

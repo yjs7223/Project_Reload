@@ -45,7 +45,7 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	
 }
 
-void UAIStatComponent::Attacked1(float p_damage, FHitResult result)
+void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	if (result.GetActor()->ActorHasTag("Enemy"))
 	{

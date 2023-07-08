@@ -236,14 +236,14 @@ void UPlayerWeaponComponent::Fire()
 				if (m_result.BoneName == "head")
 				{
 					d = FMath::RandRange(H_damage.X, H_damage.Y);
-					s->Attacked1(d,m_result);
+					s->Attacked(d,m_result);
 					headhit = true;
 					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, headhitFXNiagara, m_result.Location);
 				}
 				else
 				{
 					d = FMath::RandRange(damage.X, damage.Y);
-					s->Attacked1(d, m_result);
+					s->Attacked(d, m_result);
 					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
 				}
 				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(d));

@@ -26,7 +26,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-		void Attacked1(float p_damage, FHitResult result) override;
+		void Attacked(float p_damage, FHitResult result) override;
 	UFUNCTION(BlueprintCallable)
 		void SuppresionPoint();
 	UFUNCTION()
