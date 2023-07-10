@@ -14,6 +14,8 @@ class AICLASSMODULE_API UAISensingComponent : public UActorComponent
 public:	
 	UAISensingComponent();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool sensing;
 protected:
 	virtual void BeginPlay() override;
 
@@ -24,10 +26,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* AIRangeData;
 	// 현재 데이터 테이블
-	struct FST_Range* curAIRangeData;
+		struct FST_Range* curAIRangeData;
 
-	// 원의 부채꼴 계산기
-	float CalculateSectorArea(float centralAngle, float radius);
+	// 원의 부채꼴 디버그 그리기
+	UFUNCTION(BlueprintCallable, Category = "Sense")
+		void DrawCircleSector(float Radius, float Angle, int32 NumSegments);
+
+	bool IsPlayerInsideFanArea(float LocationRadius, float FanAngle, FVector FanDirection);
 
 	// 사격 센서
 	UFUNCTION(BlueprintCallable, Category = "Sense")
