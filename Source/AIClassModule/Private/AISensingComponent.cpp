@@ -31,7 +31,7 @@ void UAISensingComponent::BeginPlay()
 	Super::BeginPlay();
 
 	
-}
+}	
 
 
 // Called every frame
@@ -42,23 +42,23 @@ void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 }
 
 
-void UAISensingComponent::DrawCircleSector(float Radius, float StartAngle, float EndAngle, int32 NumSegments)
+void UAISensingComponent::DrawCircleSector(float Radius, float Angle, int32 NumSegments)
 {
 	const FVector CharacterLocation = GetOwner()->GetActorLocation();
 	const FVector CharacterForward = GetOwner()->GetActorForwardVector();
 	const FRotator CharacterRotation = CharacterForward.Rotation();
 
 	const float TwoPi = 2 * PI;
-	const float AngleIncrement = (EndAngle - StartAngle) / NumSegments;
+	const float AngleIncrement = -Angle / NumSegments;
 	const float SegmentLength = TwoPi * Radius * (AngleIncrement / 360.0f);
 
 	const FVector StartOffset = FVector(Radius, 0.0f, 0.0f);
 
 	for (int32 i = 0; i < NumSegments; ++i)
 	{
-		const float Angle = StartAngle + (i * AngleIncrement);
-		const FVector Start = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(Angle, FVector::UpVector));
-		const FVector End = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(Angle + AngleIncrement, FVector::UpVector));
+		const float tempAngle = (Angle * 0.5) + (i * AngleIncrement);
+		const FVector Start = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(tempAngle, FVector::UpVector));
+		const FVector End = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(tempAngle + AngleIncrement, FVector::UpVector));
 
 		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, -1.0f, 0, 1.0f);
 	}
@@ -84,8 +84,25 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 // 아직 미완성
 bool UAISensingComponent::ShotSenseRange()
 {
+	// 후면
+	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
+	// 옆면
+	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
+	// 정면
+	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
+
 	// 가장 가까운 후면부터 검사
-	if (IsPlayerInsideFanArea(500, 120, FVector::UpVector))
+	if (IsPlayerInsideFanArea(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, GetOwner()->GetActorForwardVector()))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+	}
+	// 다음 옆면 검사
+	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+	}
+	// 마지막 정면 검사
+	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 	}
