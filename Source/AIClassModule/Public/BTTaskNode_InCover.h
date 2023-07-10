@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class AICLASSMODULE_API UBTTaskNode_InCover : public UBTTaskNode
 {
 	GENERATED_BODY()
@@ -23,6 +23,6 @@ public:
 	UBTTaskNode_InCover();
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
+	
 	
 };

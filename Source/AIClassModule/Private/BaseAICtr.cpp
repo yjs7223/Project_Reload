@@ -12,6 +12,10 @@
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
+
+const FName ABaseAICtr::Key_Cover(TEXT("Key_Cover"));
+const FName ABaseAICtr::Key_CoverLocation(TEXT("Key_CoverLocation"));
+
 ABaseAICtr::ABaseAICtr()
 {
 	PrimaryActorTick.bCanEverTick = true;
