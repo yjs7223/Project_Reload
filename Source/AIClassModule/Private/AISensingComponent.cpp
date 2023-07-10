@@ -95,17 +95,25 @@ bool UAISensingComponent::ShotSenseRange()
 	if (IsPlayerInsideFanArea(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		sensing = true;
 	}
 	// 다음 옆면 검사
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		sensing = true;
 	}
 	// 마지막 정면 검사
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		sensing = true;
 	}
+	else
+	{
+		sensing = false;
+	}
+
 
 	return true;
 }
