@@ -10,6 +10,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
 #include "ST_Suppression.h"
+#include "BehaviorTree/BlackboardComponent.h"
+
+
+
 // Sets default values
 AAICommander::AAICommander()
 {
