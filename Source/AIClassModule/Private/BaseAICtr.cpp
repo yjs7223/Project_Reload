@@ -5,6 +5,10 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 
+
+const FName ABaseAICtr::Key_Cover(TEXT("Key_Cover"));
+const FName ABaseAICtr::Key_CoverLocation(TEXT("Key_CoverLocation"));
+
 ABaseAICtr::ABaseAICtr()
 {
 	PrimaryActorTick.bCanEverTick = true;
