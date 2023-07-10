@@ -32,7 +32,6 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		shotFXNiagara = ShotFXNiagara.Object;
 	}
-	
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -41,12 +40,25 @@ void UAIWeaponComponent::BeginPlay()
 	owner = GetOwner<AAICharacter>();
 
 	// 라이플 데이터 가져오기
-	curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle", TEXT(""));
+	curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
 
 	// 가져온 데이터 삽입
 	recoil_Range = curAIShotData->Recoil_Range;
-	recoilMax_Radius = (*curAIShotData).RecoilMax_Radius;
-	recoilMin_Radius = (*curAIShotData).RecoilMin_Radius;
+	recoilMax_Radius = curAIShotData->RecoilMax_Radius;
+	recoilMin_Radius = curAIShotData->RecoilMin_Radius;
+
+	shot_MaxRange = curAIShotData->Shot_MaxRange;
+	shot_MinRange = curAIShotData->Shot_MinRange;
+
+	shot_MaxDmg = curAIShotData->Shot_MaxDmg;
+	shot_MinDmg = curAIShotData->Shot_MinDmg;
+
+	shot_MaxCount = curAIShotData->Shot_MaxCount;
+
+	shot_Delay = curAIShotData->Shot_ShootDelay;
+
+	// 현재 반동은 최대로 시작
+	recoil_Radius = recoilMax_Radius;
 }
 
 
@@ -55,6 +67,7 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	ShotAITimer(DeltaTime);
 	// ...
 }
 
@@ -72,11 +85,22 @@ void UAIWeaponComponent::ShotAI()
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * 5000);
+	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * shot_MaxRange);
 	FVector end2 = (rot + FRotator(x, y, 0)).Vector() * recoil_Range;
 	FCollisionQueryParams traceParams;
-	
+
+	// 조준 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
+	{
+		// AI가 앞을 막고 있을 때 사격 불가능
+		if (m_result.GetActor()->ActorHasTag("Enemy"))
+		{
+			return;
+		}
+	}
+	
+	// 사격 방향 체크
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end2, ECC_Visibility, traceParams))
 	{
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
@@ -87,22 +111,24 @@ void UAIWeaponComponent::ShotAI()
 			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 			if (temp) {
 				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
-				temp->Attacked(shotDamage);
-			}
-			else
-			{
-				if (recoil_Radius >= recoilMin_Radius)
-				{
-					recoil_Radius -= recoilMax_Radius - recoilMin_Radius / shot_MaxCount;
-
-					shot_MaxCount++;
-				}
-			}
-
+				temp->Attacked(((shot_MaxDmg - shot_MinDmg) / 100)* (shot_MaxRange - shot_MinRange));
+			}	
 		}
-
-		shot = true;
 	}
+
+	// 점점 반동이 줄어듦
+	if (recoil_Radius > recoilMin_Radius)
+	{
+		recoil_Radius = recoilMax_Radius - recoilMin_Radius / cur_Shot_Count;
+	}
+	else
+	{
+		// 최소로 고정
+		recoil_Radius = recoilMin_Radius;
+	}
+
+	// 총알 감소
+	cur_Shot_Count--;
 
 	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 
@@ -116,4 +142,45 @@ void UAIWeaponComponent::ShotAI()
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
+
+	// 총 공격수만큼 사격했다면 사격 상태 해제
+	if (cur_Shot_Count <= 0)
+	{
+		shot_State = false;
+		recoil_Radius = recoilMax_Radius;
+	}
+}
+
+void UAIWeaponComponent::ShotAITimer(float p_Time)
+{
+	// 사격 상태가 아니라면 취소
+	if (!shot_State)
+	{
+		return;
+	}
+
+
+	cur_Shot_Delay += p_Time;
+	if (cur_Shot_Delay >= shot_Delay)
+	{
+		ShotAI();
+		cur_Shot_Delay = 0;
+	}
+}
+
+void UAIWeaponComponent::ShotAIStart()
+{
+	shot_State = true;
+}
+
+void UAIWeaponComponent::ShotAIStop()
+{
+	shot_State = false;
+	cur_Shot_Count = shot_MaxCount;
+	recoil_Radius = recoilMax_Radius;
+}
+
+void UAIWeaponComponent::ReloadAI()
+{
+	cur_Shot_Count = shot_MaxCount;
 }

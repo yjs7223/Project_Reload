@@ -16,13 +16,13 @@ enum class ECombat : uint8
 	Attack 	UMETA(DisplayName = "Attack"),
 	InCover 	UMETA(DisplayName = "InCover")
 };
-UENUM(BlueprintType)
-enum class EState : uint8
-{
-	Start 	UMETA(DisplayName = "Start"),
-	Play 	UMETA(DisplayName = "Play"),
-	End 	UMETA(DisplayName = "End")
-};
+//UENUM(BlueprintType)
+//enum class EState : uint8
+//{
+//	Start 	UMETA(DisplayName = "Start"),
+//	Play 	UMETA(DisplayName = "Play"),
+//	End 	UMETA(DisplayName = "End")
+//};
 
 UCLASS()
 class AICLASSMODULE_API AAICommander : public AAIController
@@ -55,23 +55,43 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, FVector> List_ChkLocation; //��ǥ �����̼��� �۾� ��
+		TMap<int, FVector> List_ChkLocation; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<AActor*> arrOutActors;
+		TArray<AActor*> EncounterArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> AILocation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool En_Start;//��ī���� ������ ��������
+		bool MapList_Start;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		EState state;
+		AActor* actor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AEncounterSpace* encounter;
+		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class ASubEncounterSpace* suben;
+		float s_time;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_sharerange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_sharetime;
 
 
 public:
+	UFUNCTION()
+		void ListSet();
+	UFUNCTION()
+		void ListReset(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListStartSet(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListTickSet(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void SuppressionShare();
+	UFUNCTION()
+		void SetDataTable(FName EnemyName);
+
 };
 

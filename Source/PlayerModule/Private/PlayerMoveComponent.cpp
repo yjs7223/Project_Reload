@@ -7,6 +7,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CoverComponent.h"
+#include "Pakurable.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -30,6 +31,11 @@ void UPlayerMoveComponent::BeginPlay()
 
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
+	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() > 0) {
+		m_PakurComp = pakurArr[0];
+	}
 
 	mCanMove = true;
 }
@@ -40,13 +46,16 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (!mCanMove) return;
+
+
+	if (m_PakurComp && IPakurable::Execute_IsRolling(m_PakurComp)) return;
 	Moving(DeltaTime);
 	Turning(DeltaTime);
 }
 
 void UPlayerMoveComponent::Turning(float DeltaTime)
 {
-	if (m_CoverComp && m_CoverComp->RotateSet()) {
+	if (m_CoverComp && m_CoverComp->IsCover()) {
 		
 		return;
 	}
@@ -65,17 +74,16 @@ void UPlayerMoveComponent::Turn()
 
 void UPlayerMoveComponent::Moving(float DeltaTime)
 {
-	FInputData* data = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
-	if (data->movevec == FVector::ZeroVector) {
+	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
-		data->IsRuning = false;
+		m_Inputdata->IsRuning = false;
 
 		return;
 	}
 
 	FVector MoveDirect;
 
-	MoveDirect = owner->Controller->GetControlRotation().RotateVector(data->movevec);
+	MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
 
 	if (m_CoverComp) {
 		m_CoverComp->SettingMoveVector(MoveDirect);
@@ -86,7 +94,7 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 
 	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
-	if (data->IsRuning) {
+	if (m_Inputdata->IsRuning) {
 		MoveDirect *= 2;
 		targetRotate = MoveDirect.Rotation();
 

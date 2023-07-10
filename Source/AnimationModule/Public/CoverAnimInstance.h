@@ -26,6 +26,8 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+		class UBaseInputComponent* m_Input;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UCoverComponent* mCover;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UWeaponComponent* mWeapon;

@@ -26,6 +26,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void InitData();
 
 	UFUNCTION(BlueprintCallable)
 		void Fire() override;
@@ -39,6 +40,8 @@ public:
 	void StopFire();
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
+	void StopReload();
+	void ReloadTick(float Deltatime);
 
 	void RecoilTick(float p_deltatime);
 
@@ -56,6 +59,10 @@ public:
 
 	void SpawnDecal(FHitResult result);
 
+	void PlayRandomShotSound();
+
+	void PlayCameraShake(float scale);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class APlayerCharacter* owner;
@@ -64,6 +71,15 @@ public:
 		class UDataTable* PlayerWeaponData;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstance* Decal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FHitResult m_result;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool headhit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool ammoinfinite;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_firerate;
@@ -96,9 +112,12 @@ public:
 		FVector2D yawRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector2D pitchRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float recoilAlpha;
 
-	float pp;
 	float TickCount;
+	float reloadCount;
+	int reloadvalue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bRecovery;
@@ -124,4 +143,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraSystem* shotFXNiagara;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraComponent* hitFXComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraSystem* hitFXNiagara;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraSystem* headhitFXNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundWave*> shotsound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UMatineeCameraShake> fireShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TObjectPtr<UBlueprint> fieldActor;
 };
