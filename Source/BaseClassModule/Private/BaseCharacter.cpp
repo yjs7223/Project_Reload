@@ -15,6 +15,7 @@ ABaseCharacter::ABaseCharacter()
 
 	PrimaryActorTick.bCanEverTick = true;
 
+	GetCapsuleComponent()->SetCapsuleRadius(44.0f);
 
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Cyber_Girl/Mesh/SK_Cyber_Girl.SK_Cyber_Girl'"));
 
