@@ -117,3 +117,13 @@ bool UAISensingComponent::ShotSenseRange()
 
 	return true;
 }
+
+bool UAISensingComponent::MinRangeCheck()
+{
+	if (GetOwner()->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) >= curAIRangeData->Target_MinRange)
+	{
+		return true;
+	}
+
+	return false;
+}
