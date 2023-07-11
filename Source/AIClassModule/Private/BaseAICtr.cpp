@@ -6,6 +6,7 @@
 #include "BaseCharacter.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -28,14 +29,17 @@ ABaseAICtr::ABaseAICtr()
 	}
 
 	SetEnemy("Rifle_E");
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBObject(TEXT("BlackboardData'/Game/_sjs/BB_BaseAI.BB_BaseAI'"));
-	if (BBObject.Succeeded())
-		BBAsset = BBObject.Object;
-
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackBoard'/Game/JHB/BB_BaseAI.BB_BaseAI'"));
+	if (BB_BaseAIObject.Succeeded())
+	{
+		BBAsset = BB_BaseAIObject.Object;
+	}
+	
 
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/_sjs/BT_BaseAI.BT_BaseAI'"));
 	if (BTObject.Succeeded())
 		BTAsset = BTObject.Object;
+
 }
 
 
@@ -61,7 +65,7 @@ void ABaseAICtr::OnPossess(APawn* pPawn)
 	Super::OnPossess(pPawn);
 
 	UBlackboardComponent* BlackboardComp = Blackboard;
-	if (UseBlackboard(BBAsset, BlackboardComp))
+	if (UseBlackboard(BBAsset, BlackboardComponent))
 	{
 		if (!RunBehaviorTree(BTAsset))
 			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
@@ -71,6 +75,11 @@ void ABaseAICtr::OnPossess(APawn* pPawn)
 void ABaseAICtr::Tick(float DeltaSeconds)
 {
 	m_character = Cast<ABaseCharacter>(GetPawn());
+	BlackboardComponent = Blackboard;
+	if (UseBlackboard(BBAsset, BlackboardComponent))
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(BlackboardComponent->GetValueAsFloat("AI_HP")));
+	}
 }
 
 FRotator ABaseAICtr::GetControlRotation() const

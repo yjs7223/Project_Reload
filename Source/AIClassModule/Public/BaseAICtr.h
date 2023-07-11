@@ -80,6 +80,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaesAICtr)
 		class UBlackboardData* BBAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaesAICtr)
+		UBlackboardComponent* BlackboardComponent;
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetEnemy(FName EnemyName);
