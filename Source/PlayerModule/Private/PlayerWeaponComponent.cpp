@@ -175,7 +175,7 @@ void UPlayerWeaponComponent::Fire()
 	cameraRotation.Pitch += FMath::RandRange(-spread, spread);
 	end = start + (cameraRotation.Vector() * 99999);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
-	m_result = FHitResult();
+	//m_result = FHitResult();
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
@@ -240,7 +240,7 @@ void UPlayerWeaponComponent::Fire()
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
 			isHit = true;
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 			//USkeletalMeshComponent* sm = m_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
 			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 			if (s)
@@ -271,11 +271,23 @@ void UPlayerWeaponComponent::Fire()
 			spawnparam.Owner = owner;
 			TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
 			GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);
+
 		}
 	}
 	else
 	{
 		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+	}
+
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel2, param))
+	{
+		if (m_result.GetActor()->ActorHasTag("Enemy"))
+		{
+			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+			float d = 0;
+			d = FMath::RandRange(damage.X, damage.Y);
+			s->Attacked(d);
+		}
 	}
 
 	start = WeaponMesh->GetSocketLocation(TEXT("BulletTracerStart"));
