@@ -47,10 +47,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		bool patrol_Dir;
 
-	// µÙ∑π¿Ã ¡÷∑¡∞Ì ∏∏µÍ
-	bool check;
-	float t;
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

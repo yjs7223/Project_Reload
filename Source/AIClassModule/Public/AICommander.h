@@ -45,7 +45,8 @@ public:
 		Tick(float DeltaTime) override;
 
 public:
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		UBlackboardComponent* BlackboardComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -71,6 +72,12 @@ public:
 		AActor* actor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Suppression;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBlackboardData* BB_AICommander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBlackboardData* BB_BaseAI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAIController* BaseAI_Ctr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float s_time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)

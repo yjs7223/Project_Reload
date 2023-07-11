@@ -284,6 +284,7 @@ void UPlayerWeaponComponent::Fire()
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
 			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+
 			if (s)
 			{
 				float d = FMath::RandRange(H_damage.X, H_damage.Y);
