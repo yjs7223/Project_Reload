@@ -7,10 +7,6 @@
 #include "BaseAICtr.generated.h"
 
 
-/**
- * 
- */
-
 
 
 UCLASS()
@@ -20,6 +16,10 @@ class AICLASSMODULE_API ABaseAICtr : public AAIController
 
 public :
 	ABaseAICtr();
+
+	static const FName Key_Cover;
+	static const FName Key_CoverLocation;
+
 
 protected:
 
@@ -80,6 +80,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaesAICtr)
 		class UBlackboardData* BBAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BaesAICtr)
+		UBlackboardComponent* BlackboardComponent;
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetEnemy(FName EnemyName);

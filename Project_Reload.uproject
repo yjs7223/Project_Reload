@@ -28,7 +28,10 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"BaseClassModule",
-				"CoreUObject"
+				"CoreUObject",
+				"Slate",
+				"SlateCore",
+				"UMG"
 			]
 		},
 		{

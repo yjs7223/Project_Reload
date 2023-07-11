@@ -37,9 +37,10 @@ public:
 		void RecoverHP(float p_HP);
 
 	//Damage process
-	UFUNCTION(BlueprintCallable)
-		void Attacked(float p_damage);
-		void Attacked(float p_damage, FHitResult result);
+	virtual void Attacked(float p_damage);
+	virtual void Attacked(float p_damage, FHitResult result);
+	virtual void Attacked(FHitResult result);
+
 public:
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
@@ -56,7 +57,7 @@ public:
 	//When Character's currentHP <= 0  isDie = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isDie;
-
+	
 
 protected:
 	UPROPERTY()

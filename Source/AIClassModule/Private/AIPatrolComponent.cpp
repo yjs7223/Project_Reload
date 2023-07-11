@@ -10,31 +10,25 @@
 UAIPatrolComponent::UAIPatrolComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	patrol_State = true;
 	patrol_Dir = true;
 }
 
 
-// Called when the game starts
 void UAIPatrolComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	owner = Cast<AAICharacter>(GetOwner());
-
-	for (int i = 0; i < patrol_Actor->patrol_Point.Num(); i++)
+	
+	if (patrol_Actor != nullptr)
 	{
-		patrol_Point.Add(GetOwner()->GetActorTransform().TransformPosition(patrol_Actor->patrol_Point[i]));
+		patrol_Num = patrol_Actor->patrol_Point.Num() - 1;
 	}
 }
 
-
-// Called every frame
 void UAIPatrolComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	PatrolControl();
 }
 
 void UAIPatrolComponent::PatrolMove(const FVector Destination)
@@ -42,72 +36,45 @@ void UAIPatrolComponent::PatrolMove(const FVector Destination)
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), Destination);
 }
 
-void UAIPatrolComponent::PatrolEnable(bool p_flag)
+void UAIPatrolComponent::SetNextPatrolNum()
 {
-	patrol_State = p_flag;
-}
-
-void UAIPatrolComponent::PatrolControl()
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("PatrolControl")));
-	// ¼øÂû »óÅÂ°¡ ¾Æ´Ï¸é Ãë¼Ò
-	if (!patrol_State)
+	if (patrol_Actor != nullptr)
 	{
-		return;
-	}
-
-	// ¹è¿­ÀÌ ºñ¾úÀ¸¸é ¼øÂû¾øÀ½
-	if (patrol_Point.Num() != 0)
-	{
-		// ¸ñÀûÁö µµÂøÇÏ¸é ´Ù½Ã Ãâ¹ß
-		if (FVector::Distance(owner->GetActorLocation(), patrol_Point[patrol_Num]) <= 100)
+		// ï¿½ï¿½ï¿½ï¿½ Ã¼Å© ï¿½ï¿½ ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½
+		switch (patrol_Type)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Goal")));
-			if (!patrol_State)
+		case Patrol_Type::STAY:
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			break;
+		case Patrol_Type::CYCLE:
+			cur_patrol_Num++;
+			// ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+			if (cur_patrol_Num > patrol_Num)
 			{
-				// ¹æÇâ Ã¼Å© ÈÄ Á¤/¿ª¹æÇâ ÀÌµ¿
-				if (patrol_Dir)
+				cur_patrol_Num = 0;
+			}
+			break;
+		case Patrol_Type::RETURN:
+			if (patrol_Dir)
+			{
+				cur_patrol_Num++;
+				// ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+				if (cur_patrol_Num >= patrol_Num)
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Dir = true")));
-					// ³¡ ¹øÈ£±îÁö °¬À» °æ¿ì
-					if (patrol_Num >= patrol_Point.Num())
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Max")));
-						patrol_Dir = !patrol_Dir;
-					}
-					else
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Num++")));
-						patrol_Num++;
-					}
+					patrol_Dir = !patrol_Dir;
 				}
-				else if (!patrol_Dir)
+			}
+			else if (!patrol_Dir)
+			{
+				cur_patrol_Num--;
+				// Ã¹ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+				if (cur_patrol_Num == 0)
 				{
-					// Ã¹ ¹øÈ£·Î ´Ù½Ã ¿ÔÀ» °æ¿ì
-					if (patrol_Num == 0)
-					{
-						patrol_Dir = !patrol_Dir;
-					}
-					else
-					{
-						patrol_Num--;
-					}
+					patrol_Dir = !patrol_Dir;
 				}
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("patrol_State = true")));
-				patrol_State = true;
 			}
 		}
-
-		if (patrol_State)
-		{
-			// ´ÙÀ½ ¼øÂû À§Ä¡·Î Á¤¹æÇâ ÀÌµ¿
-			PatrolMove(patrol_Point[patrol_Num]);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : %s"), *patrol_Point[patrol_Num].ToString()));
-			patrol_State = false;
-		}
-
 	}
-
 }
 
 

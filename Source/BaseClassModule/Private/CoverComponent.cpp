@@ -309,8 +309,9 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 		cameraRotation,
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		true,
+
 		{m_CoverWall},
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		results,
 		true
 	)) return FVector::ZeroVector;

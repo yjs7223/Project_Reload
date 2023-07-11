@@ -68,11 +68,18 @@ void UStatComponent::Attacked(float p_damage)
 
 void UStatComponent::Attacked(float p_damage, FHitResult result)
 {
+
 	curHP -= p_damage;
 	isAttacked = true;
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
 	}
+
+}
+
+void UStatComponent::Attacked(FHitResult result)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("indirection hit"));
 }
 

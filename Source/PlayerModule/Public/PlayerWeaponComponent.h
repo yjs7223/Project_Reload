@@ -129,6 +129,8 @@ public:
 		float pitchRecoveryValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FRotator startRot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator recoveryRot;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
