@@ -30,7 +30,8 @@
 				"BaseClassModule",
 				"CoreUObject",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"UMG"
 			]
 		},
 		{
