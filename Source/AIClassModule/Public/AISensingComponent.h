@@ -37,4 +37,8 @@ public:
 	// 사격 센서
 	UFUNCTION(BlueprintCallable, Category = "Sense")
 		bool ShotSenseRange();
+
+	// 플레이어와의 위치 검사
+	UFUNCTION(BlueprintCallable, Category = "Range")
+		bool MinRangeCheck();
 };
