@@ -275,7 +275,7 @@ void UCoverComponent::TestFN(float DeltaTime)
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		true,
 		{},
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		results,
 		true
 		)) return;
