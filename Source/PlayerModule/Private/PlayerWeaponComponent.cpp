@@ -108,7 +108,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	
 	RecoilTick(DeltaTime);
 	ReloadTick(DeltaTime);
-	//RecoveryTick(DeltaTime);
+	RecoveryTick(DeltaTime);
 }
 
 void UPlayerWeaponComponent::InitData()
@@ -240,7 +240,7 @@ void UPlayerWeaponComponent::Fire()
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
 			isHit = true;
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 			//USkeletalMeshComponent* sm = m_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
 			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 			if (s)
@@ -284,14 +284,18 @@ void UPlayerWeaponComponent::Fire()
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
 			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
-			s->Attacked(m_result);
+			if (s)
+			{
+				float d = FMath::RandRange(H_damage.X, H_damage.Y);
+				s->Attacked(d);
+			}
 		}
 	}
 
 	start = WeaponMesh->GetSocketLocation(TEXT("BulletTracerStart"));
 	GameStatic->SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
 	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", m_result.Location);
-	//PlayRandomShotSound();
+	PlayRandomShotSound();
 
 	if(m_firecount < 10)
 	{
@@ -322,18 +326,24 @@ void UPlayerWeaponComponent::StartFire()
 	{ 
 		return;
 	}
+
+	StopRcovery();
 	Fire();
 	isFire = true;
-	//startRot = owner->GetController()->GetControlRotation();
+	startRot = owner->GetController()->GetControlRotation();
 	owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
 }
 
 void UPlayerWeaponComponent::StopFire()
 {
-	owner->GetWorldTimerManager().ClearTimer(fHandle);
-	owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
-	isFire = false;
-	//m_firecount = 0;
+	if (isFire)
+	{
+		owner->GetWorldTimerManager().ClearTimer(fHandle);
+		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
+		isFire = false;
+		StartRecovery();
+		//m_firecount = 0;
+	}
 }
 
 void UPlayerWeaponComponent::StartReload()
@@ -423,21 +433,19 @@ void UPlayerWeaponComponent::RecoilTick(float p_deltatime)
 
 void UPlayerWeaponComponent::StartRecoil()
 {
-	StopRcovery();
+	bRecovery = false;
 	bRecoil = true;
 	yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
 	pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
-	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoilValue));
+	//yawRecoveryValue += yawRecoilValue;
+	//pitchRecoveryValue += pitchRecoilValue;
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("recoil start"));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::SanitizeFloat(pitchRecoilValue));
 }
 
 void UPlayerWeaponComponent::StopRecoil()
 {
 	bRecoil = false;
-	/*if (!bRecovery && !isFire)
-	{
-		StartRecovery();
-	}*/
 }
 
 //���
@@ -446,26 +454,25 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 	if (bRecovery)
 	{
 		RecoveryTime += p_deltatime * 2.0f;
-		FRotator nowrot = owner->GetController()->GetControlRotation();
-		FRotator rc = nowrot; //= FMath::Lerp(nowrot, startRot, RecoveryTime);
-		//rc.Yaw = FMath::Lerp(nowrot.Yaw, startRot.Yaw, RecoveryTime)/ TickCount;
-		rc.Pitch = FMath::Lerp(nowrot.Pitch, startRot.Pitch, RecoveryTime);
-		//rc.Roll = FMath::Lerp(nowrot.Roll, startRot.Roll, RecoveryTime);
-		owner->GetController()->SetControlRotation(rc);
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, nowrot.ToString());
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, startRot.ToString());
-
-		if (nowrot.Pitch == startRot.Pitch)
+		TickCount += 2;
+		if (yawRecoveryValue < -20.0f)
 		{
-			StopRcovery();
-			RecoveryTime = 0;
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("equal"));
+			TickCount += 10;
 		}
-		if (RecoveryTime >= 1.0f)
+		if (pitchRecoveryValue < -20.0f)
+		{
+			TickCount += 10;
+		}
+		float y = FMath::Lerp(0.0f, yawRecoveryValue, RecoveryTime) / TickCount;
+		float p = FMath::Lerp(0.0f, -pitchRecoveryValue, RecoveryTime) / TickCount;
+		owner->AddControllerYawInput(y);
+		owner->AddControllerPitchInput(p);
+		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
+
+		if (RecoveryTime >= 0.8f)
 		{
 			StopRcovery();
-			RecoveryTime = 0;
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("endtimre"));
 		}
 	}
 }
@@ -473,11 +480,42 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 void UPlayerWeaponComponent::StartRecovery()
 {
 	bRecovery = true;
+	StopRecoil();
+	FRotator nowrot = owner->GetController()->GetControlRotation();
+	//recoveryRot = nowrot - startRot;
+	if (startRot.Yaw <= 90)
+	{
+		startRot.Yaw += 360;
+	}
+	if (nowrot.Yaw <= 90)
+	{
+		nowrot.Yaw += 360;
+	}
+	if (startRot.Pitch <= 90)
+	{
+		startRot.Pitch += 360;
+	}
+	if (nowrot.Pitch <= 90)
+	{
+		nowrot.Pitch += 360;
+	}
+	yawRecoveryValue = startRot.Yaw - nowrot.Yaw;
+	pitchRecoveryValue = startRot.Pitch - nowrot.Pitch;
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
+	//StopRcovery();
+
 }
 
 void UPlayerWeaponComponent::StopRcovery()
 {
 	bRecovery = false;
+	yawRecoveryValue = 0;
+	pitchRecoveryValue = 0;
+	RecoveryTime = 0;
+	TickCount = 0;
+	//startRot = FRotator::ZeroRotator;
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("end recovery"));
 }
 
 float UPlayerWeaponComponent::easeOutExpo(float t, float b, float c, float d)
@@ -502,7 +540,7 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 void UPlayerWeaponComponent::PlayRandomShotSound()
 {
 	int r = FMath::RandRange(0, 3);
-	//UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
+	UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
 }
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)

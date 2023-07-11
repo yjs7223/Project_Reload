@@ -71,6 +71,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	}
 }
 
+
 void UAIStatComponent::SuppresionPoint()
 {
 	AI_PlayerDis = GetOwner()->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn());
