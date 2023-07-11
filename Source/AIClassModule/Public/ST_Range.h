@@ -42,6 +42,8 @@ public:
 		float Sup_HitRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
 		float Move_DecRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIRangeDataBase)
+		float Target_MinRange;
 	
 	
 };
