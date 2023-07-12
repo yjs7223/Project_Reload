@@ -19,7 +19,7 @@ EBTNodeResult::Type UBTTaskNode_InCover::ExecuteTask(UBehaviorTreeComponent& Own
     //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "TTTTTTTT");
 
 
-    OwnerComp.GetBlackboardComponent()->SetValueAsVector(ABaseAICtr::Key_CoverLocation, FVector(0, 0, 0));
+    //OwnerComp.GetBlackboardComponent()->SetValueAsVector(ABaseAICtr::Key_CoverLocation, FVector(0, 0, 0));
         //OwnerComp.GetBlackboardComponent()->GetValueAsVector(ABaseAICtr::Key_Cover));
 
     return EBTNodeResult::Succeeded;
