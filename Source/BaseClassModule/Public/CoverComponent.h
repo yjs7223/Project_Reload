@@ -28,10 +28,16 @@ public:
 	void SettingMoveVector(FVector& vector);
 	void AimSetting(float DeltaTime);
 	void RotateSet(float DeltaTime);
+	/*
+	* 커버 가능한 점을 구합니다
+	* @param DeltaTime 업데이트에서 호출됨을 뜻합니다
+	* @return 커버가능한점을 반환합니다 FVector::ZeroVector면 실패입니다
+	*/
 	FVector CalculateCoverPoint(float DeltaTime);
 
 	bool IsCover();
 	bool IsTurnWait();
+	UFUNCTION(BlueprintCallable)
 	float FaceRight();
 	bool IsCornering();
 	bool isPeeking();
@@ -48,7 +54,6 @@ protected:
 	bool StartCover();
 
 	void CheckCoverCollision(OUT FHitResult& result);
-	UFUNCTION(BlueprintCallable)
 	void PlayCornering();
 	void StopCornering(float DeltaTim);
 	void PlayingCornering(float DeltaTim);
@@ -58,11 +63,14 @@ protected:
 	void AIMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
 
 private:
+	//엄폐벽을 체크할 트레이스채널 입니다
 	static const ECollisionChannel traceChanel = ECC_GameTraceChannel1;
+	//엄폐오브젝트타입채널 입니다
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 	
 
 private:
+	//
 	class UCharacterMovementComponent* m_Movement;
 	struct FInputData* m_Inputdata;
 	class UWeaponComponent* m_Weapon;

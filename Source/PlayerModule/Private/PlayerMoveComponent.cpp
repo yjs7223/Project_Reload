@@ -9,6 +9,7 @@
 #include "CoverComponent.h"
 #include "Pakurable.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Navigation/PathFollowingComponent.h"
 
 // Sets default values for this component's properties
 UPlayerMoveComponent::UPlayerMoveComponent()
@@ -32,6 +33,14 @@ void UPlayerMoveComponent::BeginPlay()
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
+	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
+
+	if (m_PathFollowingComp == nullptr) {
+		GetWorld()->GetTimerManager().SetTimerForNextTick([this]() {
+			m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
+		});
+	}
+
 	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
 	if (pakurArr.Num() > 0) {
 		m_PakurComp = pakurArr[0];
@@ -74,6 +83,10 @@ void UPlayerMoveComponent::Turn()
 
 void UPlayerMoveComponent::Moving(float DeltaTime)
 {
+	if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
+		mTargetRotate = owner->GetVelocity().Rotation();
+		return;
+	}
 	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
 		m_Inputdata->IsRuning = false;

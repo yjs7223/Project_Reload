@@ -48,6 +48,7 @@ private:
 	class UCoverComponent* m_CoverComp;
 	class UActorComponent* m_PakurComp;
 	struct FInputData* m_Inputdata;
+	class UPathFollowingComponent* m_PathFollowingComp;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
 		FRotator mTargetRotate;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
