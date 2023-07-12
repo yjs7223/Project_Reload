@@ -67,7 +67,11 @@ public:
 		float sup_middlePoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		bool PlayerAtt_ai;
-	
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class UBlackboardComponent* BlackboardComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class ABaseAICtr* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class AAICharacter* ACharacter;
 
 };

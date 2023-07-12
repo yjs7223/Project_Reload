@@ -120,25 +120,28 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 {
 	for (auto& subAi : Cast<ASubEncounterSpace>(sub)->AIArray)
 	{
+		
 		List_Division.Add(subAi, AddIndex);
 		List_RDivision.Add(AddIndex, subAi);
-		List_Combat.Add(AddIndex, ECombat::Patrol);
+		List_Combat.Add(AddIndex, ECombat::Alaramed);
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
-		AAIController* AIController = nullptr;
-		AAICharacter* ACharacter = Cast<AAICharacter>(subAi);
+		
+		AIController = nullptr;
+		ACharacter = Cast<AAICharacter>(subAi);
 		if (ACharacter)
 		{
-			AIController = Cast<AAIController>(Cast<AAICharacter>(subAi)->GetController());
+			AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
 		}
 		if (AIController)
 		{
-			BlackboardComponent = AIController->GetBlackboardComponent();
-			if (BlackboardComponent)
+			if (AIController->BlackboardComponent)
 			{
-				if (UseBlackboard(BB_BaseAI, BlackboardComponent))
+				BlackboardComponent = AIController->BlackboardComponent;
+				if (UseBlackboard(AIController->BBAsset, BlackboardComponent))
 				{
-					BlackboardComponent->SetValueAsFloat("AI_HP", 19.0f);
+					BlackboardComponent->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->BlackboardComponent->GetValueAsEnum("Combat")));
 				}
 			}
 		}
@@ -152,21 +155,35 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 
 void AAICommander::ListTickSet(ASubEncounterSpace* sub)
 {
-	for (auto ai : Cast<ASubEncounterSpace>(sub)->AIArray)
+	for (auto ai :sub->AIArray)
 	{
 		auto FindActor = List_Division.Find(ai); 
 		
 		if (FindActor)
 		{
-			
+
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AICOMMENDER"));
 			List_Location.Add(*FindActor, ai->GetActorLocation());
-			//List_Suppression.Add(*FindActor, Cast<AAICharacter>(actor)->FindComponentByClass<UAIStatComponent>()->sup_total);
-			/*if (s_time >= sup_sharetime)
+			AIController = nullptr;
+			ACharacter = Cast<AAICharacter>(ai);
+			if (ACharacter)
 			{
-				SuppressionShare();
-				s_time = 0;
-			}*/
+				AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ai)->GetController());
+			}
+			if (AIController)
+			{
+				if (AIController->BlackboardComponent)
+				{
+					BlackboardComponent = AIController->BlackboardComponent;
+					List_Suppression.Add(*FindActor, AIController->BlackboardComponent->GetValueAsFloat("Sup_TotalPoint"));
+					if (s_time >= sup_sharetime)
+					{
+						SuppressionShare();
+						
+						s_time = 0;
+					}
+				}
+			}
 		}
 		else
 		{
@@ -185,15 +202,16 @@ void AAICommander::SuppressionShare()
 		});
 	int key = List_Suppression[0];
 	List_Location.GenerateValueArray(AILocation);
-	FVector* MaxSupLoc = List_Location.Find(key);
+	/*FVector* MaxSupLoc = List_Location.Find(key);
 	for (auto ai : AILocation)
 	{
 		if (ai != *MaxSupLoc)
 		{
 			List_Suppression.Add(*List_Location.FindKey(ai)) = 
 				(*List_Suppression.Find(*List_Location.FindKey(ai)) / 5) * (1 - ((FVector::Distance(*MaxSupLoc, ai))/ sup_sharerange));
+			AIController->BlackboardComponent->SetValueAsFloat("Sup_TotalPoint", *List_Suppression.Find(*List_Location.FindKey(ai)));
 		}
-	}
+	}*/
 	
 	
 }

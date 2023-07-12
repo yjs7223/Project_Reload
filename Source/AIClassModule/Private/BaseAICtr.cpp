@@ -32,15 +32,18 @@ ABaseAICtr::ABaseAICtr()
 		DT_Range = DT_RangeDataObject.Object;
 	}
 
-	SetEnemy("Rifle_E");
+	
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackBoard'/Game/JHB/BB_BaseAI.BB_BaseAI'"));
 	if (BB_BaseAIObject.Succeeded())
 	{
 		BBAsset = BB_BaseAIObject.Object;
 	}
-	
 
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/_sjs/BT_BaseAI.BT_BaseAI'"));
+
+
+	SetEnemy("Rifle_E");
+
+	/*static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/_sjs/BT_BaseAI.BT_BaseAI'"));
 	if (BTObject.Succeeded())
 		BTAsset = BTObject.Object;*/
 
@@ -80,10 +83,16 @@ void ABaseAICtr::Tick(float DeltaSeconds)
 {
 	m_character = Cast<ABaseCharacter>(GetPawn());
 	BlackboardComponent = Blackboard;
-	if (UseBlackboard(BBAsset, BlackboardComponent))
+	if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(BlackboardComponent->GetValueAsFloat("AI_HP")));
+		bIsPlayerDetected = false;
 	}
+	if (bIsPlayerDetected)
+	{
+		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		
+	}
+	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
 FRotator ABaseAICtr::GetControlRotation() const
@@ -124,9 +133,12 @@ void ABaseAICtr::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
 {
 	for (size_t i = 0; i < DetectedPawns.Num(); i++)
 	{
-		DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
-
-		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+		if (DetectedPawns[i]->ActorHasTag("Player"))
+		{
+			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
+			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+			bIsPlayerDetected = true;
+		}
 	}
-	bIsPlayerDetected = true;
+	
 }

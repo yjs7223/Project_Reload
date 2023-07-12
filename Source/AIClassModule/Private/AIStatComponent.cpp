@@ -7,7 +7,10 @@
 #include "ST_Suppression.h"
 #include "AICharacter.h"
 #include "AIController.h"
-
+#include "BaseAICtr.h"
+#include "Kismet/GameplayStatics.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UAIStatComponent::UAIStatComponent()
 {
@@ -68,37 +71,52 @@ void UAIStatComponent::SuppresionPoint()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
 	AI_PlayerDis = GetOwner()->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn());
-	/*int i = Cast<AAICommander>(AICommander)->aaaa;
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::FromInt(i));
-	*/
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FindObject<UEnum>(ANY_PACKAGE, TEXT("ECombat"), true)->GetNameStringByValue((int32)*Cast<AAICommander>(AICommander)->List_Combat.Find(*Cast<AAICommander>(AICommander)->List_Division.Find(GetOwner()))));
-	//switch (*Cast<AAICommander>(AICommander)->List_Combat.Find(*Cast<AAICommander>(AICommander)->List_Division.Find(GetOwner())))
-	//{
-	//case ECombat::Patrol:
-	//	sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1.2;
-	//	break;
-	//case ECombat::Move:
-	//	sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1;
-	//	break;
-	//case ECombat::Attack:
-	//	sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.7;
-	//	break;
-	//case ECombat::InCover:
-	//	sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.5;
-	//	break;
-	//}
-	//if(Time <= sup_DelayTime)
-	//{
-	//	sup_middlePoint *= sup_Multi;
-	//}
-	//sup_total = sup_Input * sup_middlePoint;
-	////SuppresionPoint();
-	//if (sup_total >= sup_MaxPoint)
-	//{
-	//	sup_total = sup_MaxPoint;
-	//}
-	//Time = 0.0f;
-	//PlayerAtt_ai = false;
+	AIController = nullptr;
+	ACharacter = Cast<AAICharacter>(GetOwner());
+	if (ACharacter)
+	{
+		AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+	}
+	if (AIController)
+	{
+		if (AIController->BlackboardComponent)
+		{
+			BlackboardComponent = AIController->BlackboardComponent;
+			if (Cast<ABaseAICtr>(Cast<AAICharacter>(GetOwner())->GetController())->UseBlackboard(AIController->BBAsset, BlackboardComponent))
+			{
+				switch (BlackboardComponent->GetValueAsEnum("Combat"))
+				{
+				case 0:
+					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1.2;
+					break;
+				case 2:
+				case 3:
+					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1;
+					break;
+				case 4:
+					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.7;
+					break;
+				case 5:
+					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.5;
+					break;
+				}
+				if (Time <= sup_DelayTime)
+				{
+					sup_middlePoint *= sup_Multi;
+				}
+				sup_total += sup_Input * sup_middlePoint;
+				//SuppresionPoint();
+				if (sup_total >= sup_MaxPoint)
+				{
+					sup_total = sup_MaxPoint;
+				}
+				BlackboardComponent->SetValueAsFloat("Sup_TotalPoint", sup_total);
+				Time = 0.0f;
+				PlayerAtt_ai = false;
+			}
+			
+		}
+	}
 }
 
 void UAIStatComponent::SetDataTable(FName EnemyName)
