@@ -24,9 +24,10 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	UFUNCTION(BlueprintCallable)
+		void Attacked(float p_damage) override;
 		void Attacked(float p_damage, FHitResult result) override;
+		//void Attacked(FHitResult result) override;
 	UFUNCTION(BlueprintCallable)
 		void SuppresionPoint();
 	UFUNCTION()
@@ -66,6 +67,7 @@ public:
 		float sup_middlePoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		bool PlayerAtt_ai;
+	
 
 
 };
