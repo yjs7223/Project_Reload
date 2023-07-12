@@ -62,7 +62,7 @@ bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& O
 
 	FName Name_AILineOfSight = FName(TEXT("TestPawnLineOfSight"));
 	FHitResult HitResult;
-	FVector SightTargetLocation = GetMesh()->GetSocketLocation("neck_Socket");
+	FVector SightTargetLocation = GetMesh()->GetSocketLocation("neck_01");
 
 
 	bool hit = GetWorld()->LineTraceSingleByChannel(HitResult, ObserverLocation, SightTargetLocation, ECC_Visibility, FCollisionQueryParams(Name_AILineOfSight, false, IgnoreActor));

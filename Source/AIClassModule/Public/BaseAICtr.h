@@ -87,4 +87,5 @@ public:
 		void SetEnemy(FName EnemyName);
 	UFUNCTION()
 		void OnPawnDetected(const TArray<AActor*>& DetectedPawns);
+
 };

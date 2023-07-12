@@ -79,6 +79,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAIController* BaseAI_Ctr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ABaseAICtr* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICharacter* ACharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float s_time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharerange;
