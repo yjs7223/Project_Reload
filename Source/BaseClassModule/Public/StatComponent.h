@@ -39,6 +39,8 @@ public:
 	//Damage process
 	virtual void Attacked(float p_damage);
 	virtual void Attacked(float p_damage, FHitResult result);
+	virtual void Attacked(FHitResult result);
+
 public:
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
