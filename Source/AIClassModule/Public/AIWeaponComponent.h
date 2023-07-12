@@ -20,6 +20,10 @@ class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 public :
 	UAIWeaponComponent();
 
+	// 현재 캐릭터 타입
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		Enemy_Name type;
+
 	// AI 사격 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		bool shot_State;
@@ -93,6 +97,7 @@ public :
 	// 현재 데이터 테이블
 	struct FST_AIShot* curAIShotData;
 
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -115,4 +120,12 @@ public:
 	// AI Reload
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ReloadAI();
+	
+	// AI Type Setting
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		void AITypeSetting();
+
+	// AI Sniper Check
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		bool AITypeSniperCheck();
 };
