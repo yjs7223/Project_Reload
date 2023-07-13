@@ -122,9 +122,10 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	else {
 		mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
 	}
-	owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
 
-
+	//owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
+	owner->AddMovementInput(mMoveDirect);
+	owner->GetCharacterMovement().componenetclass
 	
 
 }
