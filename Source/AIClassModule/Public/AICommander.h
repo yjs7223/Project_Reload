@@ -63,7 +63,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> AILocation;
+		TArray<float> Sup_Array;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -74,8 +74,6 @@ public:
 		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBlackboardData* BB_AICommander;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UBlackboardData* BB_BaseAI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAIController* BaseAI_Ctr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -88,8 +86,14 @@ public:
 		float sup_sharerange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharetime;
-
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		FVector MaxSupLoc;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_value;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		UObject* Target;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool sightin;
 public:
 	UFUNCTION()
 		void ListSet();
@@ -100,9 +104,11 @@ public:
 	UFUNCTION()
 		void ListTickSet(ASubEncounterSpace* sub);
 	UFUNCTION()
-		void SuppressionShare();
+		void SuppressionShare(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void SetDataTable(FName EnemyName);
+	UFUNCTION()
+		void TargetTickSet(ASubEncounterSpace* sub);
 
 };
 

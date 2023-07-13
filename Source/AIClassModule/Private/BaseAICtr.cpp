@@ -25,7 +25,7 @@ ABaseAICtr::ABaseAICtr()
 	SetPerceptionComponent(*CreateOptionalDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception")));
 	
 
-	/*static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
 	if (DT_RangeDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
@@ -90,9 +90,11 @@ void ABaseAICtr::Tick(float DeltaSeconds)
 	if (bIsPlayerDetected)
 	{
 		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-		
+		BlackboardComponent->SetValueAsObject("Target", m_character);
 	}
+	
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
+	
 }
 
 FRotator ABaseAICtr::GetControlRotation() const
