@@ -34,7 +34,7 @@ class AICLASSMODULE_API AAICommander : public AAIController
 public:
 	// Sets default values for this actor's properties
 	AAICommander();
-
+	virtual void OnPossess(APawn* pPawn) override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -73,6 +73,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBehaviorTreeComponent* behavior_tree_component;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBehaviorTree* btree;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBlackboardData* BB_AICommander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAIController* BaseAI_Ctr;
@@ -94,6 +98,10 @@ public:
 		UObject* Target;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool sightin;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool subenbool;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		int subenNum;
 public:
 	UFUNCTION()
 		void ListSet();
@@ -102,7 +110,7 @@ public:
 	UFUNCTION()
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()
-		void ListTickSet(ASubEncounterSpace* sub);
+		void ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en);
 	UFUNCTION()
 		void SuppressionShare(ASubEncounterSpace* sub);
 	UFUNCTION()

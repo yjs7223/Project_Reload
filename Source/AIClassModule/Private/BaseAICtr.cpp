@@ -4,7 +4,9 @@
 #include "BaseAICtr.h"
 #include "ST_Range.h"
 #include "BaseCharacter.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -32,6 +34,14 @@ ABaseAICtr::ABaseAICtr()
 		DT_Range = DT_RangeDataObject.Object;
 	}
 
+	//BT
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/JHB/BTBt.BTBt'"));
+	if (BTObject.Succeeded())
+	{
+		btree = BTObject.Object;
+		UE_LOG(LogTemp, Warning, TEXT("BehaviorTree Succeed!"));
+	}
+	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackBoard'/Game/JHB/BB_BaseAI.BB_BaseAI'"));
 	if (BB_BaseAIObject.Succeeded())
@@ -55,8 +65,6 @@ void ABaseAICtr::BeginPlay()
 {
 
 	Super::BeginPlay();
-	
-
 	if (GetPerceptionComponent() != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ALL Systems Set!"));
@@ -70,7 +78,8 @@ void ABaseAICtr::BeginPlay()
 void ABaseAICtr::OnPossess(APawn* pPawn)
 {
 	Super::OnPossess(pPawn);
-
+	RunBehaviorTree(btree);
+	behavior_tree_component->StartTree(*btree);
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	if (UseBlackboard(BBAsset, BlackboardComponent))
 	{

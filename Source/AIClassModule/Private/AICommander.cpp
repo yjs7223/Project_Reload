@@ -10,6 +10,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
 #include "ST_Suppression.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "EngineGlobals.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BaseAICtr.h"
@@ -32,6 +39,14 @@ AAICommander::AAICommander()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
 	}
+	//BT
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/JHB/BT_AICommander.BT_AICommander'"));
+	if (BTObject.Succeeded())
+	{
+		btree = BTObject.Object;
+		UE_LOG(LogTemp, Warning, TEXT("BehaviorTree Succeed!"));
+	}
+	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_AICommanderObject(TEXT("BlackBoard'/Game/JHB/BB_Commander.BB_Commander'"));
 	if (BB_AICommanderObject.Succeeded())
@@ -39,7 +54,7 @@ AAICommander::AAICommander()
 		UE_LOG(LogTemp, Warning, TEXT("AICommander Blackboard Succeed!"));
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
-
+	AddIndex = 0;
 	/*static ConstructorHelpers::FObjectFinder<AAIController> BaseAI_Ctr_Object(TEXT("AIController'/Game/JHB/BaseAI_Ctr.BaseAI_Ctr'"));
 	if (BaseAI_Ctr_Object.Succeeded())
 	{
@@ -49,6 +64,14 @@ AAICommander::AAICommander()
 	
 	
 	SetDataTable("Rifle_E");
+}
+
+void AAICommander::OnPossess(APawn* pPawn)
+{
+	Super::OnPossess(pPawn);
+	RunBehaviorTree(btree);
+	behavior_tree_component->StartTree(*btree);
+
 }
 
 void AAICommander::SetDataTable(FName EnemyName)
@@ -160,6 +183,7 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 void AAICommander::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEncounterSpace::StaticClass(), EncounterArray);
 }
 
@@ -168,8 +192,9 @@ void AAICommander::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	s_time += DeltaTime;
-	ListSet();
 	
+	ListSet();
+	UseBlackboard(BB_AICommander, BlackboardComponent);
 }
 
 void AAICommander::ListSet()
@@ -178,17 +203,20 @@ void AAICommander::ListSet()
 	{
 		if (Cast<AEncounterSpace>(en)->LevelActive)
 		{
+			Blackboard->SetValueAsObject("Cmd_Space", en);
 			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
 			{
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
+					Blackboard->SetValueAsBool("CmdAI_Active", true);
+					subenbool = true;
 					if (!MapList_Start)
 					{
 						ListStartSet(Cast<ASubEncounterSpace>(sub));
 					}
 					else
 					{
-						ListTickSet(Cast<ASubEncounterSpace>(sub));
+						ListTickSet(Cast<ASubEncounterSpace>(sub), Cast<AEncounterSpace>(en));
 						TargetTickSet(Cast<ASubEncounterSpace>(sub));
 					}
 				}
@@ -229,11 +257,9 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 			if (AIController->BlackboardComponent)
 			{
 				BlackboardComponent = AIController->BlackboardComponent;
-				if (UseBlackboard(AIController->BBAsset, BlackboardComponent))
-				{
-					BlackboardComponent->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
-					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->BlackboardComponent->GetValueAsEnum("Combat")));
-				}
+				BlackboardComponent->SetValueAsInt("ID_Number", AddIndex);
+				BlackboardComponent->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->BlackboardComponent->GetValueAsEnum("Combat")));
 			}
 		}
 		
@@ -243,7 +269,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 	MapList_Start = true;
 }
 
-void AAICommander::ListTickSet(ASubEncounterSpace* sub)
+void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 {
 	for (auto ai :sub->AIArray)
 	{
@@ -251,7 +277,6 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub)
 		
 		if (FindActor)
 		{
-
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AICOMMENDER"));
 			List_Location.Add(*FindActor, ai->GetActorLocation());
 			AIController = nullptr;
@@ -278,10 +303,18 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub)
 		}
 		else
 		{
-			if (List_Division.IsEmpty())
+			if (Cast<ASubEncounterSpace>(sub)->LevelActive == false)
 			{
-				Cast<ASubEncounterSpace>(sub)->LevelActive = false;
+				subenNum = Cast<ASubEncounterSpace>(sub)->LevelNum + 1;
+				for (auto suben : Cast<AEncounterSpace>(en)->LevelArray)
+				{
+					if (Cast<ASubEncounterSpace>(suben)->LevelNum == subenNum)
+					{
+						Cast<ASubEncounterSpace>(suben)->LevelActive = true;
+					}
+				}
 			}
+
 		}
 	}
 }
