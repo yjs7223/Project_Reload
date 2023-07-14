@@ -257,6 +257,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 			if (AIController->BlackboardComponent)
 			{
 				BlackboardComponent = AIController->BlackboardComponent;
+				BlackboardComponent->SetValueAsBool("AI_Active", true);
 				BlackboardComponent->SetValueAsInt("ID_Number", AddIndex);
 				BlackboardComponent->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
 				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->BlackboardComponent->GetValueAsEnum("Combat")));
