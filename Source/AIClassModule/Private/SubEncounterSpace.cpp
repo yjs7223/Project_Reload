@@ -59,6 +59,7 @@ void ASubEncounterSpace::EnemyAICheck()
 	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
 	if (AIArray.IsEmpty())
 	{
+		en->LevelArray.Remove(this);
 		LevelActive = false;
 	}
 }

@@ -27,6 +27,7 @@ void UAIStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<AAICharacter>();
+	PlayerAtt_ai = false;
 	//AICommander = AAICommander::aicinstance;
 }
 
@@ -39,13 +40,45 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		SuppresionPoint();
 	}
+	else
+	{
+		if (Time >= sup_DecTime)
+		{
+			AIController = nullptr;
+			ACharacter = Cast<AAICharacter>(GetOwner());
+			if (ACharacter)
+			{
+				AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+			}
+			if (AIController)
+			{
+				if (AIController->BlackboardComponent)
+				{
+					BlackboardComponent = AIController->BlackboardComponent;
+
+					sup_total = BlackboardComponent->GetValueAsFloat("Sup_TotalPoint");
+					sup_total -= sup_DecPoint;
+					if (sup_total <= 0)
+					{
+						sup_total = 0;
+					}
+					BlackboardComponent->SetValueAsFloat("Sup_TotalPoint", sup_total);
+					
+				}
+			}
+			Time = 0;
+		}
+		
+	}
 }
 
 void UAIStatComponent::Attacked(float p_damage)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
 	sup_Input = p_damage * sup_DecInput;
+	Time = 0;
 	PlayerAtt_ai = true;
+	
 }
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
@@ -57,6 +90,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		curHP = 0.0f;
 	}
 	sup_Input = p_damage;
+	Time = 0;
 	PlayerAtt_ai = true;
 }
 
@@ -104,6 +138,10 @@ void UAIStatComponent::SuppresionPoint()
 				{
 					sup_middlePoint *= sup_Multi;
 				}
+				else
+				{
+					PlayerAtt_ai = false;
+				}
 				sup_total += sup_Input * sup_middlePoint;
 				//SuppresionPoint();
 				if (sup_total >= sup_MaxPoint)
@@ -133,5 +171,7 @@ void UAIStatComponent::SetDataTable(FName EnemyName)
 		sup_Multi = SuppressionData->Sup_Multi;
 		sup_DelayTime = SuppressionData->Sup_DelayTime;
 		sup_MaxPoint = SuppressionData->Sup_MaxPoint;
+		sup_DecPoint = SuppressionData->Sup_DecPoint;
+		sup_DecTime = SuppressionData->Sup_DecTime;
 	}
 }
