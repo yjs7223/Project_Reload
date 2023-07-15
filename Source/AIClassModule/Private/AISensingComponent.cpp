@@ -81,7 +81,6 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 	return false;
 }
 
-// 아직 미완성
 bool UAISensingComponent::ShotSenseRange()
 {
 	// 후면
@@ -96,18 +95,21 @@ bool UAISensingComponent::ShotSenseRange()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
+		return true;
 	}
 	// 다음 옆면 검사
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
+		return true;
 	}
 	// 마지막 정면 검사
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
+		return true;
 	}
 	else
 	{
@@ -115,7 +117,7 @@ bool UAISensingComponent::ShotSenseRange()
 	}
 
 
-	return true;
+	return false;
 }
 
 bool UAISensingComponent::MinRangeCheck()
