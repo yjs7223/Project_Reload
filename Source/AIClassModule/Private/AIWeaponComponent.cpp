@@ -9,6 +9,7 @@
 #include "StatComponent.h"
 #include "ST_AIShot.h"
 #include <Kismet/GameplayStatics.h>
+#include "ST_Spawn.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -39,26 +40,7 @@ void UAIWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<AAICharacter>();
 
-	// 라이플 데이터 가져오기
-	curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
-
-	// 가져온 데이터 삽입
-	recoil_Range = curAIShotData->Recoil_Range;
-	recoilMax_Radius = curAIShotData->RecoilMax_Radius;
-	recoilMin_Radius = curAIShotData->RecoilMin_Radius;
-
-	shot_MaxRange = curAIShotData->Shot_MaxRange;
-	shot_MinRange = curAIShotData->Shot_MinRange;
-
-	shot_MaxDmg = curAIShotData->Shot_MaxDmg;
-	shot_MinDmg = curAIShotData->Shot_MinDmg;
-
-	shot_MaxCount = curAIShotData->Shot_MaxCount;
-
-	shot_Delay = curAIShotData->Shot_ShootDelay;
-
-	// 현재 반동은 최대로 시작
-	recoil_Radius = recoilMax_Radius;
+	AITypeSetting();
 }
 
 
@@ -183,4 +165,50 @@ void UAIWeaponComponent::ShotAIStop()
 void UAIWeaponComponent::ReloadAI()
 {
 	cur_Shot_Count = shot_MaxCount;
+}
+
+void UAIWeaponComponent::AITypeSetting()
+{
+	switch (type)
+	{
+	case Enemy_Name::RIFLE:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
+		break;
+	case Enemy_Name::HEAVY:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Heavy_E", TEXT(""));
+		break;
+	case Enemy_Name::SNIPER:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Sniper_E", TEXT(""));
+		break;
+	}
+
+	// 가져온 데이터 삽입
+	recoil_Range = curAIShotData->Recoil_Range;
+	recoilMax_Radius = curAIShotData->RecoilMax_Radius;
+	recoilMin_Radius = curAIShotData->RecoilMin_Radius;
+
+	shot_MaxRange = curAIShotData->Shot_MaxRange;
+	shot_MinRange = curAIShotData->Shot_MinRange;
+
+	shot_MaxDmg = curAIShotData->Shot_MaxDmg;
+	shot_MinDmg = curAIShotData->Shot_MinDmg;
+
+	shot_MaxCount = curAIShotData->Shot_MaxCount;
+
+	shot_Delay = curAIShotData->Shot_ShootDelay;
+
+	// 현재 반동은 최대로 시작
+	recoil_Radius = recoilMax_Radius;
+}
+
+bool UAIWeaponComponent::AITypeSniperCheck()
+{
+	if (type == Enemy_Name::SNIPER)
+	{
+		return true;
+	}
+	return false;
 }
