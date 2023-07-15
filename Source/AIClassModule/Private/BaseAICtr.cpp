@@ -13,6 +13,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
+#include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
@@ -92,6 +93,8 @@ void ABaseAICtr::Tick(float DeltaSeconds)
 {
 	m_character = Cast<ABaseCharacter>(GetPawn());
 	BlackboardComponent = Blackboard;
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	SetFocus(PlayerPawn);
 	if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
 		bIsPlayerDetected = false;
