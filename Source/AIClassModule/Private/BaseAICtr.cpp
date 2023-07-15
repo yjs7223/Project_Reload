@@ -4,7 +4,9 @@
 #include "BaseAICtr.h"
 #include "ST_Range.h"
 #include "BaseCharacter.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -25,13 +27,21 @@ ABaseAICtr::ABaseAICtr()
 	SetPerceptionComponent(*CreateOptionalDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception")));
 	
 
-	/*static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
 	if (DT_RangeDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
 
+	//BT
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/JHB/BTBt.BTBt'"));
+	if (BTObject.Succeeded())
+	{
+		btree = BTObject.Object;
+		UE_LOG(LogTemp, Warning, TEXT("BehaviorTree Succeed!"));
+	}
+	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackBoard'/Game/JHB/BB_BaseAI.BB_BaseAI'"));
 	if (BB_BaseAIObject.Succeeded())
@@ -55,8 +65,6 @@ void ABaseAICtr::BeginPlay()
 {
 
 	Super::BeginPlay();
-	
-
 	if (GetPerceptionComponent() != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ALL Systems Set!"));
@@ -70,7 +78,8 @@ void ABaseAICtr::BeginPlay()
 void ABaseAICtr::OnPossess(APawn* pPawn)
 {
 	Super::OnPossess(pPawn);
-
+	RunBehaviorTree(btree);
+	behavior_tree_component->StartTree(*btree);
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	if (UseBlackboard(BBAsset, BlackboardComponent))
 	{
@@ -90,9 +99,11 @@ void ABaseAICtr::Tick(float DeltaSeconds)
 	if (bIsPlayerDetected)
 	{
 		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-		
+		BlackboardComponent->SetValueAsObject("Target", m_character);
 	}
+	
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
+	
 }
 
 FRotator ABaseAICtr::GetControlRotation() const

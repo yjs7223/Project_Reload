@@ -34,7 +34,7 @@ class AICLASSMODULE_API AAICommander : public AAIController
 public:
 	// Sets default values for this actor's properties
 	AAICommander();
-
+	virtual void OnPossess(APawn* pPawn) override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -63,7 +63,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> AILocation;
+		TArray<float> Sup_Array;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -73,9 +73,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UBlackboardData* BB_AICommander;
+		class UBehaviorTreeComponent* behavior_tree_component;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UBlackboardData* BB_BaseAI;
+		class UBehaviorTree* btree;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBlackboardData* BB_AICommander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAIController* BaseAI_Ctr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -88,8 +90,18 @@ public:
 		float sup_sharerange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharetime;
-
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		FVector MaxSupLoc;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_value;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		UObject* Target;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool sightin;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool subenbool;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		int subenNum;
 public:
 	UFUNCTION()
 		void ListSet();
@@ -98,11 +110,13 @@ public:
 	UFUNCTION()
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()
-		void ListTickSet(ASubEncounterSpace* sub);
+		void ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en);
 	UFUNCTION()
-		void SuppressionShare();
+		void SuppressionShare(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void SetDataTable(FName EnemyName);
+	UFUNCTION()
+		void TargetTickSet(ASubEncounterSpace* sub);
 
 };
 

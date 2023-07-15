@@ -279,7 +279,7 @@ void UPlayerWeaponComponent::Fire()
 		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
 	}
 
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel2, param))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel3, param))
 	{
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
