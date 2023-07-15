@@ -32,6 +32,10 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UDataTable* DT_Range;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBehaviorTreeComponent* behavior_tree_component;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBehaviorTree* btree;
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float m_SightRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
