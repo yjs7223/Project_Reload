@@ -209,7 +209,6 @@ void AAICommander::ListSet()
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
 					Blackboard->SetValueAsBool("CmdAI_Active", true);
-					subenbool = true;
 					if (!MapList_Start)
 					{
 						ListStartSet(Cast<ASubEncounterSpace>(sub));
