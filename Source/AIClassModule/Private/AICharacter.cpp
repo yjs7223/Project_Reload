@@ -1,7 +1,9 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AICharacter.h"
+#include "AI_Controller.h"
 #include "AIWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "AICharacterMoveComponent.h"
@@ -19,7 +21,8 @@ AAICharacter::AAICharacter()
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
-	
+	AIControllerClass = AAI_Controller::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())

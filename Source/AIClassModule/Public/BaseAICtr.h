@@ -27,7 +27,7 @@ protected:
 
 	virtual void OnPossess(APawn* pPawn) override;
 	virtual void Tick(float DeltaSeconds) override;
-	virtual FRotator GetControlRotation()const override;
+	//virtual FRotator GetControlRotation()const override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)

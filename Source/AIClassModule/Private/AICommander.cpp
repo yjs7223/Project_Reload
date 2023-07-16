@@ -19,7 +19,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BaseAICtr.h"
+#include "AI_Controller.h"
 
 
 
@@ -94,7 +94,7 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 		ACharacter = Cast<AAICharacter>(subAi);
 		if (ACharacter)
 		{
-			AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 		}
 		if (AIController)
 		{
@@ -112,7 +112,7 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 							ACharacter = Cast<AAICharacter>(ai);
 							if (ACharacter)
 							{
-								AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+								AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 							}
 							if (AIController)
 							{
@@ -139,7 +139,7 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 							ACharacter = Cast<AAICharacter>(aichk);
 							if (ACharacter)
 							{
-								AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+								AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 							}
 							if (AIController)
 							{
@@ -162,7 +162,7 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 							ACharacter = Cast<AAICharacter>(sightai);
 							if (ACharacter)
 							{
-								AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+								AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 							}
 							if (AIController)
 							{
@@ -249,7 +249,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		ACharacter = Cast<AAICharacter>(subAi);
 		if (ACharacter)
 		{
-			AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 		}
 		if (AIController)
 		{
@@ -283,7 +283,7 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 			ACharacter = Cast<AAICharacter>(ai);
 			if (ACharacter)
 			{
-				AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ai)->GetController());
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
 			}
 			if (AIController)
 			{
@@ -337,7 +337,7 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 			ACharacter = Cast<AAICharacter>(ac);
 			if (ACharacter)
 			{
-				AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ac)->GetController());
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ac)->GetController());
 			}
 			if (AIController)
 			{
