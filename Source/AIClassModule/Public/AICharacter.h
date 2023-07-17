@@ -14,7 +14,7 @@
 UENUM(BlueprintType)
 enum class CombatState : uint8
 {
-	PATROL, MOVECOVER, MOVE, INCOVER, ATTACK
+	PATROL, MOVECOVER, MOVE, ATTACK, INCOVER
 };
 
 UCLASS()

@@ -10,7 +10,6 @@ UENUM(BlueprintType)
 enum class ECombat : uint8
 {
 	Patrol 	UMETA(DisplayName = "Patrol"),
-	Alaramed 	UMETA(DisplayName = "Alaramed"),
 	MoveCover 	UMETA(DisplayName = "MoveCover"),
 	Move 	UMETA(DisplayName = "Move"),
 	Attack 	UMETA(DisplayName = "Attack"),
