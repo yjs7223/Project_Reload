@@ -29,7 +29,7 @@ AAI_Controller::AAI_Controller()
 	}
 
 	//BT
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/JHB/BTBt.BTBt'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/SGJ/BT_Main.BT_Main'"));
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
@@ -51,8 +51,8 @@ AAI_Controller::AAI_Controller()
 void AAI_Controller::BeginPlay()
 {
 	Super::BeginPlay();
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	SetFocus(PlayerPawn); // 플레이어 폰의 위치로 SetFocus
+	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	SetFocus(PlayerPawn);*/
 	m_character = Cast<ABaseCharacter>(GetPawn());
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
@@ -64,23 +64,48 @@ void AAI_Controller::BeginPlay()
 	}
 		
 }
+void AAI_Controller::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
+{
+	for (size_t i = 0; i < DetectedPawns.Num(); i++)
+	{
+		if (DetectedPawns[i]->ActorHasTag("Player"))
+		{
+			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
+			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+			bIsPlayerDetected = true;
+		}
+	}
+}
 
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	m_character = Cast<ABaseCharacter>(GetPawn());
 	BlackboardComponent = Blackboard;
 
 
 	if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
+		BlackboardComponent->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}
 	if (bIsPlayerDetected)
 	{
+		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		BlackboardComponent->SetValueAsObject("Target", m_character);
 	}
 
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
+}
+
+FRotator AAI_Controller::GetControlRotation() const
+{
+	if (GetPawn() == nullptr)
+	{
+		return FRotator(0.f, 0.f, 0.f);
+	}
+
+	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
 }
 
 void AAI_Controller::SetEnemy(FName EnemyName)
@@ -107,15 +132,4 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 	}
 }
 
-void AAI_Controller::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
-{
-	for (size_t i = 0; i < DetectedPawns.Num(); i++)
-	{
-		if (DetectedPawns[i]->ActorHasTag("Player"))
-		{
-			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
-			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-			bIsPlayerDetected = true;
-		}
-	}
-}
+

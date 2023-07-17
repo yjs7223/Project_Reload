@@ -20,6 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+	virtual FRotator GetControlRotation()const override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
