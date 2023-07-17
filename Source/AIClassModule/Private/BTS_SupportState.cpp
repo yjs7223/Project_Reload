@@ -9,6 +9,7 @@
 
 UBTS_SupportState::UBTS_SupportState()
 {
+	NodeName = TEXT("SupportState");
 	Dis_start = false;
 }
 
@@ -16,6 +17,11 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
+	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
+	if (nullptr == ControllingPawn) return;
+
+	UWorld* World = ControllingPawn->GetWorld();
+	if (nullptr == World) return;
 	
 	for (auto sup : Cast<AAICommander>(commander)->List_Suppression)
 	{
