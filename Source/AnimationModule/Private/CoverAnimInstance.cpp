@@ -51,7 +51,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			mLastPeekingState = mPeekingState;
 		}
 
-		mIsPeeking = mLastPeekingState != EPeekingState::None;
+		mIsPeeking = mPeekingState != EPeekingState::None;
 		mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
 	}
 
