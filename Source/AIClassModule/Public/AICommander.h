@@ -81,7 +81,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAIController* BaseAI_Ctr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class ABaseAICtr* AIController;
+		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
