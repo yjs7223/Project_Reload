@@ -47,10 +47,7 @@ void UCoverComponent::BeginPlay()
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
 	capsule = owner->GetCapsuleComponent();
-	UInputComponent* input = owner->FindComponentByClass<UInputComponent>();
 
-	input->BindAction("Aim", IE_Pressed, this, &UCoverComponent::StartPeeking);
-	input->BindAction("Aim", IE_Released, this, &UCoverComponent::StopPeeking);
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 	if (m_PathFollowingComp == nullptr)
 	{
@@ -104,10 +101,12 @@ void UCoverComponent::PlayCover()
 {
 	if (EPathFollowingStatus::Type::Moving == m_PathFollowingComp->GetStatus()) {
 		m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
+		StopCover();
 		return;
 	}
 
 	if (m_CanCoverPoint != FVector::ZeroVector) {
+		m_Inputdata->IsRuning = true;
 		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
@@ -373,6 +372,11 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 
 }
 
+void UCoverComponent::SetCanCoverPoint(FVector point)
+{
+	m_CanCoverPoint = point;
+}
+
 bool UCoverComponent::IsCover()
 {
 	return m_IsCover;
@@ -505,7 +509,7 @@ bool UCoverComponent::StartCover()
 
 void UCoverComponent::StopCover()
 {
-	//m_Movement->SetPlaneConstraintEnabled(false);
+	m_Inputdata->IsRuning = false;
 	m_CoverWall = nullptr;
 	m_IsCover = false;
 	m_FaceRight = true;
@@ -703,6 +707,7 @@ void UCoverComponent::StopPeeking()
 void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
 	if (!Result.IsSuccess()) return;
+
 
 	StartCover();
 	FRotator rot = UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CoverWall->GetActorLocation());

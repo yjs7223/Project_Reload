@@ -34,6 +34,11 @@ public:
 	* @return 커버가능한점을 반환합니다 FVector::ZeroVector면 실패입니다
 	*/
 	FVector CalculateCoverPoint(float DeltaTime);
+	/*
+	* 커버 가능한 점을 세팅합니다
+	* @param point 커버할 지점 입니다
+	*/
+	void SetCanCoverPoint(FVector point);
 
 	bool IsCover();
 	bool IsTurnWait();
@@ -46,6 +51,8 @@ public:
 	ECoverShootingState getCoverSootingState();
 	EPeekingState getPeekingState();
 
+	void StartPeeking();
+	void StopPeeking();
 
 	UFUNCTION(BlueprintCallable)
 	void StopCover();
@@ -58,8 +65,6 @@ protected:
 	void StopCornering(float DeltaTim);
 	void PlayingCornering(float DeltaTim);
 	void BeCrouch(float deltaTime);
-	void StartPeeking();
-	void StopPeeking();
 	void AIMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
 
 private:

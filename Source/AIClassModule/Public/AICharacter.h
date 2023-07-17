@@ -23,7 +23,7 @@ class AICLASSMODULE_API AAICharacter : public ABaseCharacter
 	GENERATED_BODY()
 public:
 	// Sets default values for this character's properties
-	AAICharacter();
+	AAICharacter(const FObjectInitializer& ObjectInitializer);
 
 	// 자신의 스포너
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
