@@ -74,7 +74,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class UBlackboardComponent* BlackboardComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		class ABaseAICtr* AIController;
+		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class AAICharacter* ACharacter;
 

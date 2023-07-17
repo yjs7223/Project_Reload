@@ -7,7 +7,7 @@
 #include "ST_Suppression.h"
 #include "AICharacter.h"
 #include "AIController.h"
-#include "BaseAICtr.h"
+#include "AI_Controller.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -48,7 +48,7 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			ACharacter = Cast<AAICharacter>(GetOwner());
 			if (ACharacter)
 			{
-				AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 			}
 			if (AIController)
 			{
@@ -109,14 +109,14 @@ void UAIStatComponent::SuppresionPoint()
 	ACharacter = Cast<AAICharacter>(GetOwner());
 	if (ACharacter)
 	{
-		AIController = Cast<ABaseAICtr>(Cast<AAICharacter>(ACharacter)->GetController());
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 	}
 	if (AIController)
 	{
 		if (AIController->BlackboardComponent)
 		{
 			BlackboardComponent = AIController->BlackboardComponent;
-			if (Cast<ABaseAICtr>(Cast<AAICharacter>(GetOwner())->GetController())->UseBlackboard(AIController->BBAsset, BlackboardComponent))
+			if (Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController())->UseBlackboard(AIController->BBAsset, BlackboardComponent))
 			{
 				switch (BlackboardComponent->GetValueAsEnum("Combat"))
 				{
