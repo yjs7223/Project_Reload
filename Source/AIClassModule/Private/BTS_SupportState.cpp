@@ -2,7 +2,7 @@
 
 
 #include "BTS_SupportState.h"
-#include "BaseAICtr.h"
+#include "AI_Controller.h"
 #include "AICommander.h"
 #include "AICharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -48,7 +48,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			ACharacter = Cast<AAICharacter>(*Cast<AAICommander>(commander)->List_Division.FindKey(Min_Dis_Key));
 			if (ACharacter)
 			{
-				AIController = Cast<ABaseAICtr>(Cast<AAICharacter>((*Cast<AAICommander>(commander)->List_Division.FindKey(Min_Dis_Key)))->GetController());
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>((*Cast<AAICommander>(commander)->List_Division.FindKey(Min_Dis_Key)))->GetController());
 			}
 			if (AIController)
 			{
@@ -94,7 +94,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			ACharacter = Cast<AAICharacter>(*Cast<AAICommander>(commander)->List_Division.FindKey(Min_Dis_Key));
 			if (ACharacter)
 			{
-				AIController = Cast<ABaseAICtr>(Cast<AAICharacter>((*Cast<AAICommander>(commander)->List_Division.FindKey(Min_Dis_Key)))->GetController());
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>((*Cast<AAICommander>(commander)->List_Division.FindKey(Min_Dis_Key)))->GetController());
 			}
 			if (AIController)
 			{

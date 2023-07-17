@@ -3,7 +3,7 @@
 
 #include "BTTaskNode_InCover.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BaseAICtr.h"
+#include "AI_Controller.h"
 
 
 UBTTaskNode_InCover::UBTTaskNode_InCover()
