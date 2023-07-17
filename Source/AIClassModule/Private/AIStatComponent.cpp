@@ -123,14 +123,14 @@ void UAIStatComponent::SuppresionPoint()
 				case 0:
 					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1.2;
 					break;
+				case 1:
 				case 2:
-				case 3:
 					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1;
 					break;
-				case 4:
+				case 3:
 					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.7;
 					break;
-				case 5:
+				case 4:
 					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.5;
 					break;
 				}
