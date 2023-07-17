@@ -73,6 +73,7 @@ void ABaseAICtr::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Component"));
 	}
+
 }
 
 void ABaseAICtr::OnPossess(APawn* pPawn)
@@ -85,6 +86,12 @@ void ABaseAICtr::OnPossess(APawn* pPawn)
 	{
 		if (!RunBehaviorTree(BTAsset))
 			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
+	}
+
+	APawn* ControlledPawn = GetPawn();
+	if (ControlledPawn != nullptr)
+	{
+		ControlledPawn->SetActorRotation(GetControlRotation());
 	}
 }
 
@@ -106,15 +113,15 @@ void ABaseAICtr::Tick(float DeltaSeconds)
 	
 }
 
-FRotator ABaseAICtr::GetControlRotation() const
-{
-	if (GetPawn() == nullptr)
-	{
-		return FRotator(0.f, 0.f, 0.f);
-	}
-
-	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
-}
+//FRotator ABaseAICtr::GetControlRotation() const
+//{
+//	if (GetPawn() == nullptr)
+//	{
+//		return FRotator(0.f, 0.f, 0.f);
+//	}
+//
+//	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
+//}
 
 void ABaseAICtr::SetEnemy(FName EnemyName)
 {
