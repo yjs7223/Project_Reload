@@ -28,6 +28,10 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		bool shot_State;
 
+	// AI 사격 가능 상태
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		bool use_Shot_State;
+
 	// AI 캐릭터
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		AAICharacter* owner;

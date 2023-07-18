@@ -33,6 +33,7 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		shotFXNiagara = ShotFXNiagara.Object;
 	}
+	use_Shot_State = true;
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -124,13 +125,6 @@ void UAIWeaponComponent::ShotAI()
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
-
-	// 총 공격수만큼 사격했다면 사격 상태 해제
-	if (cur_Shot_Count <= 0)
-	{
-		shot_State = false;
-		recoil_Radius = recoilMax_Radius;
-	}
 }
 
 void UAIWeaponComponent::ShotAITimer(float p_Time)
@@ -153,11 +147,20 @@ void UAIWeaponComponent::ShotAITimer(float p_Time)
 void UAIWeaponComponent::ShotAIStart()
 {
 	shot_State = true;
+
+	// 총 공격수만큼 사격했다면 사격 상태 해제
+	if (cur_Shot_Count <= 0)
+	{
+		shot_State = false;
+		use_Shot_State = false;
+		recoil_Radius = recoilMax_Radius;
+	}
 }
 
 void UAIWeaponComponent::ShotAIStop()
 {
 	shot_State = false;
+	use_Shot_State = true;
 	cur_Shot_Count = shot_MaxCount;
 	recoil_Radius = recoilMax_Radius;
 }
@@ -165,6 +168,7 @@ void UAIWeaponComponent::ShotAIStop()
 void UAIWeaponComponent::ReloadAI()
 {
 	cur_Shot_Count = shot_MaxCount;
+	use_Shot_State = true;
 }
 
 void UAIWeaponComponent::AITypeSetting()

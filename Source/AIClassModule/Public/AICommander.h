@@ -10,7 +10,6 @@ UENUM(BlueprintType)
 enum class ECombat : uint8
 {
 	Patrol 	UMETA(DisplayName = "Patrol"),
-	Alaramed 	UMETA(DisplayName = "Alaramed"),
 	MoveCover 	UMETA(DisplayName = "MoveCover"),
 	Move 	UMETA(DisplayName = "Move"),
 	Attack 	UMETA(DisplayName = "Attack"),
@@ -60,6 +59,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> CoverArray;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
