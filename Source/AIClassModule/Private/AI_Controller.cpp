@@ -76,9 +76,9 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 
 		bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
 	}
-	else {
+	/*else {
 		bIsPlayerDetected = false;
-	}
+	}*/
 
 	/*for (size_t i = 0; i < DetectedPawns.Num(); i++)
 	{
@@ -112,10 +112,10 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		BlackboardComponent->SetValueAsObject("Target", m_character);
 	}
-	else
+	/*else
 	{
 		BlackboardComponent->SetValueAsObject("Target", nullptr);
-	}
+	}*/
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
@@ -140,7 +140,6 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->LoseSightRadius = RangeData->LoseSight_Radius;
 		SightConfig->PeripheralVisionAngleDegrees = RangeData->Sight_Angle;
 		SightConfig->SetMaxAge(RangeData->Sight_Age);
-		SightConfig->AutoSuccessRangeFromLastSeenLocation = 10;
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
