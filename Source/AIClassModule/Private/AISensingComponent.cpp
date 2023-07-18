@@ -14,14 +14,14 @@ UAISensingComponent::UAISensingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// µ¥ÀÌÅÍ Å×ÀÌºí »ðÀÔ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½
 	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
 	if (DataTable.Succeeded())
 	{
 		AIRangeData = DataTable.Object;
 	}
 
-	// ¶óÀÌÇÃ µ¥ÀÌÅÍ °¡Á®¿À±â
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	curAIRangeData = AIRangeData->FindRow<FST_Range>("Rifle_E", TEXT(""));
 }
 
@@ -83,28 +83,28 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 
 bool UAISensingComponent::ShotSenseRange()
 {
-	// ÈÄ¸é
+	// ï¿½Ä¸ï¿½
 	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
-	// ¿·¸é
+	// ï¿½ï¿½ï¿½ï¿½
 	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
-	// Á¤¸é
+	// ï¿½ï¿½ï¿½ï¿½
 	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
 
-	// °¡Àå °¡±î¿î ÈÄ¸éºÎÅÍ °Ë»ç
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
 	if (IsPlayerInsideFanArea(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
-	// ´ÙÀ½ ¿·¸é °Ë»ç
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
-	// ¸¶Áö¸· Á¤¸é °Ë»ç
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
