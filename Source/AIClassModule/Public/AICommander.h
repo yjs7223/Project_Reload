@@ -116,6 +116,9 @@ public:
 		void SetDataTable(FName EnemyName);
 	UFUNCTION()
 		void TargetTickSet(ASubEncounterSpace* sub);
+	/*UFUNCTION()
+		void CoverPointList();*/
+
 
 };
 
