@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "AI_Controller.generated.h"
 
 /**
@@ -40,12 +41,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		bool bIsPlayerPerception = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float DistanceToPlayer = 0.0f;
 
 public:
 	UFUNCTION()//BlueprintCallable
 		void SetEnemy(FName EnemyName);
 	UFUNCTION()
-		void OnPawnDetected(const TArray<AActor*>& DetectedPawns);
+		void OnTargetDetected(AActor* actor, FAIStimulus const Stimulus);
 	
 };
