@@ -20,7 +20,7 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
-
+#include "Components/BoxComponent.h"
 
 
 
@@ -217,6 +217,7 @@ void AAICommander::ListSet()
 					{
 						ListTickSet(Cast<ASubEncounterSpace>(sub), Cast<AEncounterSpace>(en));
 						TargetTickSet(Cast<ASubEncounterSpace>(sub));
+						CoverPointSubEn(Cast<ASubEncounterSpace>(sub));
 					}
 				}
 			}
@@ -364,7 +365,27 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 
 
 }
+void AAICommander::CoverPointSubEn(ASubEncounterSpace* sub)
+{
+	CoverSubEnArray.Reset();
+	for (auto cover : CoverArray)
+	{
+		if ((sub->GetActorLocation().X - sub->CollisionMesh->GetScaledBoxExtent().X) >= cover.X)
+		{
+			if ((sub->GetActorLocation().X + sub->CollisionMesh->GetScaledBoxExtent().X) <= cover.X)
+			{
+				if ((sub->GetActorLocation().Y - sub->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
+				{
+					if ((sub->GetActorLocation().Y + sub->CollisionMesh->GetScaledBoxExtent().Y) <= cover.Y)
+					{
+						CoverSubEnArray.Add(cover);
+					}
+				}
+			}
+		}
 
+	}
+}
 
 
 
