@@ -76,9 +76,9 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 
 		bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
 	}
-	else {
+	/*else {
 		bIsPlayerDetected = false;
-	}
+	}*/
 
 	/*for (size_t i = 0; i < DetectedPawns.Num(); i++)
 	{

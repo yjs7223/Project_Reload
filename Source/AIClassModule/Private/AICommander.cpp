@@ -13,6 +13,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "EngineGlobals.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -21,6 +22,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
 #include "Components/BoxComponent.h"
+#include "Engine/EngineTypes.h"
+
 
 
 
@@ -55,6 +58,7 @@ AAICommander::AAICommander()
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
 	AddIndex = 0;
+	enemycover = false;
 	/*static ConstructorHelpers::FObjectFinder<AAIController> BaseAI_Ctr_Object(TEXT("AIController'/Game/JHB/BaseAI_Ctr.BaseAI_Ctr'"));
 	if (BaseAI_Ctr_Object.Succeeded())
 	{
@@ -218,6 +222,7 @@ void AAICommander::ListSet()
 						ListTickSet(Cast<ASubEncounterSpace>(sub), Cast<AEncounterSpace>(en));
 						TargetTickSet(Cast<ASubEncounterSpace>(sub));
 						CoverPointSubEn(Cast<ASubEncounterSpace>(sub));
+						CoverPointEnemy();
 					}
 				}
 			}
@@ -380,7 +385,14 @@ void AAICommander::CoverPointSubEn(ASubEncounterSpace* sub)
 					{
 						if ((sub->GetActorLocation().Y + sub->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
 						{
-							CoverSubEnArray.Add(cover);
+							if ((sub->GetActorLocation().Z - sub->CollisionMesh->GetScaledBoxExtent().Z) <= cover.Z)
+							{
+								if ((sub->GetActorLocation().Z + sub->CollisionMesh->GetScaledBoxExtent().Z) >= cover.Z)
+								{
+									CoverSubEnArray.Add(cover);
+								}
+							}
+							
 						}
 					}
 				}
@@ -389,6 +401,46 @@ void AAICommander::CoverPointSubEn(ASubEncounterSpace* sub)
 		}
 	}
 	
+}
+
+void AAICommander::CoverPointEnemy()
+{
+	CoverEnemyArray.Reset();
+	if (!CoverArray.IsEmpty())
+	{
+		if (!CoverSubEnArray.IsEmpty())
+		{
+			for (auto subencover : CoverSubEnArray)
+			{
+				FCollisionQueryParams collisionParams;
+				collisionParams.AddIgnoredActor(this);
+				if (GetWorld()->LineTraceMultiByChannel(results, subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation(), ECC_Visibility, collisionParams))
+				{
+					enemycover = false;
+					for (auto result : results)
+					{
+						if (result.GetActor()->ActorHasTag("Cover"))
+						{
+							if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
+								if (FVector::Distance(subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation()) >= 500.0f)
+								{
+									enemycover = true;
+									
+								}
+							}
+						}
+					}
+					if (enemycover)
+					{
+						CoverEnemyArray.Add(subencover);
+					}
+				}
+			}
+		}
+	}
 }
 
 

@@ -108,6 +108,10 @@ public:
 		TArray<FVector> CoverEnemyArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<FVector> CoverCompliteArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FHitResult> results;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool enemycover;
 public:
 	UFUNCTION()
 		void ListSet();
@@ -125,8 +129,8 @@ public:
 		void TargetTickSet(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void CoverPointSubEn(ASubEncounterSpace* sub);
-	/*UFUNCTION()
-		void CoverPointEnemy(ASubEncounterSpace* sub);*/
+	UFUNCTION()
+		void CoverPointEnemy();
 
 
 };
