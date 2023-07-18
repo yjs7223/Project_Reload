@@ -368,23 +368,27 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 void AAICommander::CoverPointSubEn(ASubEncounterSpace* sub)
 {
 	CoverSubEnArray.Reset();
-	for (auto cover : CoverArray)
+	if (!CoverArray.IsEmpty())
 	{
-		if ((sub->GetActorLocation().X - sub->CollisionMesh->GetScaledBoxExtent().X) >= cover.X)
+		for (auto cover : CoverArray)
 		{
-			if ((sub->GetActorLocation().X + sub->CollisionMesh->GetScaledBoxExtent().X) <= cover.X)
+			if ((sub->GetActorLocation().X - sub->CollisionMesh->GetScaledBoxExtent().X) <= cover.X)
 			{
-				if ((sub->GetActorLocation().Y - sub->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
+				if ((sub->GetActorLocation().X + sub->CollisionMesh->GetScaledBoxExtent().X) >= cover.X)
 				{
-					if ((sub->GetActorLocation().Y + sub->CollisionMesh->GetScaledBoxExtent().Y) <= cover.Y)
+					if ((sub->GetActorLocation().Y - sub->CollisionMesh->GetScaledBoxExtent().Y) <= cover.Y)
 					{
-						CoverSubEnArray.Add(cover);
+						if ((sub->GetActorLocation().Y + sub->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
+						{
+							CoverSubEnArray.Add(cover);
+						}
 					}
 				}
 			}
-		}
 
+		}
 	}
+	
 }
 
 

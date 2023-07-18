@@ -5,12 +5,15 @@
 #include "ST_Range.h"
 #include "BaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Hearing.h"
 
 
@@ -64,17 +67,32 @@ void AAI_Controller::BeginPlay()
 	}
 		
 }
-void AAI_Controller::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
+void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 {
-	for (size_t i = 0; i < DetectedPawns.Num(); i++)
+	if (auto const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 	{
+		DistanceToPlayer = GetPawn()->GetDistanceTo(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+
+		bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+	}
+	else {
+		bIsPlayerDetected = false;
+	}
+
+	/*for (size_t i = 0; i < DetectedPawns.Num(); i++)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, DetectedPawns[i]->GetName());
 		if (DetectedPawns[i]->ActorHasTag("Player"))
 		{
 			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
 			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+			
 			bIsPlayerDetected = true;
 		}
 	}
+	if(SightConfig->age)*/
+
 }
 
 void AAI_Controller::Tick(float DeltaSeconds)
@@ -94,7 +112,10 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		BlackboardComponent->SetValueAsObject("Target", m_character);
 	}
-
+	else
+	{
+		BlackboardComponent->SetValueAsObject("Target", nullptr);
+	}
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
@@ -119,12 +140,13 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->LoseSightRadius = RangeData->LoseSight_Radius;
 		SightConfig->PeripheralVisionAngleDegrees = RangeData->Sight_Angle;
 		SightConfig->SetMaxAge(RangeData->Sight_Age);
+		SightConfig->AutoSuccessRangeFromLastSeenLocation = 10;
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
 		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
-		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnPawnDetected);
+		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
 		/*SightConfig->SightRadius = RangeData->Sense_Radius;
 		SightConfig->SightRadius = 360.0f - RangeData->Sight_Angle;

@@ -125,6 +125,8 @@ public:
 		void TargetTickSet(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void CoverPointSubEn(ASubEncounterSpace* sub);
+	/*UFUNCTION()
+		void CoverPointEnemy(ASubEncounterSpace* sub);*/
 
 
 };
