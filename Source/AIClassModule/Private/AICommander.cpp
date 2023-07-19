@@ -464,8 +464,8 @@ void AAICommander::CoverPointEnemy()
 					{
 						if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
-							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
+							//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
+							//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
 							if (FVector::Distance(subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation()) >= 500.0f)
 							{
 								enemycover = true;
