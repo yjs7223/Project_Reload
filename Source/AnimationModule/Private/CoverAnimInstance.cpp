@@ -60,7 +60,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
 	}
 	
-	if (mIsCover && !mIsPeeking && !mIsCoverShooting && (m_Input->getInput()->IsAiming || m_Input->getInput()->IsFire)) {
+	if (mIsCover && !mIsPeeking && !mIsCoverShooting && mIsAiming || mIsFire) {
 		mSpinRotater = FRotator(0.0, 180.0, 0.0);
 	}
 	else if (mWeapon && mIsReload && !mIsPeeking) {
@@ -70,7 +70,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mSpinRotater = FRotator(0.0, 0.0, 0.0);
 	}
 
-	mSpinRotater = FRotator(0.0, 0.0, 0.0);
+
 	SetHandleing(DeltaSeconds);
 }
 
