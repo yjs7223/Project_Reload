@@ -307,7 +307,7 @@ void UPlayerWeaponComponent::Fire()
 
 void UPlayerWeaponComponent::StartAiming()
 {
-	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 90.0f;
+	//Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 90.0f;
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
@@ -318,7 +318,7 @@ void UPlayerWeaponComponent::StartAiming()
 void UPlayerWeaponComponent::StopAiming()
 {
 	isAiming = false;
-	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 120.0f;
+	//Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 120.0f;
 }
 
 void UPlayerWeaponComponent::StartFire()

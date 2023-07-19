@@ -3,7 +3,10 @@
 
 #include "AISpawner.h"
 #include "AICharacter.h"
+#include "AI_Controller.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
+#include "AICommander.h"
 
 // Sets default values
 AAISpawner::AAISpawner()
@@ -162,3 +165,21 @@ void AAISpawner::SpawnEnable(bool p_flag)
 	check_Overlap = p_flag;
 }
 
+void AAISpawner::SpawnLastPoint(float DeltaTime)
+{
+	if (Cast<AAICommander>(commander)->Cmd_SightOut)
+	{
+		pointTime += DeltaTime;
+		if (pointTime >= 1 && !pointSpawnCheck)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+			// Spawn
+			GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+			pointSpawnCheck = true;
+			pointTime = 0;
+		}
+	}
+}

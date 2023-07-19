@@ -24,13 +24,11 @@ class AICLASSMODULE_API AAICharacter : public ABaseCharacter
 	GENERATED_BODY()
 public:
 	// Sets default values for this character's properties
-	AAICharacter();
+	AAICharacter(const FObjectInitializer& ObjectInitializer);
 
 	// 자신의 스포너
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AAISpawner* mySpawner;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AActor> lastPoint;
 	
 
 	//간접 공격 감지 캡슐 매쉬
@@ -85,6 +83,4 @@ public:
 	// 순찰 대기 행동
 	UFUNCTION(BlueprintCallable, Category = "Anim")
 		void IdleAnim();
-	UFUNCTION(BlueprintCallable, Category = "Spawn")
-		void SpawnLastPoint();
 };

@@ -17,7 +17,7 @@
 #include "AISpawner.h"
 
 
-AAICharacter::AAICharacter()
+AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
@@ -90,15 +90,5 @@ void AAICharacter::IdleAnim()
 {
 	//PlayAnimMontage(idle_Montage, 1.0f);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
-}
-
-void AAICharacter::SpawnLastPoint()
-{
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	// Spawn
-	GetWorld()->SpawnActor<AActor>(lastPoint, GetActorTransform(), SpawnParams);
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 }
 

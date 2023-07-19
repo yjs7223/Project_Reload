@@ -10,9 +10,10 @@
 #include "PlayerStatComponent.h"
 #include "PlayerInputComponent.h"
 #include "CoverComponent.h"
+#include "CameraControllComponent.h"
 
 
-APlayerCharacter::APlayerCharacter()
+APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())
@@ -38,7 +39,7 @@ APlayerCharacter::APlayerCharacter()
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
-
+	m_CameraControll = CreateDefaultSubobject<UCameraControllComponent>(TEXT("CameraControll"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 
 
