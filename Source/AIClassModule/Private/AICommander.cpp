@@ -66,6 +66,7 @@ AAICommander::AAICommander()
 		BaseAI_Ctr = BaseAI_Ctr_Object.Object;
 	}*/
 	SightIn_CHK = false;
+	Patrol_CHK = false;
 	Cmd_SightOut = false;
 	SetDataTable("Rifle_E");
 }
@@ -223,6 +224,8 @@ void AAICommander::ListSet()
 						TargetTickSet(Cast<ASubEncounterSpace>(sub));
 						CoverPointSubEn(Cast<ASubEncounterSpace>(sub));
 						CoverPointEnemy();
+						SiegeCoverPoint();
+						DetourCoverPoint();
 					}
 				}
 			}
@@ -250,6 +253,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		List_Combat.Add(AddIndex, ECombat::Patrol);
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
+		List_CoverPoint.Add(AddIndex, FVector(0,0,0));
 		
 		AIController = nullptr;
 		ACharacter = Cast<AAICharacter>(subAi);
@@ -330,7 +334,36 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 	}
 	if (SightIn_CHK == false)
 	{
-		Cmd_SightOut = true;
+		Patrol_CHK = false;
+		for (auto enemy : List_Division)
+		{
+			AIController = nullptr;
+			ACharacter = Cast<AAICharacter>(enemy.Key);
+			if (ACharacter)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(enemy.Key)->GetController());
+			}
+			if (AIController)
+			{
+				if (AIController->BlackboardComponent)
+				{
+					BlackboardComponent = AIController->BlackboardComponent;
+					if (BlackboardComponent->GetValueAsEnum("Combat") == 0)
+					{
+						Patrol_CHK = true;
+					}
+				}
+			}
+		}
+		if (Patrol_CHK)
+		{
+			Cmd_SightOut = true;
+		}
+		else
+		{
+			Cmd_SightOut = false;
+		}
+		
 	}
 }
 
@@ -423,25 +456,23 @@ void AAICommander::CoverPointEnemy()
 			{
 				FCollisionQueryParams collisionParams;
 				collisionParams.AddIgnoredActor(this);
-				if (GetWorld()->LineTraceMultiByChannel(results, subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation(), ECC_Visibility, collisionParams))
+				if (GetWorld()->LineTraceSingleByChannel(result, subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation(), ECC_Visibility, collisionParams))
 				{
 					enemycover = false;
-					for (auto result : results)
+
+					if (result.GetActor()->ActorHasTag("Cover"))
 					{
-						if (result.GetActor()->ActorHasTag("Cover"))
+						if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
 						{
-							if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
+							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
+							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
+							if (FVector::Distance(subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation()) >= 500.0f)
 							{
-								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
-								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
-								if (FVector::Distance(subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation()) >= 500.0f)
-								{
-									enemycover = true;
-									
-								}
+								enemycover = true;
 							}
 						}
 					}
+					
 					if (enemycover)
 					{
 						CoverEnemyArray.Add(subencover);
@@ -450,6 +481,67 @@ void AAICommander::CoverPointEnemy()
 			}
 		}
 	}
+}
+
+void AAICommander::SiegeCoverPoint()
+{
+	SiegeCoverArray.Reset();
+	if (!CoverArray.IsEmpty())
+	{
+		if (!CoverSubEnArray.IsEmpty())
+		{
+			if (!CoverEnemyArray.IsEmpty())
+			{
+				for (auto enemy_cover : CoverEnemyArray)
+				{
+					if (IsPlayerInsideFanArea(enemy_cover, 1000, 360, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorForwardVector()))
+					{
+						SiegeCoverArray.Add(enemy_cover);
+					}
+				}
+			}
+		}
+	}
+}
+
+void AAICommander::DetourCoverPoint()
+{
+	DetourCoverArray.Reset();
+	if (!CoverArray.IsEmpty())
+	{
+		if (!CoverSubEnArray.IsEmpty())
+		{
+			if (!CoverEnemyArray.IsEmpty())
+			{
+				for (auto enemy_cover : CoverEnemyArray)
+				{
+					if (IsPlayerInsideFanArea(enemy_cover, 2000, 240, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorForwardVector()))
+					{
+						if (!IsPlayerInsideFanArea(enemy_cover, 2000, 160, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorForwardVector()))
+						{
+							DetourCoverArray.Add(enemy_cover);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+bool AAICommander::IsPlayerInsideFanArea(FVector CoverPoint,float LocationRadius, float FanAngle, FVector FanDirection)
+{
+	FVector playerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+
+	FVector locationToPlayer = playerLocation - CoverPoint;
+
+	float AngleToPlayer = FMath::Acos(FVector::DotProduct(FanDirection, locationToPlayer.GetSafeNormal()));
+
+	if (AngleToPlayer <= FMath::DegreesToRadians(FanAngle) / 2.0f && locationToPlayer.Size2D() <= LocationRadius)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 
