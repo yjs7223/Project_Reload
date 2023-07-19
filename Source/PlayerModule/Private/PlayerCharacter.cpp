@@ -10,6 +10,7 @@
 #include "PlayerStatComponent.h"
 #include "PlayerInputComponent.h"
 #include "CoverComponent.h"
+#include "CameraControllComponent.h"
 
 
 APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -38,7 +39,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
-
+	m_CameraControll = CreateDefaultSubobject<UCameraControllComponent>(TEXT("CameraControll"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 
 

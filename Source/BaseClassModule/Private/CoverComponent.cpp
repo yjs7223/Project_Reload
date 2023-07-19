@@ -9,6 +9,7 @@
 #include "BaseInputComponent.h"
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 #include "PlayerMovable.h"
 #include "WeaponComponent.h"
 #include "EPeekingState.h"
@@ -245,7 +246,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	}
 	//로테이션 가져와서 보간설정
 	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal);
-	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 6.0f));
+	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 11.0f));
 
 	//로테이션이 원하는수치에 비슷해지면 포즈세팅
 	if (owner->GetActorRotation().Vector().Dot(TargetRotation.Vector()) >= 0.999) {
@@ -467,7 +468,6 @@ EPeekingState UCoverComponent::getPeekingState()
 	return mPeekingState;
 }
 
-
 bool UCoverComponent::StartCover()
 {
 	FHitResult result = FHitResult();
@@ -615,6 +615,7 @@ void UCoverComponent::StartPeeking()
 	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 80) return;
 
 
+
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
@@ -638,7 +639,7 @@ void UCoverComponent::StartPeeking()
 		if (!result.GetActor()) return;
 
 		start = start;
-		end = start + forwardVector;
+		end = start + forwardVector * 1.1f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 
 		if (!result.GetActor()) {
@@ -652,7 +653,7 @@ void UCoverComponent::StartPeeking()
 		}
 		else {
 			start = temppos + upVector;
-			end = start + forwardVector;
+			end = start + forwardVector * 1.1f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 			if (!result.GetActor()) {
 				mPeekingState = EPeekingState::FrontRightStart;
@@ -672,7 +673,7 @@ void UCoverComponent::StartPeeking()
 		if (!result.GetActor()) return;
 
 		start = start;
-		end = start + forwardVector;
+		end = start + forwardVector * 1.1f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		if (!result.GetActor()) {
 			if (owner->bIsCrouched) {
@@ -685,7 +686,7 @@ void UCoverComponent::StartPeeking()
 		}
 		else {
 			start = temppos + upVector;
-			end = start + forwardVector;
+			end = start + forwardVector * 1.1f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 			if (!result.GetActor()) {
 				mPeekingState = EPeekingState::FrontLeftStart;
@@ -700,6 +701,8 @@ void UCoverComponent::StartPeeking()
 
 void UCoverComponent::StopPeeking()
 {
+	
+
 	if (!m_IsCover) return;
 	mPeekingState = EPeekingState::None;
 }

@@ -33,7 +33,8 @@ void UPlayerInputComponent::BeginPlay()
 	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
 	InputComponent->BindAction("Cover", IE_Pressed, covercomp, &UCoverComponent::PlayCover);
 	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StartPeeking);
-	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StopPeeking);
+	InputComponent->BindAction("Aim", IE_Released, covercomp, &UCoverComponent::StopPeeking);
+
 }
 
 void UPlayerInputComponent::MoveForward(float Value)
