@@ -66,6 +66,7 @@ AAICommander::AAICommander()
 		BaseAI_Ctr = BaseAI_Ctr_Object.Object;
 	}*/
 	SightIn_CHK = false;
+	Patrol_CHK = false;
 	Cmd_SightOut = false;
 	SetDataTable("Rifle_E");
 }
@@ -333,7 +334,36 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 	}
 	if (SightIn_CHK == false)
 	{
-		Cmd_SightOut = true;
+		Patrol_CHK = false;
+		for (auto enemy : List_Division)
+		{
+			AIController = nullptr;
+			ACharacter = Cast<AAICharacter>(enemy.Key);
+			if (ACharacter)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(enemy.Key)->GetController());
+			}
+			if (AIController)
+			{
+				if (AIController->BlackboardComponent)
+				{
+					BlackboardComponent = AIController->BlackboardComponent;
+					if (BlackboardComponent->GetValueAsEnum("Combat") == 0)
+					{
+						Patrol_CHK = true;
+					}
+				}
+			}
+		}
+		if (Patrol_CHK)
+		{
+			Cmd_SightOut = true;
+		}
+		else
+		{
+			Cmd_SightOut = false;
+		}
+		
 	}
 }
 

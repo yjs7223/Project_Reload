@@ -119,6 +119,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool Cmd_SightOut;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool Patrol_CHK;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		FVector nomalcover;
