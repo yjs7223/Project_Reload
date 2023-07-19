@@ -17,7 +17,7 @@ UBTT_OrderWaitChk::UBTT_OrderWaitChk()
 EBTNodeResult::Type UBTT_OrderWaitChk::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	orderchk = false;
-	for (auto ai : Cast<AAICommander>(commander)->List_Division)
+	for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
 	{
 		AIController = nullptr;
 		ACharacter = Cast<AAICharacter>(ai.Key);
@@ -38,7 +38,7 @@ EBTNodeResult::Type UBTT_OrderWaitChk::ExecuteTask(UBehaviorTreeComponent& Owner
 		}
 	}
 	AIController = nullptr;
-	ACharacter = Cast<AAICharacter>(Cast<AAICommander>(commander));
+	ACharacter = Cast<AAICharacter>(Cast<AAICommander>(OwnerComp.GetAIOwner()));
 	if (ACharacter)
 	{
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
