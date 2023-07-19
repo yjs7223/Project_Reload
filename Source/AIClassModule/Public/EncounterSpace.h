@@ -33,11 +33,12 @@ public:
 		TArray<AActor*> LevelArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int LevelActiveNum;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool subencheck;
 
 public:
 	UFUNCTION()
-		ASubEncounterSpace* LevelArrayActive();
+		void LevelArrayActive();
 	UFUNCTION()
 		void LevelEndActive();
 	UFUNCTION()

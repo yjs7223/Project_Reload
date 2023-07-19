@@ -6,6 +6,7 @@
 #include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/PointLightComponent.h"
+#include "LastPoint.h"
 #include "AISpawner.h"
 //#include "NiagaraComponent.h"
 #include "AICharacter.generated.h"
@@ -14,7 +15,7 @@
 UENUM(BlueprintType)
 enum class CombatState : uint8
 {
-	PATROL, MOVECOVER, MOVE, INCOVER, ATTACK
+	PATROL, MOVECOVER, MOVE, ATTACK, INCOVER
 };
 
 UCLASS()
@@ -79,7 +80,7 @@ public:
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	// 순찰 번호 검사
+	// 순찰 대기 행동
 	UFUNCTION(BlueprintCallable, Category = "Anim")
 		void IdleAnim();
 };

@@ -133,6 +133,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	bool bGenerateOnBeginPlay = true;
 
+
 	// Should generation process started after navigation rebuild?
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	bool bGenerateOnNavigationRebuild = false;
