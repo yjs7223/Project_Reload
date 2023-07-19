@@ -13,6 +13,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "EngineGlobals.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -20,6 +21,8 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
+#include "Components/BoxComponent.h"
+#include "Engine/EngineTypes.h"
 
 
 
@@ -55,14 +58,15 @@ AAICommander::AAICommander()
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
 	AddIndex = 0;
+	enemycover = false;
 	/*static ConstructorHelpers::FObjectFinder<AAIController> BaseAI_Ctr_Object(TEXT("AIController'/Game/JHB/BaseAI_Ctr.BaseAI_Ctr'"));
 	if (BaseAI_Ctr_Object.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		BaseAI_Ctr = BaseAI_Ctr_Object.Object;
 	}*/
-	
-	
+	SightIn_CHK = false;
+	Cmd_SightOut = false;
 	SetDataTable("Rifle_E");
 }
 
@@ -217,6 +221,8 @@ void AAICommander::ListSet()
 					{
 						ListTickSet(Cast<ASubEncounterSpace>(sub), Cast<AEncounterSpace>(en));
 						TargetTickSet(Cast<ASubEncounterSpace>(sub));
+						CoverPointSubEn(Cast<ASubEncounterSpace>(sub));
+						CoverPointEnemy();
 					}
 				}
 			}
@@ -271,6 +277,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 
 void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 {
+	SightIn_CHK = false;
 	for (auto ai :sub->AIArray)
 	{
 		auto FindActor = List_Division.Find(ai); 
@@ -298,6 +305,10 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 						
 						s_time = 0;
 					}
+					if (BlackboardComponent->GetValueAsBool("Sight_In"))
+					{
+						SightIn_CHK = true;
+					}
 				}
 			}
 		}
@@ -316,6 +327,10 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 			}
 
 		}
+	}
+	if (SightIn_CHK == false)
+	{
+		Cmd_SightOut = true;
 	}
 }
 
@@ -364,7 +379,78 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 
 
 }
+void AAICommander::CoverPointSubEn(ASubEncounterSpace* sub)
+{
+	CoverSubEnArray.Reset();
+	if (!CoverArray.IsEmpty())
+	{
+		for (auto cover : CoverArray)
+		{
+			if ((sub->GetActorLocation().X - sub->CollisionMesh->GetScaledBoxExtent().X) <= cover.X)
+			{
+				if ((sub->GetActorLocation().X + sub->CollisionMesh->GetScaledBoxExtent().X) >= cover.X)
+				{
+					if ((sub->GetActorLocation().Y - sub->CollisionMesh->GetScaledBoxExtent().Y) <= cover.Y)
+					{
+						if ((sub->GetActorLocation().Y + sub->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
+						{
+							if ((sub->GetActorLocation().Z - sub->CollisionMesh->GetScaledBoxExtent().Z) <= cover.Z)
+							{
+								if ((sub->GetActorLocation().Z + sub->CollisionMesh->GetScaledBoxExtent().Z) >= cover.Z)
+								{
+									CoverSubEnArray.Add(cover);
+								}
+							}
+							
+						}
+					}
+				}
+			}
 
+		}
+	}
+	
+}
+
+void AAICommander::CoverPointEnemy()
+{
+	CoverEnemyArray.Reset();
+	if (!CoverArray.IsEmpty())
+	{
+		if (!CoverSubEnArray.IsEmpty())
+		{
+			for (auto subencover : CoverSubEnArray)
+			{
+				FCollisionQueryParams collisionParams;
+				collisionParams.AddIgnoredActor(this);
+				if (GetWorld()->LineTraceMultiByChannel(results, subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation(), ECC_Visibility, collisionParams))
+				{
+					enemycover = false;
+					for (auto result : results)
+					{
+						if (result.GetActor()->ActorHasTag("Cover"))
+						{
+							if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
+								if (FVector::Distance(subencover, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation()) >= 500.0f)
+								{
+									enemycover = true;
+									
+								}
+							}
+						}
+					}
+					if (enemycover)
+					{
+						CoverEnemyArray.Add(subencover);
+					}
+				}
+			}
+		}
+	}
+}
 
 
 

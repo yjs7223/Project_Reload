@@ -58,10 +58,6 @@ public:
 		TMap<int, FVector> List_ChkLocation; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> CoverArray;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -104,6 +100,22 @@ public:
 		bool subenbool;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int subenNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> CoverArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> CoverSubEnArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> CoverEnemyArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> CoverCompliteArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FHitResult> results;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool enemycover;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool Cmd_SightOut;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool SightIn_CHK;
 public:
 	UFUNCTION()
 		void ListSet();
@@ -119,8 +131,10 @@ public:
 		void SetDataTable(FName EnemyName);
 	UFUNCTION()
 		void TargetTickSet(ASubEncounterSpace* sub);
-	/*UFUNCTION()
-		void CoverPointList();*/
+	UFUNCTION()
+		void CoverPointSubEn(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void CoverPointEnemy();
 
 
 };

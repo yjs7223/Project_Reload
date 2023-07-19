@@ -36,7 +36,7 @@ void ASubEncounterSpace::Tick(float DeltaTime)
 	{
 		EnemyAICheck();
 		
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
 	}
 }
 
