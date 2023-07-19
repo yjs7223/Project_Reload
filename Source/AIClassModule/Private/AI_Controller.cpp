@@ -112,10 +112,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		BlackboardComponent->SetValueAsObject("Target", m_character);
 	}
-	/*else
-	{
-		BlackboardComponent->SetValueAsObject("Target", nullptr);
-	}*/
+
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
