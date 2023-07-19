@@ -52,6 +52,12 @@ public:
 	// 딜레이용
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		float spawn_Timer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class AActor* commander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAI_Controller* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICharacter* ACharacter;
 
 	// 이번 웨이브 소환 여부
 	bool spawnCheck;
@@ -63,6 +69,12 @@ public:
 	// 스포너 스폰 지점들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		TArray<AActor*> spawn_Spots;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AActor> lastPoint;
+
+	float pointTime;
+	bool pointSpawnCheck;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -86,4 +98,8 @@ public:
 	// 스포너 활/비활성화
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 		void SpawnEnable(bool p_flag);
+	UFUNCTION(BlueprintCallable, Category = "Spawner")
+		void SpawnLastPoint(float DeltaTime);
+
+	void SetNullSightOut();
 };

@@ -29,10 +29,12 @@ void UPlayerInputComponent::BeginPlay()
 
 	InputComponent->BindAction("Reload", IE_Pressed, this, &UPlayerInputComponent::StartReload);
 
-	InputComponent->BindAction("Cover", IE_Pressed, this, &UPlayerInputComponent::CoverInputEvent);
 
-	InputComponent->BindAction("Aim", IE_Pressed, this, &UPlayerInputComponent::StartPeeking);
-	InputComponent->BindAction("Aim", IE_Released, this, &UPlayerInputComponent::StopPeeking);
+	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
+	InputComponent->BindAction("Cover", IE_Pressed, covercomp, &UCoverComponent::PlayCover);
+	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StartPeeking);
+	InputComponent->BindAction("Aim", IE_Released, covercomp, &UCoverComponent::StopPeeking);
+
 }
 
 void UPlayerInputComponent::MoveForward(float Value)
@@ -98,21 +100,4 @@ void UPlayerInputComponent::StartReload()
 	{
 		m_inputData.IsReload = true;
 	}
-}
-
-void UPlayerInputComponent::CoverInputEvent()
-{
-	owner->FindComponentByClass<UCoverComponent>()->PlayCover();
-
-	//m_inputData->CoverInputEventDelegate.ExecuteIfBound();
-}
-
-void UPlayerInputComponent::StartPeeking()
-{
-	//
-}
-
-void UPlayerInputComponent::StopPeeking()
-{
-	//
 }
