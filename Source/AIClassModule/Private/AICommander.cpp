@@ -65,8 +65,8 @@ AAICommander::AAICommander()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		BaseAI_Ctr = BaseAI_Ctr_Object.Object;
 	}*/
-	
-	
+	SightIn_CHK = false;
+	Cmd_SightOut = false;
 	SetDataTable("Rifle_E");
 }
 
@@ -277,6 +277,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 
 void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 {
+	SightIn_CHK = false;
 	for (auto ai :sub->AIArray)
 	{
 		auto FindActor = List_Division.Find(ai); 
@@ -304,6 +305,10 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 						
 						s_time = 0;
 					}
+					if (BlackboardComponent->GetValueAsBool("Sight_In"))
+					{
+						SightIn_CHK = true;
+					}
 				}
 			}
 		}
@@ -322,6 +327,10 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 			}
 
 		}
+	}
+	if (SightIn_CHK == false)
+	{
+		Cmd_SightOut = true;
 	}
 }
 

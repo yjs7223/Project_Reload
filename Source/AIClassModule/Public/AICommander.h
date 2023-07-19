@@ -112,6 +112,10 @@ public:
 		TArray<FHitResult> results;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool enemycover;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool Cmd_SightOut;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool SightIn_CHK;
 public:
 	UFUNCTION()
 		void ListSet();
