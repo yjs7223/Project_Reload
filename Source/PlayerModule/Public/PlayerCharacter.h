@@ -17,7 +17,7 @@ class PLAYERMODULE_API APlayerCharacter : public ABaseCharacter, public IAISight
 	GENERATED_BODY()
 public:
 	// Sets default values for this character's properties
-	APlayerCharacter();
+	APlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,5 +47,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UPlayerMoveComponent* m_PlayerMove;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		class UCameraControllComponent* m_CameraControll;
 
 };
