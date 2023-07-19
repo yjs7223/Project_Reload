@@ -13,6 +13,8 @@
 #include "Animation/AnimInstance.h"
 #include "Math/UnrealMathUtility.h"
 #include "AISensingComponent.h"
+#include "LastPoint.h"
+#include "AISpawner.h"
 
 
 AAICharacter::AAICharacter()
@@ -86,8 +88,17 @@ void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 
 void AAICharacter::IdleAnim()
 {
-	// ���κ� ���� ������� (�ִϸ��̼� ������ �ҵ�)
 	//PlayAnimMontage(idle_Montage, 1.0f);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
+}
+
+void AAICharacter::SpawnLastPoint()
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	// Spawn
+	GetWorld()->SpawnActor<AActor>(lastPoint, GetActorTransform(), SpawnParams);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 }
 
