@@ -125,7 +125,7 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	}
 
 	//owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
-	owner->AddMovementInput(mMoveDirect);
+	owner->AddMovementInput(mMoveDirect, 0.5f);
 
 	
 
