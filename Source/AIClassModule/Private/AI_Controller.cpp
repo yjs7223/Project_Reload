@@ -2,6 +2,8 @@
 
 
 #include "AI_Controller.h"
+#include "AICharacter.h"
+#include "AICommander.h"
 #include "ST_Range.h"
 #include "BaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -73,12 +75,36 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 	{
 		DistanceToPlayer = GetPawn()->GetDistanceTo(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+		if (Stimulus.Tag == "Player")
+		{
+			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+		}
+		if (Stimulus.Tag == "Last")
+		{
+			AIController = nullptr;
+			ACharacter = Cast<AAICharacter>(Cast<AAICommander>(commander));
+			if (ACharacter)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
+			}
+			if (AIController)
+			{
+				if (AIController->BlackboardComponent)
+				{
+					BlackboardComponent = AIController->BlackboardComponent;
+					BlackboardComponent->SetValueAsObject("Cmd_Target", NULL);
+					AActor* temp = Cast<AActor>(BlackboardComponent->GetValueAsObject("Cmd_Target"));
+					GetWorld()->DestroyActor(temp);
+				}
+			}
 
-		bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+		}
+		
 	}
-	/*else {
+	else {
 		bIsPlayerDetected = false;
-	}*/
+	}
 
 	/*for (size_t i = 0; i < DetectedPawns.Num(); i++)
 	{
