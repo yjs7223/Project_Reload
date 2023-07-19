@@ -92,13 +92,3 @@ void AAICharacter::IdleAnim()
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
 
-void AAICharacter::SpawnLastPoint()
-{
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	// Spawn
-	GetWorld()->SpawnActor<AActor>(lastPoint, GetActorTransform(), SpawnParams);
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
-}
-
