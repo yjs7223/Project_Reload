@@ -40,8 +40,7 @@ public:
 		class UAISenseConfig_Sight* SightConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		bool bIsPlayerPerception = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float DistanceToPlayer = 0.0f;
 
