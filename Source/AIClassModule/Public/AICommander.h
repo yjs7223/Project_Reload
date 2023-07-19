@@ -57,6 +57,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_ChkLocation; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TMap<int, FVector> List_CoverPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
@@ -107,15 +109,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<FVector> CoverEnemyArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> CoverCompliteArray;
+		TArray<FVector> SiegeCoverArray; //포위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FHitResult> results;
+		TArray<FVector> DetourCoverArray; //우회
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		FHitResult result;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool enemycover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool Cmd_SightOut;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		FVector nomalcover;
+
 public:
 	UFUNCTION()
 		void ListSet();
@@ -135,7 +142,12 @@ public:
 		void CoverPointSubEn(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void CoverPointEnemy();
-
+	UFUNCTION()
+		void SiegeCoverPoint();
+	UFUNCTION()
+		void DetourCoverPoint();
+	UFUNCTION()
+		bool IsPlayerInsideFanArea(FVector CoverPoint, float LocationRadius, float FanAngle, FVector FanDirection); //위치, 범위, 각도, 방향
 
 };
 
