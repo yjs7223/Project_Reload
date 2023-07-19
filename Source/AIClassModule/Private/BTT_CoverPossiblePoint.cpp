@@ -16,7 +16,7 @@ UBTT_CoverPossiblePoint::UBTT_CoverPossiblePoint()
 
 EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	for (auto ai : Cast<AAICommander>(commander)->List_Division)
+	for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
 	{
 		AIController = nullptr;
 		ACharacter = Cast<AAICharacter>(ai.Key);
@@ -32,10 +32,10 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 				if (BlackboardComponent->GetValueAsBool("OrderWait"))
 				{
 
-					if (*Cast<AAICommander>(commander)->List_CoverPoint.Find(ai.Value) == FVector(0, 0, 0))
+					if (*Cast<AAICommander>(OwnerComp.GetAIOwner())->List_CoverPoint.Find(ai.Value) == FVector(0, 0, 0))
 					{
 						mindis = NULL;
-						for (auto coverenemy : Cast<AAICommander>(commander)->CoverEnemyArray)
+						for (auto coverenemy : Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray)
 						{
 							if (mindis == NULL)
 							{
@@ -55,7 +55,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 					else
 					{
 						coverpossible = false;
-						for (auto coverenemy : Cast<AAICommander>(commander)->CoverEnemyArray)
+						for (auto coverenemy : Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray)
 						{
 							if (*Cast<AAICommander>(commander)->List_CoverPoint.Find(ai.Value) == coverenemy)
 							{
@@ -64,7 +64,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						}
 						if (!coverpossible)
 						{
-							for (auto coverenemy : Cast<AAICommander>(commander)->CoverEnemyArray)
+							for (auto coverenemy : Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray)
 							{
 								if (mindis == NULL)
 								{
