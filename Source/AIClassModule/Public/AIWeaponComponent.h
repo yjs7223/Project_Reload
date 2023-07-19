@@ -24,6 +24,10 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		Enemy_Name type;
 
+	// 사격 대상
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AActor* target;
+
 	// AI 사격 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		bool shot_State;

@@ -6,6 +6,7 @@
 #include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/PointLightComponent.h"
+#include "LastPoint.h"
 #include "AISpawner.h"
 //#include "NiagaraComponent.h"
 #include "AICharacter.generated.h"
@@ -28,6 +29,8 @@ public:
 	// 자신의 스포너
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AAISpawner* mySpawner;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AActor> lastPoint;
 	
 
 	//간접 공격 감지 캡슐 매쉬
@@ -79,7 +82,9 @@ public:
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	// 순찰 번호 검사
+	// 순찰 대기 행동
 	UFUNCTION(BlueprintCallable, Category = "Anim")
 		void IdleAnim();
+	UFUNCTION(BlueprintCallable, Category = "Spawn")
+		void SpawnLastPoint();
 };

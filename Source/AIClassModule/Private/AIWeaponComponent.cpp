@@ -10,6 +10,7 @@
 #include "ST_AIShot.h"
 #include <Kismet/GameplayStatics.h>
 #include "ST_Spawn.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -39,7 +40,7 @@ UAIWeaponComponent::UAIWeaponComponent()
 void UAIWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = GetOwner<AAICharacter>();
+	owner = Cast<AAICharacter>(GetOwner());
 
 	AITypeSetting();
 }
@@ -56,20 +57,20 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UAIWeaponComponent::ShotAI()
 {
-	//owner->bUseControllerRotationYaw = true;
+	owner->bUseControllerRotationYaw = true;
 	
 	FVector loc;
 	FRotator rot;
-	owner->Controller->GetPlayerViewPoint(loc, rot);
+	owner->GetController()->GetPlayerViewPoint(loc, rot);
 
 	float x = 0, y = 0;
-
+	
 	x = FMath::RandRange(-recoil_Radius, recoil_Radius);
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * shot_MaxRange);
-	FVector end2 = (rot + FRotator(x, y, 0)).Vector() * recoil_Range;
+	FVector end2 = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
@@ -123,7 +124,7 @@ void UAIWeaponComponent::ShotAI()
 
 	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);
 
-	DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
+	DrawDebugLine(GetWorld(), start, end2, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
 }
 
