@@ -68,6 +68,7 @@ AAICommander::AAICommander()
 	SightIn_CHK = false;
 	Patrol_CHK = false;
 	Cmd_SightOut = false;
+	
 	SetDataTable("Rifle_E");
 }
 
@@ -298,6 +299,10 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 			}
 			if (AIController)
 			{
+				if (AIController->commander != this)
+				{
+					AIController->commander = this;
+				}
 				if (AIController->BlackboardComponent)
 				{
 					BlackboardComponent = AIController->BlackboardComponent;
