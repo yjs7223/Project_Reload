@@ -34,6 +34,8 @@ public:
 		bool LevelActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> AIArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* en;
 	
 
 public:

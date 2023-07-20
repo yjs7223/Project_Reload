@@ -18,7 +18,7 @@ ASubEncounterSpace::ASubEncounterSpace()
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapBegin);
 	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapEnd);
-
+	
 	LevelActive = false;
 }
 
@@ -35,6 +35,8 @@ void ASubEncounterSpace::Tick(float DeltaTime)
 	if (LevelActive)
 	{
 		EnemyAICheck();
+		
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
 	}
 }
 
@@ -59,6 +61,7 @@ void ASubEncounterSpace::EnemyAICheck()
 	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
 	if (AIArray.IsEmpty())
 	{
+		en->LevelArray.Remove(this);
 		LevelActive = false;
 	}
 }

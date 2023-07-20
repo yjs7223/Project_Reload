@@ -9,6 +9,8 @@
 #include "StatComponent.h"
 #include "ST_AIShot.h"
 #include <Kismet/GameplayStatics.h>
+#include "ST_Spawn.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -32,33 +34,15 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		shotFXNiagara = ShotFXNiagara.Object;
 	}
+	use_Shot_State = true;
 }
 
 void UAIWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = GetOwner<AAICharacter>();
+	owner = Cast<AAICharacter>(GetOwner());
 
-	// 라이플 데이터 가져오기
-	curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
-
-	// 가져온 데이터 삽입
-	recoil_Range = curAIShotData->Recoil_Range;
-	recoilMax_Radius = curAIShotData->RecoilMax_Radius;
-	recoilMin_Radius = curAIShotData->RecoilMin_Radius;
-
-	shot_MaxRange = curAIShotData->Shot_MaxRange;
-	shot_MinRange = curAIShotData->Shot_MinRange;
-
-	shot_MaxDmg = curAIShotData->Shot_MaxDmg;
-	shot_MinDmg = curAIShotData->Shot_MinDmg;
-
-	shot_MaxCount = curAIShotData->Shot_MaxCount;
-
-	shot_Delay = curAIShotData->Shot_ShootDelay;
-
-	// 현재 반동은 최대로 시작
-	recoil_Radius = recoilMax_Radius;
+	AITypeSetting();
 }
 
 
@@ -73,20 +57,20 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UAIWeaponComponent::ShotAI()
 {
-	//owner->bUseControllerRotationYaw = true;
+	owner->bUseControllerRotationYaw = true;
 	
 	FVector loc;
 	FRotator rot;
-	owner->Controller->GetPlayerViewPoint(loc, rot);
+	owner->GetController()->GetPlayerViewPoint(loc, rot);
 
 	float x = 0, y = 0;
-
+	
 	x = FMath::RandRange(-recoil_Radius, recoil_Radius);
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * shot_MaxRange);
-	FVector end2 = (rot + FRotator(x, y, 0)).Vector() * recoil_Range;
+	FVector end2 = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
@@ -140,15 +124,8 @@ void UAIWeaponComponent::ShotAI()
 
 	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);
 
-	DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
+	DrawDebugLine(GetWorld(), start, end2, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
-
-	// 총 공격수만큼 사격했다면 사격 상태 해제
-	if (cur_Shot_Count <= 0)
-	{
-		shot_State = false;
-		recoil_Radius = recoilMax_Radius;
-	}
 }
 
 void UAIWeaponComponent::ShotAITimer(float p_Time)
@@ -171,11 +148,20 @@ void UAIWeaponComponent::ShotAITimer(float p_Time)
 void UAIWeaponComponent::ShotAIStart()
 {
 	shot_State = true;
+
+	// 총 공격수만큼 사격했다면 사격 상태 해제
+	if (cur_Shot_Count <= 0)
+	{
+		shot_State = false;
+		use_Shot_State = false;
+		recoil_Radius = recoilMax_Radius;
+	}
 }
 
 void UAIWeaponComponent::ShotAIStop()
 {
 	shot_State = false;
+	use_Shot_State = true;
 	cur_Shot_Count = shot_MaxCount;
 	recoil_Radius = recoilMax_Radius;
 }
@@ -183,4 +169,51 @@ void UAIWeaponComponent::ShotAIStop()
 void UAIWeaponComponent::ReloadAI()
 {
 	cur_Shot_Count = shot_MaxCount;
+	use_Shot_State = true;
+}
+
+void UAIWeaponComponent::AITypeSetting()
+{
+	switch (type)
+	{
+	case Enemy_Name::RIFLE:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
+		break;
+	case Enemy_Name::HEAVY:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Heavy_E", TEXT(""));
+		break;
+	case Enemy_Name::SNIPER:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Sniper_E", TEXT(""));
+		break;
+	}
+
+	// 가져온 데이터 삽입
+	recoil_Range = curAIShotData->Recoil_Range;
+	recoilMax_Radius = curAIShotData->RecoilMax_Radius;
+	recoilMin_Radius = curAIShotData->RecoilMin_Radius;
+
+	shot_MaxRange = curAIShotData->Shot_MaxRange;
+	shot_MinRange = curAIShotData->Shot_MinRange;
+
+	shot_MaxDmg = curAIShotData->Shot_MaxDmg;
+	shot_MinDmg = curAIShotData->Shot_MinDmg;
+
+	shot_MaxCount = curAIShotData->Shot_MaxCount;
+
+	shot_Delay = curAIShotData->Shot_ShootDelay;
+
+	// 현재 반동은 최대로 시작
+	recoil_Radius = recoilMax_Radius;
+}
+
+bool UAIWeaponComponent::AITypeSniperCheck()
+{
+	if (type == Enemy_Name::SNIPER)
+	{
+		return true;
+	}
+	return false;
 }
