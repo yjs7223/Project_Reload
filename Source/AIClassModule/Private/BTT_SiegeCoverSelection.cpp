@@ -29,15 +29,45 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 		{
 			if (AIController->BlackboardComponent)
 			{
-				BlackboardComponent = AIController->BlackboardComponent;
-				if (enemyActivenum <= maplistnum)
+				if(AIController->BlackboardComponent->GetValueAsEnum("Combat") == 4)
 				{
-					if (BlackboardComponent->GetValueAsEnum("Combat") == 4)
+					enemyActivenum++;
+					if (enemyActivenum <= maplistnum)
 					{
-						enemyActivenum++;
+						arraysame = false;
+						int num = 1;
+						for (int i = 0; i < num; i++)
+						{
+							for (auto coverpoint : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_CoverPoint)
+							{
+								if (coverpoint.Key != ai.Value)
+								{
+									if (Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray[i] == coverpoint.Value)
+									{
+										arraysame = true;
+									}
+								}
+							}
+							if (arraysame)
+							{
+								num++;
+								if (num >= Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray.Num())
+								{
+									return EBTNodeResult::Succeeded;
+								}
+							}
+							else if (!arraysame)
+							{
+								AIController->BlackboardComponent->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray[i]);
+							}
+						}
+					}
+					else
+					{
+						return EBTNodeResult::Succeeded;
 					}
 				}
-				
+
 			}
 		}
 	}
