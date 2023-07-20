@@ -51,7 +51,8 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ShotAITimer(DeltaTime);
+	cur_Shot_Delay += DeltaTime;
+	//ShotAITimer(DeltaTime);
 	// ...
 }
 
@@ -128,16 +129,8 @@ void UAIWeaponComponent::ShotAI()
 	//name = "AttackLocation";
 }
 
-void UAIWeaponComponent::ShotAITimer(float p_Time)
+void UAIWeaponComponent::ShotAITimer()
 {
-	// 사격 상태가 아니라면 취소
-	if (!shot_State)
-	{
-		return;
-	}
-
-
-	cur_Shot_Delay += p_Time;
 	if (cur_Shot_Delay >= shot_Delay)
 	{
 		ShotAI();

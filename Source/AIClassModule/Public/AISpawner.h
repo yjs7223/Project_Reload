@@ -55,7 +55,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		AAICommander* commander;
+		class AAICommander* commander;
 
 	// 이번 웨이브 소환 여부
 	bool spawnCheck;
