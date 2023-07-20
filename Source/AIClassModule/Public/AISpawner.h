@@ -52,14 +52,10 @@ public:
 	// 딜레이용
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		float spawn_Timer;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class AActor* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICharacter* ACharacter;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UBlackboardData* BB_AICommander;
+		AAICommander* commander;
 
 	// 이번 웨이브 소환 여부
 	bool spawnCheck;

@@ -9,7 +9,9 @@
 #include "LastPoint.h"
 #include "AISpawner.h"
 //#include "NiagaraComponent.h"
+
 #include "AICharacter.generated.h"
+
 
 
 UENUM(BlueprintType)
@@ -61,13 +63,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class UAICharacterMoveComponent* AIMovement;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class UAIWeaponComponent* AIWeapon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class UAIPatrolComponent* AIPatrol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class UAISensingComponent* AISensing;
 
 	// 몽타주
@@ -75,6 +77,8 @@ public:
 		class UAnimMontage* idle_Montage;
 
 public:
+
+
 	UFUNCTION()
 		void SetDataTable(FName EnemyName);
 	UFUNCTION()
