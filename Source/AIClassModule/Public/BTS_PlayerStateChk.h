@@ -4,31 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "BTS_SupportState.generated.h"
+#include "BTS_PlayerStateChk.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AICLASSMODULE_API UBTS_SupportState : public UBTService
+class AICLASSMODULE_API UBTS_PlayerStateChk : public UBTService
 {
 	GENERATED_BODY()
+	
 public:
-	UBTS_SupportState();
+	UBTS_PlayerStateChk();
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
-		FVector Sup_Vec;
+		UBlackboardComponent* BlackboardComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
-		bool Dis_start;
+		class AAICommander* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
-		float Min_Dis;
+		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
-		int Min_Dis_Key;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
-		float Dis;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
-		FVector Com_Vec;
+		class AActor* commander;
 };

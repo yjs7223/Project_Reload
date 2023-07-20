@@ -15,13 +15,15 @@ enum class ECombat : uint8
 	Attack 	UMETA(DisplayName = "Attack"),
 	InCover 	UMETA(DisplayName = "InCover")
 };
-//UENUM(BlueprintType)
-//enum class EState : uint8
-//{
-//	Start 	UMETA(DisplayName = "Start"),
-//	Play 	UMETA(DisplayName = "Play"),
-//	End 	UMETA(DisplayName = "End")
-//};
+
+UENUM(BlueprintType)
+enum class ETarget_State : uint8
+{
+	Idle 	UMETA(DisplayName = "Idle"),
+	Attack 	UMETA(DisplayName = "Attack"),
+	Cover 	UMETA(DisplayName = "Cover"),
+	Move 	UMETA(DisplayName = "Move")
+};
 
 UCLASS()
 class AICLASSMODULE_API AAICommander : public AAIController
