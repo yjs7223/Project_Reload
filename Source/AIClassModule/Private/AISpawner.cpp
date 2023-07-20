@@ -21,6 +21,9 @@ AAISpawner::AAISpawner()
 	{
 		spawnData = DataTable.Object;
 	}
+
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+	BlackboardComponent = commander->BlackboardComponent;
 }
 
 // Called when the game starts or when spawned
@@ -168,23 +171,7 @@ void AAISpawner::SpawnEnable(bool p_flag)
 
 void AAISpawner::SpawnLastPoint(float DeltaTime)
 {
-	//AIController = nullptr;
-	//ACharacter = Cast<AAICharacter>(subAi);
-	//if (ACharacter)
-	//{
-	//	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-	//}
-	//if (AIController)
-	//{
-	//	if (AIController->BlackboardComponent)
-	//	{
-	//		BlackboardComponent = AIController->BlackboardComponent;
-	//	}
-	//}
-
-	AAI_Controller* Actor = Cast<AAI_Controller>(UGameplayStatics::GetActorOfClass(GetWorld(), AAI_Controller::StaticClass()));
-
-	if (Cast<AAICommander>(commander)->Cmd_SightOut)
+	if (commander->Cmd_SightOut)
 	{
 		pointTime += DeltaTime;
 		if (pointTime >= 1 && !pointSpawnCheck)
@@ -193,10 +180,12 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 			// Spawn
-			GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
+			AActor* temp = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 			pointSpawnCheck = true;
 			pointTime = 0;
+
+			commander->BlackboardComponent->SetValueAsObject("Cmd_Target", temp);
 		}
 	}
 }
