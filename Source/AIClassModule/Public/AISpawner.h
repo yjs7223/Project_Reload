@@ -58,6 +58,8 @@ public:
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAICharacter* ACharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UBlackboardData* BB_AICommander;
 
 	// 이번 웨이브 소환 여부
 	bool spawnCheck;
