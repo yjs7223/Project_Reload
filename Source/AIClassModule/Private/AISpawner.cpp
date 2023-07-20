@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include "AICommander.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AAISpawner::AAISpawner()
@@ -167,6 +168,22 @@ void AAISpawner::SpawnEnable(bool p_flag)
 
 void AAISpawner::SpawnLastPoint(float DeltaTime)
 {
+	//AIController = nullptr;
+	//ACharacter = Cast<AAICharacter>(subAi);
+	//if (ACharacter)
+	//{
+	//	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
+	//}
+	//if (AIController)
+	//{
+	//	if (AIController->BlackboardComponent)
+	//	{
+	//		BlackboardComponent = AIController->BlackboardComponent;
+	//	}
+	//}
+
+	AAI_Controller* Actor = Cast<AAI_Controller>(UGameplayStatics::GetActorOfClass(GetWorld(), AAI_Controller::StaticClass()));
+
 	if (Cast<AAICommander>(commander)->Cmd_SightOut)
 	{
 		pointTime += DeltaTime;
@@ -177,7 +194,7 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 
 			// Spawn
 			GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 			pointSpawnCheck = true;
 			pointTime = 0;
 		}
