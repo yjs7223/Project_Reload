@@ -30,5 +30,10 @@ public:
 		int maplistnum;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
 		int enemyActivenum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		FVector movepoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		bool arraysame;
+
 
 };
