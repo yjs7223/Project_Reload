@@ -81,23 +81,13 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 		}
 		if (actor->ActorHasTag("Last"))
 		{
-			AIController = nullptr;
-			ACharacter = Cast<AAICharacter>(Cast<AAICommander>(commander));
-			if (ACharacter)
+			if (commander->BlackboardComponent)
 			{
-				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
+				
+				commander->BlackboardComponent->SetValueAsObject("Cmd_Target", NULL);
+				AActor* temp = Cast<AActor>(commander->BlackboardComponent->GetValueAsObject("Cmd_Target"));
+				GetWorld()->DestroyActor(temp);
 			}
-			if (AIController)
-			{
-				if (AIController->BlackboardComponent)
-				{
-					BlackboardComponent = AIController->BlackboardComponent;
-					BlackboardComponent->SetValueAsObject("Cmd_Target", NULL);
-					AActor* temp = Cast<AActor>(BlackboardComponent->GetValueAsObject("Cmd_Target"));
-					GetWorld()->DestroyActor(temp);
-				}
-			}
-
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
 		}
 
