@@ -67,7 +67,7 @@ void AAI_Controller::BeginPlay()
 		if (!RunBehaviorTree(btree))
 			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
 	}
-		
+
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 {
@@ -75,11 +75,11 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 	{
 		DistanceToPlayer = GetPawn()->GetDistanceTo(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-		if (Stimulus.Tag == "Player")
+		if (actor->ActorHasTag("Player"))
 		{
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
 		}
-		if (Stimulus.Tag == "Last")
+		if (actor->ActorHasTag("Last"))
 		{
 			AIController = nullptr;
 			ACharacter = Cast<AAICharacter>(Cast<AAICommander>(commander));
@@ -100,7 +100,7 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
 		}
-		
+
 	}
 	else {
 		bIsPlayerDetected = false;
@@ -113,7 +113,7 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 		{
 			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
 			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-			
+
 			bIsPlayerDetected = true;
 		}
 	}
@@ -175,5 +175,3 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->SightRadius = RangeData->Sight_Age;*/
 	}
 }
-
-
