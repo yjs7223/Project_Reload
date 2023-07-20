@@ -48,7 +48,7 @@ AAI_Controller::AAI_Controller()
 		BBAsset = BB_BaseAIObject.Object;
 	}
 
-
+	commander = nullptr;
 
 	SetEnemy("Rifle_E");
 }
@@ -111,6 +111,21 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 
 }
 
+void AAI_Controller::SetUseCover()
+{
+	for (int i = 0; i < commander->CoverEnemyArray.Num(); i++)
+	{
+		if (FVector::Dist(commander->CoverEnemyArray[i], GetOwner()->GetActorLocation()))
+		{
+			BlackboardComponent->SetValueAsBool("AI_UseCover", true);
+		}
+		else
+		{
+			BlackboardComponent->SetValueAsBool("AI_UseCover", false);
+		}
+	}
+}
+
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -130,6 +145,8 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	}
 
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
+
+	SetUseCover();
 }
 
 FRotator AAI_Controller::GetControlRotation() const
