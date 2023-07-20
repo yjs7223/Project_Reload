@@ -67,7 +67,7 @@ void AAI_Controller::BeginPlay()
 		if (!RunBehaviorTree(btree))
 			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
 	}
-		
+
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 {
@@ -75,32 +75,22 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 	{
 		DistanceToPlayer = GetPawn()->GetDistanceTo(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-		if (Stimulus.Tag == "Player")
+		if (actor->ActorHasTag("Player"))
 		{
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
 		}
-		if (Stimulus.Tag == "Last")
+		if (actor->ActorHasTag("Last"))
 		{
-			AIController = nullptr;
-			ACharacter = Cast<AAICharacter>(Cast<AAICommander>(commander));
-			if (ACharacter)
+			if (commander->BlackboardComponent)
 			{
-				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
+				
+				commander->BlackboardComponent->SetValueAsObject("Cmd_Target", NULL);
+				AActor* temp = Cast<AActor>(commander->BlackboardComponent->GetValueAsObject("Cmd_Target"));
+				GetWorld()->DestroyActor(temp);
 			}
-			if (AIController)
-			{
-				if (AIController->BlackboardComponent)
-				{
-					BlackboardComponent = AIController->BlackboardComponent;
-					BlackboardComponent->SetValueAsObject("Cmd_Target", NULL);
-					AActor* temp = Cast<AActor>(BlackboardComponent->GetValueAsObject("Cmd_Target"));
-					GetWorld()->DestroyActor(temp);
-				}
-			}
+			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+		}
 
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-		}
-		
 	}
 	else {
 		bIsPlayerDetected = false;
@@ -113,7 +103,7 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 		{
 			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
 			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-			
+
 			bIsPlayerDetected = true;
 		}
 	}
@@ -175,5 +165,3 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->SightRadius = RangeData->Sight_Age;*/
 	}
 }
-
-
