@@ -15,6 +15,7 @@
 #include "AISensingComponent.h"
 #include "LastPoint.h"
 #include "AISpawner.h"
+#include "AIInputComponent.h"
 
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -23,6 +24,8 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
+	m_InputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
+	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 	AIControllerClass = AAI_Controller::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -67,6 +70,8 @@ void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+
 
 void AAICharacter::SetDataTable(FName EnemyName)
 {
