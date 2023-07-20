@@ -78,6 +78,8 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 		if (actor->ActorHasTag("Player"))
 		{
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+			GetWorld()->DestroyActor(Cast<AActor>(BlackboardComponent->GetValueAsObject("Target")));
+			BlackboardComponent->SetValueAsObject("Target", m_character);
 		}
 		if (actor->ActorHasTag("Last"))
 		{
@@ -141,7 +143,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	if (bIsPlayerDetected)
 	{
 		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-		BlackboardComponent->SetValueAsObject("Target", m_character);
+		
 	}
 
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
