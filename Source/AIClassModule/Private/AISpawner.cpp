@@ -23,7 +23,6 @@ AAISpawner::AAISpawner()
 	}
 
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-	BlackboardComponent = commander->BlackboardComponent;
 }
 
 // Called when the game starts or when spawned

@@ -58,7 +58,6 @@ void AAI_Controller::BeginPlay()
 	Super::BeginPlay();
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
-	m_character = Cast<ABaseCharacter>(GetPawn());
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
 	UBlackboardComponent* BlackboardComp = Blackboard;
@@ -78,8 +77,14 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 		if (actor->ActorHasTag("Player"))
 		{
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-			GetWorld()->DestroyActor(Cast<AActor>(BlackboardComponent->GetValueAsObject("Target")));
-			BlackboardComponent->SetValueAsObject("Target", m_character);
+			if (BlackboardComponent->GetValueAsObject("Target") != nullptr)
+			{
+				if (Cast<AActor>(BlackboardComponent->GetValueAsObject("Target"))->ActorHasTag("Last"))
+				{
+					GetWorld()->DestroyActor(Cast<AActor>(BlackboardComponent->GetValueAsObject("Target")));
+				}
+			}
+			BlackboardComponent->SetValueAsObject("Target", Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)));
 		}
 		if (actor->ActorHasTag("Last"))
 		{
@@ -115,23 +120,33 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 
 void AAI_Controller::SetUseCover()
 {
-	for (int i = 0; i < commander->CoverEnemyArray.Num(); i++)
-	{
-		if (FVector::Dist(commander->CoverEnemyArray[i], GetOwner()->GetActorLocation()))
-		{
-			BlackboardComponent->SetValueAsBool("AI_UseCover", true);
-		}
-		else
-		{
-			BlackboardComponent->SetValueAsBool("AI_UseCover", false);
-		}
-	}
+	//if (commander != nullptr)
+	//{
+	//	if (BlackboardComponent != nullptr)
+	//	{
+	//		if (commander->CoverEnemyArray.Num() > 0)
+	//		{
+	//			for (auto loc : commander->CoverEnemyArray)
+	//			{
+	//				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("rgrgrgrgrg")));
+	//				FVector a = loc;
+	//				/*if (FVector::Dist(loc, GetOwner()->GetActorLocation()) <= 50)
+	//				{
+	//					BlackboardComponent->SetValueAsBool("AI_UseCover", true);
+	//				}
+	//				else
+	//				{
+	//					BlackboardComponent->SetValueAsBool("AI_UseCover", false);
+	//				}*/
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	m_character = Cast<ABaseCharacter>(GetPawn());
 	BlackboardComponent = Blackboard;
 
 
@@ -139,11 +154,6 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		BlackboardComponent->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
-	}
-	if (bIsPlayerDetected)
-	{
-		m_character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-		
 	}
 
 	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);

@@ -35,8 +35,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBehaviorTreeComponent* behavior_tree_component;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class ABaseCharacter* m_character;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UAISenseConfig_Sight* SightConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
