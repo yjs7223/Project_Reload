@@ -22,23 +22,23 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// µ¥ÀÌÅÍ Å×ÀÌºí
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* AIRangeData;
-	// ÇöÀç µ¥ÀÌÅÍ Å×ÀÌºí
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½
 		struct FST_Range* curAIRangeData;
 
-	// ¿øÀÇ ºÎÃ¤²Ã µð¹ö±× ±×¸®±â
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Sense")
 		void DrawCircleSector(float Radius, float Angle, int32 NumSegments);
 
 	bool IsPlayerInsideFanArea(float LocationRadius, float FanAngle, FVector FanDirection);
 
-	// »ç°Ý ¼¾¼­
+	// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Sense")
 		bool ShotSenseRange();
 
-	// ÇÃ·¹ÀÌ¾î¿ÍÀÇ À§Ä¡ °Ë»ç
+	// ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ë»ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Range")
 		bool MinRangeCheck();
 };

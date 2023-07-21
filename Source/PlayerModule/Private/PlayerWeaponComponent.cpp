@@ -304,7 +304,7 @@ void UPlayerWeaponComponent::Fire()
 		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
 	}
 
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel2, param))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel3, param))
 	{
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
@@ -332,7 +332,9 @@ void UPlayerWeaponComponent::Fire()
 
 void UPlayerWeaponComponent::StartAiming()
 {
+
 	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 60.0f;
+
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
@@ -343,7 +345,7 @@ void UPlayerWeaponComponent::StartAiming()
 void UPlayerWeaponComponent::StopAiming()
 {
 	isAiming = false;
-	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 120.0f;
+	//Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 120.0f;
 }
 
 void UPlayerWeaponComponent::StartFire()

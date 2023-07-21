@@ -41,6 +41,7 @@ void UPlayerInputComponent::BeginPlay()
 	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StopPeeking);
 
 	InputComponent->BindAction("TestInput", IE_Pressed, this, &UPlayerInputComponent::TestHud);
+
 }
 
 void UPlayerInputComponent::MoveForward(float Value)

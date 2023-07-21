@@ -1,7 +1,9 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AICharacter.h"
+#include "AI_Controller.h"
 #include "AIWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "AICharacterMoveComponent.h"
@@ -11,6 +13,8 @@
 #include "Animation/AnimInstance.h"
 #include "Math/UnrealMathUtility.h"
 #include "AISensingComponent.h"
+#include "LastPoint.h"
+#include "AISpawner.h"
 
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -19,7 +23,8 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
-	
+	AIControllerClass = AAI_Controller::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (sk_asset.Succeeded())
@@ -83,7 +88,6 @@ void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 
 void AAICharacter::IdleAnim()
 {
-	// ���κ� ���� ������� (�ִϸ��̼� ������ �ҵ�)
 	//PlayAnimMontage(idle_Montage, 1.0f);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }

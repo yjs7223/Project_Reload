@@ -15,7 +15,7 @@ enum class Spawn_Type : uint8
 UENUM(BlueprintType)
 enum class Enemy_Name : uint8
 {
-	RIFLE , DOG
+	RIFLE, HEAVY, SNIPER , DOG
 };
 
 UCLASS()

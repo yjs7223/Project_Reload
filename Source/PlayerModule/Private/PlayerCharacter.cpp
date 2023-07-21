@@ -15,9 +15,11 @@
 #include "Player_Ammo_Widget.h"
 #include "CoverComponent.h"
 #include "Crosshair_Widget.h"
+#include "CameraControllComponent.h"
 //#include "Kismet/GameplayStatics.h"
 //#include "Engine.h"
 //#include "EngineMinimal.h"
+
 
 
 APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -49,7 +51,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
-
+	m_CameraControll = CreateDefaultSubobject<UCameraControllComponent>(TEXT("CameraControll"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 
 	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
@@ -81,7 +83,7 @@ bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& O
 
 	FName Name_AILineOfSight = FName(TEXT("TestPawnLineOfSight"));
 	FHitResult HitResult;
-	FVector SightTargetLocation = GetMesh()->GetSocketLocation("neck_Socket");
+	FVector SightTargetLocation = GetMesh()->GetSocketLocation("neck_01");
 
 
 	bool hit = GetWorld()->LineTraceSingleByChannel(HitResult, ObserverLocation, SightTargetLocation, ECC_Visibility, FCollisionQueryParams(Name_AILineOfSight, false, IgnoreActor));

@@ -15,6 +15,7 @@ AEncounterSpace::AEncounterSpace()
 	RootComponent = CollisionMesh;
 
 	LevelActive = false;
+	subencheck = false;
 	LevelActiveNum = 1;
 	
 }
@@ -33,18 +34,21 @@ void AEncounterSpace::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (LevelActive)
 	{
-		SubEncounterCheck();
-		if (LevelArrayActive() != nullptr)
+		if (!subencheck)
 		{
-			LevelArrayActive();
+			SubEncounterCheck();
 		}
-		
+		LevelArrayActive();
+		if (LevelArray.Num() <= 0)
+		{
+			LevelEndActive();
+		}
 	}
 
 }
 
 
-ASubEncounterSpace* AEncounterSpace::LevelArrayActive()
+void AEncounterSpace::LevelArrayActive()
 {
 	for (auto& sub : LevelArray)
 	{
@@ -55,7 +59,7 @@ ASubEncounterSpace* AEncounterSpace::LevelArrayActive()
 			{
 				Cast<ASubEncounterSpace>(sub)->LevelActive = true;
 				ActiveStart = true;
-				return Cast<ASubEncounterSpace>(sub);
+				//return Cast<ASubEncounterSpace>(sub);
 			}
 		}
 		else {
@@ -64,27 +68,22 @@ ASubEncounterSpace* AEncounterSpace::LevelArrayActive()
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive == false)
 				{
 					LevelActiveNum++;
-					if (LevelArray.Num() < LevelActiveNum)
-					{
-						LevelActive = false;
-						LevelEndActive();
-						return nullptr;
-					}
+					
 					for (auto& sub2 : LevelArray)
 					{
 						if (Cast<ASubEncounterSpace>(sub2)->LevelNum == LevelActiveNum)
 						{
 							Cast<ASubEncounterSpace>(sub2)->LevelActive = true;
-							return Cast<ASubEncounterSpace>(sub2);
+							//return Cast<ASubEncounterSpace>(sub2);
 						}
 					}
 				}
-				else return Cast<ASubEncounterSpace>(sub);
+				//else return Cast<ASubEncounterSpace>(sub);
 			}
 		}
 		
 	}
-	return nullptr;
+	//return nullptr;
 }
 
 void AEncounterSpace::LevelEndActive()
@@ -93,43 +92,12 @@ void AEncounterSpace::LevelEndActive()
 	{
 		Cast<ASubEncounterSpace>(item)->LevelActive = false;
 	}
+	LevelActive = false;
 }
 
 void AEncounterSpace::SubEncounterCheck()
 {
 	this->GetOverlappingActors(LevelArray, ASubEncounterSpace::StaticClass());
+	subencheck = true;
 }
 
-//void AEncounterSpace::ListStartSet(ASubEncounterSpace* sub)
-//{
-//	for (auto& item : sub->AIArray)
-//	{
-//		aic->List_Division.Add(item, aic->AddIndex);
-//		aic->List_RDivision.Add(aic->AddIndex, item);
-//		aic->List_Combat.Add(aic->AddIndex, ECombat::Patrol);
-//		aic->List_Location.Add(aic->AddIndex, item->GetActorLocation());
-//		aic->List_Suppression.Add(aic->AddIndex, 0.0);
-//		aic->AddIndex++;
-//	}
-//}
-
-//void AEncounterSpace::ListTickSet(ASubEncounterSpace* sub)
-//{
-//	for (auto& item : sub->AIArray)
-//	{
-//		auto FindActor = aic->List_Division.Find(item); //���� �׾����� aiĳ���� ��ü���� ����� �����
-//		if (FindActor != nullptr)
-//		{
-//			aic->List_Location.Add(*FindActor, sub->GetActorLocation());
-//			aic->List_Location.Add(*FindActor, sub->GetActorLocation());//��ǥ ��ġ ���� �� �����ֱ�
-//			aic->List_Suppression.Add(*FindActor, 0.0); //���߿� �������� ���� ���� ����
-//		}
-//		else
-//		{
-//			if (aic->List_Division.IsEmpty())
-//			{
-//				sub->LevelActive = false;
-//			}
-//		}
-//	}
-//}

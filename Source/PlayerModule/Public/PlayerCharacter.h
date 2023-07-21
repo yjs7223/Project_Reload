@@ -68,5 +68,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UPlayerMoveComponent* m_PlayerMove;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		class UCameraControllComponent* m_CameraControll;
 
 };

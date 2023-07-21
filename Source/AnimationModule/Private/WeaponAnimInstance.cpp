@@ -29,13 +29,11 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsAiming = m_Input->getInput()->IsAiming;
 		mIsFire = m_Input->getInput()->IsFire;
 		mIsReload = m_Input->getInput()->IsReload;
+		mIsRuning = m_Input->getInput()->IsRuning;
 	}
 	if (mWeapon) {
 		mAimYaw = mWeapon->getAimYaw();
 		mAimPitch = mWeapon->getAimPitch();
 		
-	}
-	if (mPlayerMove) {
-		//mIsRuning = mPlayerMove->IsRuning();
 	}
 }
