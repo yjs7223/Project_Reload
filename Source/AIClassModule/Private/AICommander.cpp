@@ -90,6 +90,7 @@ void AAICommander::SetDataTable(FName EnemyName)
 		sup_sharerange = SuppressionData->Sup_ShareRange;
 		sup_sharetime = SuppressionData->Sup_ShareTime;
 	}
+
 	
 }
 void AAICommander::TargetTickSet(ASubEncounterSpace* sub)

@@ -30,9 +30,9 @@ public:
 		int maplistnum;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
 		int enemyActivenum;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
 		FVector movepoint;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
 		bool arraysame;
 
 
