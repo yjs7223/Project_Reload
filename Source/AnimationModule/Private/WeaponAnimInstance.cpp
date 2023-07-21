@@ -4,6 +4,7 @@
 #include "WeaponAnimInstance.h"
 #include "WeaponComponent.h"
 
+#include "WeaponAnimDataAsset.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
 #include "PlayerMoveComponent.h"

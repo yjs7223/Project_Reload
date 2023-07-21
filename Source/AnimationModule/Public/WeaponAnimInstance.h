@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom))
 class ANIMATIONMODULE_API UWeaponAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
@@ -49,7 +49,8 @@ protected:
 		UAnimMontage* mReloadMontage;
 	UPROPERTY(EditAnywhere, Category = Montage)
 		UAnimMontage* mAimingMontage;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = animation)
+	class UWeaponAnimDataAsset* test;
 private:
 	UPROPERTY(VisibleAnywhere, Category = molu)
 		float mfireTime;
