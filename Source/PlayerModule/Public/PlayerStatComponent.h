@@ -14,4 +14,6 @@ class PLAYERMODULE_API UPlayerStatComponent : public UStatComponent
 {
 	GENERATED_BODY()
 	
+public:
+	void Attacked(float p_damage) override;
 };
