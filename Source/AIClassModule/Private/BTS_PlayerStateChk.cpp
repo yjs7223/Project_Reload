@@ -21,28 +21,27 @@ void UBTS_PlayerStateChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
 	if (AIController)
 	{
-		if (AIController->BlackboardComponent)
+		if (AIController->GetBlackboardComponent())
 		{
 			UBaseInputComponent* Inputcomp = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UBaseInputComponent>();
 			UCoverComponent* Covercomp = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UCoverComponent>();
-			BlackboardComponent = AIController->BlackboardComponent;
 
 			FInputData data;
 			memset(&data, 0, sizeof(FInputData));
 			if (Inputcomp->getInput()->IsFire || Inputcomp->getInput()->IsAiming)
 			{
-				BlackboardComponent->SetValueAsEnum("Target_State", 1);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 1);
 			}
 			else if (Covercomp->IsCover())
 			{
-				BlackboardComponent->SetValueAsEnum("Target_State", 2);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 2);
 			}
 			else if (Inputcomp->getInput()->IsRuning)
 			{
-				BlackboardComponent->SetValueAsEnum("Target_State", 3);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 3);
 			}
 			else if (!memcmp(Inputcomp->getInput(), &data, sizeof(FInputData))) {
-				BlackboardComponent->SetValueAsEnum("Target_State", 0);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 0);
 			}
 			
 		}
