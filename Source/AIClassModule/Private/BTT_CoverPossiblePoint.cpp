@@ -12,6 +12,8 @@ UBTT_CoverPossiblePoint::UBTT_CoverPossiblePoint()
 {
 	NodeName = TEXT("CoverPossiblePoint");
 	coverpossible = false;
+	same = false;
+	arraysame = false;
 }
 
 EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -40,14 +42,15 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 							if (mindis == NULL)
 							{
 								mindis = FVector::Distance(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), coverenemy);
-								BlackboardComponent->SetValueAsVector("AI_MoveLocation", coverenemy);
+								mindislocation = coverenemy;
+								
 							}
 							else
 							{
 								if (mindis > FVector::Distance(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), coverenemy))
 								{
 									mindis = FVector::Distance(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), coverenemy);
-									BlackboardComponent->SetValueAsVector("AI_MoveLocation", coverenemy);
+									mindislocation = coverenemy;
 								}
 							}
 						}
@@ -69,19 +72,66 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 								if (mindis == NULL)
 								{
 									mindis = FVector::Distance(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), coverenemy);
-									BlackboardComponent->SetValueAsVector("AI_MoveLocation", coverenemy);
+									mindislocation = coverenemy;
 								}
 								else
 								{
 									if (mindis > FVector::Distance(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), coverenemy))
 									{
 										mindis = FVector::Distance(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), coverenemy);
-										BlackboardComponent->SetValueAsVector("AI_MoveLocation", coverenemy);
+										mindislocation = coverenemy;
 									}
 								}
 							}
 						}
 					}
+					same = false;
+					for (auto coverpoint : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_CoverPoint)
+					{
+						if (coverpoint.Key != ai.Value)
+						{
+							if (mindislocation == coverpoint.Value)
+							{
+								same = true;
+							}
+						}
+					}
+					if (!same)
+					{
+						BlackboardComponent->SetValueAsVector("AI_MoveLocation", mindislocation);
+					}
+					else if (same)
+					{
+						arraysame = false;
+						int num = 1;
+						for (int i = 0; i < num; i++)
+						{
+							for (auto coverpoint : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_CoverPoint)
+							{
+								if (coverpoint.Key != ai.Value)
+								{
+									if (Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray[i] == coverpoint.Value)
+									{
+										arraysame = true;
+									}
+								}
+							}
+							if (arraysame)
+							{
+								num++;
+								if (num >= Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray.Num())
+								{
+									BlackboardComponent->SetValueAsBool("OrderWait", false);
+									return EBTNodeResult::Succeeded;
+								}
+							}
+							else if (!arraysame)
+							{
+								BlackboardComponent->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray[i]);
+							}
+						}
+					}
+
 					BlackboardComponent->SetValueAsBool("OrderWait", false);
 				}
 			}

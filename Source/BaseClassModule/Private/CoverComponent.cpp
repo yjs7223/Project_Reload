@@ -59,9 +59,6 @@ void UCoverComponent::BeginPlay()
 		m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 		m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	}
-	else {
-		FMessageLog("PIE").CriticalError(LOCTEXT("SimpleMoveErrorNoComp", "PathFollowingComp Create failed"));
-	}
 
 
 }
@@ -281,8 +278,9 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector ViewVector;
 	FRotator cameraRotation;
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
+
 	UCameraComponent* camera = owner->FindComponentByClass<UCameraComponent>();
-	
+	if(!camera) return  FVector::ZeroVector;
 	ViewVector = cameraRotation.Vector();
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,

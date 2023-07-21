@@ -68,6 +68,7 @@ AAICommander::AAICommander()
 	SightIn_CHK = false;
 	Patrol_CHK = false;
 	Cmd_SightOut = false;
+	
 	SetDataTable("Rifle_E");
 }
 
@@ -89,6 +90,7 @@ void AAICommander::SetDataTable(FName EnemyName)
 		sup_sharerange = SuppressionData->Sup_ShareRange;
 		sup_sharetime = SuppressionData->Sup_ShareTime;
 	}
+
 	
 }
 void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
@@ -298,6 +300,10 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 			}
 			if (AIController)
 			{
+				if (AIController->commander != this)
+				{
+					AIController->commander = this;
+				}
 				if (AIController->BlackboardComponent)
 				{
 					BlackboardComponent = AIController->BlackboardComponent;
