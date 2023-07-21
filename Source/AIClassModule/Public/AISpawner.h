@@ -16,6 +16,9 @@ public:
 	// Sets default values for this actor's properties
 	AAISpawner();
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class UBlackboardComponent* BlackboardComponent;
 	// 현재 웨이브
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int curWave;

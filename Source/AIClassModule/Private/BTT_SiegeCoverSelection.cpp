@@ -10,7 +10,9 @@
 
 UBTT_SiegeCoverSelection::UBTT_SiegeCoverSelection()
 {
+	NodeName = TEXT("SiegeCoverSelection");
 	maplistnum = 0;
+	enemyActivenum = 0;
 }
 
 EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
