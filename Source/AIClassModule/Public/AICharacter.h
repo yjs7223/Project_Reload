@@ -75,6 +75,8 @@ public:
 	// 몽타주
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* idle_Montage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool Detour;
 
 public:
 

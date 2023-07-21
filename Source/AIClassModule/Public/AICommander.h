@@ -93,6 +93,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharetime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float env_range;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float Siege_angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float detour_radius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float detour_angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float ndetour_angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector MaxSupLoc;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_value;
