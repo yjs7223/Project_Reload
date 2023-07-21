@@ -17,9 +17,11 @@ UCameraControllComponent::UCameraControllComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	AimingArmLength = 90.0f;
-	IdleArmLength = 120.0f;
-	TargetArmLenght = IdleArmLength;
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/ATH/PlayerCharacter/DT_CameraControll.DT_CameraControll'"));
+	if (DataTable.Succeeded())
+	{
+		m_CameraControllData = DataTable.Object;
+	}
 	
 	// ...
 }
@@ -31,13 +33,15 @@ void UCameraControllComponent::BeginPlay()
 	Super::BeginPlay();
 
 	owner = dynamic_cast<ACharacter*>(GetOwner());
+	
+	m_Data = reinterpret_cast<FCameraControllData*>(m_CameraControllData->GetRowMap().begin().Value());
 
 	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
 	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
 	m_FollowCamera = owner->FindComponentByClass<UCameraComponent>();
 	m_FollowSpringArm = owner->FindComponentByClass<USpringArmComponent>();
-	m_FollowSpringArm->SocketOffset = camerapos;
+	m_FollowSpringArm->SocketOffset = m_Data->camerapos;
 	m_FollowSpringArm->SetRelativeLocation(owner->GetMesh()->GetBoneLocation(TEXT("spine_01"), EBoneSpaces::ComponentSpace));
 }
 
@@ -47,64 +51,64 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FVector tempCamerapos = camerapos;
+	FVector tempCamerapos = m_Data->camerapos;
 	FRotator tempCameraRot = FRotator(0, 0, 0);
 	tempCamerapos.Z -= owner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 
 	if (m_Input && m_Input->getInput()->IsAiming) {
-		TargetArmLenght = AimingArmLength;
-		tempCamerapos += camerapos_Aiming;
-		tempCameraRot += camerarot_aiming;
+		m_Data->TargetArmLenght = m_Data->AimingArmLength;
+		tempCamerapos += m_Data->camerapos_Aiming;
+		tempCameraRot += m_Data->camerarot_aiming;
 	}
 	else {
-		TargetArmLenght = IdleArmLength;
+		m_Data->TargetArmLenght = m_Data->IdleArmLength;
 	}
 	if (m_Cover && m_Cover->isPeeking()) {
 		EPeekingState peekstate = m_Cover->getPeekingState();
 		if (peekstate == EPeekingState::FrontRightStart) {
-			tempCamerapos += camerapos_FrontRightPeek;
-			tempCameraRot += camerarot_PeekingLRight;
+			tempCamerapos += m_Data->camerapos_FrontRightPeek;
+			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
 		else if (peekstate == EPeekingState::FrontLeftStart) {
-			tempCamerapos += camerapos_FrontLeftPeek;
-			tempCameraRot += camerarot_PeekingLeft;
+			tempCamerapos += m_Data->camerapos_FrontLeftPeek;
+			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
 		else if (peekstate == EPeekingState::HighRightStart) {
-			tempCamerapos += camerapos_HighRightPeek;
-			tempCameraRot += camerarot_PeekingLRight;
+			tempCamerapos += m_Data->camerapos_HighRightPeek;
+			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
 		else if (peekstate == EPeekingState::HighLeftStart) {
-			tempCamerapos += camerapos_HighLeftPeek;
-			tempCameraRot += camerarot_PeekingLeft;
+			tempCamerapos += m_Data->camerapos_HighLeftPeek;
+			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
 		else if (peekstate == EPeekingState::LowRightStart) {
-			tempCamerapos += camerapos_LowRightPeek;
-			tempCameraRot += camerarot_PeekingLRight;
+			tempCamerapos += m_Data->camerapos_LowRightPeek;
+			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
 		else if (peekstate == EPeekingState::LowLeftStart) {
-			tempCamerapos += camerapos_LowLeftPeek;
-			tempCameraRot += camerarot_PeekingLeft;
+			tempCamerapos += m_Data->camerapos_LowLeftPeek;
+			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
 
 	}
 
 	if (m_Cover->IsCover()) {
 		if (m_Cover->FaceRight() > 0.0f) {
-			tempCamerapos += camerapos_FaceRight;
+			tempCamerapos += m_Data->camerapos_FaceRight;
 		}
 		else {
-			tempCamerapos += camerapos_FaceLeft;
+			tempCamerapos += m_Data->camerapos_FaceLeft;
 		}
 	}
 
 
 	if (owner->bIsCrouched) {
-		tempCamerapos += camerapos_Crouch;
+		tempCamerapos += m_Data->camerapos_Crouch;
 		if (m_Cover->FaceRight() > 0.0f) {
-			tempCamerapos += camerapos_Crouch;
+			tempCamerapos += m_Data->camerapos_Crouch;
 		}
 		else {
-			FVector tempvec = camerapos_Crouch;
+			FVector tempvec = m_Data->camerapos_Crouch;
 			tempvec.Y *= -1;
 			tempCamerapos += tempvec;
 		}
@@ -113,14 +117,14 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 
 
-	for (auto& item : camerplusvectors)
+	for (auto& item : m_Data->camerplusvectors)
 	{
 		tempCamerapos += item.Value;
 	}
 
-	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(m_FollowSpringArm->SocketOffset, tempCamerapos, DeltaTime, m_PosSpeed);
-	m_FollowCamera->SetRelativeRotation(FMath::RInterpTo(m_FollowCamera->GetRelativeRotation(), tempCameraRot, DeltaTime, m_RotSpeed));
-	m_FollowSpringArm->TargetArmLength = FMath::FInterpTo(m_FollowSpringArm->TargetArmLength, TargetArmLenght, DeltaTime, m_LengthSpeed);
+	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(m_FollowSpringArm->SocketOffset, tempCamerapos, DeltaTime, m_Data->m_PosSpeed);
+	m_FollowCamera->SetRelativeRotation(FMath::RInterpTo(m_FollowCamera->GetRelativeRotation(), tempCameraRot, DeltaTime, m_Data->m_RotSpeed));
+	m_FollowSpringArm->TargetArmLength = FMath::FInterpTo(m_FollowSpringArm->TargetArmLength, m_Data->TargetArmLenght, DeltaTime, m_Data->m_LengthSpeed);
 	//m_FollowSpringArm->SocketOffset = tempCamerapos;
 	//m_FollowCamera->SetRelativeRotation(tempCameraRot);
 	//m_FollowSpringArm->TargetArmLength = TargetArmLenght;
@@ -131,5 +135,5 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 bool UCameraControllComponent::isAimChangeFinish()
 {
-	return m_FollowSpringArm->TargetArmLength >= AimingArmLength - 1.f;
+	return m_FollowSpringArm->TargetArmLength >= m_Data->AimingArmLength - 1.f;
 }
