@@ -14,31 +14,24 @@ UBTT_NomalCoverRequest::UBTT_NomalCoverRequest()
 
 EBTNodeResult::Type UBTT_NomalCoverRequest::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	BlackboardComponent = OwnerComp.GetAIOwner()->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsBool("OrderWait", true);
+	OwnerComp.GetAIOwner()->GetBlackboardComponent()->SetValueAsBool("OrderWait", true);
 	AIController = nullptr;
-	
 
 	AIController = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander;
 
 	if (AIController)
 	{
-		if (AIController->BlackboardComponent)
+		if (AIController->GetBlackboardComponent())
 		{
 			
-			if (!AIController->BlackboardComponent->GetValueAsBool("CmdAI_OrderWait"))
+			if (!AIController->GetBlackboardComponent()->GetValueAsBool("CmdAI_OrderWait"))
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "SDADSADADAASDDADADAD");
-				AIController->BlackboardComponent->SetValueAsBool("CmdAI_OrderWait", true);
+				AIController->GetBlackboardComponent()->SetValueAsBool("CmdAI_OrderWait", true);
 			}
 		}
 	}
 	
-	
-	
-
-
 	return EBTNodeResult::Succeeded;
-
 
 }
