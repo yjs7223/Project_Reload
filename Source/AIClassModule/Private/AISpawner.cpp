@@ -22,8 +22,9 @@ AAISpawner::AAISpawner()
 		spawnData = DataTable.Object;
 	}
 
-	/*commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-	BlackboardComponent = commander->GetBlackboardComponent();*/
+
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+
 }
 
 // Called when the game starts or when spawned
