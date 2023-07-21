@@ -24,8 +24,7 @@ protected:
 	virtual FRotator GetControlRotation()const override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		UBlackboardComponent* BlackboardComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBlackboardData* BBAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)

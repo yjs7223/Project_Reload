@@ -117,7 +117,7 @@ public:
 		void ShotAI();
 	// AI Shot Timer
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAITimer();
+		void ShotAITimer(float t);
 	// AI Shot Start
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ShotAIStart();
