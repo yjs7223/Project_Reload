@@ -14,12 +14,12 @@ UWeaponComponent::UWeaponComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_weapon(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
-	if (sk_weapon.Succeeded())
-	{
-		WeaponMesh->SetSkeletalMesh(sk_weapon.Object);
-	}
+	//WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_weapon(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
+	//if (sk_weapon.Succeeded())
+	//{
+	//	WeaponMesh->SetSkeletalMesh(sk_weapon.Object);
+	//}
 	// ...
 }
 
@@ -29,7 +29,16 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	// ...
-	
+	ABaseCharacter* owner = Cast<ABaseCharacter>(GetOwner());
+	ensure(owner);
+	if (owner->WeaponMesh == nullptr) {
+		GetWorld()->GetTimerManager().SetTimerForNextTick([this, owner]() {
+			WeaponMesh = owner->WeaponMesh;
+			});
+	}
+	else {
+		WeaponMesh = owner->WeaponMesh;
+	}
 }
 
 
@@ -124,5 +133,15 @@ void UWeaponComponent::AimSetting()
 	}
 
 
+}
+
+void UWeaponComponent::setWeaponSkeletalMesh(USkeletalMeshComponent* mesh, TCHAR* path)
+{
+	WeaponMesh = mesh;
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_weapon(path);
+	if (sk_weapon.Succeeded())
+	{
+		WeaponMesh->SetSkeletalMesh(sk_weapon.Object);
+	}
 }
 

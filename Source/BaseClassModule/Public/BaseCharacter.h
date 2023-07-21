@@ -34,6 +34,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UCoverComponent* m_CoverComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USkeletalMeshComponent* WeaponMesh;
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UStatComponent* Stat;
 

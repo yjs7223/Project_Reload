@@ -20,6 +20,7 @@
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
@@ -34,8 +35,9 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
-	FName WeaponSocket(TEXT("hand_r_Socket"));
-	AIWeapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
+
+	AIWeapon->setWeaponSkeletalMesh(WeaponMesh, TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
+	WeaponMesh->SetupAttachment(GetMesh(), TEXT("hand_r_Socket"));
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
 	if (DT_RangeDataObject.Succeeded())

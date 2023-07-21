@@ -38,7 +38,7 @@ public:
 		float getAimPitch();
 
 		void AimSetting();
-
+		void setWeaponSkeletalMesh(USkeletalMeshComponent* mesh, TCHAR* path = TEXT(""));
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int maxAmmo;
