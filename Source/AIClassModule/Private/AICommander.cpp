@@ -105,12 +105,11 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 		}
 		if (AIController)
 		{
-			if (AIController->BlackboardComponent)
+			if (AIController->GetBlackboardComponent())
 			{
-				BlackboardComponent = AIController->BlackboardComponent;
-				if (BlackboardComponent->GetValueAsBool("Sight_In"))
+				if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
 				{
-					Blackboard->SetValueAsObject("Cmd_Target", BlackboardComponent->GetValueAsObject("Target"));
+					Blackboard->SetValueAsObject("Cmd_Target", AIController->GetBlackboardComponent()->GetValueAsObject("Target"));
 					for (auto& ai : Cast<ASubEncounterSpace>(sub)->AIArray)
 					{
 						if (ai != subAi)
@@ -123,12 +122,11 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 							}
 							if (AIController)
 							{
-								if (AIController->BlackboardComponent)
+								if (AIController->GetBlackboardComponent())
 								{
-									BlackboardComponent = AIController->BlackboardComponent;
-									if (BlackboardComponent->GetValueAsObject("Target") == nullptr)
+									if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
 									{
-										BlackboardComponent->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+										AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
 									}
 								}
 							}
@@ -150,10 +148,9 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 							}
 							if (AIController)
 							{
-								if (AIController->BlackboardComponent)
+								if (AIController->GetBlackboardComponent())
 								{
-									BlackboardComponent = AIController->BlackboardComponent;
-									if (BlackboardComponent->GetValueAsBool("Sight_In"))
+									if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
 									{
 										sightin = true;
 									}
@@ -173,10 +170,9 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 							}
 							if (AIController)
 							{
-								if (AIController->BlackboardComponent)
+								if (AIController->GetBlackboardComponent())
 								{
-									BlackboardComponent = AIController->BlackboardComponent;
-									BlackboardComponent->SetValueAsBool("Sight_In", false);
+									AIController->GetBlackboardComponent()->SetValueAsBool("Sight_In", false);
 								}
 							}
 						}
@@ -192,6 +188,8 @@ void AAICommander::BeginPlay()
 	Super::BeginPlay();
 	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEncounterSpace::StaticClass(), EncounterArray);
+	UBlackboardComponent* BlackboardComp = Blackboard;
+	UseBlackboard(BB_AICommander, BlackboardComp);
 }
 
 // Called every frame
@@ -201,7 +199,8 @@ void AAICommander::Tick(float DeltaTime)
 	s_time += DeltaTime;
 	
 	ListSet();
-	UseBlackboard(BB_AICommander, BlackboardComponent);
+	UBlackboardComponent* BlackboardComp = Blackboard;
+	UseBlackboard(BB_AICommander, BlackboardComp);
 }
 
 void AAICommander::ListSet()
@@ -265,13 +264,13 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		}
 		if (AIController)
 		{
-			if (AIController->BlackboardComponent)
+			if (AIController->GetBlackboardComponent())
 			{
-				BlackboardComponent = AIController->BlackboardComponent;
-				BlackboardComponent->SetValueAsBool("AI_Active", true);
-				BlackboardComponent->SetValueAsInt("ID_Number", AddIndex);
-				BlackboardComponent->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->BlackboardComponent->GetValueAsEnum("Combat")));
+
+				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
+				AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
 			}
 		}
 		
@@ -304,10 +303,9 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 				{
 					AIController->commander = this;
 				}
-				if (AIController->BlackboardComponent)
+				if (AIController->GetBlackboardComponent())
 				{
-					BlackboardComponent = AIController->BlackboardComponent;
-					List_Suppression.Add(*FindActor, AIController->BlackboardComponent->GetValueAsFloat("Sup_TotalPoint"));
+					List_Suppression.Add(*FindActor, AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint"));
 					
 					if (s_time >= sup_sharetime)
 					{
@@ -315,7 +313,7 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 						
 						s_time = 0;
 					}
-					if (BlackboardComponent->GetValueAsBool("Sight_In"))
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
 					{
 						SightIn_CHK = true;
 					}
@@ -351,10 +349,9 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 			}
 			if (AIController)
 			{
-				if (AIController->BlackboardComponent)
+				if (AIController->GetBlackboardComponent())
 				{
-					BlackboardComponent = AIController->BlackboardComponent;
-					if (BlackboardComponent->GetValueAsEnum("Combat") == 0)
+					if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == 0)
 					{
 						Patrol_CHK = true;
 					}
@@ -395,19 +392,18 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 			}
 			if (AIController)
 			{
-				if (AIController->BlackboardComponent)
+				if (AIController->GetBlackboardComponent())
 				{
-					BlackboardComponent = AIController->BlackboardComponent;
 					if (*List_Location.Find(*FindAc) != MaxSupLoc)
 					{
-						sup_value = BlackboardComponent->GetValueAsFloat("Sup_TotalPoint");
+						sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
 						sup_value += (Sup_Array[0] / 5)
 							* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / sup_sharerange));
 						if (sup_value >= Sup_Array[0])
 						{
 							sup_value = Sup_Array[0];
 						}
-						BlackboardComponent->SetValueAsFloat
+						AIController->GetBlackboardComponent()->SetValueAsFloat
 						("Sup_TotalPoint", sup_value);
 					}
 				}

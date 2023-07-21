@@ -18,20 +18,20 @@ EBTNodeResult::Type UBTT_MovePossible::ExecuteTask(UBehaviorTreeComponent& Owner
 	if (nullptr == ControllingPawn) return EBTNodeResult::Failed;
 	
 
-	Cast<AAI_Controller>(OwnerComp.GetAIOwner())->BlackboardComponent->SetValueAsFloat("AI_Dist",
+	Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->SetValueAsFloat("AI_Dist",
 		FVector::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation()));
-	if (Cast<AAI_Controller>(OwnerComp.GetAIOwner())->BlackboardComponent->GetValueAsFloat("Sup_TotalPoint") > 30.0f)
+	if (Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint") > 30.0f)
 	{
 		return EBTNodeResult::Failed;
 	}
 	else
 	{
-		dist = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->BlackboardComponent->GetValueAsFloat("AI_Dist");
+		dist = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->GetValueAsFloat("AI_Dist");
 		for (auto ai : Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Division)
 		{
 			if (ai.Key != OwnerComp.GetAIOwner()->GetPawn())
 			{
-				if (dist < Cast<AAI_Controller>(OwnerComp.GetAIOwner())->BlackboardComponent->GetValueAsFloat("AI_Dist"))
+				if (dist < Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->GetValueAsFloat("AI_Dist"))
 				{
 					return EBTNodeResult::Failed;
 				}	

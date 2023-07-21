@@ -47,8 +47,6 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		UBlackboardComponent* BlackboardComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, AActor*> List_RDivision;
