@@ -56,6 +56,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StopCover();
+
+
+	UFUNCTION(BlueprintCallable)
+		bool StartAICover();
+
 protected:
 	void TurnCheck(float DeltaTime);
 	bool StartCover();
@@ -84,7 +89,11 @@ private:
 	class UPathFollowingComponent* m_PathFollowingComp;
 	enum class ECoverShootingState mCoverShootingState;
 	enum class EPeekingState mPeekingState;
-	bool m_IsCover;
+public :
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
+		bool m_IsCover;
+
+private:
 	bool m_IsTurnWait;
 	bool m_IsCornering;
 	float m_FaceRight;
