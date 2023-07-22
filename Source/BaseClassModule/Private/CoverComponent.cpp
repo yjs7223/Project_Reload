@@ -243,37 +243,40 @@ void UCoverComponent::RotateSet(float DeltaTime)
 
 	//앞에 벽이 있는지
 	start = owner->GetActorLocation();
-	end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
+	end = start + (owner->GetActorForwardVector().GetSafeNormal2D() * capsule->GetScaledCapsuleRadius() * 2.0f);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
+	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 100.0f);
 
 	if (!result.bBlockingHit) return;
 
 	//벽이있다면 이동방향 체크
 	start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
-	end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
+	end = start + (owner->GetActorForwardVector().GetSafeNormal2D() * capsule->GetScaledCapsuleRadius() * 2.0f);
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
+	DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 100.0f);
 
 	//이동방향에 벽이있다면 캡슐로 노말값 가져오기
 	if (result2.bBlockingHit) {
 		FHitResult tempResult;
 		start = owner->GetActorLocation();
-		end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
+		end = start + (owner->GetActorForwardVector().GetSafeNormal2D() * capsule->GetScaledCapsuleRadius() * 2.0f);
 
 		UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(), start, end,
 			capsule->GetScaledCapsuleRadius(),
 			capsule->GetScaledCapsuleHalfHeight(),
 			UEngineTypes::ConvertToTraceType(ECC_Visibility),
-			false,
+			true,
 			{},
-			EDrawDebugTrace::None,
+			EDrawDebugTrace::ForDuration,
 			tempResult,
 			true);
 
-		FinalNormal = tempResult.Normal;
+		FinalNormal = tempResult.Normal.GetSafeNormal2D();
+		DrawDebugLine(GetWorld(), start, start +tempResult.Normal * 100, FColor::Blue, false, 100.0f);
 	}
 	//없다면 액터위치의 노말값가져오기
 	else {
-		FinalNormal = result.Normal;
+		FinalNormal = result2.Normal;
 	}
 	// result.Normal이나 tempResult.Normal이 없다면 에러
 	if (FinalNormal == FVector::ZeroVector) {
