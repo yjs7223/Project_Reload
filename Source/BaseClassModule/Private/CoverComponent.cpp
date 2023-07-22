@@ -230,7 +230,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 			UEngineTypes::ConvertToTraceType(ECC_Visibility),
 			false,
 			{},
-			EDrawDebugTrace::None,
+			EDrawDebugTrace::ForDuration,
 			tempResult,
 			true);
 
@@ -529,12 +529,15 @@ void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
 void UCoverComponent::PlayCornering()
 {
 	FHitResult result1;
-	CheckCoverCollision(result1);
-
 	FHitResult result2;
-	FVector start = result1.TraceEnd;
-	FVector end = start + -m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
+	FVector start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
+	FVector end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
 	FCollisionQueryParams params(NAME_None, true, owner);
+
+	GetWorld()->LineTraceSingleByChannel(result1, start, end, traceChanel, params);
+
+	start = result1.TraceEnd;
+	end = start + -m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
 
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
 	DrawDebugSphere(GetWorld(), end, 10.f, 32, FColor::Cyan, false, 100.0f);
