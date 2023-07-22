@@ -14,12 +14,25 @@ UWeaponComponent::UWeaponComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	//WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_weapon(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
-	//if (sk_weapon.Succeeded())
-	//{
-	//	WeaponMesh->SetSkeletalMesh(sk_weapon.Object);
-	//}
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
+	if (sk_rifle.Succeeded())
+	{
+		RifleMesh = sk_rifle.Object;
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_pistol(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/PIstolScifi/SKM_PistolSciFi.SKM_PistolSciFi'"));
+	if (sk_pistol.Succeeded())
+	{
+		PistolMesh = sk_pistol.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_shotgun(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Shotgun/SKM_Shotgun.SKM_Shotgun'"));
+	if (sk_shotgun.Succeeded())
+	{
+		ShotgunMesh = sk_shotgun.Object;
+	}
 	// ...
 }
 
@@ -29,16 +42,7 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	// ...
-	ABaseCharacter* owner = Cast<ABaseCharacter>(GetOwner());
-	ensure(owner);
-	if (owner->WeaponMesh == nullptr) {
-		GetWorld()->GetTimerManager().SetTimerForNextTick([this, owner]() {
-			WeaponMesh = owner->WeaponMesh;
-			});
-	}
-	else {
-		WeaponMesh = owner->WeaponMesh;
-	}
+	
 }
 
 
@@ -58,7 +62,21 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
 	maxAmmo = p_ammo;
-	curAmmo = 30;
+	switch (weapontype)
+	{
+	case EWeaponType::TE_Pistol:
+		curAmmo = 10;
+		break;
+	case EWeaponType::TE_Rifle:
+		curAmmo = 30;
+		break;
+	case EWeaponType::TE_Shotgun:
+		curAmmo = 7;
+		break;
+	default:
+		curAmmo = 30;
+		break;
+	}
 }
 
 void UWeaponComponent::ReloadAmmo()
@@ -133,15 +151,5 @@ void UWeaponComponent::AimSetting()
 	}
 
 
-}
-
-void UWeaponComponent::setWeaponSkeletalMesh(USkeletalMeshComponent* mesh, TCHAR* path)
-{
-	WeaponMesh = mesh;
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_weapon(path);
-	if (sk_weapon.Succeeded())
-	{
-		WeaponMesh->SetSkeletalMesh(sk_weapon.Object);
-	}
 }
 

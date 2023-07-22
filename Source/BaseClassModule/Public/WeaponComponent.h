@@ -6,6 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "WeaponComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	TE_Pistol UMETA(DisplayName = "Pistol"),
+	TE_Rifle UMETA(DisplayName = "Rifle"),
+	TE_Shotgun UMETA(DisplayName = "Shotgun"),
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
@@ -38,7 +45,7 @@ public:
 		float getAimPitch();
 
 		void AimSetting();
-		void setWeaponSkeletalMesh(USkeletalMeshComponent* mesh, TCHAR* path = TEXT(""));
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int maxAmmo;
@@ -70,4 +77,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USkeletalMesh* RifleMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USkeletalMesh* PistolMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USkeletalMesh* ShotgunMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		EWeaponType weapontype;
 };

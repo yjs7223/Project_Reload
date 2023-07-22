@@ -59,9 +59,6 @@ void UCoverComponent::BeginPlay()
 		m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 		m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	}
-	else {
-		FMessageLog("PIE").CriticalError(LOCTEXT("SimpleMoveErrorNoComp", "PathFollowingComp Create failed"));
-	}
 
 
 }
@@ -230,7 +227,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 			UEngineTypes::ConvertToTraceType(ECC_Visibility),
 			false,
 			{},
-			EDrawDebugTrace::ForDuration,
+			EDrawDebugTrace::None,
 			tempResult,
 			true);
 
@@ -281,8 +278,9 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector ViewVector;
 	FRotator cameraRotation;
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
+
 	UCameraComponent* camera = owner->FindComponentByClass<UCameraComponent>();
-	
+	if(!camera) return  FVector::ZeroVector;
 	ViewVector = cameraRotation.Vector();
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,
@@ -529,15 +527,12 @@ void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
 void UCoverComponent::PlayCornering()
 {
 	FHitResult result1;
+	CheckCoverCollision(result1);
+
 	FHitResult result2;
-	FVector start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
-	FVector end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
+	FVector start = result1.TraceEnd;
+	FVector end = start + -m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
 	FCollisionQueryParams params(NAME_None, true, owner);
-
-	GetWorld()->LineTraceSingleByChannel(result1, start, end, traceChanel, params);
-
-	start = result1.TraceEnd;
-	end = start + -m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
 
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
 	DrawDebugSphere(GetWorld(), end, 10.f, 32, FColor::Cyan, false, 100.0f);
