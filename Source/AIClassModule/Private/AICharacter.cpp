@@ -15,6 +15,7 @@
 #include "AISensingComponent.h"
 #include "LastPoint.h"
 #include "AISpawner.h"
+#include "AIInputComponent.h"
 
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -24,6 +25,8 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
+	m_InputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
+	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 	AIControllerClass = AAI_Controller::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -70,6 +73,8 @@ void AAICharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+
+
 void AAICharacter::SetDataTable(FName EnemyName)
 {
 	FST_Range* RangeData = DT_Range->FindRow<FST_Range>(EnemyName, FString(""));
@@ -91,6 +96,6 @@ void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 void AAICharacter::IdleAnim()
 {
 	//PlayAnimMontage(idle_Montage, 1.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
 

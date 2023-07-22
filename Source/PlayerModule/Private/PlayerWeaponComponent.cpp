@@ -89,7 +89,23 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		fieldActor = fActor.Object;
 	}
+	weapontype = EWeaponType::TE_Pistol;
 
+	switch (weapontype)
+	{
+	case EWeaponType::TE_Pistol:
+		WeaponMesh->SetSkeletalMesh(PistolMesh);
+		break;
+	case EWeaponType::TE_Rifle:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		break;
+	case EWeaponType::TE_Shotgun:
+		WeaponMesh->SetSkeletalMesh(ShotgunMesh);
+		break;
+	default:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		break;
+	}
 }
 
 void UPlayerWeaponComponent::BeginPlay()
@@ -109,6 +125,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoilTick(DeltaTime);
 	ReloadTick(DeltaTime);
 	RecoveryTick(DeltaTime);
+	
 }
 
 void UPlayerWeaponComponent::InitData()
@@ -116,9 +133,23 @@ void UPlayerWeaponComponent::InitData()
 	owner = GetOwner<APlayerCharacter>();
 	if (PlayerWeaponData != nullptr)
 	{
-		TArray<FName> rownames;
-		FPlayerweaponStruct* data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
-
+		FPlayerweaponStruct* data;
+		switch (weapontype)
+		{
+		case EWeaponType::TE_Pistol:
+			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Pistol"), FString(""));
+			break;
+		case EWeaponType::TE_Rifle:
+			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Rifle"), FString(""));
+			break;
+		case EWeaponType::TE_Shotgun:
+			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Shotgun"), FString(""));
+			break;
+		default:
+			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+			break;
+		}
+		
 		SetAmmo(data->bullet_Num);
 
 		damage.X = data->max_Damage;
@@ -169,34 +200,28 @@ void UPlayerWeaponComponent::Fire()
 	{
 		spread = m_firecount * m_spreadPower;
 	}
-	//start.X += FMath::RandRange(-spread, spread);
-	//start.Y += FMath::RandRange(-spread, spread);
+
 	cameraRotation.Yaw += FMath::RandRange(-spread, spread);
 	cameraRotation.Pitch += FMath::RandRange(-spread, spread);
 	end = start + (cameraRotation.Vector() * 99999);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
-	//m_result = FHitResult();
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
-	//ī�޶� Ʈ���̽�
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
-		//ī�޶󿡼� �߻��� Ʈ���̽� ����
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		end = m_rot.Vector() * 99999;
 
-		//�ѱ� Ʈ���̽�
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 		{
-			//�ѱ�Ʈ���̽� ����
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
@@ -206,17 +231,14 @@ void UPlayerWeaponComponent::Fire()
 		}
 		else
 		{
-			//�ѱ�Ʈ���̽� ������
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			SpawnDecal(m_result);
 		}
 	}
 	else
 	{
-		//ī�޶󿡼� �߻��� Ʈ���̽� ������
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
 
-		//�ѱ� Ʈ���̽�
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
@@ -307,7 +329,9 @@ void UPlayerWeaponComponent::Fire()
 
 void UPlayerWeaponComponent::StartAiming()
 {
-	//Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 90.0f;
+
+	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 60.0f;
+
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
@@ -332,48 +356,100 @@ void UPlayerWeaponComponent::StartFire()
 	Fire();
 	isFire = true;
 	startRot = owner->GetController()->GetControlRotation();
-	owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
+	if (weapontype == EWeaponType::TE_Rifle)
+	{
+		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
+	}
 }
 
 void UPlayerWeaponComponent::StopFire()
 {
 	if (isFire)
 	{
-		owner->GetWorldTimerManager().ClearTimer(fHandle);
+		if (weapontype == EWeaponType::TE_Rifle)
+		{
+			owner->GetWorldTimerManager().ClearTimer(fHandle);
+		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		isFire = false;
 		StartRecovery();
-		//m_firecount = 0;
 	}
 }
 
 void UPlayerWeaponComponent::StartReload()
 {
 	//ReloadAmmo();
-	if (maxAmmo <= 0)
+
+	switch (weapontype)
 	{
-		isReload = false;
-		return;
+	case EWeaponType::TE_Pistol:
+		if (curAmmo >= 10)
+		{
+			isReload = false;
+			return;
+		}
+
+		reloadvalue = 10;
+
+		curAmmo = 0;
+		break;
+	case EWeaponType::TE_Rifle:
+		if (maxAmmo <= 0)
+		{
+			isReload = false;
+			return;
+		}
+
+		if (curAmmo >= 30)
+		{
+			isReload = false;
+			return;
+		}
+
+		reloadvalue = 30 - curAmmo;
+		if (maxAmmo < reloadvalue)
+		{
+			reloadvalue = maxAmmo;
+			maxAmmo = 0;
+		}
+		else
+		{
+			maxAmmo -= reloadvalue;
+		}
+
+		curAmmo = 0;
+		break;
+	case EWeaponType::TE_Shotgun:
+
+		break;
+	default:
+		if (maxAmmo <= 0)
+		{
+			isReload = false;
+			return;
+		}
+
+		if (curAmmo >= 30)
+		{
+			isReload = false;
+			return;
+		}
+
+		reloadvalue = 30 - curAmmo;
+		if (maxAmmo < reloadvalue)
+		{
+			reloadvalue = maxAmmo;
+			maxAmmo = 0;
+		}
+		else
+		{
+			maxAmmo -= reloadvalue;
+		}
+
+		curAmmo = 0;
+		break;
 	}
 
-	if (curAmmo >= 30)
-	{
-		isReload = false;
-		return;
-	}
-
-	reloadvalue = 30 - curAmmo;
-	if (maxAmmo < reloadvalue)
-	{
-		reloadvalue = maxAmmo;
-		maxAmmo = 0;
-	}
-	else
-	{
-		maxAmmo -= reloadvalue;
-	}
-
-	curAmmo = 0;
 	isReload = true;
 }
 
@@ -387,22 +463,51 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 {
 	if (isReload)
 	{
-		reloadCount += Deltatime * 30;
+		reloadCount += Deltatime * 20;
 		if (reloadCount >= 1)
 		{
 			curAmmo++;
 			reloadCount = 0;
 		}
-		if (maxAmmo == 0)
+
+		switch (weapontype)
 		{
-			if (curAmmo == reloadvalue)
+		case EWeaponType::TE_Pistol:
+			if (curAmmo == 10)
 			{
 				StopReload();
 			}
-		}
-		if (curAmmo == 30)
-		{
-			StopReload();
+			break;
+		case EWeaponType::TE_Rifle:
+			if (maxAmmo == 0)
+			{
+				if (curAmmo == reloadvalue)
+				{
+					StopReload();
+				}
+			}
+
+			if (curAmmo == 30)
+			{
+				StopReload();
+			}
+			break;
+		case EWeaponType::TE_Shotgun:
+			break;
+		default:
+			if (maxAmmo == 0)
+			{
+				if (curAmmo == reloadvalue)
+				{
+					StopReload();
+				}
+			}
+
+			if (curAmmo == 30)
+			{
+				StopReload();
+			}
+			break;
 		}
 	}
 }
@@ -456,9 +561,9 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 	{
 		RecoveryTime += p_deltatime * 2.0f;
 		TickCount += 2;
-		if (yawRecoveryValue < -20.0f)
+		if (FMath::Abs(yawRecoveryValue) > 5.0f)
 		{
-			TickCount += 10;
+			TickCount += 1000;
 		}
 		if (pitchRecoveryValue < -20.0f)
 		{
@@ -502,8 +607,8 @@ void UPlayerWeaponComponent::StartRecovery()
 	}
 	yawRecoveryValue = startRot.Yaw - nowrot.Yaw;
 	pitchRecoveryValue = startRot.Pitch - nowrot.Pitch;
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
 	//StopRcovery();
 
 }

@@ -52,17 +52,16 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			}
 			if (AIController)
 			{
-				if (AIController->BlackboardComponent)
+				if (AIController->GetBlackboardComponent())
 				{
-					BlackboardComponent = AIController->BlackboardComponent;
 
-					sup_total = BlackboardComponent->GetValueAsFloat("Sup_TotalPoint");
+					sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
 					sup_total -= sup_DecPoint;
 					if (sup_total <= 0)
 					{
 						sup_total = 0;
 					}
-					BlackboardComponent->SetValueAsFloat("Sup_TotalPoint", sup_total);
+					AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
 					
 				}
 			}
@@ -74,7 +73,8 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAIStatComponent::Attacked(float p_damage)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
 	sup_Input = p_damage * sup_DecInput;
 	Time = 0;
 	PlayerAtt_ai = true;
@@ -83,7 +83,7 @@ void UAIStatComponent::Attacked(float p_damage)
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
 	curHP -= p_damage;
 	if (curHP < 0.0f)
 	{
@@ -113,12 +113,11 @@ void UAIStatComponent::SuppresionPoint()
 	}
 	if (AIController)
 	{
-		if (AIController->BlackboardComponent)
+		if (AIController->GetBlackboardComponent())
 		{
-			BlackboardComponent = AIController->BlackboardComponent;
 			if (Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController())->UseBlackboard(AIController->BBAsset, BlackboardComponent))
 			{
-				switch (BlackboardComponent->GetValueAsEnum("Combat"))
+				switch (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat"))
 				{
 				case 0:
 					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1.2;
@@ -148,7 +147,7 @@ void UAIStatComponent::SuppresionPoint()
 				{
 					sup_total = sup_MaxPoint;
 				}
-				BlackboardComponent->SetValueAsFloat("Sup_TotalPoint", sup_total);
+				AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
 				Time = 0.0f;
 				PlayerAtt_ai = false;
 			}
