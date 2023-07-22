@@ -59,10 +59,7 @@ void ASubEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 void ASubEncounterSpace::EnemyAICheck()
 {
 	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
-	if (AIArray.IsEmpty())
-	{
-		
-	}
+	
 }
 
 
