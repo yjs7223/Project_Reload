@@ -232,6 +232,10 @@ void AAICommander::ListSet()
 						DetourCoverPoint();
 					}
 				}
+				if (Cast<ASubEncounterSpace>(sub)->AIArray.IsEmpty())
+				{
+					ListReset(Cast<ASubEncounterSpace>(sub));
+				}
 			}
 		}
 		
@@ -245,6 +249,8 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_Combat.Reset();
 	List_Location.Reset();
 	List_Suppression.Reset();
+	sub->en->LevelArray.Remove(this);
+	sub->LevelActive = false;
 }
 
 void AAICommander::ListStartSet(ASubEncounterSpace* sub)
