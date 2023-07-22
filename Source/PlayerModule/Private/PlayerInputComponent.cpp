@@ -4,13 +4,8 @@
 #include "PlayerInputComponent.h"
 #include "GameFramework/Character.h"
 #include "PlayerWeaponComponent.h"
-#include "PlayerStatComponent.h"
 #include "CoverComponent.h"
 #include <Kismet/KismetSystemLibrary.h>
-#include "PlayerCharacter.h"
-#include "Components/WidgetComponent.h"
-#include "PlayerHUDWidget.h"
-#include "Player_HP_Widget.h"
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -38,9 +33,7 @@ void UPlayerInputComponent::BeginPlay()
 	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
 	InputComponent->BindAction("Cover", IE_Pressed, covercomp, &UCoverComponent::PlayCover);
 	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StartPeeking);
-	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StopPeeking);
-
-	InputComponent->BindAction("TestInput", IE_Pressed, this, &UPlayerInputComponent::TestHud);
+	InputComponent->BindAction("Aim", IE_Released, covercomp, &UCoverComponent::StopPeeking);
 
 }
 
@@ -107,9 +100,4 @@ void UPlayerInputComponent::StartReload()
 	{
 		m_inputData.IsReload = true;
 	}
-}
-
-void UPlayerInputComponent::TestHud()
-{
-	owner->FindComponentByClass<UStatComponent>()->Attacked(20.0f);
 }

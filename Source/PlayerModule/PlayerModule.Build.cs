@@ -6,19 +6,7 @@ public class PlayerModule : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { 
-            "Core",
-            "CoreUObject", 
-            "Engine", 
-            "BaseClassModule", 
-            "Niagara", 
-            "GameplayCameras", 
-            "AIModule", 
-            "InputCore", 
-            "UMG",
-            "UMGEditor",
-
-        });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "BaseClassModule", "Niagara", "GameplayCameras", "AIModule", "InputCore", "UMG" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
     }

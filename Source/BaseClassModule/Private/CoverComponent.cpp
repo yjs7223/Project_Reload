@@ -59,6 +59,9 @@ void UCoverComponent::BeginPlay()
 		m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 		m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	}
+	else {
+		FMessageLog("PIE").CriticalError(LOCTEXT("SimpleMoveErrorNoComp", "PathFollowingComp Create failed"));
+	}
 
 
 }
@@ -146,44 +149,6 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 
 	
 	
-}
-
-bool UCoverComponent::StartAICover()
-{
-	//FHitResult result = FHitResult();
-	//FHitResult temp = FHitResult();
-	//TArray<AActor*> OutActors;
-	//if (UKismetSystemLibrary::CapsuleOverlapActors(GetWorld(),
-	//	owner->GetActorLocation(),
-	//	capsule->GetScaledCapsuleRadius() * 2.0f,
-	//	capsule->GetScaledCapsuleHalfHeight() * 2.0f,
-	//	{ UEngineTypes::ConvertToObjectType(coverWallType) },
-	//	AActor::StaticClass(),
-	//	{},
-	//	OutActors))
-	//{
-	//	for (auto& item : OutActors)
-	//	{
-
-	//		FVector start = owner->GetActorLocation();
-	//		FVector end = item->GetActorLocation();
-	//		FCollisionQueryParams params(NAME_None, true, owner);
-
-	//		if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
-	//			break;
-	//		}
-	//	}
-
-	//}
-
-	//if (result.GetActor() == nullptr) return false;
-	//RotateSet(0.0f);
-
-	////owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
-	//m_CoverWall = result.GetActor();
-	m_IsCover = true;
-
-	return m_IsCover;
 }
 
 void UCoverComponent::TurnCheck(float DeltaTime)
@@ -316,9 +281,8 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector ViewVector;
 	FRotator cameraRotation;
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
-
 	UCameraComponent* camera = owner->FindComponentByClass<UCameraComponent>();
-	if(!camera) return  FVector::ZeroVector;
+	
 	ViewVector = cameraRotation.Vector();
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,
