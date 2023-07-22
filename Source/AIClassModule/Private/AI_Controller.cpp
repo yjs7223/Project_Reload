@@ -17,6 +17,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Hearing.h"
+#include "Math/Vector.h"
 
 
 AAI_Controller::AAI_Controller()
@@ -61,7 +62,7 @@ void AAI_Controller::BeginPlay()
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
 	UBlackboardComponent* BlackboardComp = Blackboard;
-	if (UseBlackboard(BBAsset, BlackboardComponent))
+	if (UseBlackboard(BBAsset, BlackboardComp))
 	{
 		if (!RunBehaviorTree(btree))
 			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
@@ -77,22 +78,22 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 		if (actor->ActorHasTag("Player"))
 		{
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-			if (BlackboardComponent->GetValueAsObject("Target") != nullptr)
+			if (Blackboard->GetValueAsObject("Target") != nullptr)
 			{
-				if (Cast<AActor>(BlackboardComponent->GetValueAsObject("Target"))->ActorHasTag("Last"))
+				if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
 				{
-					GetWorld()->DestroyActor(Cast<AActor>(BlackboardComponent->GetValueAsObject("Target")));
+					GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 				}
 			}
-			BlackboardComponent->SetValueAsObject("Target", Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)));
+			Blackboard->SetValueAsObject("Target", Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)));
 		}
 		if (actor->ActorHasTag("Last"))
 		{
-			if (commander->BlackboardComponent)
+			if (commander->GetBlackboardComponent())
 			{
 				
-				commander->BlackboardComponent->SetValueAsObject("Cmd_Target", NULL);
-				AActor* temp = Cast<AActor>(commander->BlackboardComponent->GetValueAsObject("Cmd_Target"));
+				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
+				AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
 				GetWorld()->DestroyActor(temp);
 			}
 			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
@@ -120,43 +121,42 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 
 void AAI_Controller::SetUseCover()
 {
-	//if (commander != nullptr)
-	//{
-	//	if (BlackboardComponent != nullptr)
-	//	{
-	//		if (commander->CoverEnemyArray.Num() > 0)
-	//		{
-	//			for (auto loc : commander->CoverEnemyArray)
-	//			{
-	//				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("rgrgrgrgrg")));
-	//				FVector a = loc;
-	//				/*if (FVector::Dist(loc, GetOwner()->GetActorLocation()) <= 50)
-	//				{
-	//					BlackboardComponent->SetValueAsBool("AI_UseCover", true);
-	//				}
-	//				else
-	//				{
-	//					BlackboardComponent->SetValueAsBool("AI_UseCover", false);
-	//				}*/
-	//			}
-	//		}
-	//	}
-	//}
+	if (commander != nullptr)
+	{
+		if (commander->GetBlackboardComponent() != nullptr)
+		{
+			if (commander->CoverEnemyArray.Num() > 0)
+			{
+				for (auto loc : commander->CoverEnemyArray)
+				{
+					
+					if (FVector::Distance(loc, GetPawn()->GetActorLocation()) <= 50)
+					{
+						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
+						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+					}
+					else
+					{
+						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+					}
+				}
+			}
+		}
+	}
 }
 
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	BlackboardComponent = Blackboard;
 
 
 	if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
-		BlackboardComponent->SetValueAsObject("Target", nullptr);
+		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}
 
-	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
+	Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 
 	SetUseCover();
 }

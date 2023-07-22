@@ -20,16 +20,15 @@ void UBTS_PlayerInCoverChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
 	if (AIController)
 	{
-		if (AIController->BlackboardComponent)
+		if (AIController->GetBlackboardComponent())
 		{
-			BlackboardComponent = AIController->BlackboardComponent;
 			if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UCoverComponent>()->IsCover())
 			{
-				BlackboardComponent->SetValueAsBool("Target_Cover", true);
+				AIController->GetBlackboardComponent()->SetValueAsBool("Target_Cover", true);
 			}
 			else if (!UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UCoverComponent>()->IsCover())
 			{
-				BlackboardComponent->SetValueAsBool("Target_Cover", false);
+				AIController->GetBlackboardComponent()->SetValueAsBool("Target_Cover", false);
 			}
 		}
 

@@ -29,9 +29,9 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 		}
 		if (AIController)
 		{
-			if (AIController->BlackboardComponent)
+			if (AIController->GetBlackboardComponent())
 			{
-				if(AIController->BlackboardComponent->GetValueAsEnum("Combat") == 4)
+				if(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == 4)
 				{
 					enemyActivenum++;
 					if (enemyActivenum <= maplistnum)
@@ -60,7 +60,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 							}
 							else if (!arraysame)
 							{
-								AIController->BlackboardComponent->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray[i]);
+								AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray[i]);
 							}
 						}
 					}
