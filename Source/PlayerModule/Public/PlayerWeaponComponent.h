@@ -69,7 +69,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* PlayerWeaponData;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstance* Decal;
 

@@ -16,9 +16,6 @@ public:
 	// Sets default values for this actor's properties
 	AAISpawner();
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class UBlackboardComponent* BlackboardComponent;
 	// 현재 웨이브
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int curWave;
@@ -55,10 +52,12 @@ public:
 	// 딜레이용
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		float spawn_Timer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class AActor* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICommander* commander;
+		class AAICharacter* ACharacter;
 
 	// 이번 웨이브 소환 여부
 	bool spawnCheck;

@@ -27,9 +27,10 @@ EBTNodeResult::Type UBTT_OrderWaitChk::ExecuteTask(UBehaviorTreeComponent& Owner
 		}
 		if (AIController)
 		{
-			if (AIController->GetBlackboardComponent())
+			if (AIController->BlackboardComponent)
 			{
-				if (AIController->GetBlackboardComponent()->GetValueAsBool("OrderWait"))
+				BlackboardComponent = AIController->BlackboardComponent;
+				if (BlackboardComponent->GetValueAsBool("OrderWait"))
 				{
 					orderchk = true;
 				}
@@ -44,15 +45,16 @@ EBTNodeResult::Type UBTT_OrderWaitChk::ExecuteTask(UBehaviorTreeComponent& Owner
 	}
 	if (AIController)
 	{
-		if (AIController->GetBlackboardComponent())
+		if (AIController->BlackboardComponent)
 		{
+			BlackboardComponent = AIController->BlackboardComponent;
 			if (orderchk)
 			{
-				AIController->GetBlackboardComponent()->SetValueAsBool("Cmd_OrderWait", true);
+				BlackboardComponent->SetValueAsBool("Cmd_OrderWait", true);
 			}
 			else
 			{
-				AIController->GetBlackboardComponent()->SetValueAsBool("Cmd_OrderWait", false);
+				BlackboardComponent->SetValueAsBool("Cmd_OrderWait", false);
 			}
 		}
 	}

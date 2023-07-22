@@ -20,7 +20,11 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_NomalCoverRequest)
-		class AAICommander* AIController;
+		UBlackboardComponent* BlackboardComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_NomalCoverRequest)
+		class AActor* commander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_NomalCoverRequest)
+		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_NomalCoverRequest)
 		class AAICharacter* ACharacter;
 };

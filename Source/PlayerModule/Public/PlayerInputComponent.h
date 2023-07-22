@@ -26,7 +26,4 @@ private:
 	void StartAiming();
 	void StopAiming();
 	void StartReload();
-
-	void TestHud();
-
 };
