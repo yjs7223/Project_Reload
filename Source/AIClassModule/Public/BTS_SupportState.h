@@ -20,6 +20,14 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		UBlackboardComponent* BlackboardComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		class AAI_Controller* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		class AAICharacter* ACharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		class AActor* commander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		FVector Sup_Vec;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		bool Dis_start;

@@ -64,12 +64,14 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	mSpinRotater = FRotator(0.0, 0.0, 0.0);
 	
-	if (mWeapon && !mIsPeeking && (mIsAiming || mIsFire)) {
-		mSpinRotater = mIsFaceRight ? FRotator(6, 45.0, 11)  : FRotator(-5.0, -35.0, -10.0);
+	if (mWeapon && !mIsPeeking && (mIsAiming || mIsFire || mIsReload)) {
+		mSpinRotater = FRotator(0.0, 180.0, 0.0);
 	}
-	else if(mWeapon && mIsReload) {
+	else if (mWeapon && mIsReload && !mIsFaceRight) {
+		mSpinRotater = FRotator(0.0, 90.0, 0.0);
 
 	}
+
 
 
 	SetHandleing(DeltaSeconds);

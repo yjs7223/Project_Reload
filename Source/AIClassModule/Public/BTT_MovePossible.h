@@ -24,6 +24,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_MovePossible)
 		UBlackboardComponent* BlackboardComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_MovePossible)
+		class AAI_Controller* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_MovePossible)
+		class AAICharacter* ACharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_MovePossible)
+		class AActor* commander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_MovePossible)
 		float dist;
 
 };

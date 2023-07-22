@@ -29,33 +29,12 @@ public:
 
 	virtual bool CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor = nullptr, const bool* bWasVisible = nullptr, int32* UserData = nullptr) const;
 
-	void InitWidget(FViewport* viewport, uint32 value);
-	void UpdateWidget(float deltatime);
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPlayerWeaponComponent* weapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPlayerStatComponent* stat;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWidgetComponent* HPWidgetComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWidgetComponent* AmmoWidgetComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> HP_Widget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Ammo_Widget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Crosshair_WidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UCrosshair_Widget* Crosshair_Widget;
     
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
