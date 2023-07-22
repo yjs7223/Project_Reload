@@ -148,6 +148,44 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 	
 }
 
+bool UCoverComponent::StartAICover()
+{
+	//FHitResult result = FHitResult();
+	//FHitResult temp = FHitResult();
+	//TArray<AActor*> OutActors;
+	//if (UKismetSystemLibrary::CapsuleOverlapActors(GetWorld(),
+	//	owner->GetActorLocation(),
+	//	capsule->GetScaledCapsuleRadius() * 2.0f,
+	//	capsule->GetScaledCapsuleHalfHeight() * 2.0f,
+	//	{ UEngineTypes::ConvertToObjectType(coverWallType) },
+	//	AActor::StaticClass(),
+	//	{},
+	//	OutActors))
+	//{
+	//	for (auto& item : OutActors)
+	//	{
+
+	//		FVector start = owner->GetActorLocation();
+	//		FVector end = item->GetActorLocation();
+	//		FCollisionQueryParams params(NAME_None, true, owner);
+
+	//		if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
+	//			break;
+	//		}
+	//	}
+
+	//}
+
+	//if (result.GetActor() == nullptr) return false;
+	//RotateSet(0.0f);
+
+	////owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
+	//m_CoverWall = result.GetActor();
+	m_IsCover = true;
+
+	return m_IsCover;
+}
+
 void UCoverComponent::TurnCheck(float DeltaTime)
 {
 	if (m_IsTurnWait) {
