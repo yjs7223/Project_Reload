@@ -17,53 +17,28 @@ EBTNodeResult::Type UBTT_MovePossible::ExecuteTask(UBehaviorTreeComponent& Owner
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (nullptr == ControllingPawn) return EBTNodeResult::Failed;
 	
-	AIController = nullptr;
-	ACharacter = Cast<AAICharacter>(OwnerComp.GetAIOwner()->GetPawn());
-	if (ACharacter)
+
+	Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->SetValueAsFloat("AI_Dist",
+		FVector::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation()));
+	if (Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint") > 30.0f)
 	{
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
+		return EBTNodeResult::Failed;
 	}
-	if (AIController)
+	else
 	{
-		if (AIController->BlackboardComponent)
+		dist = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->GetValueAsFloat("AI_Dist");
+		for (auto ai : Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Division)
 		{
-			BlackboardComponent = AIController->BlackboardComponent;
-			BlackboardComponent->SetValueAsFloat("AI_Dist", 
-				FVector::Dist(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation()));
-			if (BlackboardComponent->GetValueAsFloat("Sup_TotalPoint") > 30.0f)
+			if (ai.Key != OwnerComp.GetAIOwner()->GetPawn())
 			{
-				return EBTNodeResult::Failed;
-			}
-			else
-			{
-				dist = BlackboardComponent->GetValueAsFloat("AI_Dist");
-				for (auto ai : Cast<AAICommander>(commander)->List_Division)
+				if (dist < Cast<AAI_Controller>(OwnerComp.GetAIOwner())->GetBlackboardComponent()->GetValueAsFloat("AI_Dist"))
 				{
-					if (ai.Key != OwnerComp.GetAIOwner()->GetPawn())
-					{
-						AIController = nullptr;
-						ACharacter = Cast<AAICharacter>(ai.Key);
-						if (ACharacter)
-						{
-							AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-						}
-						if (AIController)
-						{
-							if (AIController->BlackboardComponent)
-							{
-								BlackboardComponent = AIController->BlackboardComponent;
-								if (dist < BlackboardComponent->GetValueAsFloat("AI_Dist"))
-								{
-									return EBTNodeResult::Failed;
-								}
-							}
-						}
-					}
-				}
-				return EBTNodeResult::Succeeded;
+					return EBTNodeResult::Failed;
+				}	
 			}
 		}
+		return EBTNodeResult::Succeeded;
 	}
-
+		
 	return EBTNodeResult::Failed;
 }

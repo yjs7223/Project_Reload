@@ -9,19 +9,31 @@
 #include "PlayerWeaponComponent.h"
 #include "PlayerStatComponent.h"
 #include "PlayerInputComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/WidgetComponent.h"
+#include "Player_HP_Widget.h"
+#include "Player_Ammo_Widget.h"
 #include "CoverComponent.h"
+#include "Crosshair_Widget.h"
 #include "CameraControllComponent.h"
+//#include "Kismet/GameplayStatics.h"
+//#include "Engine.h"
+//#include "EngineMinimal.h"
+
 
 
 APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Animation/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/CyberpunkMetalhead/Meshes/SKM_CyberpunkMetalhead_FullBodyA.SKM_CyberpunkMetalhead_FullBodyA'"));
 	if (sk_asset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(sk_asset.Object);
 	}
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+
+	/*const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimObj(TEXT("AnimBlueprint'/Game/NewAnim/ABP_Charactor.ABP_Charactor'"));
+	GetMesh()->SetAnimInstanceClass(AnimObj.Object->GeneratedClass);*/
 
 	m_FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
 	m_FollowSpringArm->SetupAttachment(RootComponent);
@@ -33,22 +45,29 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
-	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
-	weapon->setWeaponSkeletalMesh(WeaponMesh, TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
-	WeaponMesh->SetupAttachment(GetMesh(), TEXT("hand_r_Socket"));
-
+	FName WeaponSocket(TEXT("hand_r_Socket"));
+	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
+  
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 	m_CameraControll = CreateDefaultSubobject<UCameraControllComponent>(TEXT("CameraControll"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 
+	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
+	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+
+	AmmoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerAmmo_Widget"));
+	AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 
 }
 
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	stat->SetHP(1000.0f);
+	InitWidget(nullptr, 0);
+	GEngine->GameViewport->Viewport->ViewportResizedEvent.AddUObject(this, &APlayerCharacter::InitWidget);
 
 }
 
@@ -56,7 +75,7 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UpdateWidget(DeltaTime);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
@@ -77,6 +96,63 @@ bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& O
 	}
 	OutSightStrength = 0;
 	return false;
+}
+
+void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
+{
+	if (Crosshair_WidgetClass)
+	{
+		if (Crosshair_Widget)
+		{
+			Crosshair_Widget->RemoveFromViewport();
+		}
+		Crosshair_Widget = CreateWidget<UCrosshair_Widget>(Cast<APlayerController>(GetController()), Crosshair_WidgetClass);
+		Crosshair_Widget->AddToViewport();
+		Crosshair_Widget->weapon = weapon;
+	}
+
+	if (HPWidgetComponent)
+	{
+		HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+		HPWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+		HPWidgetComponent->SetDrawSize(FVector2D(200.0f, 200.0f));
+		
+		if (HP_Widget)
+		{
+			HPWidgetComponent->SetWidgetClass(HP_Widget);
+		}
+	}
+	if (AmmoWidgetComponent)
+	{
+		AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
+		AmmoWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+		AmmoWidgetComponent->SetDrawSize(FVector2D(130.0f, 50.0f));
+
+		if (Ammo_Widget)
+		{
+			AmmoWidgetComponent->SetWidgetClass(Ammo_Widget);
+			Cast<UPlayer_Ammo_Widget>(AmmoWidgetComponent->GetWidget())->weapon = weapon;
+		}
+	}
+
+}
+
+void APlayerCharacter::UpdateWidget(float deltatime)
+{
+	if (HPWidgetComponent)
+	{
+		UPlayer_HP_Widget* hpw = Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget());
+		if (hpw)
+		{
+			hpw->SetPercent(stat->curHP / stat->maxHP);
+			hpw->MoveCircle(deltatime);
+		}
+	}
+
+	if (Crosshair_Widget)
+	{
+		Crosshair_Widget->UpdateCrosshair(deltatime);
+	}
 }
 
 

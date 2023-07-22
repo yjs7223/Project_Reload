@@ -24,8 +24,7 @@ protected:
 	virtual FRotator GetControlRotation()const override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		UBlackboardComponent* BlackboardComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBlackboardData* BBAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
@@ -35,17 +34,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBehaviorTreeComponent* behavior_tree_component;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class ABaseCharacter* m_character;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UAISenseConfig_Sight* SightConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAICharacter* ACharacter;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class AActor* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float DistanceToPlayer = 0.0f;
 
@@ -54,5 +51,7 @@ public:
 		void SetEnemy(FName EnemyName);
 	UFUNCTION()
 		void OnTargetDetected(AActor* actor, FAIStimulus const Stimulus);
+	UFUNCTION()
+		void SetUseCover();
 	
 };
