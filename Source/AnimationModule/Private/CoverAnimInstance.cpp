@@ -84,13 +84,14 @@ void UCoverAnimInstance::SetHandleing(float DeltaTime)
 	if (mIsCover == false || mIsFaceRight || mIsReload) {
 		mWeaponMesh->AttachToComponent(
 			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mRightHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(0, 0, 0));
-		mWeaponMesh->SetRelativeLocation(FVector(6, 0, 0));
+		mWeaponMesh->SetRelativeRotation(FRotator(0, -90, 0));
+		mWeaponMesh->SetRelativeLocation(FVector(-6.628899, 0.669571, 6.741303));
 	}
 	else {
 		mWeaponMesh->AttachToComponent(
 			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mLeftHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(0, 180, 180));
-		mWeaponMesh->SetRelativeLocation(FVector(-6, 0, 0));
+		mWeaponMesh->SetRelativeRotation(FRotator(180, 90, 0));
+		mWeaponMesh->SetRelativeLocation(FVector(6.628899, 0.669571, 6.741303));
+
 	}
 }
