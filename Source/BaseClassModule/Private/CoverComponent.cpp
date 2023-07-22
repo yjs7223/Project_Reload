@@ -2,6 +2,7 @@
 
 
 #include "CoverComponent.h"
+#include "Engine/Engine.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -41,10 +42,15 @@ void UCoverComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = Cast<ACharacter>(GetOwner());
+
+
+
+
 	m_IsCover = false;
 	m_CoverWall = nullptr;
 
 	m_Movement = owner->GetCharacterMovement();
+	
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
 	capsule = owner->GetCapsuleComponent();
@@ -67,6 +73,10 @@ void UCoverComponent::BeginPlay()
 void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+
+	
+
 
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	if (!m_IsCover) return;
@@ -150,37 +160,48 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 
 bool UCoverComponent::StartAICover()
 {
-	//FHitResult result = FHitResult();
-	//FHitResult temp = FHitResult();
-	//TArray<AActor*> OutActors;
-	//if (UKismetSystemLibrary::CapsuleOverlapActors(GetWorld(),
-	//	owner->GetActorLocation(),
-	//	capsule->GetScaledCapsuleRadius() * 2.0f,
-	//	capsule->GetScaledCapsuleHalfHeight() * 2.0f,
-	//	{ UEngineTypes::ConvertToObjectType(coverWallType) },
-	//	AActor::StaticClass(),
-	//	{},
-	//	OutActors))
-	//{
-	//	for (auto& item : OutActors)
-	//	{
+	FHitResult result = FHitResult();
+	FHitResult temp = FHitResult();
+	TArray<AActor*> OutActors;
 
-	//		FVector start = owner->GetActorLocation();
-	//		FVector end = item->GetActorLocation();
-	//		FCollisionQueryParams params(NAME_None, true, owner);
+	if (!owner)
+	{
+		owner = Cast<ACharacter>(GetOwner());
+	}
+	if (!capsule)
+	{
+		capsule = owner->GetCapsuleComponent();
+	}
 
-	//		if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
-	//			break;
-	//		}
-	//	}
 
-	//}
+	if (UKismetSystemLibrary::CapsuleOverlapActors(GetWorld(),
+		owner->GetActorLocation(),
+		capsule->GetScaledCapsuleRadius() * 2.0f,
+		capsule->GetScaledCapsuleHalfHeight() * 2.0f,
+		{ UEngineTypes::ConvertToObjectType(coverWallType) },
+		AActor::StaticClass(),
+		{},
+		OutActors))
+	{
+		for (auto& item : OutActors)
+		{
 
-	//if (result.GetActor() == nullptr) return false;
-	//RotateSet(0.0f);
+			FVector start = owner->GetActorLocation();
+			FVector end = item->GetActorLocation();
+			FCollisionQueryParams params(NAME_None, true, owner);
 
-	////owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
-	//m_CoverWall = result.GetActor();
+			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
+				break;
+			}
+		}
+
+	}
+
+	if (result.GetActor() == nullptr) return false;
+	RotateSet(0.0f);
+
+	owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
+	m_CoverWall = result.GetActor();
 	m_IsCover = true;
 
 	return m_IsCover;
