@@ -71,4 +71,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 		class UCameraControllComponent* m_CameraControll;
 
+
 };
