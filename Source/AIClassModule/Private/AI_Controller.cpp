@@ -54,18 +54,19 @@ AAI_Controller::AAI_Controller()
 	SetEnemy("Rifle_E");
 }
 
+
 void AAI_Controller::BeginPlay()
 {
 	Super::BeginPlay();
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
-	RunBehaviorTree(btree);
-	behavior_tree_component->StartTree(*btree);
+	//RunBehaviorTree(btree);
+	//behavior_tree_component->StartTree(*btree);
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	if (UseBlackboard(BBAsset, BlackboardComp))
 	{
-		if (!RunBehaviorTree(btree))
-			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
+		/*if (!RunBehaviorTree(btree))
+			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));*/
 	}
 
 }
@@ -132,7 +133,7 @@ void AAI_Controller::SetUseCover()
 					
 					if (FVector::Distance(loc, GetPawn()->GetActorLocation()) <= 50)
 					{
-						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
+						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
 						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
 					}
 					else
@@ -142,6 +143,14 @@ void AAI_Controller::SetUseCover()
 				}
 			}
 		}
+	}
+}
+
+void AAI_Controller::RunBTT()
+{
+	if (IsValid(btree)) 
+	{
+		RunBehaviorTree(btree);
 	}
 }
 
