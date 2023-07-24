@@ -230,7 +230,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 			UEngineTypes::ConvertToTraceType(ECC_Visibility),
 			false,
 			{},
-			EDrawDebugTrace::ForDuration,
+			EDrawDebugTrace::None,
 			tempResult,
 			true);
 
