@@ -28,6 +28,8 @@ public:
 		void SetEnemy(FName EnemyName);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		class AAICharacter* aicharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Move_Speed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		bool AI_Move;
