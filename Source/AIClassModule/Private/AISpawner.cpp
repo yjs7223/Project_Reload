@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include "AICommander.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AAISpawner::AAISpawner()
@@ -20,6 +21,10 @@ AAISpawner::AAISpawner()
 	{
 		spawnData = DataTable.Object;
 	}
+
+
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+
 }
 
 // Called when the game starts or when spawned
@@ -167,7 +172,7 @@ void AAISpawner::SpawnEnable(bool p_flag)
 
 void AAISpawner::SpawnLastPoint(float DeltaTime)
 {
-	if (Cast<AAICommander>(commander)->Cmd_SightOut)
+	if (commander->Cmd_SightOut)
 	{
 		pointTime += DeltaTime;
 		if (pointTime >= 1 && !pointSpawnCheck)
@@ -176,10 +181,12 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 			// Spawn
-			GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+			AActor* temp = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 			pointSpawnCheck = true;
 			pointTime = 0;
+
+			commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", temp);
 		}
 	}
 }

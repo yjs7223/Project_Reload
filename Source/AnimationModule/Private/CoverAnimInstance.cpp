@@ -59,7 +59,6 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsCrouching = charcter->bIsCrouched;
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
 	}
-
 	SetHandleing(DeltaSeconds);
 	if (!mIsCover) return;
 
@@ -81,7 +80,7 @@ void UCoverAnimInstance::SetHandleing(float DeltaTime)
 {
 	if (mWeaponMesh == nullptr) return;
 	//if (mIsAiming == true) return;
-	if (mIsCover == false || mIsFaceRight || mIsReload) {
+	if (mIsCover == false || mIsFaceRight) {
 		mWeaponMesh->AttachToComponent(
 			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mRightHandName);
 		mWeaponMesh->SetRelativeRotation(FRotator(0, -90, 0));

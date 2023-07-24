@@ -15,15 +15,17 @@
 #include "AISensingComponent.h"
 #include "LastPoint.h"
 #include "AISpawner.h"
+#include "AIInputComponent.h"
 
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
-	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
+	m_InputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
+	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 	AIControllerClass = AAI_Controller::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -35,9 +37,8 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
-
-	AIWeapon->setWeaponSkeletalMesh(WeaponMesh, TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
-	WeaponMesh->SetupAttachment(GetMesh(), TEXT("hand_r_Socket"));
+	FName WeaponSocket(TEXT("hand_r_Socket"));
+	AIWeapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
 	if (DT_RangeDataObject.Succeeded())
@@ -69,6 +70,8 @@ void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+
 
 void AAICharacter::SetDataTable(FName EnemyName)
 {

@@ -15,13 +15,15 @@ enum class ECombat : uint8
 	Attack 	UMETA(DisplayName = "Attack"),
 	InCover 	UMETA(DisplayName = "InCover")
 };
-//UENUM(BlueprintType)
-//enum class EState : uint8
-//{
-//	Start 	UMETA(DisplayName = "Start"),
-//	Play 	UMETA(DisplayName = "Play"),
-//	End 	UMETA(DisplayName = "End")
-//};
+
+UENUM(BlueprintType)
+enum class ETarget_State : uint8
+{
+	Idle 	UMETA(DisplayName = "Idle"),
+	Attack 	UMETA(DisplayName = "Attack"),
+	Cover 	UMETA(DisplayName = "Cover"),
+	Move 	UMETA(DisplayName = "Move")
+};
 
 UCLASS()
 class AICLASSMODULE_API AAICommander : public AAIController
@@ -44,8 +46,6 @@ public:
 		Tick(float DeltaTime) override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		UBlackboardComponent* BlackboardComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -90,6 +90,16 @@ public:
 		float sup_sharerange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharetime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float env_range;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float Siege_angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float detour_radius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float detour_angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float ndetour_angle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector MaxSupLoc;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
