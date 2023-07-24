@@ -47,6 +47,8 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 
 	GetCapsuleComponent()->SetCapsuleRadius(44.0f);
 
+
+
 }
 
 // Called when the game starts or when spawned

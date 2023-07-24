@@ -53,5 +53,8 @@ public:
 		void OnTargetDetected(AActor* actor, FAIStimulus const Stimulus);
 	UFUNCTION()
 		void SetUseCover();
+
+	UFUNCTION()
+		void RunBTT();
 	
 };

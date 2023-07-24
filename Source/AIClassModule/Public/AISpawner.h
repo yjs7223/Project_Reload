@@ -101,6 +101,4 @@ public:
 		void SpawnEnable(bool p_flag);
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 		void SpawnLastPoint(float DeltaTime);
-
-	void SetNullSightOut();
 };

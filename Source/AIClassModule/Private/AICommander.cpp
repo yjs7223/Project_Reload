@@ -120,10 +120,7 @@ void AAICommander::ListSet()
 					Blackboard->SetValueAsBool("CmdAI_Active", true);
 					if (!MapList_Start)
 					{
-						if (!Cast<ASubEncounterSpace>(sub)->AIArray.IsEmpty())
-						{
-							ListStartSet(Cast<ASubEncounterSpace>(sub));
-						}
+						ListStartSet(Cast<ASubEncounterSpace>(sub));
 					}
 					else
 					{
@@ -165,20 +162,23 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		List_Combat.Add(AddIndex, ECombat::Patrol);
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
-		List_CoverPoint.Add(AddIndex, FVector(0, 0, 0));
-
+		List_CoverPoint.Add(AddIndex, FVector(0,0,0));
+		
 		AIController = nullptr;
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
 		if (AIController)
 		{
 			if (AIController->GetBlackboardComponent())
 			{
+
+				AIController->RunBTT();
 				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 				AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 				AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
-				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
 			}
 		}
+
 		AddIndex++;
 	}
 	MapList_Start = true;
