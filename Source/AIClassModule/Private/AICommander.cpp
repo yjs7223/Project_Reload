@@ -33,6 +33,7 @@ AAICommander::AAICommander()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	//encounter = CreateDefaultSubobject<AEncounterSpace>(TEXT("Encounter"));
 	PrimaryActorTick.bCanEverTick = true;
+
 	AddIndex = 0;
 	MapList_Start = false;
 	sightin = false;
@@ -225,10 +226,14 @@ void AAICommander::ListSet()
 						TargetTickSet(Cast<ASubEncounterSpace>(sub));
 						CoverPointSubEn(Cast<ASubEncounterSpace>(sub));
 						CoverPointEnemy();
-						SiegeCoverPoint();
-						DetourCoverPoint();
+						
+						if (Cast<ASubEncounterSpace>(sub)->AIArray.IsEmpty())
+						{
+							ListReset(Cast<ASubEncounterSpace>(sub));
+						}
 					}
 				}
+				
 			}
 		}
 		
@@ -242,6 +247,8 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_Combat.Reset();
 	List_Location.Reset();
 	List_Suppression.Reset();
+	sub->en->LevelArray.Remove(this);
+	sub->LevelActive = false;
 }
 
 void AAICommander::ListStartSet(ASubEncounterSpace* sub)

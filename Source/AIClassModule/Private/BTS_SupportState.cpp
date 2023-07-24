@@ -8,6 +8,9 @@
 
 UBTS_SupportState::UBTS_SupportState()
 {
+
+	//Interval = 0.5f;
+
 	NodeName = TEXT("SupportState");
 	Dis_start = false;
 }
@@ -86,5 +89,6 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			Dis_start = false;
 		}
 	}
+
 
 }
