@@ -139,6 +139,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 										return EBTNodeResult::Succeeded;
 									}
 									AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray[i]);
+									AIController->commander->List_CoverPoint.Add(*AIController->commander->List_Division.Find(OwnerComp.GetAIOwner()->GetPawn()), Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray[i]);
 								}
 							}
 						}
