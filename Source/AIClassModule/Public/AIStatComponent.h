@@ -37,8 +37,8 @@ public:
 		AActor* IndirectCollision;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		AActor* AICommander;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		AActor* Player;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
@@ -72,10 +72,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		bool PlayerAtt_ai;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		class UBlackboardComponent* BlackboardComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		class AAICharacter* ACharacter;
 
 };
