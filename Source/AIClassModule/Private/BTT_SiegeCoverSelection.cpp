@@ -17,6 +17,8 @@ UBTT_SiegeCoverSelection::UBTT_SiegeCoverSelection()
 
 EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+
+	Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverPoint();
 	maplistnum = Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray.Num();
 	enemyActivenum = 0;
 	for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
@@ -29,9 +31,9 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 		}
 		if (AIController)
 		{
-			if (AIController->BlackboardComponent)
+			if (AIController->GetBlackboardComponent())
 			{
-				if(AIController->BlackboardComponent->GetValueAsEnum("Combat") == 4)
+				if(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == 4)
 				{
 					enemyActivenum++;
 					if (enemyActivenum <= maplistnum)
@@ -60,7 +62,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 							}
 							else if (!arraysame)
 							{
-								AIController->BlackboardComponent->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray[i]);
+								AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray[i]);
 							}
 						}
 					}

@@ -63,6 +63,16 @@ void UCoverComponent::BeginPlay()
 
 }
 
+void UCoverComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	owner = Cast<ACharacter>(GetOwner());
+	if (owner)
+	{
+		capsule = owner->GetCapsuleComponent();
+	}
+}
+
 // Called every frame
 void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -146,6 +156,68 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 
 	
 	
+}
+
+bool UCoverComponent::StartAICover()
+{
+	
+
+
+	/*if (!owner)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "EEEEE");
+		owner = Cast<ACharacter>(GetOwner());
+	}
+	if (!capsule)
+	{
+		capsule = owner->GetCapsuleComponent();
+	}*/
+
+	if (ACharacter* mycharacter = Cast<ACharacter>(GetOwner()))
+	{
+		if (UCapsuleComponent* mycap = mycharacter->GetCapsuleComponent())
+		{
+			FHitResult result = FHitResult();
+			FHitResult temp = FHitResult();
+
+			TArray<AActor*> OutActors;
+			if (UKismetSystemLibrary::CapsuleOverlapActors(GetWorld(),
+				mycharacter->GetActorLocation(),
+				mycap->GetScaledCapsuleRadius() * 2.0f,
+				mycap->GetScaledCapsuleHalfHeight() * 2.0f,
+				{ UEngineTypes::ConvertToObjectType(coverWallType) },
+				AActor::StaticClass(),
+				{},
+				OutActors))
+			{
+				for (auto& item : OutActors)
+				{
+
+					FVector start = mycharacter->GetActorLocation();
+					FVector end = item->GetActorLocation();
+					FCollisionQueryParams params(NAME_None, true, mycharacter);
+
+					if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
+						break;
+					}
+				}
+
+			}
+
+			if (result.GetActor() == nullptr) return false;
+			RotateSet(0.0f);
+
+			mycharacter->SetActorLocation(result.Location + result.Normal * mycap->GetScaledCapsuleRadius() * 1.01f);
+			m_CoverWall = result.GetActor();
+			//m_IsCover = true;
+
+			return true;
+		}
+	}
+	
+
+
+	return false;
 }
 
 void UCoverComponent::TurnCheck(float DeltaTime)

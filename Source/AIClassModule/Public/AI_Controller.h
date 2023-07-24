@@ -24,8 +24,7 @@ protected:
 	virtual FRotator GetControlRotation()const override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		UBlackboardComponent* BlackboardComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBlackboardData* BBAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
@@ -54,5 +53,8 @@ public:
 		void OnTargetDetected(AActor* actor, FAIStimulus const Stimulus);
 	UFUNCTION()
 		void SetUseCover();
+
+	UFUNCTION()
+		void RunBTT();
 	
 };

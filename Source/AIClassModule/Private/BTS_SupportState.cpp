@@ -8,6 +8,9 @@
 
 UBTS_SupportState::UBTS_SupportState()
 {
+
+	//Interval = 0.5f;
+
 	NodeName = TEXT("SupportState");
 	Dis_start = false;
 }
@@ -49,7 +52,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				}
 				
 			}
-			Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->BlackboardComponent->SetValueAsBool("AI_Support", true);
+			Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
 			Dis_start = false;
 		}
 		else
@@ -82,9 +85,10 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 					}
 				}
 			}
-			Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->BlackboardComponent->SetValueAsBool("AI_Support", true);			
+			Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
 			Dis_start = false;
 		}
 	}
+
 
 }

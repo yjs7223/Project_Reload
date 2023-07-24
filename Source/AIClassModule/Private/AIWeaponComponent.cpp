@@ -51,8 +51,10 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	cur_Shot_Delay += DeltaTime;
-	//ShotAITimer(DeltaTime);
+	/*if (shot_State)
+	{
+		ShotAITimer(DeltaTime);
+	}*/
 	// ...
 }
 
@@ -129,8 +131,9 @@ void UAIWeaponComponent::ShotAI()
 	//name = "AttackLocation";
 }
 
-void UAIWeaponComponent::ShotAITimer()
+void UAIWeaponComponent::ShotAITimer(float t)
 {
+	cur_Shot_Delay += t;
 	if (cur_Shot_Delay >= shot_Delay)
 	{
 		ShotAI();
@@ -200,6 +203,9 @@ void UAIWeaponComponent::AITypeSetting()
 
 	// 현재 반동은 최대로 시작
 	recoil_Radius = recoilMax_Radius;
+
+	// 첫 총알은 최대로
+	cur_Shot_Count = shot_MaxCount;
 }
 
 bool UAIWeaponComponent::AITypeSniperCheck()
