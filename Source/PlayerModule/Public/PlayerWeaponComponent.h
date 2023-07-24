@@ -6,6 +6,11 @@
 #include "WeaponComponent.h"
 #include "PlayerWeaponComponent.generated.h"
 
+DECLARE_DELEGATE(FOnChangedCrossHairAmmoDelegate);
+DECLARE_DELEGATE(FOnChangedCrossHairHitDelegate);
+DECLARE_DELEGATE(FOnChangedAmmoUIDelegate);
+DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
+DECLARE_DELEGATE(FOnVisibleAmmoUIDelegate);
 
 /**
  * 
@@ -17,6 +22,13 @@ class PLAYERMODULE_API UPlayerWeaponComponent : public UWeaponComponent
 public:
 	// Sets default values for this component's properties
 	UPlayerWeaponComponent();
+
+	FOnChangedCrossHairAmmoDelegate OnChangedCrossHairAmmoDelegate;
+	FOnChangedCrossHairHitDelegate OnChangedCrossHairHitDelegate;
+	FOnVisibleCrossHairUIDelegate OnVisibleCrossHairUIDelegate;
+
+	FOnVisibleAmmoUIDelegate OnVisibleAmmoUIDelegate;
+	FOnChangedAmmoUIDelegate OnChangedAmmoUIDelegate;
 
 protected:
 	// Called when the game starts
