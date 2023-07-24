@@ -28,6 +28,8 @@ void UAIStatComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<AAICharacter>();
 	PlayerAtt_ai = false;
+	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
 	//AICommander = AAICommander::aicinstance;
 }
 
@@ -36,76 +38,32 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Time += DeltaTime;
 
-	/*if (PlayerAtt_ai)
-	{
-		SuppresionPoint();
-	}
-	else
-	{
-		if (Time >= sup_DecTime)
-		{
-			AIController = nullptr;
-			ACharacter = Cast<AAICharacter>(GetOwner());
-			if (ACharacter)
-			{
-				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-			}
-			if (AIController)
-			{
-				if (AIController->GetBlackboardComponent())
-				{
-
-					sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
-					sup_total -= sup_DecPoint;
-					if (sup_total <= 0)
-					{
-						sup_total = 0;
-					}
-					AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
-					
-				}
-			}
-			Time = 0;
-		}
-		
-	}*/
-
 	if (Time >= sup_DecTime)
 	{
 		AIController = nullptr;
-		ACharacter = Cast<AAICharacter>(GetOwner());
-		if (ACharacter)
+
+		if (AIController && AIController->GetBlackboardComponent())
 		{
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-
-			if (AIController && AIController->GetBlackboardComponent())
+			sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
+			sup_total -= sup_DecPoint;
+			if (sup_total <= 0)
 			{
-				sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
-				sup_total -= sup_DecPoint;
-				if (sup_total <= 0)
-				{
-					sup_total = 0;
-				}
-				AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
-
+				sup_total = 0;
 			}
-
+			AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
 		}
-
+		
 		Time = 0;
 	}
 }
 
 void UAIStatComponent::Attacked(float p_damage)
 {
-	
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
 	sup_Input = p_damage * sup_DecInput;
 	Time = 0;
 	PlayerAtt_ai = true;
-
 	SuppresionPoint();
-	
 }
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
@@ -119,8 +77,6 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	sup_Input = p_damage;
 	Time = 0;
 	PlayerAtt_ai = true;
-
-
 	SuppresionPoint();
 }
 
@@ -134,62 +90,46 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 void UAIStatComponent::SuppresionPoint()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
-
 	AIController = nullptr;
-	ACharacter = Cast<AAICharacter>(GetOwner());
-	if (ACharacter)
+	if (AIController && AIController->GetBlackboardComponent())
 	{
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-
-		if (AIController && AIController->GetBlackboardComponent())
+		AI_PlayerDis = GetOwner()->GetDistanceTo(player);
+		switch (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat"))
 		{
-			if (Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController())->UseBlackboard(AIController->BBAsset, BlackboardComponent))
-			{
-				AI_PlayerDis = GetOwner()->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn());
-
-				switch (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat"))
-				{
-
-				default:
-
-					break;
-
-				case 0:
-					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1.2;
-					break;
-				case 1:
-				case 2:
-					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1;
-					break;
-				case 3:
-					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.7;
-					break;
-				case 4:
-					sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.5;
-					break;
-				}
-				if (Time <= sup_DelayTime)
-				{
-					sup_middlePoint *= sup_Multi;
-				}
-				else
-				{
-					PlayerAtt_ai = false;
-				}
-				sup_total += sup_Input * sup_middlePoint;
-				//SuppresionPoint();
-				if (sup_total >= sup_MaxPoint)
-				{
-					sup_total = sup_MaxPoint;
-				}
-				AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
-				Time = 0.0f;
-				PlayerAtt_ai = false;
-			}
-
+		default:
+			break;
+		case 0:
+			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1.2;
+			break;
+		case 1:
+		case 2:
+			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1;
+			break;
+		case 3:
+			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.7;
+			break;
+		case 4:
+			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.5;
+			break;
 		}
+		if (Time <= sup_DelayTime)
+		{
+			sup_middlePoint *= sup_Multi;
+		}
+		else
+		{
+			PlayerAtt_ai = false;
+		}
+		sup_total += sup_Input * sup_middlePoint;
+		//SuppresionPoint();
+		if (sup_total >= sup_MaxPoint)
+		{
+			sup_total = sup_MaxPoint;
+		}
+		AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
+		Time = 0.0f;
+		PlayerAtt_ai = false;
 	}
-
 }
 
 void UAIStatComponent::SetDataTable(FName EnemyName)

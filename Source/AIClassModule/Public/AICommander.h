@@ -35,7 +35,6 @@ class AICLASSMODULE_API AAICommander : public AAIController
 public:
 	// Sets default values for this actor's properties
 	AAICommander();
-	virtual void OnPossess(APawn* pPawn) override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -48,8 +47,6 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, AActor*> List_RDivision;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, ECombat> List_Combat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -82,8 +79,6 @@ public:
 		class AAIController* BaseAI_Ctr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float s_time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -132,8 +127,11 @@ public:
 		bool Patrol_CHK;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ACharacter* player; //cast
+
 
 public:
 	UFUNCTION()
