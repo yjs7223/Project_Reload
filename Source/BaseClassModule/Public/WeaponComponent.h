@@ -48,10 +48,13 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		int maxAmmo;
+		int holdAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int curAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		int maxAmmo;
 		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isFire;

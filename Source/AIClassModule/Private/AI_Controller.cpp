@@ -60,8 +60,8 @@ void AAI_Controller::BeginPlay()
 	Super::BeginPlay();
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
-	//RunBehaviorTree(btree);
-	//behavior_tree_component->StartTree(*btree);
+	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	if (UseBlackboard(BBAsset, BlackboardComp))
 	{
@@ -72,9 +72,9 @@ void AAI_Controller::BeginPlay()
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 {
-	if (auto const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	if (player)
 	{
-		DistanceToPlayer = GetPawn()->GetDistanceTo(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		DistanceToPlayer = GetPawn()->GetDistanceTo(player);
 		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
 		if (actor->ActorHasTag("Player"))
 		{
@@ -86,7 +86,7 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 					GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 				}
 			}
-			Blackboard->SetValueAsObject("Target", Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)));
+			Blackboard->SetValueAsObject("Target", player);
 		}
 		if (actor->ActorHasTag("Last"))
 		{
@@ -104,20 +104,6 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 	else {
 		bIsPlayerDetected = false;
 	}
-
-	/*for (size_t i = 0; i < DetectedPawns.Num(); i++)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, DetectedPawns[i]->GetName());
-		if (DetectedPawns[i]->ActorHasTag("Player"))
-		{
-			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
-			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-
-			bIsPlayerDetected = true;
-		}
-	}
-	if(SightConfig->age)*/
-
 }
 
 void AAI_Controller::SetUseCover()
@@ -130,7 +116,6 @@ void AAI_Controller::SetUseCover()
 			{
 				for (auto loc : commander->CoverEnemyArray)
 				{
-					
 					if (FVector::Distance(loc, GetPawn()->GetActorLocation()) <= 50)
 					{
 						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
@@ -157,7 +142,6 @@ void AAI_Controller::RunBTT()
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
 
 	if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
@@ -198,8 +182,5 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
-		/*SightConfig->SightRadius = RangeData->Sense_Radius;
-		SightConfig->SightRadius = 360.0f - RangeData->Sight_Angle;
-		SightConfig->SightRadius = RangeData->Sight_Age;*/
 	}
 }

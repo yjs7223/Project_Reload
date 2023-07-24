@@ -19,6 +19,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
+
 
 public:	
 	// Called every frame
@@ -29,8 +31,8 @@ public:
 		ABaseCharacter* GetCharacter();
 
 	//Default HP Setting
-	UFUNCTION(BlueprintCallable)
-		void SetHP(float p_HP);
+	//UFUNCTION(BlueprintCallable)
+	virtual void SetHP(float p_HP);
 
 	//Recover currnetHP
 	UFUNCTION(BlueprintCallable)
