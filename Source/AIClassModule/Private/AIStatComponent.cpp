@@ -73,8 +73,8 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	if (Time >= sup_DecTime)
 	{
 		AIController = nullptr;
-
-		if (ACharacter = Cast<AAICharacter>(GetOwner()))
+		ACharacter = Cast<AAICharacter>(GetOwner());
+		if (ACharacter)
 		{
 			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 
@@ -136,8 +136,8 @@ void UAIStatComponent::SuppresionPoint()
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
 
 	AIController = nullptr;
-
-	if (ACharacter = Cast<AAICharacter>(GetOwner()))
+	ACharacter = Cast<AAICharacter>(GetOwner());
+	if (ACharacter)
 	{
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
 

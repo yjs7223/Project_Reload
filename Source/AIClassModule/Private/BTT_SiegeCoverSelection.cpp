@@ -17,6 +17,8 @@ UBTT_SiegeCoverSelection::UBTT_SiegeCoverSelection()
 
 EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+
+	Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverPoint();
 	maplistnum = Cast<AAICommander>(OwnerComp.GetAIOwner())->SiegeCoverArray.Num();
 	enemyActivenum = 0;
 	for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)

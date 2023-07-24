@@ -15,6 +15,7 @@ UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 
 EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	Cast<AAICommander>(OwnerComp.GetAIOwner())->DetourCoverPoint();
 	for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
 	{
 		Cast<AAICharacter>(ai.Key)->Detour = false;

@@ -229,8 +229,7 @@ void AAICommander::ListSet()
 						TargetTickSet(Cast<ASubEncounterSpace>(sub));
 						CoverPointSubEn(Cast<ASubEncounterSpace>(sub));
 						CoverPointEnemy();
-						SiegeCoverPoint();
-						DetourCoverPoint();
+						
 						if (Cast<ASubEncounterSpace>(sub)->AIArray.IsEmpty())
 						{
 							ListReset(Cast<ASubEncounterSpace>(sub));
