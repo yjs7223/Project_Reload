@@ -16,6 +16,9 @@ class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	void StartReload();
+
 private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -25,7 +28,6 @@ private:
 	void StopFire();
 	void StartAiming();
 	void StopAiming();
-	void StartReload();
 
 	void TestHud();
 
