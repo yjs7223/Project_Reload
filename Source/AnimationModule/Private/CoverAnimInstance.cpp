@@ -24,8 +24,8 @@ void UCoverAnimInstance::NativeBeginPlay()
 	mWeapon = owner->FindComponentByClass<UWeaponComponent>();
 	if (mWeapon) {
 		mWeaponMesh = mWeapon->WeaponMesh;
+		m_WeaponPos = mWeaponMesh->GetRelativeLocation();
 	}
-
 }
 
 void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -84,13 +84,13 @@ void UCoverAnimInstance::SetHandleing(float DeltaTime)
 		mWeaponMesh->AttachToComponent(
 			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mRightHandName);
 		mWeaponMesh->SetRelativeRotation(FRotator(0, -90, 0));
-		mWeaponMesh->SetRelativeLocation(FVector(-8.861799, 1.746787, 6.528577));
+		mWeaponMesh->SetRelativeLocation(m_WeaponPos);
 	}
 	else {
 		mWeaponMesh->AttachToComponent(
 			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mLeftHandName);
 		mWeaponMesh->SetRelativeRotation(FRotator(180, 90, 0));
-		mWeaponMesh->SetRelativeLocation(FVector(8.861799, 1.746787, 6.528577));
+		mWeaponMesh->SetRelativeLocation(m_WeaponPos * FVector(-1.0f, 1.0f, 1.0f) );
 
 	}
 }

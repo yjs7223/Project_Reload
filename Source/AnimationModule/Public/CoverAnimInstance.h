@@ -75,5 +75,7 @@ protected:
 		FRotator mSpinRotater;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		FVector mBeforPos;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+		FVector m_WeaponPos;
 	
 };
