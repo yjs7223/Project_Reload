@@ -5,7 +5,11 @@
 #include "Materials/MaterialInstance.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "UObject/ConstructorHelpers.h"
+#include "PlayerStatComponent.h"
 #include "UMG.h"
+
+#include "Animation/WidgetAnimation.h"
+#include "PlayerCharacter.h"
 
 
 void UPlayer_HP_Widget::NativeConstruct()
@@ -14,14 +18,14 @@ void UPlayer_HP_Widget::NativeConstruct()
 	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL,TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP.M_RadialHP'"));
 	if (mat)
 	{
-		DynMaterial = UMaterialInstanceDynamic::Create(mat, this);
-		if (DynMaterial)
+		HPmat = UMaterialInstanceDynamic::Create(mat, this);
+		if (HPmat)
 		{
 			//FSlateBrush imageBrush;
 			//imageBrush.ImageSize = FVector2D(30.0f, 30.0f);
-			DynMaterial->SetScalarParameterValue(FName(TEXT("Percent")), 1.0f);
+			HPmat->SetScalarParameterValue(FName(TEXT("Percent")), 1.0f);
 			//imageBrush.SetResourceObject(DynMaterial);
-			HP_image->SetBrushFromMaterial(DynMaterial);
+			HP_image->SetBrushFromMaterial(HPmat);
 			
 		}
 	}
@@ -37,44 +41,41 @@ void UPlayer_HP_Widget::NativeConstruct()
 	OuterTriangle_image->SetBrushFromTexture(texture);
 
 	FSlateBrush imageBrush;
-	imageBrush.ImageSize = FVector2D(48.0f, 48.0f);
+	imageBrush.ImageSize = FVector2D(32.0f, 32.0f);
 	texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/HP_Texture/T_MoveCircle1.T_MoveCircle1'"));
 	imageBrush.SetResourceObject(texture);
 	MoveCircle1->SetBrush(imageBrush);
 
-	imageBrush.ImageSize = FVector2D(32.0f, 32.0f);
+	imageBrush.ImageSize = FVector2D(24.0f, 24.0f);
 	texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/HP_Texture/T_MoveCircle2.T_MoveCircle2'"));
 	imageBrush.SetResourceObject(texture);
 	MoveCircle2->SetBrush(imageBrush);
 
-	moveValue1 = 0;
-	moveValue2 = 5.0f;
+	moveValue1 = 0.0f;
+	moveValue2 = 0.3;
+	widgetVisibleTime = 0;
+	bWidgetVisible = true;
+
+
+	if(APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
+	{
+		if (UPlayerStatComponent* MyStatComp = Cast<UPlayerStatComponent>(MyCharacter->stat))
+		{
+			stat = MyCharacter->stat;
+			MyStatComp->OnChangedHealthDelegate.BindUObject(this, &UPlayer_HP_Widget::SetPercent);
+			MyStatComp->OnVisibleHPUIDelegate.BindUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
+		}
+	}
 }
 
 void UPlayer_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("hi"));
+	MoveCircle(InDeltaTime);
 }
 
 void UPlayer_HP_Widget::SetPercent(float percent)
 {
-	/*FHashedMaterialParameterInfo info(TEXT("Percent"));
-	float value;
-	if (DynMaterial->GetScalarParameterValue(info, value))
-	{
-		value -= percent;
-		if (value > 1.0f)
-		{
-			value = 1.0f;
-		}
-		else if (value < 0.0f) 
-		{
-			value = 0.0f;
-		}
-		DynMaterial->SetScalarParameterValue(FName(TEXT("Percent")), value);
-	}*/
-
 	if (percent > 1.0f)
 	{
 		percent = 1.0f;
@@ -84,19 +85,30 @@ void UPlayer_HP_Widget::SetPercent(float percent)
 		percent = 0.0f;
 	}
 
-	DynMaterial->SetScalarParameterValue(FName(TEXT("Percent")), percent);
-	HP_image->SetBrushFromMaterial(DynMaterial);
+	HPmat->SetScalarParameterValue(FName(TEXT("Percent")), percent);
+	HP_image->SetBrushFromMaterial(HPmat);
 }
 
 void UPlayer_HP_Widget::MoveCircle(float deltatime)
 {
 	moveValue1 += deltatime;
-	FVector2D t = FVector2D(76.0f + FMath::Sin(moveValue1) * 95.0f, 76.0f + FMath::Cos(moveValue1) * 95.0f);
+	FVector2D t = FVector2D(64.0f + FMath::Sin(moveValue1) * 75.0f, 64.0f + FMath::Cos(moveValue1) * 75.0f);
 	MoveCircle1->SetRenderTranslation(t);
 
-	moveValue2 += deltatime;
-	t = FVector2D(84.0f + FMath::Sin(moveValue2) * 80.0f, 84.0f + FMath::Cos(moveValue2) * 80.0f);
+	moveValue2 += deltatime * 1.5f;
+	t = FVector2D(68.0f + FMath::Sin(moveValue2) * 73.0f, 68.0f + FMath::Cos(moveValue2) * 73.0f);
 	MoveCircle2->SetRenderTranslation(t);
+
+}
+
+void UPlayer_HP_Widget::SetWidgetVisible()
+{
+	HP_Overlay->SetRenderOpacity(1.f);
+
+	GetWorld()->GetTimerManager().SetTimer(WTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			PlayAnimationForward(FadeOutAnimation);
+		}), 5.f, false);
 
 }
 
