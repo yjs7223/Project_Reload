@@ -31,4 +31,6 @@ public:
 		float Dis;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		FVector Com_Vec;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		class AAI_Controller* aic;
 };
