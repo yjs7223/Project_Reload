@@ -31,6 +31,7 @@ public:
 
 	void InitWidget(FViewport* viewport, uint32 value);
 	void UpdateWidget(float deltatime);
+	void WidgetShow();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
