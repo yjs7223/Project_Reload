@@ -73,8 +73,7 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAIStatComponent::Attacked(float p_damage)
 {
-	
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
 	sup_Input = p_damage * sup_DecInput;
 	Time = 0;
 	PlayerAtt_ai = true;
@@ -83,7 +82,7 @@ void UAIStatComponent::Attacked(float p_damage)
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
 	curHP -= p_damage;
 	if (curHP < 0.0f)
 	{
