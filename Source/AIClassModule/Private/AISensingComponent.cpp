@@ -93,21 +93,21 @@ bool UAISensingComponent::ShotSenseRange()
 	// ���� ����� �ĸ���� �˻�
 	if (IsPlayerInsideFanArea(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
 	// ���� ���� �˻�
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
 	// ������ ���� �˻�
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
