@@ -2,10 +2,14 @@
 
 
 #include "Crosshair_Widget.h"
+#include "Materials/MaterialInstance.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/WidgetTree.h"
+#include "PlayerCharacter.h"
 #include "PlayerWeaponComponent.h"
 #include "UMG.h"
+#include "Animation/WidgetAnimation.h"
 
 UCrosshair_Widget::UCrosshair_Widget(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
@@ -55,12 +59,38 @@ void UCrosshair_Widget::NativeConstruct()
 		HeadHit_image->SetRenderOpacity(0.0f);
 	}
 	
+	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/yjs/UI/Materials/M_AmmoRadial.M_AmmoRadial'"));
+	if (mat)
+	{
+		AmmoMat = UMaterialInstanceDynamic::Create(mat, this);
+		if (AmmoMat)
+		{
+			AmmoMat->SetScalarParameterValue(FName(TEXT("Percent")), 1.0f);
+			Cross_Ammo_Image->SetBrushFromMaterial(AmmoMat);
+			Cross_Ammo_Image->SetRenderTranslation(FVector2D(8.0f, 8.0f));
+		}
+	}
+
+	if (APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
+	{
+		if (UPlayerWeaponComponent* MyWeaponComp = Cast<UPlayerWeaponComponent>(MyCharacter->weapon))
+		{
+			weapon = MyCharacter->weapon;
+			MyWeaponComp->OnChangedCrossHairAmmoDelegate.BindUObject(this, &UCrosshair_Widget::SetAmmoImage);
+			MyWeaponComp->OnChangedCrossHairHitDelegate.BindUObject(this, &UCrosshair_Widget::CheckHit);
+			MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
+		}
+	}
+
+	bWidgetVisible = true;
+	widgetVisibleTime = 0;
 }
 
 void UCrosshair_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_alpha));
+	UpdateCrosshair(InDeltaTime);
 }
 
 void UCrosshair_Widget::UpdateCrosshair(float DeltaTime)
@@ -73,7 +103,7 @@ void UCrosshair_Widget::UpdateCrosshair(float DeltaTime)
 		}
 		CalcOffset(weapon->m_spreadPower);
 		SetCrosshairTranslation();
-		CheckHit(DeltaTime);
+		//SetAmmoImage();
 	}
 }
 
@@ -90,6 +120,9 @@ void UCrosshair_Widget::SetCrosshairTranslation()
 
 	FVector2D right = FVector2D(m_offset, 0);
 	Right_Cross_image->SetRenderTranslation(right);
+
+	FVector2D ammo = FVector2D(m_offset * 0.3f + 8.0f, m_offset * 0.3f + 8.0f);
+	Cross_Ammo_Image->SetRenderTranslation(ammo);
 }
 
 void UCrosshair_Widget::CalcOffset(float spreadpower)
@@ -121,7 +154,7 @@ bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_alpha));
 }
 
-void UCrosshair_Widget::CheckHit(float delta)
+void UCrosshair_Widget::CheckHit()
 {
 	if (weapon->isHit)
 	{
@@ -138,14 +171,62 @@ void UCrosshair_Widget::CheckHit(float delta)
 		}
 	}
 
-	if(Hit_image->RenderOpacity >= 1.0f || HeadHit_image->RenderOpacity >= 1.0f)
-	{
-		m_hitTime += delta;
-		if (m_hitTime > 0.5f)
+	GetWorld()->GetTimerManager().SetTimer(HitTimer,
+		FTimerDelegate::CreateLambda([&]()
 		{
-			m_hitTime = 0;
 			Hit_image->SetRenderOpacity(0.0f);
 			HeadHit_image->SetRenderOpacity(0.0f);
+		}
+	), .5f, false);
+}
+
+void UCrosshair_Widget::SetAmmoImage()
+{
+	if (weapon->isFire || weapon->isReload)
+	{
+		float ammovalue = 0;
+
+		switch (weapon->weapontype)
+		{
+		case EWeaponType::TE_Pistol:
+			ammovalue = weapon->curAmmo / 10.0f;
+			break;
+		case EWeaponType::TE_Rifle:
+			ammovalue = weapon->curAmmo / 30.0f;
+			break;
+		case EWeaponType::TE_Shotgun:
+			ammovalue = weapon->curAmmo / 7.0f;
+			break;
+		default:
+			ammovalue = weapon->curAmmo / 30.0f;
+			break;
+		}
+
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(ammovalue));
+		AmmoMat->SetScalarParameterValue(FName(TEXT("Percent")), ammovalue);
+		Cross_Ammo_Image->SetBrushFromMaterial(AmmoMat);
+	}
+}
+
+void UCrosshair_Widget::SetWidgetVisible()
+{
+	GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
+	Crosshair_Overlay->SetRenderOpacity(1.0f);
+	if (weapon)
+	{
+		if (weapon->isAiming || weapon->isFire)
+		{
+			bWidgetVisible = true;
+			GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
+			Crosshair_Overlay->SetRenderOpacity(1.0f);
+		}
+		else if(!weapon->isAiming && !weapon->isFire)
+		{
+			bWidgetVisible = false;
+			GetWorld()->GetTimerManager().SetTimer(VisibleTimer, FTimerDelegate::CreateLambda([&]()
+				{
+					PlayAnimationForward(FadeOutAnim);
+				}), 5.f, false);
 		}
 	}
 }

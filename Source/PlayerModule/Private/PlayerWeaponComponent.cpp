@@ -21,6 +21,7 @@
 #include "StatComponent.h"
 #include "PlayerWeaponData.h"
 #include "MatineeCameraShake.h"
+#include "PlayerInputComponent.h"
 #include "Field/FieldSystemActor.h"
 
 
@@ -89,7 +90,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		fieldActor = fActor.Object;
 	}
-	weapontype = EWeaponType::TE_Pistol;
+	weapontype = EWeaponType::TE_Rifle;
 
 	switch (weapontype)
 	{
@@ -112,6 +113,22 @@ void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	InitData();
+
+	switch (weapontype)
+	{
+	case EWeaponType::TE_Pistol:
+		WeaponMesh->SetSkeletalMesh(PistolMesh);
+		break;
+	case EWeaponType::TE_Rifle:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		break;
+	case EWeaponType::TE_Shotgun:
+		WeaponMesh->SetSkeletalMesh(ShotgunMesh);
+		break;
+	default:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		break;
+	}
 	// ...
 	//PlayerWeaponData.row
 }
@@ -324,24 +341,31 @@ void UPlayerWeaponComponent::Fire()
 	{
 		m_firecount += 1;
 	}
+	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
+	OnChangedCrossHairHitDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	StartRecoil();
 }
 
 void UPlayerWeaponComponent::StartAiming()
 {
 
-	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 60.0f;
-
+	//Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 60.0f;
+	
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
 	isAiming = true;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
 
 void UPlayerWeaponComponent::StopAiming()
 {
 	isAiming = false;
+	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 	//Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 120.0f;
 }
 
@@ -349,12 +373,17 @@ void UPlayerWeaponComponent::StartFire()
 {
 	if(curAmmo <= 0)
 	{ 
+		owner->FindComponentByClass<UPlayerInputComponent>()->StartReload();
 		return;
 	}
 
 	StopRcovery();
 	Fire();
 	isFire = true;
+
+	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.ExecuteIfBound();
+
 	startRot = owner->GetController()->GetControlRotation();
 	if (weapontype == EWeaponType::TE_Rifle)
 	{
@@ -372,6 +401,9 @@ void UPlayerWeaponComponent::StopFire()
 		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		isFire = false;
+
+		OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+		OnVisibleAmmoUIDelegate.ExecuteIfBound();
 		StartRecovery();
 	}
 }
@@ -379,7 +411,7 @@ void UPlayerWeaponComponent::StopFire()
 void UPlayerWeaponComponent::StartReload()
 {
 	//ReloadAmmo();
-
+	StopFire();
 	switch (weapontype)
 	{
 	case EWeaponType::TE_Pistol:
@@ -394,7 +426,7 @@ void UPlayerWeaponComponent::StartReload()
 		curAmmo = 0;
 		break;
 	case EWeaponType::TE_Rifle:
-		if (maxAmmo <= 0)
+		if (holdAmmo <= 0)
 		{
 			isReload = false;
 			return;
@@ -407,14 +439,14 @@ void UPlayerWeaponComponent::StartReload()
 		}
 
 		reloadvalue = 30 - curAmmo;
-		if (maxAmmo < reloadvalue)
+		if (holdAmmo < reloadvalue)
 		{
-			reloadvalue = maxAmmo;
-			maxAmmo = 0;
+			reloadvalue = holdAmmo;
+			holdAmmo = 0;
 		}
 		else
 		{
-			maxAmmo -= reloadvalue;
+			holdAmmo -= reloadvalue;
 		}
 
 		curAmmo = 0;
@@ -423,7 +455,7 @@ void UPlayerWeaponComponent::StartReload()
 
 		break;
 	default:
-		if (maxAmmo <= 0)
+		if (holdAmmo <= 0)
 		{
 			isReload = false;
 			return;
@@ -436,14 +468,14 @@ void UPlayerWeaponComponent::StartReload()
 		}
 
 		reloadvalue = 30 - curAmmo;
-		if (maxAmmo < reloadvalue)
+		if (holdAmmo < reloadvalue)
 		{
-			reloadvalue = maxAmmo;
-			maxAmmo = 0;
+			reloadvalue = holdAmmo;
+			holdAmmo = 0;
 		}
 		else
 		{
-			maxAmmo -= reloadvalue;
+			holdAmmo -= reloadvalue;
 		}
 
 		curAmmo = 0;
@@ -468,6 +500,8 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 		{
 			curAmmo++;
 			reloadCount = 0;
+			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
+			OnChangedAmmoUIDelegate.ExecuteIfBound();
 		}
 
 		switch (weapontype)
@@ -479,7 +513,7 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 			}
 			break;
 		case EWeaponType::TE_Rifle:
-			if (maxAmmo == 0)
+			if (holdAmmo == 0)
 			{
 				if (curAmmo == reloadvalue)
 				{
@@ -495,7 +529,7 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 		case EWeaponType::TE_Shotgun:
 			break;
 		default:
-			if (maxAmmo == 0)
+			if (holdAmmo == 0)
 			{
 				if (curAmmo == reloadvalue)
 				{
@@ -541,8 +575,16 @@ void UPlayerWeaponComponent::StartRecoil()
 {
 	bRecovery = false;
 	bRecoil = true;
-	yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
-	pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
+	if (m_firecount == 1)
+	{
+		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
+		pitchRecoilValue = FMath::RandRange(pitchRange.X * 2.0f, pitchRange.Y * 1.5f);
+	}
+	else
+	{
+		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
+		pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
+	}
 	//yawRecoveryValue += yawRecoilValue;
 	//pitchRecoveryValue += pitchRecoilValue;
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("recoil start"));

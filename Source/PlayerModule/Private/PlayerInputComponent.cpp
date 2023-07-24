@@ -42,6 +42,9 @@ void UPlayerInputComponent::BeginPlay()
 
 	InputComponent->BindAction("TestInput", IE_Pressed, this, &UPlayerInputComponent::TestHud);
 
+	APlayerCharacter* pc = Cast<APlayerCharacter>(owner);
+	InputComponent->BindAction("UI_Visible", IE_Pressed, pc, &APlayerCharacter::WidgetShow);
+
 }
 
 void UPlayerInputComponent::MoveForward(float Value)

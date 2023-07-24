@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "WidgetVisibleInterface.h"
 #include "Player_HP_Widget.generated.h"
+
 
 /**
  * 
  */
 UCLASS()
-class PLAYERMODULE_API UPlayer_HP_Widget : public UUserWidget
+class PLAYERMODULE_API UPlayer_HP_Widget : public UUserWidget, public IWidgetVisibleInterface
 {
 	GENERATED_BODY()
 public:
@@ -22,11 +24,16 @@ public:
 	void SetPercent(float percent);
 	void MoveCircle(float deltatime);
 
+	void SetWidgetVisible() override;
+
 	void SetShear(FRotator rot);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UMaterialInstanceDynamic* DynMaterial;
+		class UPlayerStatComponent* stat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UMaterialInstanceDynamic* HPmat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* HP_Overlay;
@@ -49,7 +56,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UImage* MoveCircle2;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		FTimerHandle WTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* FadeOutAnimation;
+
 public:
+	bool bWidgetVisible;
+	float widgetVisibleTime;
 	float moveValue1;
 	float moveValue2;
 };
