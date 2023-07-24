@@ -6,9 +6,24 @@
 #include "BaseInputComponent.h"
 #include "AIInputComponent.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class AI_Anim_Type : uint8
+{
+	StartCrouching,
+	StopCrouching,
+
+	StartRuning,
+	StopRuning,
+
+	StartFire,
+	StopFire,
+
+	StartAiming,
+	StopAiming,
+
+	Reload,
+};
+
 UCLASS()
 class AICLASSMODULE_API UAIInputComponent : public UBaseInputComponent
 {
@@ -19,22 +34,33 @@ protected:
 
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Anim")
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIMoveForward(float Value);
-	UFUNCTION(BlueprintCallable, Category = "Anim")
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIMoveRight(float Value);
-	UFUNCTION(BlueprintCallable, Category = "Anim")
-	void AICrouching();
-	UFUNCTION(BlueprintCallable, Category = "Anim")
-	void AIRuning();
-	UFUNCTION(BlueprintCallable, Category = "Anim")
+
+
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
+		void AICrouching();
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
+		void AIStopCrouching();
+
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
+		void AIRuning();
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
+		void AIStopRuning();
+
+
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIStartFire();
-	UFUNCTION(BlueprintCallable, Category = "Anim")
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIStopFire();
-	UFUNCTION(BlueprintCallable, Category = "Anim")
+
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIStartAiming();
-	UFUNCTION(BlueprintCallable, Category = "Anim")
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIStopAiming();
-	UFUNCTION(BlueprintCallable, Category = "Anim")
+
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIStartReload();
 };

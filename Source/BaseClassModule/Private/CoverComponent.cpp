@@ -326,10 +326,15 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector ViewPoint;
 	FVector ViewVector;
 	FRotator cameraRotation;
+
+	if (owner->ActorHasTag("Enemy"))
+	{
+		return FVector::ZeroVector;
+	}
+
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 
 	UCameraComponent* camera = owner->FindComponentByClass<UCameraComponent>();
-	if(!camera) return  FVector::ZeroVector;
 	ViewVector = cameraRotation.Vector();
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,
