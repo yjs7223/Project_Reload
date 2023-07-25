@@ -118,7 +118,7 @@ void AAI_Controller::SetUseCover()
 				{
 					if (FVector::Distance(loc, GetPawn()->GetActorLocation()) <= 50)
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
+						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
 						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
 					}
 					else

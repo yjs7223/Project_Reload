@@ -175,7 +175,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 				AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 				AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
 			}
 		}
 
