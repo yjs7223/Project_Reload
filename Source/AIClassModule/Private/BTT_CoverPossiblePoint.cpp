@@ -18,9 +18,13 @@ UBTT_CoverPossiblePoint::UBTT_CoverPossiblePoint()
 
 EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	if (!commander)
+	{
+		commander = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	}
 	if (OwnerComp.GetAIOwner())
 	{
-		for (auto enemy : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
+		for (auto enemy : commander->List_Division)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetPawn()->GetName());
 			AIController = nullptr;
@@ -36,10 +40,10 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 					if (AIController->GetBlackboardComponent()->GetValueAsBool("OrderWait"))
 					{
 
-						if (*Cast<AAICommander>(OwnerComp.GetAIOwner())->List_CoverPoint.Find(enemy.Value) == FVector(0, 0, 0))
+						if (*commander->List_CoverPoint.Find(enemy.Value) == FVector(0, 0, 0))
 						{
 							mindis = NULL;
-							for (auto coverenemy : Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray)
+							for (auto coverenemy : commander->CoverEnemyArray)
 							{
 								if (mindis == NULL)
 								{
@@ -60,16 +64,16 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						else
 						{
 							coverpossible = false;
-							for (auto coverenemy : Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray)
+							for (auto coverenemy : commander->CoverEnemyArray)
 							{
-								if (*Cast<AAICommander>(commander)->List_CoverPoint.Find(enemy.Value) == coverenemy)
+								if (*commander->List_CoverPoint.Find(enemy.Value) == coverenemy)
 								{
 									coverpossible = true;
 								}
 							}
 							if (!coverpossible)
 							{
-								for (auto coverenemy : Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray)
+								for (auto coverenemy : commander->CoverEnemyArray)
 								{
 									if (mindis == NULL)
 									{
@@ -88,7 +92,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 							}
 						}
 						same = false;
-						for (auto coverpoint : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_CoverPoint)
+						for (auto coverpoint : commander->List_CoverPoint)
 						{
 							if (coverpoint.Key != enemy.Value)
 							{
@@ -101,6 +105,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						if (!same)
 						{
 							AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", mindislocation);
+							commander->List_CoverPoint.Add(enemy.Value, mindislocation);
 						}
 						else if (same)
 						{
@@ -108,13 +113,13 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 							int num = 1;
 							for (int i = 0; i < num; i++)
 							{
-								for (auto coverpoint : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_CoverPoint)
+								for (auto coverpoint : commander->List_CoverPoint)
 								{
 									if (coverpoint.Key != enemy.Value)
 									{
-										if (!Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray.IsEmpty())
+										if (!commander->CoverEnemyArray.IsEmpty())
 										{
-											if (Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray[i] == coverpoint.Value)
+											if (commander->CoverEnemyArray[i] == coverpoint.Value)
 											{
 												arraysame = true;
 											}
@@ -125,7 +130,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 								if (arraysame)
 								{
 									num++;
-									if (num >= Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray.Num())
+									if (num >= commander->CoverEnemyArray.Num())
 									{
 										AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
 										return EBTNodeResult::Succeeded;
@@ -133,12 +138,13 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 								}
 								else if (!arraysame)
 								{
-									if (num >= Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray.Num())
+									if (num >= commander->CoverEnemyArray.Num())
 									{
 										AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
 										return EBTNodeResult::Succeeded;
 									}
-									AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", Cast<AAICommander>(OwnerComp.GetAIOwner())->CoverEnemyArray[i]);
+									AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", commander->CoverEnemyArray[i]);
+									commander->List_CoverPoint.Add(enemy.Value, commander->CoverEnemyArray[i]);
 								}
 							}
 						}

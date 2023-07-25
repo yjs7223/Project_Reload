@@ -17,8 +17,16 @@ UBTS_PlayerStateChk::UBTS_PlayerStateChk()
 
 void UBTS_PlayerStateChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	AIController = nullptr;
-	AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	if (!player)
+	{
+		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	}
+	//AIController = nullptr;
+	if (!AIController)
+	{
+		AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	}
+	
 	if (AIController)
 	{
 		if (AIController->GetBlackboardComponent())

@@ -52,28 +52,31 @@ void AEncounterSpace::LevelArrayActive()
 {
 	for (auto& sub : LevelArray)
 	{
+		suben = nullptr;
+		suben = Cast<ASubEncounterSpace>(sub);
 		if (!ActiveStart)
 		{
 			LevelActiveNum = 1;
-			if (Cast<ASubEncounterSpace>(sub)->LevelNum == LevelActiveNum)
+			if (suben->LevelNum == LevelActiveNum)
 			{
-				Cast<ASubEncounterSpace>(sub)->LevelActive = true;
+				suben->LevelActive = true;
 				ActiveStart = true;
 				//return Cast<ASubEncounterSpace>(sub);
 			}
 		}
 		else {
-			if (Cast<ASubEncounterSpace>(sub)->LevelNum == LevelActiveNum)
+			if (suben->LevelNum == LevelActiveNum)
 			{
-				if (Cast<ASubEncounterSpace>(sub)->LevelActive == false)
+				if (suben->LevelActive == false)
 				{
 					LevelActiveNum++;
 					
 					for (auto& sub2 : LevelArray)
 					{
-						if (Cast<ASubEncounterSpace>(sub2)->LevelNum == LevelActiveNum)
+						suben2 = Cast<ASubEncounterSpace>(sub2);
+						if (suben2->LevelNum == LevelActiveNum)
 						{
-							Cast<ASubEncounterSpace>(sub2)->LevelActive = true;
+							suben2->LevelActive = true;
 							//return Cast<ASubEncounterSpace>(sub2);
 						}
 					}
