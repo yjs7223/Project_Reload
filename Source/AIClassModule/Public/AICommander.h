@@ -131,6 +131,8 @@ public:
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ACharacter* player; //cast
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ASubEncounterSpace* m_suben;
 
 
 public:
@@ -138,6 +140,8 @@ public:
 		void ListSet();
 	UFUNCTION()
 		void ListReset(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListAdd(AActor* ac);
 	UFUNCTION()
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()

@@ -27,11 +27,8 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 	for (auto ai : commander->List_Division)
 	{
 		AIController = nullptr;
-		ACharacter = Cast<AAICharacter>(ai.Key);
-		if (ACharacter)
-		{
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-		}
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
+		
 		if (AIController)
 		{
 			if (AIController->GetBlackboardComponent())
@@ -66,6 +63,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 							else if (!arraysame)
 							{
 								AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", commander->SiegeCoverArray[i]);
+								commander->List_CoverPoint.Add(ai.Value, commander->SiegeCoverArray[i]);
 							}
 						}
 					}

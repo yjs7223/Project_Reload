@@ -59,6 +59,7 @@ void AAISpawner::SpawnWave()
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		Cast<AAICharacter>(temp)->mySpawner = this;
+		commander->ListAdd(Cast<AActor>(temp));
 		rifleCount++;
 	}
 	else
