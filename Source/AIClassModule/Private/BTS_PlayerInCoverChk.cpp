@@ -16,8 +16,11 @@ UBTS_PlayerInCoverChk::UBTS_PlayerInCoverChk()
 
 void UBTS_PlayerInCoverChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	AIController = nullptr;
-	AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	if (!AIController)
+	{
+		AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	}
+	
 	if (AIController)
 	{
 		if (AIController->GetBlackboardComponent())

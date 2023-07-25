@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
 		UBlackboardComponent* BlackboardComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
-		class AActor* commander;
+		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_SiegeCoverSelection)
