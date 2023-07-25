@@ -9,6 +9,7 @@
 #include "AIController.h"
 #include "SubEncounterSpace.h"
 #include "AI_Controller.h"
+#include "AICharacterMoveComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -68,6 +69,9 @@ void UAIStatComponent::Attacked(float p_damage)
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	moveoncmp->Move_Hit = true;
+	moveoncmp->Time = 0;
 	curHP -= p_damage;
 	if (curHP < 0.0f)
 	{

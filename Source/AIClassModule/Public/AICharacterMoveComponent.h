@@ -32,8 +32,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Move_Speed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool AI_Move;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		bool Move_Normal; //�⺻ �̵��� 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		bool Move_Attack; //ai�� ���ݽ�
@@ -57,5 +55,7 @@ public:
 		float m_SpdAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_SpdHit;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float Time;
 
 };
