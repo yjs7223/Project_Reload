@@ -42,7 +42,6 @@ void UAIInputComponent::AICrouching()
 
 void UAIInputComponent::AIStopCrouching()
 {
-	if (!m_CanUnCrouch) return;
 	owner->UnCrouch();
 
 }

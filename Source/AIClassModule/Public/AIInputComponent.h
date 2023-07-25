@@ -9,17 +9,13 @@
 UENUM(BlueprintType)
 enum class AI_Anim_Type : uint8
 {
-	StartCrouching,
-	StopCrouching,
+	Crouching,
 
-	StartRuning,
-	StopRuning,
+	Runing,
 
-	StartFire,
-	StopFire,
+	Fire,
 
-	StartAiming,
-	StopAiming,
+	Aiming,
 
 	Reload,
 };
