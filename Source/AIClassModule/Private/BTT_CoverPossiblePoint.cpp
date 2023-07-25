@@ -105,6 +105,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						if (!same)
 						{
 							AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", mindislocation);
+							commander->List_CoverPoint.Add(enemy.Value, mindislocation);
 						}
 						else if (same)
 						{
