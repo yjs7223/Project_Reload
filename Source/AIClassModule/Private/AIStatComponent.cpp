@@ -40,7 +40,6 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (Time >= sup_DecTime)
 	{
-		AIController = nullptr;
 
 		if (AIController && AIController->GetBlackboardComponent())
 		{
@@ -90,7 +89,6 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 void UAIStatComponent::SuppresionPoint()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
-	AIController = nullptr;
 	if (AIController && AIController->GetBlackboardComponent())
 	{
 		AI_PlayerDis = GetOwner()->GetDistanceTo(player);

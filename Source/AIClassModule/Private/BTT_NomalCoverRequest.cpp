@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTT_NomalCoverRequest::ExecuteTask(UBehaviorTreeComponent& 
 			
 			if (!AIController->GetBlackboardComponent()->GetValueAsBool("CmdAI_OrderWait"))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "SDADSADADAASDDADADAD");
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "SDADSADADAASDDADADAD");
 				AIController->GetBlackboardComponent()->SetValueAsBool("CmdAI_OrderWait", true);
 			}
 		}

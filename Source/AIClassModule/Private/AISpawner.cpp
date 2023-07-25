@@ -54,7 +54,7 @@ void AAISpawner::SpawnWave()
 		spawn_Pos = SetSpawnSpot(spawn_Pos);
 
 		// 생성
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Rifle, spawn_Spots[spawn_Pos]->GetActorLocation());
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
@@ -182,7 +182,7 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 
 			// Spawn
 			AActor* temp = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 			pointSpawnCheck = true;
 			pointTime = 0;
 
