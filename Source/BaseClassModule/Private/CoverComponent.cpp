@@ -296,7 +296,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 		UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(), start, end,
 			capsule->GetScaledCapsuleRadius(),
 			capsule->GetScaledCapsuleHalfHeight(),
-			UEngineTypes::ConvertToTraceType(ECC_Visibility),
+			UEngineTypes::ConvertToTraceType(traceChanel),
 			false,
 			{},
 			EDrawDebugTrace::None,

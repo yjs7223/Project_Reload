@@ -163,8 +163,16 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 
 void APlayerCharacter::WidgetShow()
 {
-	Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
-	Crosshair_Widget->SetWidgetVisible();
+	if (HPWidgetComponent) {
+		UPlayer_HP_Widget* hpWidget = Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget());
+		if (hpWidget) {
+			hpWidget->SetWidgetVisible();
+		}
+	}
+	if (Crosshair_Widget)
+	{
+		Crosshair_Widget->SetWidgetVisible();
+	}
 
 }
 

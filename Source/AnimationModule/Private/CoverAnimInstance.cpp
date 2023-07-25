@@ -24,7 +24,6 @@ void UCoverAnimInstance::NativeBeginPlay()
 	mWeapon = owner->FindComponentByClass<UWeaponComponent>();
 	if (mWeapon) {
 		mWeaponMesh = mWeapon->WeaponMesh;
-		m_WeaponPos = mWeaponMesh->GetRelativeLocation();
 	}
 }
 
@@ -60,20 +59,6 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
 	}
 	SetHandleing(DeltaSeconds);
-	if (!mIsCover) return;
-
-
-	//mSpinRotater = FRotator(0.0, 0.0, 0.0);
-	//if (mWeapon && !mIsPeeking && (mIsAiming || mIsFire || mIsReload)) {
-	//	mSpinRotater = FRotator(0.0, 180.0, 0.0);
-	//}
-	//else if (mWeapon && mIsReload && !mIsFaceRight) {
-	//	mSpinRotater = FRotator(0.0, 90.0, 0.0);
-
-	//}
-
-
-
 }
 
 void UCoverAnimInstance::SetHandleing(float DeltaTime)
@@ -83,14 +68,14 @@ void UCoverAnimInstance::SetHandleing(float DeltaTime)
 	if (mIsCover == false || mIsFaceRight) {
 		mWeaponMesh->AttachToComponent(
 			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mRightHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(0, -90, 0));
-		mWeaponMesh->SetRelativeLocation(m_WeaponPos);
+		mWeaponMesh->SetRelativeRotation(FRotator(0, 0, 0));
+
 	}
 	else {
 		mWeaponMesh->AttachToComponent(
 			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mLeftHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(180, 90, 0));
-		mWeaponMesh->SetRelativeLocation(m_WeaponPos * FVector(-1.0f, 1.0f, 1.0f) );
+		mWeaponMesh->SetRelativeRotation(FRotator(180, 180, 0));
+
 
 	}
 }

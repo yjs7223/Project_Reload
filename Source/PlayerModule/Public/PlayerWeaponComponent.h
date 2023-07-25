@@ -50,9 +50,14 @@ public:
 	void StartFire();
 	UFUNCTION(BlueprintCallable)
 	void StopFire();
+
+
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
+	void WeaponMeshSetting();
+
+
 	void ReloadTick(float Deltatime);
 
 	void RecoilTick(float p_deltatime);
