@@ -92,43 +92,15 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	}
 	weapontype = EWeaponType::TE_Rifle;
 
-	switch (weapontype)
-	{
-	case EWeaponType::TE_Pistol:
-		WeaponMesh->SetSkeletalMesh(PistolMesh);
-		break;
-	case EWeaponType::TE_Rifle:
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-		break;
-	case EWeaponType::TE_Shotgun:
-		WeaponMesh->SetSkeletalMesh(ShotgunMesh);
-		break;
-	default:
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-		break;
-	}
+	WeaponMeshSetting();
 }
 
 void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	InitData();
-
-	switch (weapontype)
-	{
-	case EWeaponType::TE_Pistol:
-		WeaponMesh->SetSkeletalMesh(PistolMesh);
-		break;
-	case EWeaponType::TE_Rifle:
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-		break;
-	case EWeaponType::TE_Shotgun:
-		WeaponMesh->SetSkeletalMesh(ShotgunMesh);
-		break;
-	default:
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-		break;
-	}
+	WeaponMeshSetting();
+	
 	// ...
 	//PlayerWeaponData.row
 }
@@ -489,6 +461,29 @@ void UPlayerWeaponComponent::StopReload()
 {
 	reloadvalue = 0;
 	isReload = false;
+}
+
+void UPlayerWeaponComponent::WeaponMeshSetting()
+{
+	FVector location = FVector::ZeroVector;
+
+	switch (weapontype)
+	{
+	case EWeaponType::TE_Pistol:
+		WeaponMesh->SetSkeletalMesh(PistolMesh);
+		break; 
+	case EWeaponType::TE_Rifle:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
+		break;
+	case EWeaponType::TE_Shotgun:
+		WeaponMesh->SetSkeletalMesh(ShotgunMesh);
+		break;
+	default:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		break;
+	}	
+	WeaponMesh->SetRelativeLocation(location);
 }
 
 void UPlayerWeaponComponent::ReloadTick(float Deltatime)

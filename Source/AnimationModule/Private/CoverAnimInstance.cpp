@@ -6,7 +6,8 @@
 #include "GameFramework/Character.h"
 #include "CoverComponent.h"
 #include "BaseInputComponent.h"
-//#include "WeaponMeshComponent.h"
+#include <Kismet/KismetSystemLibrary.h>
+
 
 
 UCoverAnimInstance::UCoverAnimInstance()
@@ -49,6 +50,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (mPeekingState != EPeekingState::None) {
 			mLastPeekingState = mPeekingState;
 		}
+		
 
 		mIsPeeking = mLastPeekingState != EPeekingState::None;
 		mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
@@ -57,25 +59,5 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
-	}
-	SetHandleing(DeltaSeconds);
-}
-
-void UCoverAnimInstance::SetHandleing(float DeltaTime)
-{
-	if (mWeaponMesh == nullptr) return;
-	//if (mIsAiming == true) return;
-	if (mIsCover == false || mIsFaceRight) {
-		mWeaponMesh->AttachToComponent(
-			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mRightHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(0, 0, 0));
-
-	}
-	else {
-		mWeaponMesh->AttachToComponent(
-			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mLeftHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(180, 180, 0));
-
-
 	}
 }

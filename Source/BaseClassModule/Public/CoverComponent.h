@@ -45,6 +45,9 @@ public:
 	bool IsTurnWait();
 	UFUNCTION(BlueprintCallable)
 	float FaceRight();
+	UFUNCTION(BlueprintCallable)
+	bool IsFaceRight();
+	void SetIsFaceRight(bool faceRight);
 	bool IsCornering();
 	bool isPeeking();
 
@@ -73,7 +76,7 @@ protected:
 	void BeCrouch(float deltaTime);
 	void AIMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
 
-private:
+protected:
 	//엄폐벽을 체크할 트레이스채널 입니다
 	static const ECollisionChannel traceChanel = ECC_GameTraceChannel1;
 	//엄폐오브젝트타입채널 입니다
@@ -89,7 +92,7 @@ private:
 	class AActor* m_CoverWall;
 	class UPathFollowingComponent* m_PathFollowingComp;
 	enum class ECoverShootingState mCoverShootingState;
-	enum class EPeekingState mPeekingState;
+	EPeekingState mPeekingState;
 public :
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 		bool m_IsCover;
