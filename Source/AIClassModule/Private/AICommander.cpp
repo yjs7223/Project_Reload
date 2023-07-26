@@ -252,7 +252,8 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 	}
 	if (SightIn_CHK == false)
 	{
-		Patrol_CHK = false;
+		Cmd_SightOut = true;
+		/*Patrol_CHK = false;
 		for (auto enemy : List_Division)
 		{
 			AIController = nullptr;
@@ -275,7 +276,11 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 		else
 		{
 			Cmd_SightOut = false;
-		}
+		}*/
+	}
+	else
+	{
+		Cmd_SightOut = false;
 	}
 }
 
