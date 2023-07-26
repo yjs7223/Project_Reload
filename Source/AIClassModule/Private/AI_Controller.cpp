@@ -112,45 +112,10 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 	case 1:
 		if (Stimulus.Tag == "Shooting")
 		{
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-		}
-		else
-		{
-			bIsPlayerDetected = false;
+			Blackboard->SetValueAsObject("Target", player);
 		}
 		break;
 
-	}
-	if (player)
-	{
-		DistanceToPlayer = GetPawn()->GetDistanceTo(player);
-		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-		if (actor->ActorHasTag("Player"))
-		{
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-			if (Blackboard->GetValueAsObject("Target") != nullptr)
-			{
-				if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
-				{
-					GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
-				}
-			}
-			Blackboard->SetValueAsObject("Target", player);
-		}
-		if (actor->ActorHasTag("Last"))
-		{
-			if (commander->GetBlackboardComponent())
-			{
-				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
-				AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
-				GetWorld()->DestroyActor(temp);
-			}
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-		}
-
-	}
-	else {
-		bIsPlayerDetected = false;
 	}
 }
 
