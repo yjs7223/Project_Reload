@@ -22,9 +22,6 @@ AAISpawner::AAISpawner()
 		spawnData = DataTable.Object;
 	}
 
-
-	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +30,10 @@ void AAISpawner::BeginPlay()
 	Super::BeginPlay();
 	
 	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(curWave), TEXT(""));
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+
+	pointTime = 0;
+	pointSpawnCheck = false;
 }
 
 // Called every frame
@@ -41,6 +42,11 @@ void AAISpawner::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	WaveControl(DeltaTime);
+
+	if (commander != nullptr)
+	{
+		SpawnLastPoint(DeltaTime);
+	}
 }
 
 void AAISpawner::SpawnWave()
@@ -175,6 +181,7 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 {
 	if (commander->Cmd_SightOut)
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Point!"));
 		pointTime += DeltaTime;
 		if (pointTime >= 1 && !pointSpawnCheck)
 		{
@@ -183,11 +190,20 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 
 			// Spawn
 			AActor* temp = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 			pointSpawnCheck = true;
 			pointTime = 0;
-
-			commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", temp);
+			
+			if (commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target") != nullptr)
+			{
+				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", temp);
+			}
 		}
+	}
+	else if(!commander->Cmd_SightOut)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
+		pointTime = 0;
+		pointSpawnCheck = false;
 	}
 }
