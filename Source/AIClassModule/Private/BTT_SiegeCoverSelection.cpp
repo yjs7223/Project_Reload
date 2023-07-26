@@ -62,7 +62,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 							}
 							else if (!arraysame)
 							{
-								AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", commander->SiegeCoverArray[i]);
+								AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", commander->SiegeCoverArray[i]);
 								commander->List_CoverPoint.Add(ai.Value, commander->SiegeCoverArray[i]);
 							}
 						}

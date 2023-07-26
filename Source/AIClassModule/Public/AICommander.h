@@ -52,8 +52,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, FVector> List_ChkLocation; 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_CoverPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
@@ -69,6 +67,8 @@ public:
 		AActor* actor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Suppression;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UDataTable* DT_Commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBehaviorTreeComponent* behavior_tree_component;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -88,9 +88,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float env_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float Siege_angle;
+		float siege_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float detour_radius;
+		float detour_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float detour_angle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)

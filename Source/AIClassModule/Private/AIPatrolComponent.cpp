@@ -2,6 +2,7 @@
 
 
 #include "AIPatrolComponent.h"
+#include "AICharacterMoveComponent.h"
 #include "Components/WidgetComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include "Math/Vector.h"

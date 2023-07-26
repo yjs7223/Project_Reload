@@ -34,7 +34,9 @@ void UAICharacterMoveComponent::BeginPlay()
 	aicharacter = GetOwner<AAICharacter>();
 	SetEnemy("Rifle_E");
 
-	Move_Normal = true;
+	Move_Normal = false;
+	Move_Attack = false;
+	Move_Hit = false;
 	// ...
 	
 }

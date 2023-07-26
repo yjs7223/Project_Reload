@@ -36,6 +36,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UAISenseConfig_Sight* SightConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class UAISenseConfig_Hearing* HearingConfig;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class AAICommander* commander;
