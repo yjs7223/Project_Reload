@@ -136,6 +136,7 @@ void AAICommander::ListSet()
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
 					m_suben = Cast<ASubEncounterSpace>(sub);
+					m_suben->spawn->check_Overlap = true;
 					Blackboard->SetValueAsBool("CmdAI_Active", true);
 					if (!MapList_Start)
 					{
