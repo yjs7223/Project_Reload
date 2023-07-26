@@ -117,21 +117,22 @@ void AAICommander::ListSet()
 			{
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
+					m_suben = Cast<ASubEncounterSpace>(sub);
 					Blackboard->SetValueAsBool("CmdAI_Active", true);
 					if (!MapList_Start)
 					{
-						ListStartSet(Cast<ASubEncounterSpace>(sub));
+						ListStartSet(m_suben);
 					}
 					else
 					{
-						ListTickSet(Cast<ASubEncounterSpace>(sub), Cast<AEncounterSpace>(en));
-						TargetTickSet(Cast<ASubEncounterSpace>(sub));
-						CoverPointSubEn(Cast<ASubEncounterSpace>(sub));
+						ListTickSet(m_suben, Cast<AEncounterSpace>(en));
+						TargetTickSet(m_suben);
+						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
 						
-						if (Cast<ASubEncounterSpace>(sub)->AIArray.IsEmpty())
+						if (m_suben->AIArray.IsEmpty())
 						{
-							ListReset(Cast<ASubEncounterSpace>(sub));
+							ListReset(m_suben);
 						}
 					}
 				}
@@ -151,6 +152,18 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_CoverPoint.Reset();
 	sub->en->LevelArray.Remove(this);
 	sub->LevelActive = false;
+	AddIndex = 0;
+}
+
+void AAICommander::ListAdd(AActor* ac)
+{
+	List_Division.Add(actor, AddIndex);
+	List_Combat.Add(AddIndex, ECombat::Patrol);
+	List_Location.Add(AddIndex, actor->GetActorLocation());
+	List_Suppression.Add(AddIndex, 0.0f);
+	List_CoverPoint.Add(AddIndex, FVector(0, 0, 0));
+
+	AddIndex++;
 }
 
 void AAICommander::ListStartSet(ASubEncounterSpace* sub)
@@ -175,7 +188,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 				AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 				AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
 			}
 		}
 

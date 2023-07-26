@@ -26,7 +26,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 	{
 		for (auto enemy : commander->List_Division)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetPawn()->GetName());
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetPawn()->GetName());
 			AIController = nullptr;
 			//ACharacter = Cast<AAICharacter>();
 	
@@ -105,6 +105,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						if (!same)
 						{
 							AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", mindislocation);
+							commander->List_CoverPoint.Add(enemy.Value, mindislocation);
 						}
 						else if (same)
 						{

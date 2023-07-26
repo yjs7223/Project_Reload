@@ -15,26 +15,34 @@ UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 
 EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	Cast<AAICommander>(OwnerComp.GetAIOwner())->DetourCoverPoint();
-	for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
+	if (!commander)
+	{
+		commander = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	}
+	if (!player)
+	{
+		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	}
+	commander->DetourCoverPoint();
+	for (auto ai : commander->List_Division)
 	{
 		Cast<AAICharacter>(ai.Key)->Detour = false;
 	}
-	for (auto cover : Cast<AAICommander>(OwnerComp.GetAIOwner())->DetourCoverArray)
+	for (auto cover : commander->DetourCoverArray)
 	{
 		select_ai = nullptr;
 		Detourchange = false;
-		for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
+		for (auto ai : commander->List_Division)
 		{
 			if (!Cast<AAICharacter>(ai.Key)->Detour)
 			{
 				Detourchange = true;
-				if (Cast<AAICommander>(OwnerComp.GetAIOwner())->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorForwardVector())
-					|| !Cast<AAICommander>(OwnerComp.GetAIOwner())->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorForwardVector()))
+				if (commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, player->GetActorForwardVector())
+					|| !commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, player->GetActorForwardVector()))
 				{
-					if (*Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Suppression.Find(ai.Value) > 30.0f)
+					if (*commander->List_Suppression.Find(ai.Value) > 30.0f)
 					{
-						if (*Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Combat.Find(ai.Value) == ECombat::InCover)
+						if (*commander->List_Combat.Find(ai.Value) == ECombat::InCover)
 						{
 							if (select_ai == nullptr)
 							{
@@ -59,17 +67,14 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 			return EBTNodeResult::Succeeded;
 		}
 		AIController = nullptr;
-		ACharacter = Cast<AAICharacter>(select_ai);
-		if (ACharacter)
-		{
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-		}
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(select_ai)->GetController());
 		if (AIController)
 		{
 			if (AIController->GetBlackboardComponent())
 			{
 				AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", cover);
 				Cast<AAICharacter>(select_ai)->Detour = true;
+				commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
 			}
 		}
 
