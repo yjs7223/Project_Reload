@@ -72,8 +72,9 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 		{
 			if (AIController->GetBlackboardComponent())
 			{
-				AIController->GetBlackboardComponent()->SetValueAsVector("AI_MoveLocation", cover);
+				AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", cover);
 				Cast<AAICharacter>(select_ai)->Detour = true;
+				commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
 			}
 		}
 

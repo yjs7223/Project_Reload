@@ -7,7 +7,9 @@
 #include "ST_Suppression.h"
 #include "AICharacter.h"
 #include "AIController.h"
+#include "SubEncounterSpace.h"
 #include "AI_Controller.h"
+#include "AICharacterMoveComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -40,7 +42,6 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (Time >= sup_DecTime)
 	{
-
 		if (AIController && AIController->GetBlackboardComponent())
 		{
 			sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
@@ -68,10 +69,17 @@ void UAIStatComponent::Attacked(float p_damage)
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	moveoncmp->Move_Hit = true;
+	moveoncmp->Time = 0;
 	curHP -= p_damage;
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
+		if (AIController->commander->m_suben->AIArray.Find(GetOwner()))
+		{
+			AIController->commander->m_suben->AIArray.Remove(GetOwner());
+		}
 	}
 	sup_Input = p_damage;
 	Time = 0;
