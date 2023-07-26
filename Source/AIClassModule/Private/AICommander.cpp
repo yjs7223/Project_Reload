@@ -104,6 +104,7 @@ void AAICommander::SetDataTable(FName EnemyName)
 		sup_sharetime = SuppressionData->Sup_ShareTime;
 	}
 	FST_Commander* CommanderData = DT_Commander->FindRow<FST_Commander>(EnemyName, FString(""));
+	if (CommanderData)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
 
