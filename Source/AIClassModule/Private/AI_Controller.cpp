@@ -14,6 +14,7 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Hearing.h"
@@ -92,7 +93,6 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 		{
 			if (commander->GetBlackboardComponent())
 			{
-				
 				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
 				AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
 				GetWorld()->DestroyActor(temp);
@@ -178,9 +178,16 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+		HearingConfig->HearingRange = 10000.0f;
+		HearingConfig->SetMaxAge(RangeData->Sight_Age);
+		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
+		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
+		GetPerceptionComponent()->ConfigureSense(*SightConfig);
+		GetPerceptionComponent()->ConfigureSense(*HearingConfig);	
 		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
-		GetPerceptionComponent()->ConfigureSense(*SightConfig);
+		
 	}
 }
