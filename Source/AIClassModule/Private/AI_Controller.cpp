@@ -13,6 +13,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/AIPerceptionSystem.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -25,6 +26,7 @@ AAI_Controller::AAI_Controller()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SightConfig = CreateOptionalDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+	HearingConfig = CreateOptionalDefaultSubobject<UAISenseConfig_Hearing>(TEXT("Hearing Config"));
 	SetPerceptionComponent(*CreateOptionalDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception")));
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
@@ -72,6 +74,53 @@ void AAI_Controller::BeginPlay()
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 {
+	switch (Stimulus.Type)
+	{
+	case 0:
+		if (player)
+		{
+			DistanceToPlayer = GetPawn()->GetDistanceTo(player);
+			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+			if (actor->ActorHasTag("Player"))
+			{
+				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+				if (Blackboard->GetValueAsObject("Target") != nullptr)
+				{
+					if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+					{
+						GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+					}
+				}
+				Blackboard->SetValueAsObject("Target", player);
+			}
+			if (actor->ActorHasTag("Last"))
+			{
+				if (commander->GetBlackboardComponent())
+				{
+					commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
+					AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
+					GetWorld()->DestroyActor(temp);
+				}
+				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+			}
+
+		}
+		else {
+			bIsPlayerDetected = false;
+		}
+		break;
+	case 1:
+		if (Stimulus.Tag == "Shooting")
+		{
+			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+		}
+		else
+		{
+			bIsPlayerDetected = false;
+		}
+		break;
+
+	}
 	if (player)
 	{
 		DistanceToPlayer = GetPawn()->GetDistanceTo(player);
@@ -177,14 +226,14 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		//HearingConfig->HearingRange = 10000.0f;
-		//HearingConfig->SetMaxAge(RangeData->Sight_Age);
-		/*HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+		HearingConfig->HearingRange = 10000.0f;
+		HearingConfig->SetMaxAge(RangeData->Sight_Age);
+		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
-		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;*/
+		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
-		//GetPerceptionComponent()->ConfigureSense(*HearingConfig);	
+		GetPerceptionComponent()->ConfigureSense(*HearingConfig);	
 		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
 		

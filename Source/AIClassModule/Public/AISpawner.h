@@ -74,8 +74,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AActor> lastPoint;
 
-	float pointTime;
-	bool pointSpawnCheck;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		float pointTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		bool pointSpawnCheck;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
