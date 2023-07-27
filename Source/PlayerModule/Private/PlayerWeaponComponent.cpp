@@ -165,6 +165,7 @@ void UPlayerWeaponComponent::InitData()
 
 void UPlayerWeaponComponent::Fire()
 {
+	if (!m_CanShooting) return;
 	if (curAmmo <= 0)
 	{
 		StopFire();

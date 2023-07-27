@@ -223,8 +223,22 @@ void UCoverComponent::AimSetting(float DeltaTime)
 		if (!IsFaceRight()) aimOffset.Yaw *= -1.0f;
 		return;
 	}
-
 	if (aimOffset.Yaw > 0) {
+		if (m_Inputdata->IsAiming || m_Inputdata->IsReload || (m_Inputdata->IsFire && aimOffset.Yaw > 45)) {
+			aimOffset.Yaw -= 180;
+			SetIsFaceRight(true);
+
+		}
+	}
+	else {
+		if (m_Inputdata->IsAiming || m_Inputdata->IsReload || (m_Inputdata->IsFire && aimOffset.Yaw < -45)) {
+			aimOffset.Yaw += 180;
+			aimOffset.Yaw *= -1.0f;
+			SetIsFaceRight(false);
+		}
+	}
+
+	/*if (aimOffset.Yaw > 0) {
 		if (m_Inputdata->IsAiming || (m_Inputdata->IsFire && aimOffset.Yaw > 45)) {
 			aimOffset.Yaw -= 180;
 			SetIsFaceRight(true);
@@ -237,7 +251,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 			aimOffset.Yaw *= -1.0f;
 			SetIsFaceRight(false);
 		}
-	}
+	}*/
 }
 
 void UCoverComponent::RotateSet(float DeltaTime)
