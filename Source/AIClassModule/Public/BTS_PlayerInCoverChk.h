@@ -27,4 +27,6 @@ public:
 		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		class AActor* commander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		class ACharacter* player;
 };

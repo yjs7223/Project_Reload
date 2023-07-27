@@ -4,6 +4,8 @@
 #include "AIInputComponent.h"
 #include "GameFramework/Character.h"
 #include "CoverComponent.h"
+#include "AIWeaponComponent.h"
+#include "AICharacterMoveComponent.h"
 
 void UAIInputComponent::BeginPlay()
 {
@@ -24,7 +26,12 @@ void UAIInputComponent::AIMoveRight(float Value)
 
 void UAIInputComponent::AIRuning()
 {
-	m_inputData.IsRuning ? m_inputData.IsRuning = false : m_inputData.IsRuning = true;
+	m_inputData.IsRuning = true;
+}
+
+void UAIInputComponent::AIStopRuning()
+{
+	m_inputData.IsRuning = false;
 }
 
 void UAIInputComponent::AICrouching()
@@ -32,20 +39,33 @@ void UAIInputComponent::AICrouching()
 	if (owner->CanCrouch()) {
 		owner->Crouch();
 	}
-	else {
-		if (!m_CanUnCrouch) return;
-		owner->UnCrouch();
-	}
+}
+
+void UAIInputComponent::AIStopCrouching()
+{
+	owner->UnCrouch();
+
 }
 
 void UAIInputComponent::AIStartFire()
 {
+	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	weaponcmp->ShotAIStart();
+	weaponcmp->ShotAI();
+	moveoncmp->Move_Attack = true;
+
 	m_inputData.IsFire = true;
 }
 
 void UAIInputComponent::AIStopFire()
 {
+	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	weaponcmp->ShotAIStop();
+	moveoncmp->Move_Attack = false;
 	m_inputData.IsFire = false;
+
 }
 
 void UAIInputComponent::AIStartAiming()
@@ -60,6 +80,5 @@ void UAIInputComponent::AIStopAiming()
 
 void UAIInputComponent::AIStartReload()
 {
-
 	m_inputData.IsReload = true;
 }

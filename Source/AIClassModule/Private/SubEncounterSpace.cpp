@@ -3,6 +3,7 @@
 
 #include "SubEncounterSpace.h"
 #include "AICharacter.h"
+#include "AISpawner.h"
 #include "EncounterSpace.h"
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"

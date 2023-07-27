@@ -35,7 +35,6 @@ class AICLASSMODULE_API AAICommander : public AAIController
 public:
 	// Sets default values for this actor's properties
 	AAICommander();
-	virtual void OnPossess(APawn* pPawn) override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,32 +45,39 @@ public:
 		Tick(float DeltaTime) override;
 
 public:
+	// TMAP_LIST
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, AActor*> List_RDivision;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, ECombat> List_Combat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, FVector> List_ChkLocation; 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_CoverPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
+
+	// TArray
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<float> Sup_Array;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		int AddIndex;
+		TArray<FVector> CoverArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool MapList_Start;
+		TArray<FVector> CoverSubEnArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		AActor* actor;
+		TArray<FVector> CoverEnemyArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> SiegeCoverArray; //포위
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<FVector> DetourCoverArray; //우회
+
+	//Class
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Suppression;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UDataTable* DT_Commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBehaviorTreeComponent* behavior_tree_component;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -83,9 +89,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICharacter* ACharacter;
+		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float s_time;
+		class ASubEncounterSpace* m_suben;
+
+	// DATA TABLE
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharerange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -93,53 +101,51 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float env_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float Siege_angle;
+		float siege_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float detour_radius;
+		float detour_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float detour_angle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float ndetour_angle;
+
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		int AddIndex;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool MapList_Start;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float s_time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector MaxSupLoc;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_value;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		UObject* Target;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool sightin;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool subenbool;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int subenNum;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> CoverArray;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> CoverSubEnArray;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> CoverEnemyArray;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> SiegeCoverArray; //포위
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> DetourCoverArray; //우회
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FHitResult result;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool enemycover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool Cmd_SightOut;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool Patrol_CHK;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool Patrol_CHK;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
+
 
 public:
 	UFUNCTION()
 		void ListSet();
 	UFUNCTION()
 		void ListReset(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListAdd(AActor* ac);
 	UFUNCTION()
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()

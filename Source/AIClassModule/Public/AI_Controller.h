@@ -36,15 +36,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UAISenseConfig_Sight* SightConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class UAISenseConfig_Hearing* HearingConfig;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		float DistanceToPlayer = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class ACharacter* player; //cast
 
 public:
 	UFUNCTION()//BlueprintCallable

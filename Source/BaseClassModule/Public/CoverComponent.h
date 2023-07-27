@@ -20,7 +20,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void InitializeComponent() override;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -54,7 +53,8 @@ public:
 	void CalculateCoverShoot();
 	ECoverShootingState getCoverSootingState();
 	EPeekingState getPeekingState();
-
+	FVector getCanCoverPoint();
+	FVector GetPointNormal();
 	void StartPeeking();
 	void StopPeeking();
 
@@ -104,6 +104,7 @@ private:
 	float m_TurnTime;
 	FVector m_Turnlookpoint;
 	FVector m_CanCoverPoint;
+	FVector m_CanCoverPointNormal;
 	class ACharacter* owner;
 
 	bool m_IsWillPosSetting;

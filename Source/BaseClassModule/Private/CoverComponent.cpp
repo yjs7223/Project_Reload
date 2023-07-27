@@ -63,16 +63,6 @@ void UCoverComponent::BeginPlay()
 
 }
 
-void UCoverComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
-	owner = Cast<ACharacter>(GetOwner());
-	if (owner)
-	{
-		capsule = owner->GetCapsuleComponent();
-	}
-}
-
 // Called every frame
 void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -156,51 +146,49 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 
 bool UCoverComponent::StartAICover()
 {
-	if (ACharacter* mycharacter = Cast<ACharacter>(GetOwner()))
+	if (!owner)
 	{
-		if (UCapsuleComponent* mycap = mycharacter->GetCapsuleComponent())
-		{
-			FHitResult result = FHitResult();
-			FHitResult temp = FHitResult();
-
-			TArray<AActor*> OutActors;
-			if (UKismetSystemLibrary::CapsuleOverlapActors(GetWorld(),
-				mycharacter->GetActorLocation(),
-				mycap->GetScaledCapsuleRadius() * 2.0f,
-				mycap->GetScaledCapsuleHalfHeight() * 2.0f,
-				{ UEngineTypes::ConvertToObjectType(coverWallType) },
-				AActor::StaticClass(),
-				{},
-				OutActors))
-			{
-				for (auto& item : OutActors)
-				{
-
-					FVector start = mycharacter->GetActorLocation();
-					FVector end = item->GetActorLocation();
-					FCollisionQueryParams params(NAME_None, true, mycharacter);
-
-					if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
-						break;
-					}
-				}
-
-			}
-
-			if (result.GetActor() == nullptr) return false;
-			RotateSet(0.0f);
-
-			mycharacter->SetActorLocation(result.Location + result.Normal * mycap->GetScaledCapsuleRadius() * 1.01f);
-			m_CoverWall = result.GetActor();
-			//m_IsCover = true;
-
-			return true;
-		}
+		owner = Cast<ACharacter>(GetOwner());
 	}
-	
+	if (!capsule)
+	{
+		capsule = owner->GetCapsuleComponent();
+	}
+	FHitResult result = FHitResult();
+	FHitResult temp = FHitResult();
 
+	TArray<AActor*> OutActors;
+	if (UKismetSystemLibrary::CapsuleOverlapActors(GetWorld(),
+		owner->GetActorLocation(),
+		capsule->GetScaledCapsuleRadius() * 2.0f,
+		capsule->GetScaledCapsuleHalfHeight() * 2.0f,
+		{ UEngineTypes::ConvertToObjectType(coverWallType) },
+		AActor::StaticClass(),
+		{},
+		OutActors))   
+	{
+		for (auto& item : OutActors)
+		{
 
-	return false;
+			FVector start = owner->GetActorLocation();
+			FVector end = item->GetActorLocation();
+			FCollisionQueryParams params(NAME_None, true, owner);
+
+			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
+				break;
+			}
+		}
+
+	}
+
+	if (result.GetActor() == nullptr) return false;
+	RotateSet(0.0f);
+
+	owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
+	m_CoverWall = result.GetActor();
+	m_IsCover = true;
+
+	return m_IsCover;
 }
 
 void UCoverComponent::TurnCheck(float DeltaTime)
@@ -347,10 +335,15 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector ViewPoint;
 	FVector ViewVector;
 	FRotator cameraRotation;
+
+	if (owner->ActorHasTag("Enemy"))
+	{
+		return FVector::ZeroVector;
+	}
+
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 
 	UCameraComponent* camera = owner->FindComponentByClass<UCameraComponent>();
-	if(!camera) return  FVector::ZeroVector;
 	ViewVector = cameraRotation.Vector();
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,
@@ -413,6 +406,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 		GetWorld()->LineTraceSingleByChannel(result3, start, end, traceChanel, params);
 		targetVector = result3.Location + result3.Normal * 1.1;
 		temptargetVector = result3.Location + result3.Normal * capsule->GetScaledCapsuleRadius();
+		m_CanCoverPointNormal = result3.Normal;
 	}
 	else {
 		FHitResult result4;
@@ -428,6 +422,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 
 		targetVector = result5.Location + result5.ImpactNormal * 1.1;
 		temptargetVector = result5.Location + result5.ImpactNormal * capsule->GetScaledCapsuleRadius();
+		m_CanCoverPointNormal = result5.ImpactNormal;
 	}
 
 	DrawDebugPoint(GetWorld(), targetVector, 5, FColor::Green);
@@ -574,6 +569,16 @@ ECoverShootingState UCoverComponent::getCoverSootingState()
 EPeekingState UCoverComponent::getPeekingState()
 {
 	return mPeekingState;
+}
+
+FVector UCoverComponent::getCanCoverPoint()
+{
+	return m_CanCoverPoint;
+}
+
+FVector UCoverComponent::GetPointNormal()
+{
+	return m_CanCoverPointNormal;
 }
 
 bool UCoverComponent::StartCover()
