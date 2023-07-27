@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "CoverComponent.h"
 #include "AIWeaponComponent.h"
+#include "AICharacterMoveComponent.h"
 
 void UAIInputComponent::BeginPlay()
 {
@@ -42,7 +43,6 @@ void UAIInputComponent::AICrouching()
 
 void UAIInputComponent::AIStopCrouching()
 {
-	if (!m_CanUnCrouch) return;
 	owner->UnCrouch();
 
 }
@@ -50,9 +50,10 @@ void UAIInputComponent::AIStopCrouching()
 void UAIInputComponent::AIStartFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
-
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	weaponcmp->ShotAIStart();
 	weaponcmp->ShotAI();
+	moveoncmp->Move_Attack = true;
 
 	m_inputData.IsFire = true;
 }
@@ -60,8 +61,9 @@ void UAIInputComponent::AIStartFire()
 void UAIInputComponent::AIStopFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
-
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	weaponcmp->ShotAIStop();
+	moveoncmp->Move_Attack = false;
 	m_inputData.IsFire = false;
 
 }

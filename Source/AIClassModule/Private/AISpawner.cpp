@@ -15,24 +15,18 @@ AAISpawner::AAISpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 데이터 테이블 삽입
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/SGJ/DT_Spawner.DT_Spawner'"));
-	if (DataTable.Succeeded())
-	{
-		spawnData = DataTable.Object;
-	}
-
-
-	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-
 }
 
 // Called when the game starts or when spawned
 void AAISpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(curWave), TEXT(""));
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+
+	pointTime = 0;
+	pointSpawnCheck = false;
 }
 
 // Called every frame
@@ -41,6 +35,11 @@ void AAISpawner::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	WaveControl(DeltaTime);
+
+	if (commander != nullptr)
+	{
+		SpawnLastPoint(DeltaTime);
+	}
 }
 
 void AAISpawner::SpawnWave()
@@ -54,11 +53,12 @@ void AAISpawner::SpawnWave()
 		spawn_Pos = SetSpawnSpot(spawn_Pos);
 
 		// 생성
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Rifle, spawn_Spots[spawn_Pos]->GetActorLocation());
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		Cast<AAICharacter>(temp)->mySpawner = this;
+		commander->ListAdd(Cast<AActor>(temp));
 		rifleCount++;
 	}
 	else
@@ -84,7 +84,7 @@ void AAISpawner::SpawnWave()
 
 void AAISpawner::WaveControl(float DeltaTime)
 {
-	if (check_Overlap && !spawnCheck)
+	/*if (check_Overlap && !spawnCheck)
 	{
 		spawn_Timer += DeltaTime;
 		if (spawn_Timer >= (*curSpawnData).spawn_Delay)
@@ -92,7 +92,7 @@ void AAISpawner::WaveControl(float DeltaTime)
 			SpawnWave();
 			spawn_Timer = 0;
 		}
-	}
+	}*/
 
 	// 마지막 웨이브인지 확인
 	if (spawnCheck)
@@ -161,6 +161,7 @@ void AAISpawner::NextWave()
 {
 	// 다음 웨이브로 넘기기
 	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(++curWave), TEXT(""));
+	SetDataTable();
 	count_Kill = 0;
 	spawnCheck = false;
 }
@@ -174,6 +175,7 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 {
 	if (commander->Cmd_SightOut)
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Point!"));
 		pointTime += DeltaTime;
 		if (pointTime >= 1 && !pointSpawnCheck)
 		{
@@ -185,8 +187,17 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 			pointSpawnCheck = true;
 			pointTime = 0;
-
-			commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", temp);
+			
+			if (commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target") != nullptr)
+			{
+				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", temp);
+			}
 		}
+	}
+	else if(!commander->Cmd_SightOut)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
+		pointTime = 0;
+		pointSpawnCheck = false;
 	}
 }

@@ -5,9 +5,12 @@
 #include "AICommander.h"
 #include "Components/CapsuleComponent.h"
 #include "ST_Suppression.h"
+#include "ST_AIShot.h"
 #include "AICharacter.h"
 #include "AIController.h"
+#include "SubEncounterSpace.h"
 #include "AI_Controller.h"
+#include "AICharacterMoveComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -20,6 +23,12 @@ UAIStatComponent::UAIStatComponent()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ShotDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Shot.DT_Shot'"));
+	if (DT_ShotDataObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
+		DT_Shot = DT_ShotDataObject.Object;
+	}
 	SetDataTable("Rifle_E");
 }
 
@@ -30,6 +39,8 @@ void UAIStatComponent::BeginPlay()
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+	DI_SupRange = 1 / sup_MaxRange;
+	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
 	//AICommander = AAICommander::aicinstance;
 }
 
@@ -40,8 +51,6 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (Time >= sup_DecTime)
 	{
-		AIController = nullptr;
-
 		if (AIController && AIController->GetBlackboardComponent())
 		{
 			sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
@@ -60,7 +69,9 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UAIStatComponent::Attacked(float p_damage)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
-	sup_Input = p_damage * sup_DecInput;
+	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
+	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
+	sup_Input = dmg * sup_DecInput;
 	Time = 0;
 	PlayerAtt_ai = true;
 	SuppresionPoint();
@@ -69,12 +80,21 @@ void UAIStatComponent::Attacked(float p_damage)
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
-	curHP -= p_damage;
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	moveoncmp->Move_Hit = true;
+	moveoncmp->Time = 0;
+	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
+	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
+	curHP -= dmg;
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
+		if (AIController->commander->m_suben->AIArray.Find(GetOwner()))
+		{
+			AIController->commander->m_suben->AIArray.Remove(GetOwner());
+		}
 	}
-	sup_Input = p_damage;
+	sup_Input = dmg;
 	Time = 0;
 	PlayerAtt_ai = true;
 	SuppresionPoint();
@@ -90,7 +110,6 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 void UAIStatComponent::SuppresionPoint()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
-	AIController = nullptr;
 	if (AIController && AIController->GetBlackboardComponent())
 	{
 		AI_PlayerDis = GetOwner()->GetDistanceTo(player);
@@ -99,17 +118,17 @@ void UAIStatComponent::SuppresionPoint()
 		default:
 			break;
 		case 0:
-			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1.2;
+			sup_middlePoint = (1 - (AI_PlayerDis * DI_SupRange)) * 1.2;
 			break;
 		case 1:
 		case 2:
-			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 1;
+			sup_middlePoint = (1 - (AI_PlayerDis * DI_SupRange)) * 1;
 			break;
 		case 3:
-			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.7;
+			sup_middlePoint = (1 - (AI_PlayerDis * DI_SupRange)) * 0.7;
 			break;
 		case 4:
-			sup_middlePoint = (1 - (AI_PlayerDis / sup_MaxRange)) * 0.5;
+			sup_middlePoint = (1 - (AI_PlayerDis * DI_SupRange)) * 0.5;
 			break;
 		}
 		if (Time <= sup_DelayTime)
@@ -148,5 +167,15 @@ void UAIStatComponent::SetDataTable(FName EnemyName)
 		sup_MaxPoint = SuppressionData->Sup_MaxPoint;
 		sup_DecPoint = SuppressionData->Sup_DecPoint;
 		sup_DecTime = SuppressionData->Sup_DecTime;
+	}
+	FST_AIShot* ShotData = DT_Shot->FindRow<FST_AIShot>(EnemyName, FString(""));
+	if (ShotData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+
+		shot_MaxRange = ShotData->Shot_MaxRange;
+		shot_MinRange = ShotData->Shot_MinRange;
+		shot_MaxDmg = ShotData->Shot_MaxDmg;
+		shot_MinDmg = ShotData->Shot_MinDmg;
 	}
 }
