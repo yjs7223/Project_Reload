@@ -168,7 +168,6 @@ void AAICommander::ListSet()
 
 void AAICommander::ListReset(ASubEncounterSpace* sub)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "asdddddasdsdasdasadsdasdadsasdasdaadsdasdsadadadasdsasdadsasaddsaasdads");
 	List_Division.Reset();
 	List_Combat.Reset();
 	List_Location.Reset();
