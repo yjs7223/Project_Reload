@@ -14,6 +14,7 @@ UBTT_NomalCoverRequest::UBTT_NomalCoverRequest()
 
 EBTNodeResult::Type UBTT_NomalCoverRequest::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	AAIController* test = OwnerComp.GetAIOwner();
 	OwnerComp.GetAIOwner()->GetBlackboardComponent()->SetValueAsBool("OrderWait", true);
 	if (!AIController)
 	{
