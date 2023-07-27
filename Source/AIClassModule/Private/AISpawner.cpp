@@ -161,7 +161,6 @@ void AAISpawner::NextWave()
 {
 	// 다음 웨이브로 넘기기
 	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(++curWave), TEXT(""));
-	SetDataTable();
 	count_Kill = 0;
 	spawnCheck = false;
 }
