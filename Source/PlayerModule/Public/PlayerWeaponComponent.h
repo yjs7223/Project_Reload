@@ -50,9 +50,14 @@ public:
 	void StartFire();
 	UFUNCTION(BlueprintCallable)
 	void StopFire();
+
+
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
+	void WeaponMeshSetting();
+
+
 	void ReloadTick(float Deltatime);
 
 	void RecoilTick(float p_deltatime);
@@ -75,12 +80,24 @@ public:
 
 	void PlayCameraShake(float scale);
 
+	void SpawnImpactEffect(FHitResult result);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class APlayerCharacter* owner;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* PlayerWeaponData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWeaponDataAsset* RifleDataAssets;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWeaponDataAsset* PistolDataAssets;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWeaponDataAsset* ShotgunDataAssets;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UHitImapactDataAsset* HitImpactDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstance* Decal;
@@ -162,11 +179,9 @@ public:
 		class UNiagaraComponent* hitFXComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraSystem* hitFXNiagara;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UNiagaraSystem* headhitFXNiagara;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> shotsound;
+		TArray<USoundWave*> ShotSounds;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UMatineeCameraShake> fireShake;

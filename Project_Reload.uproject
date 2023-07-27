@@ -79,16 +79,16 @@
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/0966972104ff4e94874096f15cf4f7f5"
 		},
 		{
-			"Name": "MotionWarping",
-			"Enabled": true
-		},
-		{
 			"Name": "DragonIKPlugin",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/3f3985e9eb40414aaabf645791fa4916"
 		},
 		{
 			"Name": "AnimationWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "MotionWarping",
 			"Enabled": true
 		}
 	]
