@@ -39,6 +39,11 @@ AAICommander::AAICommander()
 	AddIndex = 0;
 	MapList_Start = false;
 	sightin = false;
+	enemycover = false;
+	SightIn_CHK = false;
+	Cmd_SightOut = false;
+	//Patrol_CHK = false;
+
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Suppression.DT_Suppression'"));
 	if (DT_SuppressionDataObject.Succeeded())
 	{
@@ -66,17 +71,13 @@ AAICommander::AAICommander()
 		UE_LOG(LogTemp, Warning, TEXT("AICommander Blackboard Succeed!"));
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
-	AddIndex = 0;
-	enemycover = false;
+	
 	/*static ConstructorHelpers::FObjectFinder<AAIController> BaseAI_Ctr_Object(TEXT("AIController'/Game/JHB/BaseAI_Ctr.BaseAI_Ctr'"));
 	if (BaseAI_Ctr_Object.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		BaseAI_Ctr = BaseAI_Ctr_Object.Object;
 	}*/
-	SightIn_CHK = false;
-	Patrol_CHK = false;
-	Cmd_SightOut = false;
 	
 	SetDataTable("Rifle_E");
 }
@@ -136,7 +137,10 @@ void AAICommander::ListSet()
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
 					m_suben = Cast<ASubEncounterSpace>(sub);
-					m_suben->spawn->check_Overlap = true;
+					if (m_suben->spawn)
+					{
+						m_suben->spawn->check_Overlap = true;
+					}
 					Blackboard->SetValueAsBool("CmdAI_Active", true);
 					if (!MapList_Start)
 					{
@@ -172,13 +176,14 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	sub->en->LevelArray.Remove(this);
 	sub->LevelActive = false;
 	AddIndex = 0;
+	MapList_Start = false;
 }
 
 void AAICommander::ListAdd(AActor* ac)
 {
-	List_Division.Add(actor, AddIndex);
+	List_Division.Add(ac, AddIndex);
 	List_Combat.Add(AddIndex, ECombat::Patrol);
-	List_Location.Add(AddIndex, actor->GetActorLocation());
+	List_Location.Add(AddIndex, ac->GetActorLocation());
 	List_Suppression.Add(AddIndex, 0.0f);
 	List_CoverPoint.Add(AddIndex, FVector(0, 0, 0));
 
@@ -426,7 +431,6 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 		}
 
 	}
-
 
 }
 

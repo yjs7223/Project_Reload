@@ -57,6 +57,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UCrosshair_Widget* Crosshair_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWidgetComponent* CoverWidgetComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> Cover_Widget;
     
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)

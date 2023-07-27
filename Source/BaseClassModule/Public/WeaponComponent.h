@@ -67,6 +67,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isAiming;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Weapon)
+		bool m_CanShooting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		FVector2D damage;

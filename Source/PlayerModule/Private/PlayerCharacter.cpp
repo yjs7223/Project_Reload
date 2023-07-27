@@ -15,7 +15,9 @@
 #include "Player_Ammo_Widget.h"
 #include "CoverComponent.h"
 #include "Crosshair_Widget.h"
+#include "Player_Cover_Widget.h"
 #include "CameraControllComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 //#include "Kismet/GameplayStatics.h"
 //#include "Engine.h"
 //#include "EngineMinimal.h"
@@ -60,6 +62,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	AmmoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerAmmo_Widget"));
 	AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 
+	CoverWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerCover_Widget"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -77,7 +80,20 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//UpdateWidget(DeltaTime);
+	FVector coverpoint = FindComponentByClass<UCoverComponent>()->getCanCoverPoint();
+	if (coverpoint != FVector::ZeroVector)
+	{
+		coverpoint.Z -= 80.0f;
+		CoverWidgetComponent->SetWorldLocation(coverpoint);
+		FRotator rot = FindComponentByClass<UCoverComponent>()->GetPointNormal().Rotation();
+		CoverWidgetComponent->SetWorldRotation(rot);
+		Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget())->SetOpacity(1.0f);
+		
+	}
+	else
+	{
+		Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget())->SetOpacity(.0f);
+	}
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
@@ -141,6 +157,19 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		}
 	}
 
+	if (CoverWidgetComponent)
+	{
+		//CoverWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
+		//AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
+		CoverWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+		CoverWidgetComponent->SetDrawSize(FVector2D(128.0f, 64.0f));
+
+		if (Cover_Widget)
+		{
+			CoverWidgetComponent->SetWidgetClass(Cover_Widget);
+		}
+	}
+
 }
 
 void APlayerCharacter::UpdateWidget(float deltatime)
@@ -163,9 +192,16 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 
 void APlayerCharacter::WidgetShow()
 {
-	Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
-	Crosshair_Widget->SetWidgetVisible();
-
+  if (HPWidgetComponent) {
+		UPlayer_HP_Widget* hpWidget = Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget());
+		if (hpWidget) {
+			hpWidget->SetWidgetVisible();
+		}
+	}
+	if (Crosshair_Widget)
+	{
+		Crosshair_Widget->SetWidgetVisible();
+	}
 }
 
 
