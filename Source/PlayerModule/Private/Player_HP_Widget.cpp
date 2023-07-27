@@ -71,7 +71,7 @@ void UPlayer_HP_Widget::NativeConstruct()
 void UPlayer_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	MoveCircle(InDeltaTime);
+	//MoveCircle(InDeltaTime);
 }
 
 void UPlayer_HP_Widget::SetPercent(float percent)
@@ -103,13 +103,18 @@ void UPlayer_HP_Widget::MoveCircle(float deltatime)
 
 void UPlayer_HP_Widget::SetWidgetVisible()
 {
+	StopAllAnimations();
 	HP_Overlay->SetRenderOpacity(1.f);
-
-	GetWorld()->GetTimerManager().SetTimer(WTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			PlayAnimationForward(FadeOutAnimation);
-		}), 5.f, false);
-
+	if (FadeOutAnimation)
+	{
+		GetWorld()->GetTimerManager().SetTimer(WTimer, FTimerDelegate::CreateLambda([&]()
+			{
+				if (FadeOutAnimation)
+				{
+					PlayAnimationForward(FadeOutAnimation);
+				}
+			}), 5.f, false);
+	}
 }
 
 void UPlayer_HP_Widget::SetShear(FRotator rot)

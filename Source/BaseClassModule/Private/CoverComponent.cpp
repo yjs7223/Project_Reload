@@ -397,6 +397,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 		GetWorld()->LineTraceSingleByChannel(result3, start, end, traceChanel, params);
 		targetVector = result3.Location + result3.Normal * 1.1;
 		temptargetVector = result3.Location + result3.Normal * capsule->GetScaledCapsuleRadius();
+		m_CanCoverPointNormal = result3.Normal;
 	}
 	else {
 		FHitResult result4;
@@ -412,6 +413,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 
 		targetVector = result5.Location + result5.ImpactNormal * 1.1;
 		temptargetVector = result5.Location + result5.ImpactNormal * capsule->GetScaledCapsuleRadius();
+		m_CanCoverPointNormal = result5.ImpactNormal;
 	}
 
 	DrawDebugPoint(GetWorld(), targetVector, 5, FColor::Green);
@@ -518,6 +520,16 @@ ECoverShootingState UCoverComponent::getCoverSootingState()
 EPeekingState UCoverComponent::getPeekingState()
 {
 	return mPeekingState;
+}
+
+FVector UCoverComponent::getCanCoverPoint()
+{
+	return m_CanCoverPoint;
+}
+
+FVector UCoverComponent::GetPointNormal()
+{
+	return m_CanCoverPointNormal;
 }
 
 bool UCoverComponent::StartCover()
