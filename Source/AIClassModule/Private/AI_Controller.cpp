@@ -74,51 +74,39 @@ void AAI_Controller::BeginPlay()
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 {
-	switch (Stimulus.Type)
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
+	if (player)
 	{
-	case 0:
-		if (player)
+		DistanceToPlayer = GetPawn()->GetDistanceTo(player);
+		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+		if (actor->ActorHasTag("Player"))
 		{
-			DistanceToPlayer = GetPawn()->GetDistanceTo(player);
-			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-			if (actor->ActorHasTag("Player"))
+			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+			if (Blackboard->GetValueAsObject("Target") != nullptr)
 			{
-				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-				if (Blackboard->GetValueAsObject("Target") != nullptr)
+				if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
 				{
-					if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
-					{
-						GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
-					}
+					GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 				}
-				Blackboard->SetValueAsObject("Target", player);
 			}
-			if (actor->ActorHasTag("Last"))
-			{
-				if (commander->GetBlackboardComponent())
-				{
-					commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
-					AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
-					GetWorld()->DestroyActor(temp);
-				}
-				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-			}
-
-		}
-		else {
-			bIsPlayerDetected = false;
-		}
-		break;
-	case 1:
-		if (Stimulus.Tag == "Shooting")
-		{
 			Blackboard->SetValueAsObject("Target", player);
 		}
-		break;
+		if (actor->ActorHasTag("Last"))
+		{
+			if (commander->GetBlackboardComponent())
+			{
+				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
+				AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
+				GetWorld()->DestroyActor(temp);
+			}
+			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+		}
 
 	}
+	else {
+		bIsPlayerDetected = false;
+	}
 }
-
 void AAI_Controller::SetUseCover()
 {
 	if (commander != nullptr)
