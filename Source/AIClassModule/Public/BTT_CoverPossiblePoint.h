@@ -19,17 +19,17 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
-		UBlackboardComponent* BlackboardComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
-		class AActor* commander;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
-		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		bool coverpossible;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		float mindis;
-	
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		FVector mindislocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		bool same;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		bool arraysame;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		class AAICommander* commander;
 };

@@ -3,6 +3,7 @@
 
 #include "SubEncounterSpace.h"
 #include "AICharacter.h"
+#include "AISpawner.h"
 #include "EncounterSpace.h"
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
@@ -59,11 +60,7 @@ void ASubEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 void ASubEncounterSpace::EnemyAICheck()
 {
 	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
-	if (AIArray.IsEmpty())
-	{
-		en->LevelArray.Remove(this);
-		LevelActive = false;
-	}
+	
 }
 
 

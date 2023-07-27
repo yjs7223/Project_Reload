@@ -1,0 +1,84 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "AIInputComponent.h"
+#include "GameFramework/Character.h"
+#include "CoverComponent.h"
+#include "AIWeaponComponent.h"
+#include "AICharacterMoveComponent.h"
+
+void UAIInputComponent::BeginPlay()
+{
+	Super::BeginPlay(); 
+
+	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
+}
+
+void UAIInputComponent::AIMoveForward(float Value)
+{
+	m_inputData.movevec.X = Value;
+}
+
+void UAIInputComponent::AIMoveRight(float Value)
+{
+	m_inputData.movevec.Y = Value;
+}
+
+void UAIInputComponent::AIRuning()
+{
+	m_inputData.IsRuning = true;
+}
+
+void UAIInputComponent::AIStopRuning()
+{
+	m_inputData.IsRuning = false;
+}
+
+void UAIInputComponent::AICrouching()
+{
+	if (owner->CanCrouch()) {
+		owner->Crouch();
+	}
+}
+
+void UAIInputComponent::AIStopCrouching()
+{
+	owner->UnCrouch();
+
+}
+
+void UAIInputComponent::AIStartFire()
+{
+	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	weaponcmp->ShotAIStart();
+	weaponcmp->ShotAI();
+	moveoncmp->Move_Attack = true;
+
+	m_inputData.IsFire = true;
+}
+
+void UAIInputComponent::AIStopFire()
+{
+	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	weaponcmp->ShotAIStop();
+	moveoncmp->Move_Attack = false;
+	m_inputData.IsFire = false;
+
+}
+
+void UAIInputComponent::AIStartAiming()
+{
+	m_inputData.IsAiming = true;
+}
+
+void UAIInputComponent::AIStopAiming()
+{
+	m_inputData.IsAiming = false;
+}
+
+void UAIInputComponent::AIStartReload()
+{
+	m_inputData.IsReload = true;
+}

@@ -14,37 +14,25 @@ UBTT_NomalCoverRequest::UBTT_NomalCoverRequest()
 
 EBTNodeResult::Type UBTT_NomalCoverRequest::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	BlackboardComponent = OwnerComp.GetAIOwner()->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsBool("OrderWait", true);
-	AIController = nullptr;
-	ACharacter = Cast<AAICharacter>(Cast<AAICommander>(commander));
-	if (ACharacter)
+	OwnerComp.GetAIOwner()->GetBlackboardComponent()->SetValueAsBool("OrderWait", true);
+	if (!AIController)
 	{
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
+		AIController = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander;
 	}
+	
 	if (AIController)
 	{
-		if (AIController->BlackboardComponent)
+		if (AIController->GetBlackboardComponent())
 		{
-			BlackboardComponent = AIController->BlackboardComponent;
-			if (BlackboardComponent->GetValueAsBool("Cmd_OrderWait"))
+			
+			if (!AIController->GetBlackboardComponent()->GetValueAsBool("CmdAI_OrderWait"))
 			{
-				BlackboardComponent->SetValueAsBool("Cmd_OrderWait", false);
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "SDADSADADAASDDADADAD");
+				AIController->GetBlackboardComponent()->SetValueAsBool("CmdAI_OrderWait", true);
 			}
 		}
 	}
-	BlackboardComponent = OwnerComp.GetAIOwner()->GetBlackboardComponent();
-	int delay = 1;
-	for (int i = 0; i < delay; i++)
-	{
-		if (BlackboardComponent->GetValueAsBool("OrderWait"))
-		{
-			delay++;
-		}
-		else
-		{
-			return EBTNodeResult::Succeeded;
-		}
-	}
-	return EBTNodeResult::Failed;
+	
+	return EBTNodeResult::Succeeded;
+
 }

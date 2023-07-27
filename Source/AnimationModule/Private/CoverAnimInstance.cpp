@@ -6,7 +6,8 @@
 #include "GameFramework/Character.h"
 #include "CoverComponent.h"
 #include "BaseInputComponent.h"
-//#include "WeaponMeshComponent.h"
+#include <Kismet/KismetSystemLibrary.h>
+
 
 
 UCoverAnimInstance::UCoverAnimInstance()
@@ -25,7 +26,6 @@ void UCoverAnimInstance::NativeBeginPlay()
 	if (mWeapon) {
 		mWeaponMesh = mWeapon->WeaponMesh;
 	}
-
 }
 
 void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -50,6 +50,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (mPeekingState != EPeekingState::None) {
 			mLastPeekingState = mPeekingState;
 		}
+		
 
 		mIsPeeking = mLastPeekingState != EPeekingState::None;
 		mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
@@ -58,36 +59,5 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
-	}
-	
-	if (mIsCover && !mIsPeeking && !mIsCoverShooting && mIsAiming || mIsFire) {
-		mSpinRotater = FRotator(0.0, 180.0, 0.0);
-	}
-	else if (mWeapon && mIsReload && !mIsPeeking) {
-		mSpinRotater = FRotator(0.0, 90.0 * (mIsFaceRight ? 1.0 : 3.0), 0.0);
-	}
-	else {
-		mSpinRotater = FRotator(0.0, 0.0, 0.0);
-	}
-
-
-	SetHandleing(DeltaSeconds);
-}
-
-void UCoverAnimInstance::SetHandleing(float DeltaTime)
-{
-	if (mWeaponMesh == nullptr) return;
-	//if (mIsAiming == true) return;
-	if (mIsCover == false || mIsFaceRight) {
-		mWeaponMesh->AttachToComponent(
-			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mRightHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(0, 0, 0));
-		mWeaponMesh->SetRelativeLocation(FVector(6, 0, 0));
-	}
-	else {
-		mWeaponMesh->AttachToComponent(
-			dynamic_cast<ACharacter*>(TryGetPawnOwner())->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, mLeftHandName);
-		mWeaponMesh->SetRelativeRotation(FRotator(0, 180, 180));
-		mWeaponMesh->SetRelativeLocation(FVector(-6, 0, 0));
 	}
 }

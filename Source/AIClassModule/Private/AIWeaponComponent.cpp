@@ -51,7 +51,10 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ShotAITimer(DeltaTime);
+	/*if (shot_State)
+	{
+		ShotAITimer(DeltaTime);
+	}*/
 	// ...
 }
 
@@ -92,11 +95,14 @@ void UAIWeaponComponent::ShotAI()
 			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : bbb")));
 			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Name : %s"), *hit.GetComponent()->GetName()));
 
+			float deviation = FMath::RandRange((*curAIShotData).Shot_Deviation, -(*curAIShotData).Shot_Deviation);
 			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 			if (temp) {
 				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
-				temp->Attacked(((shot_MaxDmg - shot_MinDmg) / 100)* (shot_MaxRange - shot_MinRange));
-			}	
+				temp->Attacked(shot_MaxDmg - (shot_MaxDmg - shot_MinDmg) * 
+					((owner->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) - shot_MinRange) / (shot_MaxRange - shot_MinRange)) 
+					+ deviation);
+			}
 		}
 	}
 
@@ -128,16 +134,9 @@ void UAIWeaponComponent::ShotAI()
 	//name = "AttackLocation";
 }
 
-void UAIWeaponComponent::ShotAITimer(float p_Time)
+void UAIWeaponComponent::ShotAITimer(float t)
 {
-	// 사격 상태가 아니라면 취소
-	if (!shot_State)
-	{
-		return;
-	}
-
-
-	cur_Shot_Delay += p_Time;
+	cur_Shot_Delay += t;
 	if (cur_Shot_Delay >= shot_Delay)
 	{
 		ShotAI();
@@ -207,6 +206,9 @@ void UAIWeaponComponent::AITypeSetting()
 
 	// 현재 반동은 최대로 시작
 	recoil_Radius = recoilMax_Radius;
+
+	// 첫 총알은 최대로
+	cur_Shot_Count = shot_MaxCount;
 }
 
 bool UAIWeaponComponent::AITypeSniperCheck()

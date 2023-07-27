@@ -36,6 +36,8 @@ public:
 		TArray<AActor*> AIArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* en;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAISpawner* spawn;
 	
 
 public:

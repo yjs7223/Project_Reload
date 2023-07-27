@@ -16,6 +16,9 @@ public:
 	// Sets default values for this actor's properties
 	AAISpawner();
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class UBlackboardComponent* BlackboardComponent;
 	// 현재 웨이브
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int curWave;
@@ -52,12 +55,10 @@ public:
 	// 딜레이용
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		float spawn_Timer;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class AActor* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICharacter* ACharacter;
+		class AAICommander* commander;
 
 	// 이번 웨이브 소환 여부
 	bool spawnCheck;
@@ -73,8 +74,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AActor> lastPoint;
 
-	float pointTime;
-	bool pointSpawnCheck;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		float pointTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		bool pointSpawnCheck;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -101,5 +105,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 		void SpawnLastPoint(float DeltaTime);
 
-	void SetNullSightOut();
+	void SetDataTable();
 };
