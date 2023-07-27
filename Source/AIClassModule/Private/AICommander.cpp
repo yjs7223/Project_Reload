@@ -153,7 +153,7 @@ void AAICommander::ListSet()
 						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
 						
-						if (m_suben->AIArray.IsEmpty())
+						if (List_Division.Num() <= 0)
 						{
 							ListReset(m_suben);
 						}
@@ -173,6 +173,7 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_Location.Reset();
 	List_Suppression.Reset();
 	List_CoverPoint.Reset();
+	Sup_Array.Reset();
 	sub->en->LevelArray.Remove(this);
 	sub->LevelActive = false;
 	AddIndex = 0;
