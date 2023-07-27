@@ -132,26 +132,20 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 	if (owner->GetActorForwardVector().Dot(vector.GetSafeNormal2D()) < -0.9) {
 		StopCover();
 	}
-
-	m_FaceRight = owner->GetActorRightVector().Dot(vector) > 0 ? 1 : -1;
+	SetIsFaceRight(owner->GetActorRightVector().Dot(vector) > 0);
 	FHitResult result;
 	CheckCoverCollision(result);
 	if (result.bBlockingHit) {
-		vector = m_FaceRight * owner->GetActorRightVector();
+		vector = FaceRight() *owner->GetActorRightVector();
 	}
 	else {
 		vector = FVector::ZeroVector;
 		m_IsTurnWait = true;
 	}
-
-	
-	
 }
 
 bool UCoverComponent::StartAICover()
 {
-	
-
 	if (!owner)
 	{
 		owner = Cast<ACharacter>(GetOwner());
@@ -171,7 +165,7 @@ bool UCoverComponent::StartAICover()
 		{ UEngineTypes::ConvertToObjectType(coverWallType) },
 		AActor::StaticClass(),
 		{},
-		OutActors))
+		OutActors))   
 	{
 		for (auto& item : OutActors)
 		{
@@ -214,23 +208,38 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 	if (!m_IsCover) return;
 	if (isPeeking()) {
-		if (m_FaceRight < 0) aimOffset.Yaw *= -1.0f;
+		if (!IsFaceRight()) aimOffset.Yaw *= -1.0f;
 		return;
 	}
-
 	if (aimOffset.Yaw > 0) {
+		if (m_Inputdata->IsAiming || m_Inputdata->IsReload || (m_Inputdata->IsFire && aimOffset.Yaw > 45)) {
+			aimOffset.Yaw -= 180;
+			SetIsFaceRight(true);
+
+		}
+	}
+	else {
+		if (m_Inputdata->IsAiming || m_Inputdata->IsReload || (m_Inputdata->IsFire && aimOffset.Yaw < -45)) {
+			aimOffset.Yaw += 180;
+			aimOffset.Yaw *= -1.0f;
+			SetIsFaceRight(false);
+		}
+	}
+
+	/*if (aimOffset.Yaw > 0) {
 		if (m_Inputdata->IsAiming || (m_Inputdata->IsFire && aimOffset.Yaw > 45)) {
 			aimOffset.Yaw -= 180;
-			m_FaceRight = 1.0f;
+			SetIsFaceRight(true);
+
 		}
 	}
 	else {
 		if (m_Inputdata->IsAiming || (m_Inputdata->IsFire && aimOffset.Yaw < -45)) {
 			aimOffset.Yaw += 180;
 			aimOffset.Yaw *= -1.0f;
-			m_FaceRight = -1.0f;
+			SetIsFaceRight(false);
 		}
-	}
+	}*/
 }
 
 void UCoverComponent::RotateSet(float DeltaTime)
@@ -260,7 +269,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	if (!result.bBlockingHit) return;
 
 	//벽이있다면 이동방향 체크
-	start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
+	start = owner->GetActorLocation() + FaceRight() * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
 	end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
 
@@ -447,6 +456,46 @@ float UCoverComponent::FaceRight()
 	return m_IsCover ? m_FaceRight : true;
 }
 
+bool UCoverComponent::IsFaceRight()
+{
+	return FaceRight() > 0.0f;
+}
+
+void UCoverComponent::SetIsFaceRight(bool faceRight)
+{
+	if (IsFaceRight() != faceRight) {
+		faceRight ? m_FaceRight = 1.0f : m_FaceRight = -1.0f;
+
+		UWeaponComponent* mWeapon = owner->FindComponentByClass<UWeaponComponent>();
+		USkeletalMeshComponent* WeaponMesh;
+		if (mWeapon) {
+			WeaponMesh = mWeapon->WeaponMesh;
+		}
+		else {
+			return;
+		}
+		FName handSocketName;
+		FRotator meshRotate;
+		FVector meshLocation;
+
+		if (m_FaceRight >= 0.0f) {
+			handSocketName = TEXT("hand_r_Socket");
+			meshRotate = FRotator(0.0, 0.0, 0.0);
+			meshLocation = WeaponMesh->GetRelativeLocation() * FVector(-1.0f, 1.0f, -1.0f);
+		}
+		else {
+			handSocketName = TEXT("hand_l_Socket");
+			meshRotate = FRotator(0.0, 180.0, 180.0);
+			meshLocation = WeaponMesh->GetRelativeLocation() * FVector(-1.0f, 1.0f, -1.0f);
+		}
+
+
+		WeaponMesh->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, handSocketName);
+		WeaponMesh->SetRelativeRotation(meshRotate);
+		WeaponMesh->SetRelativeLocation(meshLocation);
+	}
+}
+
 bool UCoverComponent::IsCornering()
 {
 	return m_IsCornering;
@@ -467,7 +516,7 @@ void UCoverComponent::CalculateCoverShoot()
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
 	if (!m_Inputdata->IsFire || FMath::Abs(aimoffset.Yaw) > 45.0f) return;
-	if (m_FaceRight < 0) {
+	if (!IsFaceRight()) {
 		aimoffset.Yaw *= -1.0f;
 	}
 	if (owner->GetControlRotation().Vector().Dot(forwardVector.GetSafeNormal()) < 0) return;
@@ -566,6 +615,7 @@ bool UCoverComponent::StartCover()
 	//owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
+	SetIsFaceRight(true);
 
 	return true;
 }
@@ -576,13 +626,14 @@ void UCoverComponent::StopCover()
 	m_Inputdata->IsRuning = false;
 	m_CoverWall = nullptr;
 	m_IsCover = false;
-	m_FaceRight = true;
+	SetIsFaceRight(true);
+
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 }
 
 void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
 {
-	FVector start = owner->GetActorLocation() + m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
+	FVector start = owner->GetActorLocation() + FaceRight() * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
 	FVector end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 3.0f);
 	FCollisionQueryParams params(NAME_None, true, owner);
 
@@ -597,7 +648,7 @@ void UCoverComponent::PlayCornering()
 
 	FHitResult result2;
 	FVector start = result1.TraceEnd;
-	FVector end = start + -m_FaceRight * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
+	FVector end = start + - FaceRight() * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
 	FCollisionQueryParams params(NAME_None, true, owner);
 
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
@@ -617,7 +668,7 @@ void UCoverComponent::PlayCornering()
 	m_IsCornering = true;
 	m_Turnlookpoint = end;
 
-	owner->GetMovementComponent()->AddInputVector( -m_FaceRight * owner->GetActorRightVector());
+	owner->GetMovementComponent()->AddInputVector( - FaceRight() * owner->GetActorRightVector());
 }
 
 
@@ -691,7 +742,7 @@ void UCoverComponent::StartPeeking()
 	FCollisionQueryParams param(NAME_None, true, GetOwner());
 	mPeekingState = EPeekingState::None;
 
-	if (m_FaceRight > 0) {
+	if (IsFaceRight()) {
 		start = temppos;
 		end = start + RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
