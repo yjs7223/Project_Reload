@@ -105,11 +105,11 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 
 	MoveDirect.Z = 0;
 	MoveDirect.Normalize();
-
+	MoveDirect *= m_Movement->GetMaxSpeed() * 0.5f;
 	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
 	if (m_Inputdata->IsRuning) {
-		MoveDirect *= m_Movement->GetMaxSpeed();
+		MoveDirect *= 2.0f;
 		targetRotate = MoveDirect.Rotation();
 
 	}
@@ -125,7 +125,8 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	}
 
 	//owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
-	owner->AddMovementInput(mMoveDirect, 0.5f);
+	//owner->AddMovementInput(mMoveDirect, 0.5f);
+	owner->GetCharacterMovement()->Velocity = mMoveDirect;
 
 	
 
