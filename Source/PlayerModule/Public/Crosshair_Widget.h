@@ -60,9 +60,6 @@ public:
 		class UImage* Hit_image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* HeadHit_image;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Cross_Ammo_Image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

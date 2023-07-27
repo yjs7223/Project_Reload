@@ -15,20 +15,13 @@ AAISpawner::AAISpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 데이터 테이블 삽입
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/SGJ/DT_Spawner.DT_Spawner'"));
-	if (DataTable.Succeeded())
-	{
-		spawnData = DataTable.Object;
-	}
-
 }
 
 // Called when the game starts or when spawned
 void AAISpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(curWave), TEXT(""));
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
@@ -91,7 +84,7 @@ void AAISpawner::SpawnWave()
 
 void AAISpawner::WaveControl(float DeltaTime)
 {
-	if (check_Overlap && !spawnCheck)
+	/*if (check_Overlap && !spawnCheck)
 	{
 		spawn_Timer += DeltaTime;
 		if (spawn_Timer >= (*curSpawnData).spawn_Delay)
@@ -99,7 +92,7 @@ void AAISpawner::WaveControl(float DeltaTime)
 			SpawnWave();
 			spawn_Timer = 0;
 		}
-	}
+	}*/
 
 	// 마지막 웨이브인지 확인
 	if (spawnCheck)
