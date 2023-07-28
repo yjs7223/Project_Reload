@@ -30,7 +30,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 	if (player && player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
 	{
 		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
-		//commander->DetourCoverPoint();
+		commander->DetourCoverPoint();
 		for (auto ai : commander->List_Division)
 		{
 			Cast<AAICharacter>(ai.Key)->Detour = false;
