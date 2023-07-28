@@ -198,5 +198,17 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
 		pointTime = 0;
 		pointSpawnCheck = false;
+		if (commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target") != nullptr)
+		{
+			if (commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target") != GetWorld()->GetFirstPlayerController()->GetPawn())
+			{
+				if (AActor* ac = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target")))
+				{
+					GetWorld()->DestroyActor(ac);
+					commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", GetWorld()->GetFirstPlayerController()->GetPawn());
+				}
+			}
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("PlayerPoint!"));
 	}
 }
