@@ -12,6 +12,7 @@
 #include "EngineGlobals.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "SubEncounterSpace.h"
 
 // Sets default values
 AAISpawner::AAISpawner()
@@ -42,9 +43,9 @@ void AAISpawner::Tick(float DeltaTime)
 
 	if (commander != nullptr)
 	{
-		if (player && check_Overlap)
+		if (check_Overlap)
 		{
-			//SpawnLastPoint(DeltaTime);
+			SpawnLastPoint(DeltaTime);
 		}
 	}
 }
@@ -181,8 +182,6 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 {
 	if (commander->GetBlackboardComponent())
 	{
-
-
 		if (commander->Cmd_SightOut)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Point!"));
@@ -195,26 +194,35 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 					SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 					// Spawn
-					AActor* temp = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
+					cpyLastPoint = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 					pointSpawnCheck = true;
 					pointTime = 0;
 
-
-					commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", temp);
+					for (auto& ai : suben->AIArray)
+					{
+						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+						if (AIController != nullptr)
+						{
+							AIController->GetBlackboardComponent()->SetValueAsObject("Target", cpyLastPoint);
+						}
+						else
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+						}
+					}
 				}
 			}
 		}
 		else if (!commander->Cmd_SightOut)
 		{
-
 			pointTime = 0;
 			pointSpawnCheck = false;
-			if (commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target") != Cast<UObject>(player))
+			if (cpyLastPoint != nullptr)
 			{
-				GetWorld()->DestroyActor(Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target")));
+				GetWorld()->DestroyActor(cpyLastPoint);
+				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", player);
 			}
-			commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", Cast<UObject>(player));
 
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
 

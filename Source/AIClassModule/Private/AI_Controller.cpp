@@ -19,6 +19,8 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Math/Vector.h"
+#include "SubEncounterSpace.h"
+#include "AISpawner.h"
 
 
 AAI_Controller::AAI_Controller()
@@ -91,17 +93,6 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 			}
 			Blackboard->SetValueAsObject("Target", player);
 		}
-		if (actor->ActorHasTag("Last"))
-		{
-			if (commander->GetBlackboardComponent())
-			{
-				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
-				AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
-				GetWorld()->DestroyActor(temp);
-			}
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-		}
-
 	}
 	else {
 		bIsPlayerDetected = false;

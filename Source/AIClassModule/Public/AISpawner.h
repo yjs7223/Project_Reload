@@ -79,8 +79,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		bool pointSpawnCheck;
 
-	ACharacter* player;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		ACharacter* player;
 
+	// LastPoint
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		AActor* cpyLastPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class ASubEncounterSpace* suben;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

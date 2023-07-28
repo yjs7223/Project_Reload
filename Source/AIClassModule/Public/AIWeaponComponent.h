@@ -105,7 +105,8 @@ public :
 	// 현재 데이터 테이블
 	struct FST_AIShot* curAIShotData;
 
-
+	class AAICommander* commander;
+	FHitResult result;
 protected:
 	virtual void BeginPlay() override;
 
@@ -136,4 +137,6 @@ public:
 	// AI Sniper Check
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		bool AITypeSniperCheck();
+
+	void CheckTrace();
 };
