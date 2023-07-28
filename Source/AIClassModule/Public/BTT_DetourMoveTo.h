@@ -16,6 +16,5 @@ class AICLASSMODULE_API UBTT_DetourMoveTo : public UBTTaskNode
 
 public:
 	UBTT_DetourMoveTo();
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 };
