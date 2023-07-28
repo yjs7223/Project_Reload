@@ -14,6 +14,7 @@
 #include "AICommander.h"
 #include "SubEncounterSpace.h"
 #include "AISpawner.h"
+#include "HitImapactDataAsset.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -110,6 +111,8 @@ void UAIWeaponComponent::ShotAI()
 					+ deviation);
 			}
 		}
+
+		AISpawnImpactEffect(m_result);
 	}
 
 	// 점점 반동이 줄어듦
@@ -244,4 +247,60 @@ void UAIWeaponComponent::CheckTrace()
 			GetWorld()->DestroyActor(result.GetActor());
 		}
 	}
+}
+
+void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
+{
+	if (HitImpactDataAsset)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("SpawnImpact"));
+		if (result.GetActor()->ActorHasTag("Enemy"))
+		{
+			if (result.GetActor()->ActorHasTag("Robot"))
+			{
+				hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Human"))
+			{
+				hitFXNiagara = HitImpactDataAsset->HumanHitFXNiagara;
+			}
+			else
+			{
+				hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+			}
+		}
+		else
+		{
+			if (result.GetActor()->ActorHasTag("Metal"))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Metal"));
+				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Rock"))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Rock"));
+				hitFXNiagara = HitImpactDataAsset->RockHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Mud"))
+			{
+				hitFXNiagara = HitImpactDataAsset->MudHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Glass"))
+			{
+				hitFXNiagara = HitImpactDataAsset->GlassHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Water"))
+			{
+				hitFXNiagara = HitImpactDataAsset->WaterHitFXNiagara;
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
+				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
+			}
+
+		}
+	}
+
+	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, result.Location);
 }

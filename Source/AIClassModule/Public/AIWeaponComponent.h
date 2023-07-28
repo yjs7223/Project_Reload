@@ -107,6 +107,15 @@ public :
 
 	class AAICommander* commander;
 	FHitResult result;
+
+	// 총알 박히는 이펙트
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraComponent* hitFXComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraSystem* hitFXNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UHitImapactDataAsset* HitImpactDataAsset;
 protected:
 	virtual void BeginPlay() override;
 
@@ -139,4 +148,5 @@ public:
 		bool AITypeSniperCheck();
 
 	void CheckTrace();
+	void AISpawnImpactEffect(FHitResult p_result);
 };
