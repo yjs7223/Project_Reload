@@ -11,6 +11,7 @@
 #include "Engine/Engine.h"
 #include "ST_Suppression.h"
 #include "ST_Commander.h"
+#include "Components/CapsuleComponent.h"
 #include "AICharacterMoveComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "UObject/ConstructorHelpers.h"
@@ -23,9 +24,10 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
+#include "CoverComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
-
+#include "Kismet/KismetMathLibrary.h"
 
 
 
@@ -44,20 +46,20 @@ AAICommander::AAICommander()
 	Cmd_SightOut = false;
 	//Patrol_CHK = false;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Suppression.DT_Suppression'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
 	if (DT_SuppressionDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_CommanderDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Commander.DT_Commander'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_CommanderDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Commander.DT_Commander'"));
 	if (DT_CommanderDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Commander = DT_CommanderDataObject.Object;
 	}
 	//BT
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/JHB/BT_AICommander.BT_AICommander'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/Commander/BT/BT_AICommander.BT_AICommander'"));
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
@@ -65,21 +67,16 @@ AAICommander::AAICommander()
 	}
 	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_AICommanderObject(TEXT("BlackBoard'/Game/JHB/BB_Commander.BB_Commander'"));
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_AICommanderObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/Commander/BB/BB_Commander.BB_Commander'"));
 	if (BB_AICommanderObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AICommander Blackboard Succeed!"));
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
 	
-	/*static ConstructorHelpers::FObjectFinder<AAIController> BaseAI_Ctr_Object(TEXT("AIController'/Game/JHB/BaseAI_Ctr.BaseAI_Ctr'"));
-	if (BaseAI_Ctr_Object.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		BaseAI_Ctr = BaseAI_Ctr_Object.Object;
-	}*/
-	
 	SetDataTable("Rifle_E");
+	SetCommanderDataTable("Commander");
+	
 }
 
 // Called when the game starts or when spawned
@@ -104,6 +101,11 @@ void AAICommander::SetDataTable(FName EnemyName)
 		sup_sharerange = SuppressionData->Sup_ShareRange;
 		sup_sharetime = SuppressionData->Sup_ShareTime;
 	}
+	
+}
+
+void AAICommander::SetCommanderDataTable(FName EnemyName)
+{
 	FST_Commander* CommanderData = DT_Commander->FindRow<FST_Commander>(EnemyName, FString(""));
 	if (CommanderData)
 	{
@@ -152,8 +154,7 @@ void AAICommander::ListSet()
 						TargetTickSet(m_suben);
 						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
-						
-						if (m_suben->AIArray.IsEmpty())
+						if (List_Division.Num() <= 0)
 						{
 							ListReset(m_suben);
 						}
@@ -173,6 +174,7 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_Location.Reset();
 	List_Suppression.Reset();
 	List_CoverPoint.Reset();
+	Sup_Array.Reset();
 	sub->en->LevelArray.Remove(this);
 	sub->LevelActive = false;
 	AddIndex = 0;
@@ -493,7 +495,9 @@ void AAICommander::CoverPointEnemy()
 
 void AAICommander::SiegeCoverPoint()
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SiegeCoverPoint");
 	SiegeCoverArray.Reset();
+
 	if (!CoverArray.IsEmpty())
 	{
 		if (!CoverSubEnArray.IsEmpty())
@@ -502,7 +506,7 @@ void AAICommander::SiegeCoverPoint()
 			{
 				for (auto enemy_cover : CoverEnemyArray)
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 360, player->GetActorForwardVector()))
+					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 360, player->GetMesh()->GetForwardVector()))
 					{
 						SiegeCoverArray.Add(enemy_cover);
 					}
@@ -514,20 +518,25 @@ void AAICommander::SiegeCoverPoint()
 
 void AAICommander::DetourCoverPoint()
 {
-	DetourCoverArray.Reset();
-	if (!CoverArray.IsEmpty())
+	if (player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
 	{
-		if (!CoverSubEnArray.IsEmpty())
+		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
+		DetourCoverArray.Reset();
+		if (!CoverArray.IsEmpty())
 		{
-			if (!CoverEnemyArray.IsEmpty())
+			if (!CoverSubEnArray.IsEmpty())
 			{
-				for (auto enemy_cover : CoverEnemyArray)
+				if (!CoverEnemyArray.IsEmpty())
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, player->GetActorForwardVector()))
+					for (auto enemy_cover : CoverEnemyArray)
 					{
-						if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, player->GetActorForwardVector()))
+						if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, cover_rot))
 						{
-							DetourCoverArray.Add(enemy_cover);
+							if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, cover_rot))
+							{
+								DetourCoverArray.Add(enemy_cover);
+							}
 						}
 					}
 				}

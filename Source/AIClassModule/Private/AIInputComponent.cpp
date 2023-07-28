@@ -36,6 +36,10 @@ void UAIInputComponent::AIStopRuning()
 
 void UAIInputComponent::AICrouching()
 {
+	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+
+	cover->m_IsCover = true;
+
 	if (owner->CanCrouch()) {
 		owner->Crouch();
 	}
@@ -43,6 +47,9 @@ void UAIInputComponent::AICrouching()
 
 void UAIInputComponent::AIStopCrouching()
 {
+	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+
+	cover->m_IsCover = false;
 	owner->UnCrouch();
 
 }

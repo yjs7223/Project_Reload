@@ -667,9 +667,9 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 void UPlayerWeaponComponent::PlayRandomShotSound()
 {
 	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
+	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
 
-	UAISense_Hearing::ReportNoiseEvent(ShotSounds[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")), 1.0f, nullptr, 0.0f, FName(TEXT("Shooting")));
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetOwner()->GetActorLocation(), 1.0f, GetOwner(), 0.0f, FName(TEXT("Shooting")));
 }
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)

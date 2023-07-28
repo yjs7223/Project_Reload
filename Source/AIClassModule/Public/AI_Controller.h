@@ -44,7 +44,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		float DistanceToPlayer = 0.0f;
+		float DistanceToPlayer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class ACharacter* player; //cast
 
@@ -52,7 +52,7 @@ public:
 	UFUNCTION()//BlueprintCallable
 		void SetEnemy(FName EnemyName);
 	UFUNCTION()
-		void OnTargetDetected(AActor* actor, FAIStimulus const Stimulus);
+		void OnTargetDetected(AActor* actor, FAIStimulus Stimulus);
 	UFUNCTION()
 		void SetUseCover();
 
