@@ -155,6 +155,8 @@ public:
 	UFUNCTION()
 		void SetDataTable(FName EnemyName);
 	UFUNCTION()
+		void SetCommanderDataTable(FName EnemyName);
+	UFUNCTION()
 		void TargetTickSet(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void CoverPointSubEn(ASubEncounterSpace* sub);
