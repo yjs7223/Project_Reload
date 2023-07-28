@@ -19,7 +19,7 @@
 UAIWeaponComponent::UAIWeaponComponent()
 {
 	// 데이터 테이블 삽입
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Aws/AI_Stat/DT_AIShot.DT_AIShot'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
 	if (DataTable.Succeeded())
 	{
 		AIShotData = DataTable.Object;
