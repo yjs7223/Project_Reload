@@ -19,6 +19,8 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Math/Vector.h"
+#include "SubEncounterSpace.h"
+#include "AISpawner.h"
 
 
 AAI_Controller::AAI_Controller()
@@ -63,7 +65,7 @@ void AAI_Controller::BeginPlay()
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
+	DistanceToPlayer = 0.0f;
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	if (UseBlackboard(BBAsset, BlackboardComp))
 	{
@@ -94,16 +96,6 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 					}
 				}
 				Blackboard->SetValueAsObject("Target", player);
-			}
-			if (actor->ActorHasTag("Last"))
-			{
-				if (commander->GetBlackboardComponent())
-				{
-					commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
-					AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
-					GetWorld()->DestroyActor(temp);
-				}
-				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
 			}
 
 		}
@@ -138,14 +130,18 @@ void AAI_Controller::SetUseCover()
 			{
 				for (auto loc : commander->CoverEnemyArray)
 				{
-					if (FVector::Distance(loc, GetPawn()->GetActorLocation()) <= 50)
+					FVector a = GetPawn()->GetActorLocation();
+					float b = FVector::Distance(loc, a);
+
+					if (FVector::Distance(loc, a) <= 100)
 					{
 						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
-						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+						return;
 					}
 					else
 					{
-						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 					}
 				}
 			}
@@ -170,7 +166,10 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}
-
+	if (!Blackboard->GetValueAsObject("Target"))
+	{
+		DistanceToPlayer = 0.0f;
+	}
 	Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 
 	SetUseCover();

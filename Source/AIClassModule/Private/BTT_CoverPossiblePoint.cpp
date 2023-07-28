@@ -106,6 +106,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						{
 							AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", mindislocation);
 							commander->List_CoverPoint.Add(enemy.Value, mindislocation);
+							AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
 						}
 						else if (same)
 						{
@@ -143,13 +144,15 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 										AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
 										return EBTNodeResult::Succeeded;
 									}
+									
 									AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", commander->CoverEnemyArray[i]);
 									commander->List_CoverPoint.Add(enemy.Value, commander->CoverEnemyArray[i]);
+									AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
 								}
 							}
 						}
-
-						AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
+						FVector test  =   AIController->GetBlackboardComponent()->GetValueAsVector("AI_CoverLocation");
+						
 					}
 				}
 			}
