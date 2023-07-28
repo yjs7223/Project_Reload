@@ -52,7 +52,7 @@ public:
 	UFUNCTION()//BlueprintCallable
 		void SetEnemy(FName EnemyName);
 	UFUNCTION()
-		void OnTargetDetected(AActor* actor, FAIStimulus const Stimulus);
+		void OnTargetDetected(AActor* actor, FAIStimulus Stimulus);
 	UFUNCTION()
 		void SetUseCover();
 
