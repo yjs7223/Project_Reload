@@ -72,40 +72,61 @@ void AAI_Controller::BeginPlay()
 	}
 
 }
-void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
+void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
-	if (player)
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
+	switch (Stimulus.Type)
 	{
-		DistanceToPlayer = GetPawn()->GetDistanceTo(player);
-		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-		if (actor->ActorHasTag("Player"))
+	case 0:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
+		if (player)
 		{
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-			if (Blackboard->GetValueAsObject("Target") != nullptr)
+			DistanceToPlayer = GetPawn()->GetDistanceTo(player);
+			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+			if (actor->ActorHasTag("Player"))
 			{
-				if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+				if (Blackboard->GetValueAsObject("Target") != nullptr)
 				{
-					GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+					if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+					{
+						GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+					}
 				}
+				Blackboard->SetValueAsObject("Target", player);
 			}
+			if (actor->ActorHasTag("Last"))
+			{
+				if (commander->GetBlackboardComponent())
+				{
+					commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
+					AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
+					GetWorld()->DestroyActor(temp);
+				}
+				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+			}
+
+		}
+		else {
+			bIsPlayerDetected = false;
+		}
+		break;
+		// react to sight stimulus
+	case 1:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		if (Blackboard->GetValueAsBool("AI_Active"))
+		{
 			Blackboard->SetValueAsObject("Target", player);
 		}
-		if (actor->ActorHasTag("Last"))
-		{
-			if (commander->GetBlackboardComponent())
-			{
-				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
-				AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
-				GetWorld()->DestroyActor(temp);
-			}
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-		}
-
+		
+		break;
+		// react to hearing;
+	default:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		return;
 	}
-	else {
-		bIsPlayerDetected = false;
-	}
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
+	
 }
 void AAI_Controller::SetUseCover()
 {
@@ -179,16 +200,17 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		HearingConfig->HearingRange = 10000.0f;
+		HearingConfig->HearingRange = 5000.0f;
 		HearingConfig->SetMaxAge(RangeData->Sight_Age);
 		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
+		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
 		GetPerceptionComponent()->ConfigureSense(*HearingConfig);	
-		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
-		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
+		GetPerceptionComponent()->SetDominantSense(UAISenseConfig_Sight::StaticClass());
+		
 		
 	}
 }
