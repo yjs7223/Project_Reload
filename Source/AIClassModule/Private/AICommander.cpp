@@ -11,6 +11,7 @@
 #include "Engine/Engine.h"
 #include "ST_Suppression.h"
 #include "ST_Commander.h"
+#include "Components/CapsuleComponent.h"
 #include "AICharacterMoveComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "UObject/ConstructorHelpers.h"
@@ -23,9 +24,10 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
+#include "CoverComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
-
+#include "Kismet/KismetMathLibrary.h"
 
 
 
@@ -80,6 +82,8 @@ AAICommander::AAICommander()
 	}*/
 	
 	SetDataTable("Rifle_E");
+	SetCommanderDataTable("Commander");
+	
 }
 
 // Called when the game starts or when spawned
@@ -104,6 +108,11 @@ void AAICommander::SetDataTable(FName EnemyName)
 		sup_sharerange = SuppressionData->Sup_ShareRange;
 		sup_sharetime = SuppressionData->Sup_ShareTime;
 	}
+	
+}
+
+void AAICommander::SetCommanderDataTable(FName EnemyName)
+{
 	FST_Commander* CommanderData = DT_Commander->FindRow<FST_Commander>(EnemyName, FString(""));
 	if (CommanderData)
 	{
@@ -152,7 +161,6 @@ void AAICommander::ListSet()
 						TargetTickSet(m_suben);
 						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
-						
 						if (List_Division.Num() <= 0)
 						{
 							ListReset(m_suben);
@@ -494,7 +502,9 @@ void AAICommander::CoverPointEnemy()
 
 void AAICommander::SiegeCoverPoint()
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SiegeCoverPoint");
 	SiegeCoverArray.Reset();
+
 	if (!CoverArray.IsEmpty())
 	{
 		if (!CoverSubEnArray.IsEmpty())
@@ -503,7 +513,7 @@ void AAICommander::SiegeCoverPoint()
 			{
 				for (auto enemy_cover : CoverEnemyArray)
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 360, player->GetActorForwardVector()))
+					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 360, player->GetMesh()->GetForwardVector()))
 					{
 						SiegeCoverArray.Add(enemy_cover);
 					}
@@ -515,20 +525,25 @@ void AAICommander::SiegeCoverPoint()
 
 void AAICommander::DetourCoverPoint()
 {
-	DetourCoverArray.Reset();
-	if (!CoverArray.IsEmpty())
+	if (player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
 	{
-		if (!CoverSubEnArray.IsEmpty())
+		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
+		DetourCoverArray.Reset();
+		if (!CoverArray.IsEmpty())
 		{
-			if (!CoverEnemyArray.IsEmpty())
+			if (!CoverSubEnArray.IsEmpty())
 			{
-				for (auto enemy_cover : CoverEnemyArray)
+				if (!CoverEnemyArray.IsEmpty())
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, player->GetActorForwardVector()))
+					for (auto enemy_cover : CoverEnemyArray)
 					{
-						if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, player->GetActorForwardVector()))
+						if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, cover_rot))
 						{
-							DetourCoverArray.Add(enemy_cover);
+							if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, cover_rot))
+							{
+								DetourCoverArray.Add(enemy_cover);
+							}
 						}
 					}
 				}

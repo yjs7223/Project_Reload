@@ -57,7 +57,7 @@ public:
 	FVector GetPointNormal();
 	void StartPeeking();
 	void StopPeeking();
-
+	AActor* GetCoverWall();
 	UFUNCTION(BlueprintCallable)
 	void StopCover();
 
