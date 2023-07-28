@@ -161,8 +161,6 @@ void AAICommander::ListSet()
 						TargetTickSet(m_suben);
 						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
-						SiegeCoverPoint();
-						DetourCoverPoint();
 						if (List_Division.Num() <= 0)
 						{
 							ListReset(m_suben);
