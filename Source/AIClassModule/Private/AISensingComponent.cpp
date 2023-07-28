@@ -15,7 +15,7 @@ UAISensingComponent::UAISensingComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ������ ���̺� ����
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
 	if (DataTable.Succeeded())
 	{
 		AIRangeData = DataTable.Object;

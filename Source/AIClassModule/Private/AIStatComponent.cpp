@@ -17,13 +17,13 @@
 
 UAIStatComponent::UAIStatComponent()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Suppression.DT_Suppression'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
 	if (DT_SuppressionDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ShotDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_AIShot.DT_AIShot'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ShotDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
 	if (DT_ShotDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
