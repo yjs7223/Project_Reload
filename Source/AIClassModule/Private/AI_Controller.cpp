@@ -108,7 +108,13 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
 		if (Blackboard->GetValueAsBool("AI_Active"))
 		{
-			Blackboard->SetValueAsObject("Target", player);
+			if (Stimulus.Tag.IsValid())
+			{
+				if (Stimulus.Tag == "Shooting")
+				{
+					Blackboard->SetValueAsObject("Target", player);
+				}
+			}
 		}
 		
 		break;

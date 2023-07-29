@@ -521,7 +521,7 @@ void AAICommander::DetourCoverPoint()
 	if (player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
 	{
 		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
 		DetourCoverArray.Reset();
 		if (!CoverArray.IsEmpty())
 		{
