@@ -102,6 +102,51 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 			aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		}
 	}
+	else if (Move_Attack)
+	{
+		if (Move_Hit)
+		{
+			if (Time >= 1.0)
+			{
+				Move_Hit = false;
+			}
+			timeDeltaTime += DeltaTime;
+			if (timeDeltaTime >= m_ParallelTime)
+			{
+				timeDeltaTime = m_ParallelTime;
+			}
+			lerpDeltaTime = timeDeltaTime * 0.5;
+			Move_Speed = FMath::Lerp(100, m_SpdHit, lerpDeltaTime);
+			aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+		}
+		else
+		{
+			timeDeltaTime += DeltaTime;
+			if (timeDeltaTime >= m_ParallelTime)
+			{
+				timeDeltaTime = m_ParallelTime;
+			}
+			lerpDeltaTime = timeDeltaTime * 0.5;
+			Move_Speed = FMath::Lerp(100, m_SpdAttack, lerpDeltaTime);
+			aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+		}
+
+	}
+	else if (Move_Hit)
+	{
+		if (Time >= 1.0)
+		{
+			Move_Hit = false;
+		}
+		timeDeltaTime += DeltaTime;
+		if (timeDeltaTime >= m_ParallelTime)
+		{
+			timeDeltaTime = m_ParallelTime;
+		}
+		lerpDeltaTime = timeDeltaTime * 0.5;
+		Move_Speed = FMath::Lerp(100, m_SpdHit, lerpDeltaTime);
+		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+	}
 	else
 	{
 		Move_Speed = 100;
@@ -109,6 +154,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		lerpDeltaTime = 0;
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 	}
+
 	
 	// ...
 }
