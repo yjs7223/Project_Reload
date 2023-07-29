@@ -559,6 +559,196 @@ bool AAICommander::IsPlayerInsideFanArea(FVector CoverPoint,float LocationRadius
 	return false;
 }
 
+bool AAICommander::IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVector FanDirection)
+{
+	FVector playerLocation = player->GetActorLocation();
+	FVector locationToPlayer = playerLocation - CoverPoint;
+	float AngleToPlayer = FMath::Acos(FVector::DotProduct(FanDirection, locationToPlayer.GetSafeNormal()));
+
+	if (AngleToPlayer <= FMath::DegreesToRadians(FanAngle) * 0.5f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVector MiddleLocation)
+{
+	FVector move_Loc;
+	FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(AI_Actor->GetActorLocation(), FinalLocation).Vector();
+	float DI_Loc = 1 / 10;
+	float DI_Ang = 1 / 120;
+	float TotalPoint = 0.0f;
+	float MaxPoint = 0.0f;
+	
+	FVector cross_Final = FVector::CrossProduct(Find_rot, FinalLocation);
+	
+	if (MiddleLocation != FVector::ZeroVector)
+	{
+		if (FVector::Distance(MiddleLocation, AI_Actor->GetActorLocation()) >= 100)
+		{
+			return MiddleLocation;
+		}
+		for (auto C_Point : CoverEnemyArray)
+		{
+			if (cross_Final.Z > 0) // Right
+			{
+				if (FVector::CrossProduct(Find_rot, C_Point).Z > 0)
+				{
+					if (MiddleLocation != C_Point)
+					{
+						float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+						float AngPoint = 100 - (100 * (angle * DI_Ang));
+						if (AngPoint < 0)
+						{
+							AngPoint = 0;
+						}
+						float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+						if (DisPoint < 0)
+						{
+							DisPoint = 0;
+						}
+						TotalPoint = AngPoint + DisPoint;
+						if (MaxPoint == 0)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+						else
+						{
+							if (MaxPoint <= TotalPoint)
+							{
+								MaxPoint = TotalPoint;
+								move_Loc = C_Point;
+							}
+						}
+					}
+				}
+			}
+			else if (cross_Final.Z <= 0) //Left
+			{
+				if (FVector::CrossProduct(Find_rot, C_Point).Z <= 0)
+				{
+					if (MiddleLocation != C_Point)
+					{
+						float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+						float AngPoint = 100 - (100 * (angle * DI_Ang));
+						if (AngPoint < 0)
+						{
+							AngPoint = 0;
+						}
+						float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+						if (DisPoint < 0)
+						{
+							DisPoint = 0;
+						}
+						TotalPoint = AngPoint + DisPoint;
+						if (MaxPoint == 0)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+						else
+						{
+							if (MaxPoint <= TotalPoint)
+							{
+								MaxPoint = TotalPoint;
+								move_Loc = C_Point;
+							}
+						}
+					}
+				}
+			}
+			//FVector crossPrdt = FVector::CrossProduct(forwardVect, A);
+		}
+	}
+	else
+	{
+		for (auto C_Point : CoverEnemyArray)
+		{
+			if (cross_Final.Z > 0) // Right
+			{
+				if (FVector::CrossProduct(Find_rot, C_Point).Z > 0)
+				{
+					float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+					float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+					float AngPoint = 100 - (100 * (angle * DI_Ang));
+					if (AngPoint < 0)
+					{
+						AngPoint = 0;
+					}
+					float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+					if (DisPoint < 0)
+					{
+						DisPoint = 0;
+					}
+					TotalPoint = AngPoint + DisPoint;
+					if (MaxPoint == 0)
+					{
+						MaxPoint = TotalPoint;
+						move_Loc = C_Point;
+					}
+					else
+					{
+						if (MaxPoint <= TotalPoint)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+					}
+				}
+			}
+			else if (cross_Final.Z <= 0) // Right
+			{
+				if (FVector::CrossProduct(Find_rot, C_Point).Z <= 0)
+				{
+					float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+					float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+					float AngPoint = 100 - (100 * (angle * DI_Ang));
+					if (AngPoint < 0)
+					{
+						AngPoint = 0;
+					}
+					float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+					if (DisPoint < 0)
+					{
+						DisPoint = 0;
+					}
+					TotalPoint = AngPoint + DisPoint;
+					if (MaxPoint == 0)
+					{
+						MaxPoint = TotalPoint;
+						move_Loc = C_Point;
+					}
+					else
+					{
+						if (MaxPoint <= TotalPoint)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+					}
+				}
+			}
+			//FVector crossPrdt = FVector::CrossProduct(forwardVect, A);
+		}
+	}
+
+	return move_Loc;
+}
+
+bool AAICommander::SameDetourPoint(FVector FinalLocation, FVector MiddleLocation)
+{
+	if (FinalLocation == MiddleLocation)
+	{
+		return true;
+	}
+	return false;
+}
+
 
 
 
