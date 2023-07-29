@@ -5,6 +5,14 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "AICharacterMoveComponent.generated.h"
+UENUM(BlueprintType)
+enum class EMove : uint8
+{
+	Patrol 	UMETA(DisplayName = "Patrol"),
+	Nomal UMETA(DisplayName = "Nomal"),
+	Attack 	UMETA(DisplayName = "Attack"),
+	Hit 	UMETA(DisplayName = "Hit")
+};
 
 
 UCLASS()
@@ -57,5 +65,6 @@ public:
 		float m_SpdHit;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Time;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		EMove e_move;
 };
