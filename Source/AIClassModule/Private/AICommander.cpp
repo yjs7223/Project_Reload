@@ -328,10 +328,7 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 
 						for (auto& ai : sub->AIArray)
 						{
-							UAICharacterMoveComponent* moveoncmp = ai->FindComponentByClass<UAICharacterMoveComponent>();
-							moveoncmp->Move_Normal = false;
-							moveoncmp->Move_Attack = false;
-							moveoncmp->Move_Hit = false;
+
 							if (ai != subAi)
 							{
 								AIController = nullptr;
