@@ -80,14 +80,12 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 								if (*commander->List_CoverPoint.Find(enemy.Value) == coverenemy)
 								{
 									coverpossible = true;
+									AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", *commander->List_CoverPoint.Find(enemy.Value));
+									AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
+									return EBTNodeResult::Succeeded;
 								}
 							}
-							if (coverpossible)
-							{
-								AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
-								return EBTNodeResult::Succeeded;
-							}
-							else if (!coverpossible)
+							if (!coverpossible)
 							{
 								for (auto coverenemy : commander->CoverEnemyArray)
 								{
