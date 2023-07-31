@@ -44,6 +44,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class UDataTable* DT_Shot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class UDataTable* DT_AIBaseStat;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_total;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_Input;
@@ -85,6 +87,8 @@ public:
 		float DI_SupRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		bool PlayerAtt_ai;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float Def;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class AAI_Controller* AIController;
 
