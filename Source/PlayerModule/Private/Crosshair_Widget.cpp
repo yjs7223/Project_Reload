@@ -43,7 +43,7 @@ void UCrosshair_Widget::NativeConstruct()
 		hitslot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
 		hitslot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 
-		brush.SetImageSize(FVector2D(90.f, 90.f));
+		brush.SetImageSize(FVector2D(30.f, 30.f));
 		Hit_image->SetBrush(brush);
 		//Hit_image->SetRenderScale(FVector2D(3.0f, 3.0f));
 		//Hit_image->SetRenderTransformAngle(45.0f);
@@ -127,22 +127,45 @@ void UCrosshair_Widget::SetCrosshairTranslation()
 
 	FVector2D ammo = FVector2D(m_offset * 0.3f + 16.0f, m_offset * 0.3f + 16.0f);
 	Cross_Ammo_Image->SetRenderTranslation(ammo);
+
+
+	FVector2D up_s = FVector2D(0, -m_offset_s);
+	Up_Cross_image_s->SetRenderTranslation(up_s);
+
+	FVector2D down_s = FVector2D(0, m_offset_s);
+	Down_Cross_image_s->SetRenderTranslation(down_s);
+
+	FVector2D left_s = FVector2D(-m_offset_s, 0);
+	Left_Cross_image_s->SetRenderTranslation(left_s);
+
+	FVector2D right_s = FVector2D(m_offset_s, 0);
+	Right_Cross_image_s->SetRenderTranslation(right_s);
 }
 
 void UCrosshair_Widget::CalcOffset(float spreadpower)
 {
 	m_offset = FMath::Lerp(0.0f, spreadpower * 300.0f, m_alpha);
+	m_offset_s = FMath::Lerp(0.0f, spreadpower * 150.0f, m_alpha);
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_offset));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_alpha));
 }
 
 bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 {
 	if (weapon->bRecoil)
 	{
-		m_alpha += DeltaTime * 0.6f;
+		m_alpha += DeltaTime;// *0.6f;
 	}
 	else
 	{
-		m_alpha -= DeltaTime * 0.4f;
+		if (weapon->bRecovery)
+		{
+			m_alpha -= DeltaTime * 2.0f;
+		}
+		else
+		{
+			m_alpha -= DeltaTime * 0.8f;
+		}
 	}
 
 	if (m_alpha < 0)
@@ -155,7 +178,6 @@ bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 		m_alpha = 1;
 	}
 	return false;
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_alpha));
 }
 
 void UCrosshair_Widget::CheckHit()
@@ -236,14 +258,17 @@ void UCrosshair_Widget::SetWidgetVisible()
 		}
 		else if(!weapon->isAiming && !weapon->isFire)
 		{
-			bWidgetVisible = false;
-			GetWorld()->GetTimerManager().SetTimer(VisibleTimer, FTimerDelegate::CreateLambda([&]()
-				{
-					if (FadeOutAnim)
+			if (FadeOutAnim)
+			{
+				bWidgetVisible = false;
+				GetWorld()->GetTimerManager().SetTimer(VisibleTimer, FTimerDelegate::CreateLambda([&]()
 					{
-						PlayAnimationForward(FadeOutAnim);
-					}
-				}), 5.f, false);
+						if (FadeOutAnim)
+						{
+							PlayAnimationForward(FadeOutAnim);
+						}
+					}), 5.f, false);
+			}
 		}
 	}
 }
