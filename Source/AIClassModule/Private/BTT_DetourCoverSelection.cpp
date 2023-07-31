@@ -14,6 +14,7 @@
 UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 {
 	NodeName = TEXT("DetourCoverSelection");
+	B_distance = false;
 }
 
 EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -41,32 +42,36 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 			Detourchange = false;
 			for (auto coverlist : commander->List_CoverPoint)
 			{
-				if (FVector::Distance(cover, coverlist.Value) > 200)
+				if (FVector::Distance(cover, coverlist.Value) < 200)
 				{
-					for (auto ai : commander->List_Division)
+					B_distance = true;
+				}
+			}
+			if (!B_distance)
+			{
+				for (auto ai : commander->List_Division)
+				{
+					if (!Cast<AAICharacter>(ai.Key)->Detour)
 					{
-						if (!Cast<AAICharacter>(ai.Key)->Detour)
+						Detourchange = true;
+						if (commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, cover_rot)
+							|| !commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, cover_rot))
 						{
-							Detourchange = true;
-							if (commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, cover_rot)
-								|| !commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, cover_rot))
+							if (*commander->List_Suppression.Find(ai.Value) > 30.0f)
 							{
-								if (*commander->List_Suppression.Find(ai.Value) > 30.0f)
+								if (*commander->List_Combat.Find(ai.Value) == ECombat::InCover)
 								{
-									if (*commander->List_Combat.Find(ai.Value) == ECombat::InCover)
+									if (select_ai == nullptr)
 									{
-										if (select_ai == nullptr)
+										Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
+										select_ai = ai.Key;
+									}
+									else
+									{
+										if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
 										{
 											Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
 											select_ai = ai.Key;
-										}
-										else
-										{
-											if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
-											{
-												Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
-												select_ai = ai.Key;
-											}
 										}
 									}
 								}
