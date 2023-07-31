@@ -53,7 +53,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		lerpDeltaTime = 0;
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
-	case EMove::Nomal:
+	case EMove::Normal:
 		timeDeltaTime += DeltaTime;
 		if (timeDeltaTime >= m_ChangeTime)
 		{
@@ -65,12 +65,6 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		break;
 	case EMove::Attack:
 		timeDeltaTime += DeltaTime;
-		if (Time >= 1.0f)
-		{
-			timeDeltaTime = 0;
-			e_move = EMove::Nomal;
-			break;
-		}
 		if (timeDeltaTime >= m_ParallelTime)
 		{
 			timeDeltaTime = m_ParallelTime;
@@ -81,6 +75,12 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		break;
 	case EMove::Hit:
 		timeDeltaTime += DeltaTime;
+		if (Time >= 1.0f)
+		{
+			timeDeltaTime = 0;
+			e_move = EMove::Normal;
+			break;
+		}
 		if (timeDeltaTime >= m_ParallelTime)
 		{
 			timeDeltaTime = m_ParallelTime;

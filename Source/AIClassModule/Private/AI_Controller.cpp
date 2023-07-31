@@ -21,6 +21,7 @@
 #include "Math/Vector.h"
 #include "SubEncounterSpace.h"
 #include "AISpawner.h"
+#include "AICharacterMoveComponent.h"
 
 
 AAI_Controller::AAI_Controller()
@@ -54,7 +55,7 @@ AAI_Controller::AAI_Controller()
 	}
 
 	commander = nullptr;
-
+	em_normal = false;
 	SetEnemy("Rifle_E");
 }
 
@@ -175,6 +176,16 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	if (!Blackboard->GetValueAsObject("Target"))
 	{
 		DistanceToPlayer = 0.0f;
+		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
+		{
+			if (em_normal == false)
+			{
+				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				em_normal = true;
+			}
+			
+		}
+		
 	}
 	Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 
