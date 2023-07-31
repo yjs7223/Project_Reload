@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "ST_Suppression.h"
 #include "ST_AIShot.h"
+#include "ST_AIBaseStat.h"
 #include "AICharacter.h"
 #include "AIController.h"
 #include "SubEncounterSpace.h"
@@ -28,6 +29,12 @@ UAIStatComponent::UAIStatComponent()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Shot = DT_ShotDataObject.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
+	if (DT_AIBaseStatDataObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
+		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
 	}
 	SetDataTable("Rifle_E");
 }
@@ -85,7 +92,10 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	moveoncmp->Time = 0;
 	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
 	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
-	curHP -= dmg;
+	float total_dmg;
+	total_dmg = dmg - (dmg * 0.01f) * Def;
+	curHP -= total_dmg;
+	Def -= (total_dmg * 0.05f);
 	Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
 	if (curHP < 0.0f)
 	{
@@ -95,6 +105,10 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		{
 			AIController->commander->List_Division.Remove(GetOwner());
 		}
+	}
+	if (Def < 0.0f)
+	{
+		Def = 0.0f;
 	}
 	sup_Input = dmg;
 	Time = 0;
@@ -179,5 +193,12 @@ void UAIStatComponent::SetDataTable(FName EnemyName)
 		shot_MinRange = ShotData->Shot_MinRange;
 		shot_MaxDmg = ShotData->Shot_MaxDmg;
 		shot_MinDmg = ShotData->Shot_MinDmg;
+	}
+	FST_AIBaseStat* AIBaseStatData = DT_AIBaseStat->FindRow<FST_AIBaseStat>(EnemyName, FString(""));
+	if (AIBaseStatData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+		
+		Def = AIBaseStatData->AI_Def;
 	}
 }
