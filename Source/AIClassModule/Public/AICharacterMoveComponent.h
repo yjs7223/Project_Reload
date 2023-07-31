@@ -34,6 +34,8 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetEnemy(FName EnemyName);
+	UFUNCTION(BlueprintCallable, Category = "AIMoveComponent")
+		void MoveTimeReset();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		class AAICharacter* aicharacter;

@@ -107,3 +107,8 @@ void UAICharacterMoveComponent::SetEnemy(FName EnemyName)
 		m_SpdHit = MoveData->Spd_Hit;
 	}
 }
+
+void UAICharacterMoveComponent::MoveTimeReset()
+{
+	timeDeltaTime = 0;
+}
