@@ -573,13 +573,14 @@ bool AAICommander::IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVec
 FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVector MiddleLocation)
 {
 	FVector move_Loc;
+	FVector player_rot = UKismetMathLibrary::FindLookAtRotation(AI_Actor->GetActorLocation(), player->GetActorLocation()).Vector();
 	FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(AI_Actor->GetActorLocation(), FinalLocation).Vector();
 	float DI_Loc = 1 / 10;
 	float DI_Ang = 1 / 120;
 	float TotalPoint = 0.0f;
 	float MaxPoint = 0.0f;
 	
-	FVector cross_Final = FVector::CrossProduct(Find_rot, FinalLocation);
+	FVector cross_Final = FVector::CrossProduct(player_rot, FinalLocation);
 	
 	if (MiddleLocation != FVector::ZeroVector)
 	{
@@ -591,7 +592,7 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 		{
 			if (cross_Final.Z > 0) // Right
 			{
-				if (FVector::CrossProduct(Find_rot, C_Point).Z > 0)
+				if (FVector::CrossProduct(player_rot, C_Point).Z > 0)
 				{
 					if (MiddleLocation != C_Point)
 					{
@@ -626,7 +627,7 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 			}
 			else if (cross_Final.Z <= 0) //Left
 			{
-				if (FVector::CrossProduct(Find_rot, C_Point).Z <= 0)
+				if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
 				{
 					if (MiddleLocation != C_Point)
 					{
@@ -668,7 +669,7 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 		{
 			if (cross_Final.Z > 0) // Right
 			{
-				if (FVector::CrossProduct(Find_rot, C_Point).Z > 0)
+				if (FVector::CrossProduct(player_rot, C_Point).Z > 0)
 				{
 					float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
 					float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
@@ -700,7 +701,7 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 			}
 			else if (cross_Final.Z <= 0) // Right
 			{
-				if (FVector::CrossProduct(Find_rot, C_Point).Z <= 0)
+				if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
 				{
 					float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
 					float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));

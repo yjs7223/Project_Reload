@@ -81,7 +81,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	moveoncmp->Move_Hit = true;
+	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
 	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
 	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
