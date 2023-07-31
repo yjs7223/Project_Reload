@@ -34,9 +34,7 @@ void UAICharacterMoveComponent::BeginPlay()
 	aicharacter = GetOwner<AAICharacter>();
 	SetEnemy("Rifle_E");
 
-	Move_Normal = false;
-	Move_Attack = false;
-	Move_Hit = false;
+	e_move = EMove::Patrol;
 	// ...
 	
 }
@@ -67,11 +65,17 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		break;
 	case EMove::Attack:
 		timeDeltaTime += DeltaTime;
+		if (Time >= 1.0f)
+		{
+			timeDeltaTime = 0;
+			e_move = EMove::Nomal;
+			break;
+		}
 		if (timeDeltaTime >= m_ParallelTime)
 		{
 			timeDeltaTime = m_ParallelTime;
 		}
-		lerpDeltaTime = timeDeltaTime * 0.5;
+		lerpDeltaTime = timeDeltaTime * 2;
 		Move_Speed = FMath::Lerp(100, m_SpdAttack, lerpDeltaTime);
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
@@ -81,7 +85,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		{
 			timeDeltaTime = m_ParallelTime;
 		}
-		lerpDeltaTime = timeDeltaTime * 0.5;
+		lerpDeltaTime = timeDeltaTime * 2;
 		Move_Speed = FMath::Lerp(100, m_SpdHit, lerpDeltaTime);
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;

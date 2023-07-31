@@ -40,12 +40,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Move_Speed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Normal; //�⺻ �̵��� 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Attack; //ai�� ���ݽ�
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Hit; //ai�� �ǰݽ�
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float timeDeltaTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float lerpDeltaTime;
