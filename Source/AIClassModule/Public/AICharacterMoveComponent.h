@@ -9,7 +9,7 @@ UENUM(BlueprintType)
 enum class EMove : uint8
 {
 	Patrol 	UMETA(DisplayName = "Patrol"),
-	Nomal UMETA(DisplayName = "Nomal"),
+	Normal UMETA(DisplayName = "Normal"),
 	Attack 	UMETA(DisplayName = "Attack"),
 	Hit 	UMETA(DisplayName = "Hit")
 };
