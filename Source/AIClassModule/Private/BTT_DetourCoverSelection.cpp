@@ -39,29 +39,35 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 		{
 			select_ai = nullptr;
 			Detourchange = false;
-			for (auto ai : commander->List_Division)
+			for (auto coverlist : commander->List_CoverPoint)
 			{
-				if (!Cast<AAICharacter>(ai.Key)->Detour)
+				if (FVector::Distance(cover, coverlist.Value) > 200)
 				{
-					Detourchange = true;
-					if (commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, cover_rot)
-						|| !commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, cover_rot))
+					for (auto ai : commander->List_Division)
 					{
-						if (*commander->List_Suppression.Find(ai.Value) > 30.0f)
+						if (!Cast<AAICharacter>(ai.Key)->Detour)
 						{
-							if (*commander->List_Combat.Find(ai.Value) == ECombat::InCover)
+							Detourchange = true;
+							if (commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, cover_rot)
+								|| !commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, cover_rot))
 							{
-								if (select_ai == nullptr)
+								if (*commander->List_Suppression.Find(ai.Value) > 30.0f)
 								{
-									Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
-									select_ai = ai.Key;
-								}
-								else
-								{
-									if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
+									if (*commander->List_Combat.Find(ai.Value) == ECombat::InCover)
 									{
-										Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
-										select_ai = ai.Key;
+										if (select_ai == nullptr)
+										{
+											Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
+											select_ai = ai.Key;
+										}
+										else
+										{
+											if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
+											{
+												Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
+												select_ai = ai.Key;
+											}
+										}
 									}
 								}
 							}
