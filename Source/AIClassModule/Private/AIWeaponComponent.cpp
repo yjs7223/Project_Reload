@@ -15,6 +15,9 @@
 #include "SubEncounterSpace.h"
 #include "AISpawner.h"
 #include "HitImapactDataAsset.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AI_Controller.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -238,6 +241,7 @@ void UAIWeaponComponent::CheckTrace()
 	if (commander->m_suben == nullptr) return;
 	if (commander->m_suben->spawn == nullptr) return;
 	if (commander->m_suben->spawn->cpyLastPoint == nullptr) return;
+	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
 	{
@@ -247,6 +251,8 @@ void UAIWeaponComponent::CheckTrace()
 			GetWorld()->DestroyActor(result.GetActor());
 		}
 	}
+
+	DrawDebugLine(GetWorld(), start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Orange, false, 0.1f);
 }
 
 void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
