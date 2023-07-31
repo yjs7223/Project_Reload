@@ -21,6 +21,7 @@
 #include "Math/Vector.h"
 #include "SubEncounterSpace.h"
 #include "AISpawner.h"
+#include "AICharacterMoveComponent.h"
 
 
 AAI_Controller::AAI_Controller()
@@ -54,7 +55,7 @@ AAI_Controller::AAI_Controller()
 	}
 
 	commander = nullptr;
-
+	em_normal = false;
 	SetEnemy("Rifle_E");
 }
 
@@ -108,7 +109,13 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
 		if (Blackboard->GetValueAsBool("AI_Active"))
 		{
-			Blackboard->SetValueAsObject("Target", player);
+			if (Stimulus.Tag.IsValid())
+			{
+				if (Stimulus.Tag == "Shooting")
+				{
+					Blackboard->SetValueAsObject("Target", player);
+				}
+			}
 		}
 		
 		break;
@@ -133,7 +140,7 @@ void AAI_Controller::SetUseCover()
 					FVector a = GetPawn()->GetActorLocation();
 					float b = FVector::Distance(loc, a);
 
-					if (FVector::Distance(loc, a) <= 100)
+					if (FVector::Distance(loc, a) <= 150)
 					{
 						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
 						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
@@ -169,6 +176,16 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	if (!Blackboard->GetValueAsObject("Target"))
 	{
 		DistanceToPlayer = 0.0f;
+		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
+		{
+			if (em_normal == false)
+			{
+				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				em_normal = true;
+			}
+			
+		}
+		
 	}
 	Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 

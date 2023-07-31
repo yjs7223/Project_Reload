@@ -86,6 +86,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
 	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
 	curHP -= dmg;
+	Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
