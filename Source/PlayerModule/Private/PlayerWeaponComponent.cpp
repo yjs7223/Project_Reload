@@ -726,7 +726,7 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
 				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
 			}
 
