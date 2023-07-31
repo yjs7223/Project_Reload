@@ -68,6 +68,8 @@ void UAIInputComponent::AIStopFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	weaponcmp->ShotAIStop();
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	moveoncmp->e_move = EMove::Normal;
 	m_inputData.IsFire = false;
 
 }
@@ -83,6 +85,7 @@ void UAIInputComponent::AIStopAiming()
 {
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
 	m_inputData.IsAiming = false;
+	
 	cover->StopPeeking();
 }
 
