@@ -108,7 +108,13 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
 		if (Blackboard->GetValueAsBool("AI_Active"))
 		{
-			Blackboard->SetValueAsObject("Target", player);
+			if (Stimulus.Tag.IsValid())
+			{
+				if (Stimulus.Tag == "Shooting")
+				{
+					Blackboard->SetValueAsObject("Target", player);
+				}
+			}
 		}
 		
 		break;
@@ -133,7 +139,7 @@ void AAI_Controller::SetUseCover()
 					FVector a = GetPawn()->GetActorLocation();
 					float b = FVector::Distance(loc, a);
 
-					if (FVector::Distance(loc, a) <= 100)
+					if (FVector::Distance(loc, a) <= 150)
 					{
 						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
 						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
