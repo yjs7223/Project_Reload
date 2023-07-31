@@ -67,9 +67,7 @@ void UAIInputComponent::AIStartFire()
 void UAIInputComponent::AIStopFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
-	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	weaponcmp->ShotAIStop();
-	moveoncmp->e_move = EMove::Normal;
 	m_inputData.IsFire = false;
 
 }
@@ -86,5 +84,8 @@ void UAIInputComponent::AIStopAiming()
 
 void UAIInputComponent::AIStartReload()
 {
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	moveoncmp->e_move = EMove::Nomal;
 	m_inputData.IsReload = true;
+
 }
