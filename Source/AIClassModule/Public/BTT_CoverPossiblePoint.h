@@ -23,6 +23,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		bool coverpossible;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
+		bool B_distance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		float mindis;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		FVector mindislocation;

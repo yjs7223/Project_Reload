@@ -36,4 +36,6 @@ public:
 		class AActor* select_ai;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
 		class ACharacter* player; //cast
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
+		bool B_distance;
 };

@@ -699,7 +699,7 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 					}
 				}
 			}
-			else if (cross_Final.Z <= 0) // Right
+			else if (cross_Final.Z <= 0) // Left
 			{
 				if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
 				{
