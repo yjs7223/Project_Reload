@@ -36,6 +36,10 @@ void UAIInputComponent::AIStopRuning()
 
 void UAIInputComponent::AICrouching()
 {
+	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+
+	cover->m_IsCover = true;
+
 	if (owner->CanCrouch()) {
 		owner->Crouch();
 	}
@@ -43,6 +47,9 @@ void UAIInputComponent::AICrouching()
 
 void UAIInputComponent::AIStopCrouching()
 {
+	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+
+	cover->m_IsCover = false;
 	owner->UnCrouch();
 
 }
@@ -53,17 +60,14 @@ void UAIInputComponent::AIStartFire()
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	weaponcmp->ShotAIStart();
 	weaponcmp->ShotAI();
-	moveoncmp->Move_Attack = true;
-
+	moveoncmp->e_move = EMove::Attack;
 	m_inputData.IsFire = true;
 }
 
 void UAIInputComponent::AIStopFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
-	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	weaponcmp->ShotAIStop();
-	moveoncmp->Move_Attack = false;
 	m_inputData.IsFire = false;
 
 }
@@ -80,5 +84,8 @@ void UAIInputComponent::AIStopAiming()
 
 void UAIInputComponent::AIStartReload()
 {
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	moveoncmp->e_move = EMove::Nomal;
 	m_inputData.IsReload = true;
+
 }

@@ -817,6 +817,11 @@ void UCoverComponent::StopPeeking()
 	mPeekingState = EPeekingState::None;
 }
 
+AActor* UCoverComponent::GetCoverWall()
+{
+	return m_CoverWall;
+}
+
 void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
 	if (!Result.IsSuccess()) return;
