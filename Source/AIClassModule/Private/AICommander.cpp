@@ -180,6 +180,7 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	AddIndex = 0;
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
+	Blackboard->SetValueAsObject("Cmd_Target", NULL);
 }
 
 void AAICommander::ListAdd(AActor* ac)
