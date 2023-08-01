@@ -143,7 +143,7 @@ void AAICommander::ListSet()
 					{
 						m_suben->spawn->check_Overlap = true;
 					}
-					Blackboard->SetValueAsBool("CmdAI_Active", true);
+					
 					if (!MapList_Start)
 					{
 						ListStartSet(m_suben);
@@ -179,6 +179,8 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	sub->LevelActive = false;
 	AddIndex = 0;
 	MapList_Start = false;
+	Blackboard->SetValueAsBool("CmdAI_Active", false);
+	Blackboard->SetValueAsObject("Cmd_Target", NULL);
 }
 
 void AAICommander::ListAdd(AActor* ac)
@@ -202,7 +204,8 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
 		List_CoverPoint.Add(AddIndex, FVector(0,0,0));
-		
+		Blackboard->SetValueAsBool("CmdAI_Active", true);
+
 		AIController = nullptr;
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
 		if (AIController)
@@ -699,7 +702,7 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 					}
 				}
 			}
-			else if (cross_Final.Z <= 0) // Right
+			else if (cross_Final.Z <= 0) // Left
 			{
 				if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
 				{

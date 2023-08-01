@@ -16,6 +16,7 @@
 #include "CoverComponent.h"
 #include "Crosshair_Widget.h"
 #include "Player_Cover_Widget.h"
+#include "Attacked_Widget.h"
 #include "CameraControllComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 //#include "Kismet/GameplayStatics.h"
@@ -34,8 +35,10 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
-	/*const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimObj(TEXT("AnimBlueprint'/Game/NewAnim/ABP_Charactor.ABP_Charactor'"));
-	GetMesh()->SetAnimInstanceClass(AnimObj.Object->GeneratedClass);*/
+	//const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimObj(TEXT("AnimBlueprint'/Game/NewAnim/ABP_Charactor.ABP_Charactor'"));
+	//GetMesh()->SetAnimInstanceClass(AnimObj.Object->GetAnimBlueprintGeneratedClass());
+	//AnimObj.Object.anim
+	//GetMesh().setanimins
 
 	m_FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
 	m_FollowSpringArm->SetupAttachment(RootComponent);
@@ -81,18 +84,25 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	FVector coverpoint = FindComponentByClass<UCoverComponent>()->getCanCoverPoint();
+	UPlayer_Cover_Widget* coverwidget = Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget());
 	if (coverpoint != FVector::ZeroVector)
 	{
 		coverpoint.Z -= 80.0f;
+		//coverpoint.Y -= 30.0f;
 		CoverWidgetComponent->SetWorldLocation(coverpoint);
 		FRotator rot = FindComponentByClass<UCoverComponent>()->GetPointNormal().Rotation();
 		CoverWidgetComponent->SetWorldRotation(rot);
-		Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget())->SetOpacity(1.0f);
+		if (coverwidget) {
+			coverwidget->SetOpacity(1.0f);
+		}
 		
 	}
 	else
 	{
-		Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget())->SetOpacity(.0f);
+		if (coverwidget) {
+			coverwidget->SetOpacity(0.0f);
+		}
+
 	}
 }
 
@@ -128,6 +138,17 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		Crosshair_Widget->AddToViewport();
 		//Crosshair_Widget->weapon = weapon;
 	}
+	if (Attacked_WidgetClass)
+	{
+		if (Attacked_Widget)
+		{
+			Attacked_Widget->RemoveFromViewport();
+		}
+		Attacked_Widget = CreateWidget<UAttacked_Widget>(Cast<APlayerController>(GetController()), Attacked_WidgetClass);
+		Attacked_Widget->AddToViewport();
+		//Crosshair_Widget->weapon = weapon;
+	}
+
 
 	if (HPWidgetComponent)
 	{
@@ -162,7 +183,7 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		//CoverWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
 		//AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 		CoverWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		CoverWidgetComponent->SetDrawSize(FVector2D(128.0f, 64.0f));
+		CoverWidgetComponent->SetDrawSize(FVector2D(32.0f, 16.0f));
 
 		if (Cover_Widget)
 		{

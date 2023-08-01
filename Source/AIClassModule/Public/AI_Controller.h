@@ -47,6 +47,8 @@ public:
 		float DistanceToPlayer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class ACharacter* player; //cast
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		bool em_normal;
 
 public:
 	UFUNCTION()//BlueprintCallable

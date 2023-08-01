@@ -34,7 +34,11 @@ public:
 
 	void CheckHit();
 
+	void CheckDie();
+
 	void SetAmmoImage();
+
+	void PlayReloadAnim();
 
 	virtual void SetWidgetVisible() override;
 
@@ -46,6 +50,9 @@ public:
 		class UOverlay* Crosshair_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Reload_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Up_Cross_image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Down_Cross_image;
@@ -53,11 +60,24 @@ public:
 		class UImage* Left_Cross_image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Right_Cross_image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Up_Cross_image_s;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Down_Cross_image_s;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Left_Cross_image_s;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Right_Cross_image_s;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Dot_image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Hit_image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Kill_image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Cross_Ammo_Image;
@@ -67,9 +87,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* FadeOutAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* ReloadAnim;
+
 public:
 	float m_alpha;
 	float m_offset;
+	float m_offset_s;
 
 	float m_hitTime;
 
@@ -77,4 +102,6 @@ public:
 	float widgetVisibleTime;
 	FTimerHandle VisibleTimer;
 	FTimerHandle HitTimer;
+	FTimerHandle DieTimer;
+	FTimerHandle ReloadTimer;
 };

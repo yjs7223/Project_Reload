@@ -46,7 +46,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 							{
 								if (coverpoint.Key != ai.Value)
 								{
-									if (commander->SiegeCoverArray[i] == coverpoint.Value)
+									if (FVector::Distance(commander->SiegeCoverArray[i], coverpoint.Value) < 200)
 									{
 										arraysame = true;
 									}

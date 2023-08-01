@@ -9,7 +9,7 @@ UENUM(BlueprintType)
 enum class EMove : uint8
 {
 	Patrol 	UMETA(DisplayName = "Patrol"),
-	Nomal UMETA(DisplayName = "Nomal"),
+	Normal UMETA(DisplayName = "Normal"),
 	Attack 	UMETA(DisplayName = "Attack"),
 	Hit 	UMETA(DisplayName = "Hit")
 };
@@ -34,6 +34,8 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetEnemy(FName EnemyName);
+	UFUNCTION(BlueprintCallable, Category = "AIMoveComponent")
+		void MoveTimeReset();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		class AAICharacter* aicharacter;
