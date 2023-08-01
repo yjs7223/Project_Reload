@@ -189,7 +189,7 @@ void UAttacked_Widget::SetAttackedAngle()
 
 void UAttacked_Widget::StartAttacked()
 {
-	FindTargetEnemy();
+	//FindTargetEnemy();
 	int index = 0;
 	index = TargetEnemys.Find(stat->TargetEnemy);
 	if (index == INDEX_NONE)
