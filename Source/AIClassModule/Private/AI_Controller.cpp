@@ -216,7 +216,7 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		HearingConfig->HearingRange = 5000.0f;
+		HearingConfig->HearingRange = 3000.0f;
 		HearingConfig->SetMaxAge(RangeData->Sight_Age);
 		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;

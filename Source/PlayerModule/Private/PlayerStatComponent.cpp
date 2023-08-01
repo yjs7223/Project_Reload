@@ -2,10 +2,11 @@
 
 
 #include "PlayerStatComponent.h"
+#include "BaseCharacter.h"
 
 UPlayerStatComponent::UPlayerStatComponent()
 {
-
+	TargetEnemy = nullptr;
 }
 
 void UPlayerStatComponent::BeginPlay()
@@ -36,4 +37,13 @@ void UPlayerStatComponent::Attacked(float p_damage)
 
 	OnVisibleHPUIDelegate.ExecuteIfBound();
 	OnChangedHealthDelegate.ExecuteIfBound(curHP / maxHP);
+	OnVisibleAttackedUIDelegate.ExecuteIfBound();
+	
+}
+
+void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* character)
+{
+	Super::Attacked(p_damage, character);
+
+	TargetEnemy = character;
 }

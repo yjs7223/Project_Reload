@@ -59,6 +59,12 @@ public:
 		class UCrosshair_Widget* Crosshair_Widget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> Attacked_WidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAttacked_Widget* Attacked_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UWidgetComponent* CoverWidgetComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
