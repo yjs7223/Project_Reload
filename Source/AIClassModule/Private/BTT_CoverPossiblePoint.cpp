@@ -74,6 +74,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						}
 						else
 						{
+							mindis = NULL;
 							coverpossible = false;
 							for (auto coverenemy : commander->CoverEnemyArray)
 							{
@@ -118,12 +119,39 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 									}
 								}
 							}
+							else {
+								AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
+								return EBTNodeResult::Succeeded;
+							}
 						}
 						if (mindislocation == FVector::ZeroVector || beforelocation == mindislocation)
 						{
-							AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
-							return EBTNodeResult::Succeeded;
+							mindis = NULL;
+							for (auto coverenemy : commander->CoverEnemyArray)
+							{
+
+								if (mindis == NULL)
+								{
+									mindis = FVector::Distance(enemy.Key->GetActorLocation(), coverenemy);
+									mindislocation = coverenemy;
+								}
+								else
+								{
+									if (mindis > FVector::Distance(enemy.Key->GetActorLocation(), coverenemy))
+									{
+										mindis = FVector::Distance(enemy.Key->GetActorLocation(), coverenemy);
+										mindislocation = coverenemy;
+									}
+								}
+								
+							}
+							if (mindislocation == FVector::ZeroVector || beforelocation == mindislocation)
+							{
+								AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);
+								return EBTNodeResult::Succeeded;
+							}
 						}
+						
 						AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", mindislocation);
 						commander->List_CoverPoint.Add(enemy.Value, mindislocation);
 						AIController->GetBlackboardComponent()->SetValueAsBool("OrderWait", false);				
