@@ -137,25 +137,26 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 }
 void AAI_Controller::SetUseCover()
 {
-	if (commander != nullptr)
+	if (GetBlackboardComponent()->GetValueAsBool("AI_Active"))
 	{
-		if (commander->GetBlackboardComponent() != nullptr)
-		{
-			if (commander->CoverEnemyArray.Num() > 0)
-			{
-				for (auto loc : commander->CoverEnemyArray)
-				{
-					FVector a = GetPawn()->GetActorLocation();
-					float b = FVector::Distance(loc, a);
+		FCollisionQueryParams collisionParams;
+		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("pelvis"));
 
-					if (FVector::Distance(loc, a) <= 120)
-					{
-						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
-						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
-						return;
-					}
-				}
+		collisionParams.AddIgnoredActor(GetPawn());
+		FVector playerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+		if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
+		{
+			if (result.GetActor()->ActorHasTag("Player"))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover false"));
+				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover true"));
+				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
+				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
 			}
 		}
 	}

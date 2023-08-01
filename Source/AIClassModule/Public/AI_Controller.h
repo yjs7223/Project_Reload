@@ -50,12 +50,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool em_normal;
 
+	FHitResult result;
+
 public:
 	UFUNCTION()//BlueprintCallable
 		void SetEnemy(FName EnemyName);
 	UFUNCTION()
 		void OnTargetDetected(AActor* actor, FAIStimulus Stimulus);
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "UseCover")
 		void SetUseCover();
 
 	UFUNCTION()

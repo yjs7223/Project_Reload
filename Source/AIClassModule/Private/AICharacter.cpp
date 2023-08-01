@@ -61,12 +61,13 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	//CollisionMesh->SetRelativeLocation(FVector(0, 0, 0));
 	
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAICharacter::OnOverlapBegin);
-
 }
 
 void AAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	mesh = FindComponentByClass<USkeletalMeshComponent>();
 }
 
 void AAICharacter::Tick(float DeltaTime)
