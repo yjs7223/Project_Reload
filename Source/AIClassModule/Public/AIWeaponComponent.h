@@ -118,8 +118,8 @@ public :
 		class UHitImapactDataAsset* HitImpactDataAsset;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* RifleDataAssets;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	class UWeaponDataAsset* RifleDataAssets;
 protected:
 	virtual void BeginPlay() override;
 

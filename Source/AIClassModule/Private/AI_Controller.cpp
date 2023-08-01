@@ -40,7 +40,7 @@ AAI_Controller::AAI_Controller()
 	}
 
 	//BT
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/SGJ/BT_Main.BT_Main'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/BaseAI/BT/BT_Main.BT_Main'"));
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
