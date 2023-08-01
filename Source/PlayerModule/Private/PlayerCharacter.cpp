@@ -84,6 +84,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	FVector coverpoint = FindComponentByClass<UCoverComponent>()->getCanCoverPoint();
+	UPlayer_Cover_Widget* coverwidget = Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget());
 	if (coverpoint != FVector::ZeroVector)
 	{
 		coverpoint.Z -= 80.0f;
@@ -91,12 +92,17 @@ void APlayerCharacter::Tick(float DeltaTime)
 		CoverWidgetComponent->SetWorldLocation(coverpoint);
 		FRotator rot = FindComponentByClass<UCoverComponent>()->GetPointNormal().Rotation();
 		CoverWidgetComponent->SetWorldRotation(rot);
-		Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget())->SetOpacity(1.0f);
+		if (coverwidget) {
+			coverwidget->SetOpacity(1.0f);
+		}
 		
 	}
 	else
 	{
-		Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget())->SetOpacity(.0f);
+		if (coverwidget) {
+			coverwidget->SetOpacity(0.0f);
+		}
+
 	}
 }
 

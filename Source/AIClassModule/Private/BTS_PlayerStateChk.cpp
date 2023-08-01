@@ -31,8 +31,8 @@ void UBTS_PlayerStateChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	{
 		if (AIController->GetBlackboardComponent())
 		{
-			UBaseInputComponent* Inputcomp = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UBaseInputComponent>();
-			UCoverComponent* Covercomp = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UCoverComponent>();
+			UBaseInputComponent* Inputcomp = player->FindComponentByClass<UBaseInputComponent>();
+			UCoverComponent* Covercomp = player->FindComponentByClass<UCoverComponent>();
 
 			FInputData data;
 			memset(&data, 0, sizeof(FInputData));

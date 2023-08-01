@@ -132,7 +132,9 @@ void UCoverComponent::SettingMoveVector(FVector& vector)
 	if (owner->GetActorForwardVector().Dot(vector.GetSafeNormal2D()) < -0.9) {
 		StopCover();
 	}
-	SetIsFaceRight(owner->GetActorRightVector().Dot(vector) > 0);
+	else {
+		SetIsFaceRight(owner->GetActorRightVector().Dot(vector) > 0);
+	}
 	FHitResult result;
 	CheckCoverCollision(result);
 	if (result.bBlockingHit) {
@@ -211,35 +213,32 @@ void UCoverComponent::AimSetting(float DeltaTime)
 		if (!IsFaceRight()) aimOffset.Yaw *= -1.0f;
 		return;
 	}
-	if (aimOffset.Yaw > 0) {
-		if (m_Inputdata->IsAiming || m_Inputdata->IsReload || (m_Inputdata->IsFire && aimOffset.Yaw > 45)) {
-			aimOffset.Yaw -= 180;
+	if (aimOffset.Yaw > 45) {
+		aimOffset.Yaw -= 180;
+		if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
 			SetIsFaceRight(true);
-
 		}
 	}
-	else {
-		if (m_Inputdata->IsAiming || m_Inputdata->IsReload || (m_Inputdata->IsFire && aimOffset.Yaw < -45)) {
-			aimOffset.Yaw += 180;
-			aimOffset.Yaw *= -1.0f;
+	else if (aimOffset.Yaw < -45) {
+		aimOffset.Yaw += 180;
+		aimOffset.Yaw *= -1.0f;
+
+		if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
 			SetIsFaceRight(false);
 		}
 	}
+	/*
+	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw > 45) {
+		aimOffset.Yaw -= 180;
+		SetIsFaceRight(true);
 
-	/*if (aimOffset.Yaw > 0) {
-		if (m_Inputdata->IsAiming || (m_Inputdata->IsFire && aimOffset.Yaw > 45)) {
-			aimOffset.Yaw -= 180;
-			SetIsFaceRight(true);
-
-		}
 	}
-	else {
-		if (m_Inputdata->IsAiming || (m_Inputdata->IsFire && aimOffset.Yaw < -45)) {
-			aimOffset.Yaw += 180;
-			aimOffset.Yaw *= -1.0f;
-			SetIsFaceRight(false);
-		}
+	else if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw < -45) {
+		aimOffset.Yaw += 180;
+		aimOffset.Yaw *= -1.0f;
+		SetIsFaceRight(false);
 	}*/
+
 }
 
 void UCoverComponent::RotateSet(float DeltaTime)
@@ -453,7 +452,7 @@ bool UCoverComponent::IsTurnWait()
 
 float UCoverComponent::FaceRight()
 {
-	return m_IsCover ? m_FaceRight : true;
+	return m_FaceRight;
 }
 
 bool UCoverComponent::IsFaceRight()
@@ -820,6 +819,11 @@ void UCoverComponent::StopPeeking()
 
 	if (!m_IsCover) return;
 	mPeekingState = EPeekingState::None;
+}
+
+AActor* UCoverComponent::GetCoverWall()
+{
+	return m_CoverWall;
 }
 
 void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)

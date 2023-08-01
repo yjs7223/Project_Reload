@@ -27,6 +27,12 @@ ASubEncounterSpace::ASubEncounterSpace()
 void ASubEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// add
+	if (spawn != nullptr)
+	{
+		spawn->suben = this;
+	}
 }
 
 // Called every frame

@@ -19,6 +19,9 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Math/Vector.h"
+#include "SubEncounterSpace.h"
+#include "AISpawner.h"
+#include "AICharacterMoveComponent.h"
 
 
 AAI_Controller::AAI_Controller()
@@ -29,7 +32,7 @@ AAI_Controller::AAI_Controller()
 	HearingConfig = CreateOptionalDefaultSubobject<UAISenseConfig_Hearing>(TEXT("Hearing Config"));
 	SetPerceptionComponent(*CreateOptionalDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception")));
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
 	if (DT_RangeDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
@@ -45,14 +48,14 @@ AAI_Controller::AAI_Controller()
 	}
 	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackBoard'/Game/JHB/BB_BaseAI.BB_BaseAI'"));
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/BaseAI/BB/BB_BaseAI.BB_BaseAI'"));
 	if (BB_BaseAIObject.Succeeded())
 	{
 		BBAsset = BB_BaseAIObject.Object;
 	}
 
 	commander = nullptr;
-
+	em_normal = false;
 	SetEnemy("Rifle_E");
 }
 
@@ -63,7 +66,7 @@ void AAI_Controller::BeginPlay()
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
+	DistanceToPlayer = 0.0f;
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	if (UseBlackboard(BBAsset, BlackboardComp))
 	{
@@ -72,11 +75,13 @@ void AAI_Controller::BeginPlay()
 	}
 
 }
-void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
+void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
 	switch (Stimulus.Type)
 	{
 	case 0:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
 		if (player)
 		{
 			DistanceToPlayer = GetPawn()->GetDistanceTo(player);
@@ -93,32 +98,35 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
 				}
 				Blackboard->SetValueAsObject("Target", player);
 			}
-			if (actor->ActorHasTag("Last"))
-			{
-				if (commander->GetBlackboardComponent())
-				{
-					commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", NULL);
-					AActor* temp = Cast<AActor>(commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target"));
-					GetWorld()->DestroyActor(temp);
-				}
-				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-			}
 
 		}
 		else {
 			bIsPlayerDetected = false;
 		}
 		break;
+		// react to sight stimulus
 	case 1:
-		if (Stimulus.Tag == "Shooting")
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		if (Blackboard->GetValueAsBool("AI_Active"))
 		{
-			Blackboard->SetValueAsObject("Target", player);
+			if (Stimulus.Tag.IsValid())
+			{
+				if (Stimulus.Tag == "Shooting")
+				{
+					Blackboard->SetValueAsObject("Target", player);
+				}
+			}
 		}
+		
 		break;
-
+		// react to hearing;
+	default:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		return;
 	}
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
+	
 }
-
 void AAI_Controller::SetUseCover()
 {
 	if (commander != nullptr)
@@ -129,14 +137,18 @@ void AAI_Controller::SetUseCover()
 			{
 				for (auto loc : commander->CoverEnemyArray)
 				{
-					if (FVector::Distance(loc, GetPawn()->GetActorLocation()) <= 50)
+					FVector a = GetPawn()->GetActorLocation();
+					float b = FVector::Distance(loc, a);
+
+					if (FVector::Distance(loc, a) <= 150)
 					{
 						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
-						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+						return;
 					}
 					else
 					{
-						commander->GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 					}
 				}
 			}
@@ -161,7 +173,20 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}
-
+	if (!Blackboard->GetValueAsObject("Target"))
+	{
+		DistanceToPlayer = 0.0f;
+		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
+		{
+			if (em_normal == false)
+			{
+				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				em_normal = true;
+			}
+			
+		}
+		
+	}
 	Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 
 	SetUseCover();
@@ -191,16 +216,17 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		HearingConfig->HearingRange = 10000.0f;
+		HearingConfig->HearingRange = 5000.0f;
 		HearingConfig->SetMaxAge(RangeData->Sight_Age);
 		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
+		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
 		GetPerceptionComponent()->ConfigureSense(*HearingConfig);	
-		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
-		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
+		GetPerceptionComponent()->SetDominantSense(UAISenseConfig_Sight::StaticClass());
+		
 		
 	}
 }

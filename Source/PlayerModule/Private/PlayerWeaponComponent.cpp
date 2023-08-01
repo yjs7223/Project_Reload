@@ -463,10 +463,15 @@ void UPlayerWeaponComponent::WeaponMeshSetting()
 	{
 	case EWeaponType::TE_Pistol:
 		WeaponMesh->SetSkeletalMesh(PistolMesh);
-		//WeaponMesh->SetAnimInstanceClass()
+		if (PistolAnimation) {
+			WeaponMesh->SetAnimInstanceClass(PistolAnimation);
+		}
 		break; 
 	case EWeaponType::TE_Rifle:
 		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		if (RifleAnimation) {
+			WeaponMesh->SetAnimInstanceClass(RifleAnimation);
+		}
 		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
 		break;
 	case EWeaponType::TE_Shotgun:
@@ -693,9 +698,9 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 void UPlayerWeaponComponent::PlayRandomShotSound()
 {
 	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
+	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
 
-	UAISense_Hearing::ReportNoiseEvent(ShotSounds[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")), 1.0f, nullptr, 0.0f, FName(TEXT("Shooting")));
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetOwner()->GetActorLocation(), 1.0f, GetOwner(), 0.0f, FName(TEXT("Shooting")));
 }
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)
@@ -763,6 +768,7 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 			}
 			else
 			{
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
 				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
 			}
 		}
