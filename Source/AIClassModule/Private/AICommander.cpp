@@ -134,6 +134,13 @@ void AAICommander::ListSet()
 		if (Cast<AEncounterSpace>(en)->LevelActive)
 		{
 			Blackboard->SetValueAsObject("Cmd_Space", en);
+			if (m_suben)
+			{
+				if (!m_suben->LevelActive)
+				{
+					ListReset(m_suben);
+				}
+			}
 			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
 			{
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
@@ -176,7 +183,22 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_CoverPoint.Reset();
 	Sup_Array.Reset();
 	sub->en->LevelArray.Remove(this);
-	sub->LevelActive = false;
+	if (sub->LevelActive)
+	{
+		sub->LevelActive = false;
+	}
+	for (auto ai : sub->AIArray)
+	{
+		AIController = nullptr;
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+		if (AIController)
+		{
+			if (AIController->GetBlackboardComponent())
+			{
+				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+			}
+		}
+	}
 	AddIndex = 0;
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
