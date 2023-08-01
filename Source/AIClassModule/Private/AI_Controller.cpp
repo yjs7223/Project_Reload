@@ -40,7 +40,7 @@ AAI_Controller::AAI_Controller()
 	}
 
 	//BT
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/SGJ/BT_Main.BT_Main'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/BaseAI/BT/BT_Main.BT_Main'"));
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
@@ -216,7 +216,7 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		HearingConfig->HearingRange = 5000.0f;
+		HearingConfig->HearingRange = 3000.0f;
 		HearingConfig->SetMaxAge(RangeData->Sight_Age);
 		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;

@@ -38,18 +38,18 @@ void UBTS_PlayerStateChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 			memset(&data, 0, sizeof(FInputData));
 			if (Inputcomp->getInput()->IsFire || Inputcomp->getInput()->IsAiming)
 			{
-				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 1);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Attack);
 			}
-			else if (Covercomp->IsCover())
+			else if (player->FindComponentByClass<UCoverComponent>()->IsCover())
 			{
-				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 2);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Cover);
 			}
 			else if (Inputcomp->getInput()->IsRuning)
 			{
-				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 3);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Move);
 			}
 			else if (!memcmp(Inputcomp->getInput(), &data, sizeof(FInputData))) {
-				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", 0);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Idle);
 			}
 			
 		}
