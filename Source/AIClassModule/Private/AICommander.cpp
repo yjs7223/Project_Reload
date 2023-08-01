@@ -143,7 +143,7 @@ void AAICommander::ListSet()
 					{
 						m_suben->spawn->check_Overlap = true;
 					}
-					Blackboard->SetValueAsBool("CmdAI_Active", true);
+					
 					if (!MapList_Start)
 					{
 						ListStartSet(m_suben);
@@ -179,6 +179,7 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	sub->LevelActive = false;
 	AddIndex = 0;
 	MapList_Start = false;
+	Blackboard->SetValueAsBool("CmdAI_Active", false);
 }
 
 void AAICommander::ListAdd(AActor* ac)
@@ -202,7 +203,8 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
 		List_CoverPoint.Add(AddIndex, FVector(0,0,0));
-		
+		Blackboard->SetValueAsBool("CmdAI_Active", true);
+
 		AIController = nullptr;
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
 		if (AIController)
