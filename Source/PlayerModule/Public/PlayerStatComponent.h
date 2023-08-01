@@ -8,6 +8,7 @@
 
 DECLARE_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
 DECLARE_DELEGATE(FOnVisibleHPUIDelegate);
+DECLARE_DELEGATE(FOnVisibleAttackedUIDelegate);
 
 /**
  * 
@@ -28,10 +29,13 @@ protected:
 public:
 	void SetHP(float p_HP) override;
 	void Attacked(float p_damage) override;
+	void Attacked(float p_damage, class ABaseCharacter* character) override;
 
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;
-
+	FOnVisibleAttackedUIDelegate OnVisibleAttackedUIDelegate;
+public:
+	ABaseCharacter* TargetEnemy;
 	
 };
