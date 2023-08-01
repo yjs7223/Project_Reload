@@ -35,6 +35,5 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (mWeapon) {
 		mAimYaw = mWeapon->getAimYaw();
 		mAimPitch = mWeapon->getAimPitch();
-		
 	}
 }

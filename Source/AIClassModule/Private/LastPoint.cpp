@@ -24,4 +24,3 @@ void ALastPoint::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

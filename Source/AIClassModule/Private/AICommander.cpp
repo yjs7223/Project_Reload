@@ -11,6 +11,7 @@
 #include "Engine/Engine.h"
 #include "ST_Suppression.h"
 #include "ST_Commander.h"
+#include "Components/CapsuleComponent.h"
 #include "AICharacterMoveComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "UObject/ConstructorHelpers.h"
@@ -23,9 +24,10 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
+#include "CoverComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
-
+#include "Kismet/KismetMathLibrary.h"
 
 
 
@@ -44,20 +46,20 @@ AAICommander::AAICommander()
 	Cmd_SightOut = false;
 	//Patrol_CHK = false;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Suppression.DT_Suppression'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
 	if (DT_SuppressionDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_CommanderDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Commander.DT_Commander'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_CommanderDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Commander.DT_Commander'"));
 	if (DT_CommanderDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Commander = DT_CommanderDataObject.Object;
 	}
 	//BT
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/JHB/BT_AICommander.BT_AICommander'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/Commander/BT/BT_AICommander.BT_AICommander'"));
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
@@ -65,21 +67,16 @@ AAICommander::AAICommander()
 	}
 	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_AICommanderObject(TEXT("BlackBoard'/Game/JHB/BB_Commander.BB_Commander'"));
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_AICommanderObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/Commander/BB/BB_Commander.BB_Commander'"));
 	if (BB_AICommanderObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AICommander Blackboard Succeed!"));
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
 	
-	/*static ConstructorHelpers::FObjectFinder<AAIController> BaseAI_Ctr_Object(TEXT("AIController'/Game/JHB/BaseAI_Ctr.BaseAI_Ctr'"));
-	if (BaseAI_Ctr_Object.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		BaseAI_Ctr = BaseAI_Ctr_Object.Object;
-	}*/
-	
 	SetDataTable("Rifle_E");
+	SetCommanderDataTable("Commander");
+	
 }
 
 // Called when the game starts or when spawned
@@ -104,6 +101,11 @@ void AAICommander::SetDataTable(FName EnemyName)
 		sup_sharerange = SuppressionData->Sup_ShareRange;
 		sup_sharetime = SuppressionData->Sup_ShareTime;
 	}
+	
+}
+
+void AAICommander::SetCommanderDataTable(FName EnemyName)
+{
 	FST_Commander* CommanderData = DT_Commander->FindRow<FST_Commander>(EnemyName, FString(""));
 	if (CommanderData)
 	{
@@ -152,8 +154,7 @@ void AAICommander::ListSet()
 						TargetTickSet(m_suben);
 						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
-						
-						if (m_suben->AIArray.IsEmpty())
+						if (List_Division.Num() <= 0)
 						{
 							ListReset(m_suben);
 						}
@@ -173,6 +174,7 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_Location.Reset();
 	List_Suppression.Reset();
 	List_CoverPoint.Reset();
+	Sup_Array.Reset();
 	sub->en->LevelArray.Remove(this);
 	sub->LevelActive = false;
 	AddIndex = 0;
@@ -326,10 +328,7 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 
 						for (auto& ai : sub->AIArray)
 						{
-							UAICharacterMoveComponent* moveoncmp = ai->FindComponentByClass<UAICharacterMoveComponent>();
-							moveoncmp->Move_Normal = false;
-							moveoncmp->Move_Attack = false;
-							moveoncmp->Move_Hit = false;
+
 							if (ai != subAi)
 							{
 								AIController = nullptr;
@@ -493,7 +492,9 @@ void AAICommander::CoverPointEnemy()
 
 void AAICommander::SiegeCoverPoint()
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SiegeCoverPoint");
 	SiegeCoverArray.Reset();
+
 	if (!CoverArray.IsEmpty())
 	{
 		if (!CoverSubEnArray.IsEmpty())
@@ -502,7 +503,7 @@ void AAICommander::SiegeCoverPoint()
 			{
 				for (auto enemy_cover : CoverEnemyArray)
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 360, player->GetActorForwardVector()))
+					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 360, player->GetMesh()->GetForwardVector()))
 					{
 						SiegeCoverArray.Add(enemy_cover);
 					}
@@ -514,20 +515,25 @@ void AAICommander::SiegeCoverPoint()
 
 void AAICommander::DetourCoverPoint()
 {
-	DetourCoverArray.Reset();
-	if (!CoverArray.IsEmpty())
+	if (player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
 	{
-		if (!CoverSubEnArray.IsEmpty())
+		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
+		DetourCoverArray.Reset();
+		if (!CoverArray.IsEmpty())
 		{
-			if (!CoverEnemyArray.IsEmpty())
+			if (!CoverSubEnArray.IsEmpty())
 			{
-				for (auto enemy_cover : CoverEnemyArray)
+				if (!CoverEnemyArray.IsEmpty())
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, player->GetActorForwardVector()))
+					for (auto enemy_cover : CoverEnemyArray)
 					{
-						if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, player->GetActorForwardVector()))
+						if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, cover_rot))
 						{
-							DetourCoverArray.Add(enemy_cover);
+							if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, cover_rot))
+							{
+								DetourCoverArray.Add(enemy_cover);
+							}
 						}
 					}
 				}
@@ -547,6 +553,197 @@ bool AAICommander::IsPlayerInsideFanArea(FVector CoverPoint,float LocationRadius
 		return true;
 	}
 
+	return false;
+}
+
+bool AAICommander::IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVector FanDirection)
+{
+	FVector playerLocation = player->GetActorLocation();
+	FVector locationToPlayer = playerLocation - CoverPoint;
+	float AngleToPlayer = FMath::Acos(FVector::DotProduct(FanDirection, locationToPlayer.GetSafeNormal()));
+
+	if (AngleToPlayer <= FMath::DegreesToRadians(FanAngle) * 0.5f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVector MiddleLocation)
+{
+	FVector move_Loc;
+	FVector player_rot = UKismetMathLibrary::FindLookAtRotation(AI_Actor->GetActorLocation(), player->GetActorLocation()).Vector();
+	FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(AI_Actor->GetActorLocation(), FinalLocation).Vector();
+	float DI_Loc = 1 / 10;
+	float DI_Ang = 1 / 120;
+	float TotalPoint = 0.0f;
+	float MaxPoint = 0.0f;
+	
+	FVector cross_Final = FVector::CrossProduct(player_rot, FinalLocation);
+	
+	if (MiddleLocation != FVector::ZeroVector)
+	{
+		if (FVector::Distance(MiddleLocation, AI_Actor->GetActorLocation()) >= 100)
+		{
+			return MiddleLocation;
+		}
+		for (auto C_Point : CoverEnemyArray)
+		{
+			if (cross_Final.Z > 0) // Right
+			{
+				if (FVector::CrossProduct(player_rot, C_Point).Z > 0)
+				{
+					if (MiddleLocation != C_Point)
+					{
+						float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+						float AngPoint = 100 - (100 * (angle * DI_Ang));
+						if (AngPoint < 0)
+						{
+							AngPoint = 0;
+						}
+						float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+						if (DisPoint < 0)
+						{
+							DisPoint = 0;
+						}
+						TotalPoint = AngPoint + DisPoint;
+						if (MaxPoint == 0)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+						else
+						{
+							if (MaxPoint <= TotalPoint)
+							{
+								MaxPoint = TotalPoint;
+								move_Loc = C_Point;
+							}
+						}
+					}
+				}
+			}
+			else if (cross_Final.Z <= 0) //Left
+			{
+				if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
+				{
+					if (MiddleLocation != C_Point)
+					{
+						float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+						float AngPoint = 100 - (100 * (angle * DI_Ang));
+						if (AngPoint < 0)
+						{
+							AngPoint = 0;
+						}
+						float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+						if (DisPoint < 0)
+						{
+							DisPoint = 0;
+						}
+						TotalPoint = AngPoint + DisPoint;
+						if (MaxPoint == 0)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+						else
+						{
+							if (MaxPoint <= TotalPoint)
+							{
+								MaxPoint = TotalPoint;
+								move_Loc = C_Point;
+							}
+						}
+					}
+				}
+			}
+			//FVector crossPrdt = FVector::CrossProduct(forwardVect, A);
+		}
+	}
+	else
+	{
+		for (auto C_Point : CoverEnemyArray)
+		{
+			if (cross_Final.Z > 0) // Right
+			{
+				if (FVector::CrossProduct(player_rot, C_Point).Z > 0)
+				{
+					float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+					float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+					float AngPoint = 100 - (100 * (angle * DI_Ang));
+					if (AngPoint < 0)
+					{
+						AngPoint = 0;
+					}
+					float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+					if (DisPoint < 0)
+					{
+						DisPoint = 0;
+					}
+					TotalPoint = AngPoint + DisPoint;
+					if (MaxPoint == 0)
+					{
+						MaxPoint = TotalPoint;
+						move_Loc = C_Point;
+					}
+					else
+					{
+						if (MaxPoint <= TotalPoint)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+					}
+				}
+			}
+			else if (cross_Final.Z <= 0) // Right
+			{
+				if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
+				{
+					float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+					float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+					float AngPoint = 100 - (100 * (angle * DI_Ang));
+					if (AngPoint < 0)
+					{
+						AngPoint = 0;
+					}
+					float DisPoint = 100 - (FVector::Distance(AI_Actor->GetActorLocation(), C_Point) * DI_Loc);
+					if (DisPoint < 0)
+					{
+						DisPoint = 0;
+					}
+					TotalPoint = AngPoint + DisPoint;
+					if (MaxPoint == 0)
+					{
+						MaxPoint = TotalPoint;
+						move_Loc = C_Point;
+					}
+					else
+					{
+						if (MaxPoint <= TotalPoint)
+						{
+							MaxPoint = TotalPoint;
+							move_Loc = C_Point;
+						}
+					}
+				}
+			}
+			//FVector crossPrdt = FVector::CrossProduct(forwardVect, A);
+		}
+	}
+
+	return move_Loc;
+}
+
+bool AAICommander::SameDetourPoint(FVector FinalLocation, FVector MiddleLocation)
+{
+	if (FinalLocation == MiddleLocation)
+	{
+		return true;
+	}
 	return false;
 }
 

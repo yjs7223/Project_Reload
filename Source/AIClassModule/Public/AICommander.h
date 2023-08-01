@@ -155,6 +155,8 @@ public:
 	UFUNCTION()
 		void SetDataTable(FName EnemyName);
 	UFUNCTION()
+		void SetCommanderDataTable(FName EnemyName);
+	UFUNCTION()
 		void TargetTickSet(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void CoverPointSubEn(ASubEncounterSpace* sub);
@@ -166,6 +168,12 @@ public:
 		void DetourCoverPoint();
 	UFUNCTION()
 		bool IsPlayerInsideFanArea(FVector CoverPoint, float LocationRadius, float FanAngle, FVector FanDirection); //위치, 범위, 각도, 방향
+	UFUNCTION()
+		bool IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVector FanDirection);
+	UFUNCTION(BlueprintCallable, Category = "AICommander")
+		FVector OptimumPoint(FVector FinalLocation, AActor* AIactor, FVector MiddleLocation);
+	UFUNCTION(BlueprintCallable, Category = "AICommander")
+		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
 
 };
 
