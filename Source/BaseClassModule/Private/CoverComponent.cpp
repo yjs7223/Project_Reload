@@ -314,7 +314,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 		result;
 		start = owner->GetActorLocation();
 		end = start + (owner->GetActorForwardVector() * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 3.0f);
-		DrawDebugLine(GetWorld(), start, end, FColor::Emerald);
+
 		if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
 		FVector targetPos = result.Location + FinalNormal * owner->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.01f;
 			owner->SetActorLocation(FMath::VInterpTo(owner->GetActorLocation(), targetPos, DeltaTime, 6.0f));
@@ -424,13 +424,6 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 		m_CanCoverPointNormal = result5.ImpactNormal;
 	}
 
-	DrawDebugPoint(GetWorld(), targetVector, 5, FColor::Green);
-	DrawDebugCapsule(GetWorld(), temptargetVector,
-		capsule->GetScaledCapsuleHalfHeight(),
-		capsule->GetScaledCapsuleRadius(),
-		FQuat::Identity,
-		FColor::Green);
-
 	return temptargetVector + FVector::UpVector * capsule->GetScaledCapsuleHalfHeight() * 1.01f;
 
 }
@@ -465,33 +458,8 @@ void UCoverComponent::SetIsFaceRight(bool faceRight)
 	if (IsFaceRight() != faceRight) {
 		faceRight ? m_FaceRight = 1.0f : m_FaceRight = -1.0f;
 
-		UWeaponComponent* mWeapon = owner->FindComponentByClass<UWeaponComponent>();
-		USkeletalMeshComponent* WeaponMesh;
-		if (mWeapon) {
-			WeaponMesh = mWeapon->WeaponMesh;
-		}
-		else {
-			return;
-		}
-		FName handSocketName;
-		FRotator meshRotate;
-		FVector meshLocation;
-
-		if (m_FaceRight >= 0.0f) {
-			handSocketName = TEXT("hand_r_Socket");
-			meshRotate = FRotator(0.0, 0.0, 0.0);
-			meshLocation = WeaponMesh->GetRelativeLocation() * FVector(-1.0f, 1.0f, -1.0f);
-		}
-		else {
-			handSocketName = TEXT("hand_l_Socket");
-			meshRotate = FRotator(0.0, 180.0, 180.0);
-			meshLocation = WeaponMesh->GetRelativeLocation() * FVector(-1.0f, 1.0f, -1.0f);
-		}
-
-
-		WeaponMesh->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, handSocketName);
-		WeaponMesh->SetRelativeRotation(meshRotate);
-		WeaponMesh->SetRelativeLocation(meshLocation);
+		UWeaponComponent* mWeapon = owner->FindComponentByClass<UWeaponComponent>(); 
+		mWeapon->SetHandleing(faceRight);
 	}
 }
 
@@ -530,7 +498,6 @@ void UCoverComponent::CalculateCoverShoot()
 	result = FHitResult();
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 	if (!result.GetActor()) {
-		DrawDebugLine(GetWorld(), start, end, FColor::Red);
 		mCoverShootingState = ECoverShootingState::Left;
 		return;
 	}
@@ -540,7 +507,6 @@ void UCoverComponent::CalculateCoverShoot()
 	result = FHitResult();
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 	if (!result.GetActor()) {
-		DrawDebugLine(GetWorld(), start, end, FColor::Red);
 		mCoverShootingState = ECoverShootingState::Right;
 		return;
 	}
@@ -550,7 +516,6 @@ void UCoverComponent::CalculateCoverShoot()
 	result = FHitResult();
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 	if (!result.GetActor()) {
-		DrawDebugLine(GetWorld(), start, end, FColor::Red);
 		mCoverShootingState = ECoverShootingState::Front;
 		return;
 	}
@@ -625,6 +590,8 @@ void UCoverComponent::StopCover()
 	m_Inputdata->IsRuning = false;
 	m_CoverWall = nullptr;
 	m_IsCover = false;
+	mCoverShootingState = ECoverShootingState::None;
+	mPeekingState = EPeekingState::None;
 	SetIsFaceRight(true);
 
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
@@ -633,7 +600,7 @@ void UCoverComponent::StopCover()
 void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
 {
 	FVector start = owner->GetActorLocation() + FaceRight() * owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius();
-	FVector end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 3.0f);
+	FVector end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
 	FCollisionQueryParams params(NAME_None, true, owner);
 
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
@@ -651,11 +618,9 @@ void UCoverComponent::PlayCornering()
 	FCollisionQueryParams params(NAME_None, true, owner);
 
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
-	DrawDebugSphere(GetWorld(), end, 10.f, 32, FColor::Cyan, false, 100.0f);
 	if (!result2.bBlockingHit) return;
 
 	FVector targetPoint = result2.Location + result2.Normal * capsule->GetScaledCapsuleRadius() * 1.01f;
-	DrawDebugSphere(GetWorld(), targetPoint, 10.0f, 32, FColor::Red, false, 100.0f);
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), targetPoint);
 
 	for (auto& item : owner->GetComponentsByInterface(UPlayerMovable::StaticClass()))
@@ -711,7 +676,7 @@ void UCoverComponent::BeCrouch(float deltaTime)
 	FCollisionQueryParams param(NAME_None, true, GetOwner());
 	GetWorld()->LineTraceSingleByChannel(
 		result, start, end, traceChanel, param);
-	//DrawDebugLine(GetWorld(), start + upVector, end + upVector, FColor::Magenta, false, 100.0f);
+
 	if (result.bBlockingHit) {
 		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 	}
