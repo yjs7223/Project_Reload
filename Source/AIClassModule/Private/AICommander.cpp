@@ -134,6 +134,13 @@ void AAICommander::ListSet()
 		if (Cast<AEncounterSpace>(en)->LevelActive)
 		{
 			Blackboard->SetValueAsObject("Cmd_Space", en);
+			if (m_suben)
+			{
+				if (!m_suben->LevelActive)
+				{
+					ListReset(m_suben);
+				}
+			}
 			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
 			{
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
@@ -143,7 +150,7 @@ void AAICommander::ListSet()
 					{
 						m_suben->spawn->check_Overlap = true;
 					}
-					Blackboard->SetValueAsBool("CmdAI_Active", true);
+					
 					if (!MapList_Start)
 					{
 						ListStartSet(m_suben);
@@ -176,9 +183,26 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_CoverPoint.Reset();
 	Sup_Array.Reset();
 	sub->en->LevelArray.Remove(this);
-	sub->LevelActive = false;
+	if (sub->LevelActive)
+	{
+		sub->LevelActive = false;
+	}
+	for (auto ai : sub->AIArray)
+	{
+		AIController = nullptr;
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+		if (AIController)
+		{
+			if (AIController->GetBlackboardComponent())
+			{
+				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+			}
+		}
+	}
 	AddIndex = 0;
 	MapList_Start = false;
+	Blackboard->SetValueAsBool("CmdAI_Active", false);
+	Blackboard->SetValueAsObject("Cmd_Target", NULL);
 }
 
 void AAICommander::ListAdd(AActor* ac)
@@ -202,7 +226,8 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
 		List_CoverPoint.Add(AddIndex, FVector(0,0,0));
-		
+		Blackboard->SetValueAsBool("CmdAI_Active", true);
+
 		AIController = nullptr;
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
 		if (AIController)
@@ -440,11 +465,14 @@ void AAICommander::CoverPointSubEn(ASubEncounterSpace* sub)
 	{
 		for (auto cover : CoverArray)
 		{
-			if ((sub->GetActorLocation().X - sub->CollisionMesh->GetScaledBoxExtent().X) <= cover.X && (sub->GetActorLocation().X + sub->CollisionMesh->GetScaledBoxExtent().X) >= cover.X)
+			if ((sub->GetActorLocation().X - sub->CollisionMesh->GetScaledBoxExtent().X) <= cover.X 
+				&& (sub->GetActorLocation().X + sub->CollisionMesh->GetScaledBoxExtent().X) >= cover.X)
 			{
-				if ((sub->GetActorLocation().Y - sub->CollisionMesh->GetScaledBoxExtent().Y) <= cover.Y && (sub->GetActorLocation().Y + sub->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
+				if ((sub->GetActorLocation().Y - sub->CollisionMesh->GetScaledBoxExtent().Y) <= cover.Y 
+					&& (sub->GetActorLocation().Y + sub->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
 				{
-					if ((sub->GetActorLocation().Z - sub->CollisionMesh->GetScaledBoxExtent().Z) <= cover.Z && (sub->GetActorLocation().Z + sub->CollisionMesh->GetScaledBoxExtent().Z) >= cover.Z)
+					if ((sub->GetActorLocation().Z - sub->CollisionMesh->GetScaledBoxExtent().Z) <= cover.Z 
+						&& (sub->GetActorLocation().Z + sub->CollisionMesh->GetScaledBoxExtent().Z) >= cover.Z)
 					{
 						CoverSubEnArray.Add(cover);
 					}
@@ -699,7 +727,7 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 					}
 				}
 			}
-			else if (cross_Final.Z <= 0) // Right
+			else if (cross_Final.Z <= 0) // Left
 			{
 				if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
 				{

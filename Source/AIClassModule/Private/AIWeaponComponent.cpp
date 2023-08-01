@@ -35,13 +35,21 @@ UAIWeaponComponent::UAIWeaponComponent()
 		shotFX = ShotFX.Object;
 	}
 
-	// 총알 나이아가라 삽입
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ShotFXNiagara(TEXT("NiagaraSystem'/Game/SGJ/NS_BulletProjectile.NS_BulletProjectile'"));
-	if (DataTable.Succeeded())
-	{
-		shotFXNiagara = ShotFXNiagara.Object;
-	}
-	use_Shot_State = true;
+	//// 총알 나이아가라 삽입
+	//static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ShotFXNiagara(TEXT("NiagaraSystem'/Game/SGJ/NS_BulletProjectile.NS_BulletProjectile'"));
+	//if (DataTable.Succeeded())
+	//{
+	//	shotFXNiagara = ShotFXNiagara.Object;
+	//}
+	//use_Shot_State = true;
+
+	//// 라이플
+	//static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Rifle.DA_Rifle'"));
+	//if (rifle_da.Succeeded())
+	//{
+
+	//	RifleDataAssets = Cast<UWeaponDataAsset>(rifle_da.Object);
+	//}
 }
 
 void UAIWeaponComponent::BeginPlay()
