@@ -33,6 +33,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		if (sup.Value >= 90.0f)
 		{
 			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
+			Dis_start = false;
 			for (auto Loc : aic->commander->List_Location)
 			{
 				if (Loc.Key != *aic->commander->List_Location.FindKey(Sup_Vec))
@@ -56,7 +57,6 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-			Dis_start = false;
 		}
 		else
 		{
@@ -65,6 +65,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				if (com.Value == ECombat::Move)
 				{
 					Com_Vec = *aic->commander->List_Location.Find(com.Key);
+					Dis_start = false;
 					for (auto Loc : aic->commander->List_Location)
 					{
 						if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
@@ -89,7 +90,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				}
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-			Dis_start = false;
+			
 		}
 	}
 
