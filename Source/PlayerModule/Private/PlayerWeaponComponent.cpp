@@ -455,9 +455,15 @@ void UPlayerWeaponComponent::WeaponMeshSetting()
 	{
 	case EWeaponType::TE_Pistol:
 		WeaponMesh->SetSkeletalMesh(PistolMesh);
+		if (PistolAnimation) {
+			WeaponMesh->SetAnimInstanceClass(PistolAnimation);
+		}
 		break; 
 	case EWeaponType::TE_Rifle:
 		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		if (RifleAnimation) {
+			WeaponMesh->SetAnimInstanceClass(RifleAnimation);
+		}
 		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
 		break;
 	case EWeaponType::TE_Shotgun:
