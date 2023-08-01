@@ -71,6 +71,8 @@ public:
 		class UAIPatrolComponent* AIPatrol;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class UAISensingComponent* AISensing;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
+		class UAIStatComponent* AIStat;
 
 	// 몽타주
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

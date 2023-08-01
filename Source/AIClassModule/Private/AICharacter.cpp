@@ -15,7 +15,9 @@
 #include "AISensingComponent.h"
 #include "LastPoint.h"
 #include "AISpawner.h"
+#include "AIStatComponent.h"
 #include "AIInputComponent.h"
+#include "CoverComponent.h"
 
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -24,6 +26,7 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	AIWeapon = CreateDefaultSubobject<UAIWeaponComponent>(TEXT("AIWeapon"));
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
+	AIStat = CreateDefaultSubobject<UAIStatComponent>(TEXT("AIStat"));
 	m_InputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 	AIControllerClass = AAI_Controller::StaticClass();
