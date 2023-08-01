@@ -84,21 +84,28 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
 		if (player)
 		{
-			DistanceToPlayer = GetPawn()->GetDistanceTo(player);
-			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-			if (actor->ActorHasTag("Player"))
+			if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X
+				&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
 			{
-				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-				if (Blackboard->GetValueAsObject("Target") != nullptr)
+				if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y
+					&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
 				{
-					if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+					DistanceToPlayer = GetPawn()->GetDistanceTo(player);
+					UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+					if (actor->ActorHasTag("Player"))
 					{
-						GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+						bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+						if (Blackboard->GetValueAsObject("Target") != nullptr)
+						{
+							if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+							{
+								GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+							}
+						}
+						Blackboard->SetValueAsObject("Target", player);
 					}
 				}
-				Blackboard->SetValueAsObject("Target", player);
 			}
-
 		}
 		else {
 			bIsPlayerDetected = false;
