@@ -24,5 +24,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystem* BulletTracerParticle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UNiagaraSystem* BulletTrailFXNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UMaterialInstance*> Decals;
 };

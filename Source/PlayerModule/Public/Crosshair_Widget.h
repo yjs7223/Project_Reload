@@ -34,7 +34,11 @@ public:
 
 	void CheckHit();
 
+	void CheckDie();
+
 	void SetAmmoImage();
+
+	void PlayReloadAnim();
 
 	virtual void SetWidgetVisible() override;
 
@@ -44,6 +48,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* Crosshair_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Reload_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Up_Cross_image;
@@ -80,6 +87,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* FadeOutAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* ReloadAnim;
+
 public:
 	float m_alpha;
 	float m_offset;
@@ -91,4 +102,6 @@ public:
 	float widgetVisibleTime;
 	FTimerHandle VisibleTimer;
 	FTimerHandle HitTimer;
+	FTimerHandle DieTimer;
+	FTimerHandle ReloadTimer;
 };

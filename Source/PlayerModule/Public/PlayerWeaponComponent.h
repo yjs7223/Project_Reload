@@ -8,7 +8,11 @@
 
 DECLARE_DELEGATE(FOnChangedCrossHairAmmoDelegate);
 DECLARE_DELEGATE(FOnChangedCrossHairHitDelegate);
+DECLARE_DELEGATE(FOnChangedCrossHairDieDelegate);
 DECLARE_DELEGATE(FOnChangedAmmoUIDelegate);
+
+DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
+
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAmmoUIDelegate);
 
@@ -25,10 +29,14 @@ public:
 
 	FOnChangedCrossHairAmmoDelegate OnChangedCrossHairAmmoDelegate;
 	FOnChangedCrossHairHitDelegate OnChangedCrossHairHitDelegate;
+	FOnChangedCrossHairDieDelegate OnChangedCrossHairDieDelegate;
 	FOnVisibleCrossHairUIDelegate OnVisibleCrossHairUIDelegate;
+
 
 	FOnVisibleAmmoUIDelegate OnVisibleAmmoUIDelegate;
 	FOnChangedAmmoUIDelegate OnChangedAmmoUIDelegate;
+
+	FOnPlayReloadUIDelegate OnPlayReloadUIDelegate;
 
 protected:
 	// Called when the game starts
