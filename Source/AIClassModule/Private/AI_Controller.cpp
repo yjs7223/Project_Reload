@@ -22,7 +22,7 @@
 #include "SubEncounterSpace.h"
 #include "AISpawner.h"
 #include "AICharacterMoveComponent.h"
-
+#include "Components/BoxComponent.h"
 
 AAI_Controller::AAI_Controller()
 {
@@ -106,18 +106,26 @@ void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 		break;
 		// react to sight stimulus
 	case 1:
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
-		if (Blackboard->GetValueAsBool("AI_Active"))
+
+		if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X 
+			&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
 		{
-			if (Stimulus.Tag.IsValid())
+			if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y 
+				&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
 			{
-				if (Stimulus.Tag == "Shooting")
+				if (Blackboard->GetValueAsBool("AI_Active"))
 				{
-					Blackboard->SetValueAsObject("Target", player);
+					if (Stimulus.Tag.IsValid())
+					{
+						if (Stimulus.Tag == "Shooting")
+						{
+							Blackboard->SetValueAsObject("Target", player);
+						}
+					}
 				}
 			}
 		}
-		
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
 		break;
 		// react to hearing;
 	default:
