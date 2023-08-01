@@ -83,6 +83,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class TSubclassOf<UAnimInstance> RifleAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class TSubclassOf<UAnimInstance> PistolAnimation;
+
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMesh* RifleMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
