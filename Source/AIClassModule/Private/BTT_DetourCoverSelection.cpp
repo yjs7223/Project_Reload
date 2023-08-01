@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Engine/World.h"
 
 UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 {
@@ -93,6 +94,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 					if (AIController->GetBlackboardComponent())
 					{
 						AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", cover);
+						GetWorld()->SpawnActor<AActor>()
 						Cast<AAICharacter>(select_ai)->Detour = true;
 						commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
 					}
