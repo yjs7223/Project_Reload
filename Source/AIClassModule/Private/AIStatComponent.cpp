@@ -89,10 +89,11 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
-		if (AIController->commander->m_suben->AIArray.Find(GetOwner()))
+		isDie = true;
+		/*if (AIController->commander->m_suben->AIArray.Find(GetOwner()))
 		{
 			AIController->commander->m_suben->AIArray.Remove(GetOwner());
-		}
+		}*/
 	}
 	sup_Input = dmg;
 	Time = 0;
