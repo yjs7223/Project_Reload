@@ -11,7 +11,6 @@ UStatComponent::UStatComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 	// ...
 }
 
@@ -20,9 +19,14 @@ UStatComponent::UStatComponent()
 void UStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	owner = GetOwner<ABaseCharacter>();
 	// ...
 	
+}
+
+void UStatComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
 }
 
 
@@ -32,11 +36,6 @@ void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-}
-
-void UStatComponent::bindInput(UInputComponent* PlayerInputComponent)
-{
-	return;
 }
 
 ABaseCharacter* UStatComponent::GetCharacter()
@@ -67,5 +66,34 @@ void UStatComponent::Attacked(float p_damage)
 	{
 		curHP = 0.0f;
 	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(curHP));
+}
+
+void UStatComponent::Attacked(float p_damage, FHitResult result)
+{
+
+	curHP -= p_damage;
+	isAttacked = true;
+	if (curHP < 0.0f)
+	{
+		curHP = 0.0f;
+	}
+
+}
+
+void UStatComponent::Attacked(float p_damage, ABaseCharacter* character)
+{
+	curHP -= p_damage;
+	isAttacked = true;
+	if (curHP < 0.0f)
+	{
+		curHP = 0.0f;
+	}
+}
+
+void UStatComponent::Attacked(FHitResult result)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("indirection hit"));
 }
 

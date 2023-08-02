@@ -4,12 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Input.h"
 #include "StatComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class BASECLASSMODULE_API UStatComponent : public UActorComponent, public IInput
+class BASECLASSMODULE_API UStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -20,27 +19,31 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
+
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	virtual void bindInput(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
 		ABaseCharacter* GetCharacter();
 
 	//Default HP Setting
-	UFUNCTION(BlueprintCallable)
-		void SetHP(float p_HP);
+	//UFUNCTION(BlueprintCallable)
+	virtual void SetHP(float p_HP);
 
 	//Recover currnetHP
 	UFUNCTION(BlueprintCallable)
 		void RecoverHP(float p_HP);
 
 	//Damage process
-	UFUNCTION(BlueprintCallable)
-		void Attacked(float p_damage);
+	virtual void Attacked(float p_damage);
+	virtual void Attacked(float p_damage, FHitResult result);
+	virtual void Attacked(float p_damage, class ABaseCharacter* character);
+	virtual void Attacked(FHitResult result);
+
 public:
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
@@ -57,7 +60,7 @@ public:
 	//When Character's currentHP <= 0  isDie = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isDie;
-
+	
 
 protected:
 	UPROPERTY()

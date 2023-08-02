@@ -13,7 +13,8 @@ class BASECLASSMODULE_API ABaseCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	ABaseCharacter();
+	ABaseCharacter(const FObjectInitializer& ObjectInitializer);
+	//ABaseCharacter();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,10 +27,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
+	class UBaseInputComponent* m_InputComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
+	class UCoverComponent* m_CoverComponent;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UStatComponent* Stat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponComponent* Weapon;
+		class UWeaponComponent* Weapon;*/
 
 };

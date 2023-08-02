@@ -7,7 +7,11 @@
 		{
 			"Name": "Project_Reload",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AIClassModule",
+				"AICoverSystem"
+			]
 		},
 		{
 			"Name": "BaseClassModule",
@@ -23,7 +27,11 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"BaseClassModule"
+				"BaseClassModule",
+				"CoreUObject",
+				"Slate",
+				"SlateCore",
+				"UMG"
 			]
 		},
 		{
@@ -31,7 +39,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"BaseClassModule"
 			]
 		},
 		{
@@ -39,7 +48,12 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"BaseClassModule",
+				"AIModule",
+				"CoreUObject",
+				"AICoverSystem",
+				"UMG"
 			]
 		}
 	],
@@ -50,6 +64,36 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "VisualStudioTools",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/362651520df94e4fa65492dbcba44ae2",
+			"SupportedTargetPlatforms": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "AICoverSystem",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/0966972104ff4e94874096f15cf4f7f5"
+		},
+		{
+			"Name": "DragonIKPlugin",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/3f3985e9eb40414aaabf645791fa4916"
+		},
+		{
+			"Name": "AnimationWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "MotionWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayInsights",
+			"Enabled": true
 		}
 	]
 }

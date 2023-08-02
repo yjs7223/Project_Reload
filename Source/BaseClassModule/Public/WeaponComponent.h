@@ -6,6 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "WeaponComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	TE_Pistol UMETA(DisplayName = "Pistol"),
+	TE_Rifle UMETA(DisplayName = "Rifle"),
+	TE_Shotgun UMETA(DisplayName = "Shotgun"),
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
@@ -25,9 +32,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-		ABaseCharacter* GetCharacter();
-
-	UFUNCTION(BlueprintCallable)
 		void SetAmmo(int p_ammo);
 
 	UFUNCTION(BlueprintCallable)
@@ -37,20 +41,20 @@ public:
 	//UFUNCTION(BlueprintCallable)
 		virtual void Fire();
 
-		void StartFire();
-		void StopFire();
+		float getAimYaw();
+		float getAimPitch();
 
-		void StartReload();
-
-		void StartAim();
-		void StopAim();
+		void AimSetting();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		int maxAmmo;
+		int holdAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int curAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		int maxAmmo;
 		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isFire;
@@ -62,13 +66,39 @@ public:
 		bool isHit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		bool isAim;
+		bool isAiming;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Weapon)
+		bool m_CanShooting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		FVector2D damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		FVector2D H_damage;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		FRotator aimOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;
 
 
-protected:
-	UPROPERTY()
-		class ABaseCharacter* owner;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class TSubclassOf<UAnimInstance> RifleAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class TSubclassOf<UAnimInstance> PistolAnimation;
+
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USkeletalMesh* RifleMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USkeletalMesh* PistolMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USkeletalMesh* ShotgunMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		EWeaponType weapontype;
 };

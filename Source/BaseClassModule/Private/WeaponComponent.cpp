@@ -4,6 +4,8 @@
 #include "WeaponComponent.h"
 #include "Components/InputComponent.h"
 #include "BaseCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "CoverComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -11,12 +13,26 @@ UWeaponComponent::UWeaponComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	m_CanShooting = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_weapon(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
-	if (sk_weapon.Succeeded())
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
+	if (sk_rifle.Succeeded())
 	{
-		WeaponMesh->SetSkeletalMesh(sk_weapon.Object);
+		RifleMesh = sk_rifle.Object;
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_pistol(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/PIstolScifi/SKM_PistolSciFi.SKM_PistolSciFi'"));
+	if (sk_pistol.Succeeded())
+	{
+		PistolMesh = sk_pistol.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_shotgun(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Shotgun/SKM_Shotgun.SKM_Shotgun'"));
+	if (sk_shotgun.Succeeded())
+	{
+		ShotgunMesh = sk_shotgun.Object;
 	}
 	// ...
 }
@@ -26,7 +42,6 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = GetOwner<ABaseCharacter>();
 	// ...
 	
 }
@@ -36,7 +51,7 @@ void UWeaponComponent::BeginPlay()
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	AimSetting();
 	// ...
 }
 
@@ -45,21 +60,29 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //	return;
 //}
 
-ABaseCharacter* UWeaponComponent::GetCharacter()
-{
-	return owner;
-}
-
-
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
-	maxAmmo = p_ammo;
-	curAmmo = p_ammo;
+	holdAmmo = p_ammo;
+	switch (weapontype)
+	{
+	case EWeaponType::TE_Pistol:
+		curAmmo = 10;
+		break;
+	case EWeaponType::TE_Rifle:
+		curAmmo = 30;
+		break;
+	case EWeaponType::TE_Shotgun:
+		curAmmo = 7;
+		break;
+	default:
+		curAmmo = 30;
+		break;
+	}
 }
 
 void UWeaponComponent::ReloadAmmo()
 {
-	if (maxAmmo <= 0)
+	if (holdAmmo <= 0)
 	{
 		return;
 	}
@@ -71,14 +94,14 @@ void UWeaponComponent::ReloadAmmo()
 
 
 	int m_ammo = 0;
-	if (maxAmmo < 30)
+	if (holdAmmo < 30)
 	{
-		m_ammo = maxAmmo;
+		m_ammo = holdAmmo;
 	}
 	else
 	{
 		m_ammo = 30;
-		maxAmmo -= m_ammo;
+		holdAmmo -= m_ammo;
 	}
 
 	isReload = true;
@@ -91,28 +114,43 @@ void UWeaponComponent::Fire()
 	return;
 }
 
-void UWeaponComponent::StartFire()
+float UWeaponComponent::getAimYaw()
 {
-	isFire = true;
+	return aimOffset.Yaw;
 }
 
-void UWeaponComponent::StopFire()
+float UWeaponComponent::getAimPitch()
 {
-	isFire = false;
+	return aimOffset.Pitch;
 }
 
-void UWeaponComponent::StartReload()
+void UWeaponComponent::AimSetting()
 {
-	isReload = true;
-}
+	FRotator temprot;
+	ACharacter* Owner = GetOwner<ACharacter>();
+	temprot = Owner->GetControlRotation() - Owner->GetActorRotation();
 
-void UWeaponComponent::StartAim()
-{
-	isAim = true;
-}
+	aimOffset.Pitch = FMath::ClampAngle(temprot.Pitch, -90, 90);
+	aimOffset.Yaw = temprot.Yaw;
+	if (aimOffset.Yaw > 180) aimOffset.Yaw -= 360;
 
-void UWeaponComponent::StopAim()
-{
-	isAim = false;
+	FRotator cameraRotation;
+	FVector start;
+	Owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	FVector end = start + (cameraRotation.Vector() * 99999);
+
+	FHitResult result;
+	FCollisionQueryParams param(NAME_None, true, GetOwner());
+
+	if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param))
+	{
+		temprot = UKismetMathLibrary::FindLookAtRotation(result.Location, start);
+	}
+	else
+	{
+		temprot = UKismetMathLibrary::FindLookAtRotation(end, start);
+	}
+
+
 }
 
