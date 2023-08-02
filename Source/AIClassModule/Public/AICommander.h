@@ -138,7 +138,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AActor* blueball;
+		TSubclassOf<class AActor> RedBallBlueprint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AActor* redball;
 
