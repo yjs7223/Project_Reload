@@ -75,7 +75,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		break;
 	case EMove::Hit:
 		timeDeltaTime += DeltaTime;
-		if (Time >= 1.0f)
+		if (Time >= 0.5f)
 		{
 			timeDeltaTime = 0;
 			e_move = EMove::Normal;
