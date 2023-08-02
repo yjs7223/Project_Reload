@@ -18,6 +18,8 @@ enum class AI_Anim_Type : uint8
 	Aiming,
 
 	Reload,
+
+	Cover,
 };
 
 UCLASS()
@@ -41,6 +43,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 		void AIStopCrouching();
 
+
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 		void AIRuning();
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
@@ -59,4 +62,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIStartReload();
+
+
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
+		void AIStartCover();
+	UFUNCTION(BlueprintCallable, Category = "AIAnim")
+		void AIStopCover();
 };
