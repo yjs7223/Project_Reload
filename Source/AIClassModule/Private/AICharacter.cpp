@@ -18,7 +18,10 @@
 #include "AIStatComponent.h"
 #include "AIInputComponent.h"
 #include "CoverComponent.h"
-
+#include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "AI_HP_Widget.h"
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -61,21 +64,65 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	//CollisionMesh->SetRelativeLocation(FVector(0, 0, 0));
 	
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAICharacter::OnOverlapBegin);
+
+
+	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
+	HPWidgetComponent->SetupAttachment(GetMesh());
+	HPWidgetComponent->SetRelativeLocation(FVector(.0f, .0f, 210.0f));
+
 }
 
 void AAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	mesh = FindComponentByClass<USkeletalMeshComponent>();
+
+	if (AIStat)
+	{
+		AIStat->SetHP(100.0f);
+	}
+	InitWidget();
+
 }
 
 void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateWidget();
 }
 
 
+
+void AAICharacter::InitWidget()
+{
+	if (HPWidgetComponent)
+	{
+		HPWidgetComponent->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
+		HPWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+		HPWidgetComponent->SetDrawSize(FVector2D(600.0f, 100.0f));
+
+		if (HP_Widget)
+		{
+			HPWidgetComponent->SetWidgetClass(HP_Widget);
+			Cast<UAI_HP_Widget>(HPWidgetComponent->GetWidget())->SetDelegate(this);
+		}
+	}
+}
+
+void AAICharacter::UpdateWidget()
+{
+	if (player)
+	{
+		FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->GetActorLocation());
+		HPWidgetComponent->SetWorldRotation(FRotator(0, m_rot.Yaw, 0));
+	}
+	else
+	{
+		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	}
+}
 
 void AAICharacter::SetDataTable(FName EnemyName)
 {
@@ -92,7 +139,7 @@ void AAICharacter::SetDataTable(FName EnemyName)
 
 void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
+
 }
 
 void AAICharacter::IdleAnim()

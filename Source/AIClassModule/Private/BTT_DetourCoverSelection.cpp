@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/World.h"
+#include "SubEncounterSpace.h"
 
 UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 {
@@ -49,6 +50,18 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 				for (auto coverlist : commander->List_CoverPoint)
 				{
 					if (FVector::Distance(cover, coverlist.Value) < 200)
+					{
+						B_distance = true;
+					}
+				}
+				for (auto subAi : commander->m_suben->AIArray)
+				{
+					if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
+					{
+						continue;
+					}
+					AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
+					if (FVector::Distance(cover, sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
 					{
 						B_distance = true;
 					}

@@ -90,6 +90,8 @@ public:
 
 	void SpawnImpactEffect(FHitResult result);
 
+	void Threaten();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class APlayerCharacter* owner;
@@ -137,6 +139,8 @@ public:
 		float m_dValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FTimerHandle fHandle;
+
+	FTimerHandle AimingTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bRecoil;
