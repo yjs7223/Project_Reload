@@ -48,8 +48,8 @@ void UCoverComponent::BeginPlay()
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
 	capsule = owner->GetCapsuleComponent();
-
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
+
 	if (m_PathFollowingComp == nullptr)
 	{
 		m_PathFollowingComp = NewObject<UPathFollowingComponent>(owner->GetController());
@@ -59,9 +59,8 @@ void UCoverComponent::BeginPlay()
 		m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 		m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	}
-
-
 }
+
 
 // Called every frame
 void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

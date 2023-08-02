@@ -102,7 +102,10 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	{
 		curHP = 0.0f;
 		isDie = true;
-
+		if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
+		{
+			Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
+		}
 		if (AIController->commander->List_Division.Find(GetOwner()))
 		{
 			AIController->commander->List_Division.Remove(GetOwner());
