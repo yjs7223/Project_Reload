@@ -7,7 +7,6 @@
 #include "DrawDebugHelpers.h"
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
-#include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
 
 UAISensingComponent::UAISensingComponent()
