@@ -224,7 +224,7 @@ void UCrosshair_Widget::CheckHit()
 
 void UCrosshair_Widget::CheckDie()
 {
-	GetWorld()->GetTimerManager().ClearTimer(DieTimer);
+	//GetWorld()->GetTimerManager().ClearTimer(DieTimer);
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{

@@ -37,6 +37,7 @@ UAIStatComponent::UAIStatComponent()
 		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
 	}
 	SetDataTable("Rifle_E");
+
 }
 
 void UAIStatComponent::BeginPlay()
@@ -115,7 +116,11 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	Time = 0;
 	PlayerAtt_ai = true;
 	SuppresionPoint();
+
+	OnVisibleEnemyHPUIDelegate.ExecuteIfBound();
+	OnChangeEnemyHPUIDelegate.ExecuteIfBound();
 }
+
 
 //void UAIStatComponent::Attacked(FHitResult result)
 //{
@@ -126,7 +131,8 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 
 void UAIStatComponent::SuppresionPoint()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
+	//
+
 	if (AIController && AIController->GetBlackboardComponent())
 	{
 		AI_PlayerDis = GetOwner()->GetDistanceTo(player);
