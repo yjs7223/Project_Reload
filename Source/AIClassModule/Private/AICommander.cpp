@@ -78,8 +78,7 @@ AAICommander::AAICommander()
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
 	
-	SetDataTable("Rifle_E");
-	SetCommanderDataTable("Commander");
+	
 	
 }
 
@@ -93,6 +92,8 @@ void AAICommander::BeginPlay()
 	UseBlackboard(BB_AICommander, BlackboardComp);
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
+	SetDataTable("Rifle_E");
+	SetCommanderDataTable("Commander");
 }
 
 void AAICommander::SetDataTable(FName EnemyName)
@@ -165,6 +166,8 @@ void AAICommander::ListSet()
 						TargetTickSet(m_suben);
 						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
+						SiegeCoverPoint();
+						DetourCoverPoint();
 						if (List_Division.Num() <= 0)
 						{
 							ListReset(m_suben);
@@ -524,7 +527,6 @@ void AAICommander::SiegeCoverPoint()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SiegeCoverPoint");
 	SiegeCoverArray.Reset();
-
 	if (!CoverArray.IsEmpty())
 	{
 		if (!CoverSubEnArray.IsEmpty())
@@ -533,7 +535,7 @@ void AAICommander::SiegeCoverPoint()
 			{
 				for (auto enemy_cover : CoverEnemyArray)
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 360, player->GetMesh()->GetForwardVector()))
+					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 180, player->GetMesh()->GetForwardVector()))
 					{
 						SiegeCoverArray.Add(enemy_cover);
 					}
@@ -545,32 +547,32 @@ void AAICommander::SiegeCoverPoint()
 
 void AAICommander::DetourCoverPoint()
 {
-	if (player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
+	
+	//FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
+	DetourCoverArray.Reset();
+	if (!CoverArray.IsEmpty())
 	{
-		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
-		DetourCoverArray.Reset();
-		if (!CoverArray.IsEmpty())
+		if (!CoverSubEnArray.IsEmpty())
 		{
-			if (!CoverSubEnArray.IsEmpty())
+			if (!CoverEnemyArray.IsEmpty())
 			{
-				if (!CoverEnemyArray.IsEmpty())
+				for (auto enemy_cover : CoverEnemyArray)
 				{
-					for (auto enemy_cover : CoverEnemyArray)
+					if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, player->GetCapsuleComponent()->GetForwardVector()))
 					{
-						if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, cover_rot))
+						if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, player->GetCapsuleComponent()->GetForwardVector()))
 						{
-							if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, cover_rot))
-							{
-								DetourCoverArray.Add(enemy_cover);
-							}
+							DetourCoverArray.Add(enemy_cover);
 						}
 					}
 				}
 			}
 		}
 	}
+	
 }
+
 
 bool AAICommander::IsPlayerInsideFanArea(FVector CoverPoint,float LocationRadius, float FanAngle, FVector FanDirection)
 {

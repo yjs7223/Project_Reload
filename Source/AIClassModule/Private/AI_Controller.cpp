@@ -159,7 +159,7 @@ void AAI_Controller::SetUseCover()
 		FVector playerLocation = playerMesh->GetSocketLocation(TEXT("head"));
 		
 		
-		// ¾öÆó °¡´É Áö¿ª Ã¼Å©
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
 		if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
@@ -170,13 +170,13 @@ void AAI_Controller::SetUseCover()
 			}
 			else
 			{
-				// AI°¡ ¾öÆó ÁßÀÌ¸é
+				// AIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½
 				if (GetBlackboardComponent()->GetValueAsBool("AI_InCover"))
 				{
-					// ¸Ó¸®°¡ º¸ÀÌ´ÂÁö Ã¼Å©
+					// ï¿½Ó¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ Ã¼Å©
 					if (GetWorld()->LineTraceSingleByChannel(headResult, headVec, playerLocation, ECC_Visibility, collisionParams))
 					{
-						// ÇÃ·¹ÀÌ¾î¸é¼­ ±× °Å¸®°¡ °¡±õ´Ù¸é
+						// ï¿½Ã·ï¿½ï¿½Ì¾ï¿½é¼­ ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ù¸ï¿½
 						if (headResult.GetActor()->ActorHasTag("Player") && GetPawn()->GetDistanceTo(result.GetActor()) <= 500.0f)
 						{
 							GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
