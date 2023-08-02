@@ -158,13 +158,13 @@ void AAI_Controller::SetUseCover()
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover false"));
+				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover false"));
 				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover true"));
+				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover true"));
 				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
 			}
