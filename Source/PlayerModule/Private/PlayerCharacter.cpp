@@ -17,6 +17,7 @@
 #include "Crosshair_Widget.h"
 #include "Player_Cover_Widget.h"
 #include "Attacked_Widget.h"
+#include "Damage_Widget.h"
 #include "CameraControllComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 //#include "Kismet/GameplayStatics.h"
@@ -222,6 +223,19 @@ void APlayerCharacter::WidgetShow()
 	if (Crosshair_Widget)
 	{
 		Crosshair_Widget->SetWidgetVisible();
+	}
+}
+
+void APlayerCharacter::CreateDamageWidget(float value)
+{
+	if (Damage_Widget)
+	{
+		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_Widget);
+		if (dwidget)
+		{
+			dwidget->SetDamageText(value);
+			dwidget->AddToViewport();
+		}
 	}
 }
 
