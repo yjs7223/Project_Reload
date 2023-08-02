@@ -148,9 +148,11 @@ void UAIWeaponComponent::ShotAI()
 	UGameplayStatics::SpawnEmitterAtLocation(this, shotFX, start, rot, true);
 
 	// 총알 생성
-	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, rot + FRotator(x, y, 0));
 
-	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);
+	/*shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, rot + FRotator(x, y, 0));
+
+	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);*/
+
 
 	DrawDebugLine(GetWorld(), start, end2, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
