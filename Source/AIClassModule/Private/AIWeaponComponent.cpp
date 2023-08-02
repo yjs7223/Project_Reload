@@ -18,7 +18,6 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
-#include "AIWeaponDataAsset.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -29,26 +28,28 @@ UAIWeaponComponent::UAIWeaponComponent()
 		AIShotData = DataTable.Object;
 	}
 
+	// 총구 불꽃 파티클 삽입
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ShotFX(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_RealAssaultRifle_MF.P_AssaultRifle_MF'"));
+	if (DataTable.Succeeded())
+	{
+		shotFX = ShotFX.Object;
+	}
+
 	//// 총알 나이아가라 삽입
 	//static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ShotFXNiagara(TEXT("NiagaraSystem'/Game/SGJ/NS_BulletProjectile.NS_BulletProjectile'"));
 	//if (DataTable.Succeeded())
 	//{
 	//	shotFXNiagara = ShotFXNiagara.Object;
 	//}
+	//use_Shot_State = true;
 
-	// 라이플
-	static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIRifle.DA_AIRifle'"));
-	if (rifle_da.Succeeded())
-	{
-		RifleDataAsset = Cast<UAIWeaponDataAsset>(rifle_da.Object);
-	}
+	//// 라이플
+	//static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Rifle.DA_Rifle'"));
+	//if (rifle_da.Succeeded())
+	//{
 
-	// 총 피격 이펙트
-	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
-	if (hitimpact.Succeeded())
-	{
-		HitImpactDataAsset = Cast<UHitImapactDataAsset>(hitimpact.Object);
-	}
+	//	RifleDataAssets = Cast<UWeaponDataAsset>(rifle_da.Object);
+	//}
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -58,10 +59,6 @@ void UAIWeaponComponent::BeginPlay()
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
 	AITypeSetting();
-	use_Shot_State = true;
-
-	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 }
 
 
@@ -93,12 +90,12 @@ void UAIWeaponComponent::ShotAI()
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_04"));
-	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+	FVector end = start + ((rot + FRotator(x, y, 0)).Vector() * shot_MaxRange);
+	FVector end2 = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
 	{
 		// AI가 앞을 막고 있을 때 사격 불가능
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
@@ -108,7 +105,7 @@ void UAIWeaponComponent::ShotAI()
 	}
 	
 	// 사격 방향 체크
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end2, ECC_Visibility, traceParams))
 	{
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
@@ -146,21 +143,14 @@ void UAIWeaponComponent::ShotAI()
 	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 
 	// 총구 불꽃 생성
-	//UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFireParticle, start, rot, true);
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
-
-	// 총알 생성
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, (playerLocation - start).Rotation() + FRotator(x, y, 0));
-
-	// 사운드 재생
-	PlayRandomShotSound();
+	UGameplayStatics::SpawnEmitterAtLocation(this, shotFX, start, rot, true);
 
 	// 총알 생성
 	/*shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, rot + FRotator(x, y, 0));
 
 	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);*/
 
-	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
+	DrawDebugLine(GetWorld(), start, end2, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
 }
 
@@ -203,56 +193,42 @@ void UAIWeaponComponent::ReloadAI()
 
 void UAIWeaponComponent::AITypeSetting()
 {
-	if (AIShotData)
+	switch (type)
 	{
-		switch (type)
-		{
-		case Enemy_Name::RIFLE:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
-			AIWeaponDataAsset = RifleDataAsset;
-			break;
-		case Enemy_Name::HEAVY:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Heavy_E", TEXT(""));
-			break;
-		case Enemy_Name::SNIPER:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Sniper_E", TEXT(""));
-			break;
-		}
-
-		// 가져온 데이터 삽입
-		recoil_Range = curAIShotData->Recoil_Range;
-		recoilMax_Radius = curAIShotData->RecoilMax_Radius;
-		recoilMin_Radius = curAIShotData->RecoilMin_Radius;
-
-		shot_MaxRange = curAIShotData->Shot_MaxRange;
-		shot_MinRange = curAIShotData->Shot_MinRange;
-
-		shot_MaxDmg = curAIShotData->Shot_MaxDmg;
-		shot_MinDmg = curAIShotData->Shot_MinDmg;
-
-		shot_MaxCount = curAIShotData->Shot_MaxCount;
-
-		shot_Delay = curAIShotData->Shot_ShootDelay;
-
-		// 현재 반동은 최대로 시작
-		recoil_Radius = recoilMax_Radius;
-
-		// 첫 총알은 최대로
-		cur_Shot_Count = shot_MaxCount;
+	case Enemy_Name::RIFLE:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
+		break;
+	case Enemy_Name::HEAVY:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Heavy_E", TEXT(""));
+		break;
+	case Enemy_Name::SNIPER:
+		// 라이플 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>("Sniper_E", TEXT(""));
+		break;
 	}
-	if (AIWeaponDataAsset != nullptr)
-	{
-		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
-		BulletTracerParticle = AIWeaponDataAsset->BulletTracerParticle;
-		shotFXNiagara = AIWeaponDataAsset->BulletTrailFXNiagara;
 
-		ShotSounds = AIWeaponDataAsset->ShotSounds;
+	// 가져온 데이터 삽입
+	recoil_Range = curAIShotData->Recoil_Range;
+	recoilMax_Radius = curAIShotData->RecoilMax_Radius;
+	recoilMin_Radius = curAIShotData->RecoilMin_Radius;
 
-		Decal = AIWeaponDataAsset->Decals[0];
-	}
+	shot_MaxRange = curAIShotData->Shot_MaxRange;
+	shot_MinRange = curAIShotData->Shot_MinRange;
+
+	shot_MaxDmg = curAIShotData->Shot_MaxDmg;
+	shot_MinDmg = curAIShotData->Shot_MinDmg;
+
+	shot_MaxCount = curAIShotData->Shot_MaxCount;
+
+	shot_Delay = curAIShotData->Shot_ShootDelay;
+
+	// 현재 반동은 최대로 시작
+	recoil_Radius = recoilMax_Radius;
+
+	// 첫 총알은 최대로
+	cur_Shot_Count = shot_MaxCount;
 }
 
 bool UAIWeaponComponent::AITypeSniperCheck()
@@ -291,73 +267,54 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 {
 	if (HitImpactDataAsset)
 	{
-		if (p_result.GetActor())
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("SpawnImpact"));
+		if (result.GetActor()->ActorHasTag("Enemy"))
 		{
-			if (p_result.GetActor()->Tags.Num() > 0)
+			if (result.GetActor()->ActorHasTag("Robot"))
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("SpawnImpact"));
-				if (p_result.GetActor()->ActorHasTag("Player"))
-				{
-					if (p_result.GetActor()->ActorHasTag("Robot"))
-					{
-						hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Human"))
-					{
-						hitFXNiagara = HitImpactDataAsset->HumanHitFXNiagara;
-					}
-					else
-					{
-						hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
-					}
-				}
-				else
-				{
-					if (p_result.GetActor()->ActorHasTag("Metal"))
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Metal"));
-						hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Rock"))
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Rock"));
-						hitFXNiagara = HitImpactDataAsset->RockHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Mud"))
-					{
-						hitFXNiagara = HitImpactDataAsset->MudHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Glass"))
-					{
-						hitFXNiagara = HitImpactDataAsset->GlassHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Water"))
-					{
-						hitFXNiagara = HitImpactDataAsset->WaterHitFXNiagara;
-					}
-					else
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
-						hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
-					}
-
-				}
+				hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Human"))
+			{
+				hitFXNiagara = HitImpactDataAsset->HumanHitFXNiagara;
 			}
 			else
 			{
+				hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+			}
+		}
+		else
+		{
+			if (result.GetActor()->ActorHasTag("Metal"))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Metal"));
 				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
 			}
+			else if (result.GetActor()->ActorHasTag("Rock"))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Rock"));
+				hitFXNiagara = HitImpactDataAsset->RockHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Mud"))
+			{
+				hitFXNiagara = HitImpactDataAsset->MudHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Glass"))
+			{
+				hitFXNiagara = HitImpactDataAsset->GlassHitFXNiagara;
+			}
+			else if (result.GetActor()->ActorHasTag("Water"))
+			{
+				hitFXNiagara = HitImpactDataAsset->WaterHitFXNiagara;
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
+				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
+			}
+
 		}
 	}
 
-	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(p_result.Location, GetOwner()->GetActorLocation());
-	m_rot.Pitch -= 90.0f;
-
-	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, p_result.Location);
-}
-
-void UAIWeaponComponent::PlayRandomShotSound()
-{
-	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
+	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, result.Location);
 }
