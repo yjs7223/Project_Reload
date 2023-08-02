@@ -28,7 +28,8 @@
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "Math/UnrealMathUtility.h"
+#include "Math/Vector.h"
 
 
 // Sets default values
@@ -166,8 +167,6 @@ void AAICommander::ListSet()
 						TargetTickSet(m_suben);
 						CoverPointSubEn(m_suben);
 						CoverPointEnemy();
-						SiegeCoverPoint();
-						DetourCoverPoint();
 						if (List_Division.Num() <= 0)
 						{
 							ListReset(m_suben);
@@ -309,30 +308,6 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 	if (SightIn_CHK == false)
 	{
 		Cmd_SightOut = true;
-		/*Patrol_CHK = false;
-		for (auto enemy : List_Division)
-		{
-			AIController = nullptr;
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(enemy.Key)->GetController());
-			if (AIController)
-			{
-				if (AIController->GetBlackboardComponent())
-				{
-					if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == 0)
-					{
-						Patrol_CHK = true;
-					}
-				}
-			}
-		}
-		if (Patrol_CHK)
-		{
-			Cmd_SightOut = true;
-		}
-		else
-		{
-			Cmd_SightOut = false;
-		}*/
 	}
 	else
 	{
@@ -535,7 +510,7 @@ void AAICommander::SiegeCoverPoint()
 			{
 				for (auto enemy_cover : CoverEnemyArray)
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, siege_range, 180, player->GetMesh()->GetForwardVector()))
+					if (FVector::Distance(player->GetActorLocation(), enemy_cover) < 1000.0f)
 					{
 						SiegeCoverArray.Add(enemy_cover);
 					}
@@ -559,12 +534,17 @@ void AAICommander::DetourCoverPoint()
 			{
 				for (auto enemy_cover : CoverEnemyArray)
 				{
-					if (IsPlayerInsideFanArea(enemy_cover, detour_range, detour_angle, player->GetCapsuleComponent()->GetForwardVector()))
+					FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), enemy_cover).Vector();
+					Find_rot.Normalize();
+					float Dot_Cover = FVector::DotProduct(player->GetCapsuleComponent()->GetForwardVector(), Find_rot);
+					float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+					if (angle < detour_angle && angle > ndetour_angle)
 					{
-						if (!IsPlayerInsideFanArea(enemy_cover, detour_range, ndetour_angle, player->GetCapsuleComponent()->GetForwardVector()))
+						if (FVector::Distance(player->GetActorLocation(), enemy_cover) < 2000.0f)
 						{
 							DetourCoverArray.Add(enemy_cover);
 						}
+						
 					}
 				}
 			}
@@ -629,7 +609,9 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 					{
 						if (MiddleLocation != C_Point)
 						{
-							float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+							FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
+							cover_rot.Normalize();
+							float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
 							float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
 							float AngPoint = 100 - (100 * (angle * DI_Ang));
 							if (AngPoint < 0)
@@ -664,7 +646,9 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 					{
 						if (MiddleLocation != C_Point)
 						{
-							float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+							FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
+							cover_rot.Normalize();
+							float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
 							float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
 							float AngPoint = 100 - (100 * (angle * DI_Ang));
 							if (AngPoint < 0)
@@ -704,7 +688,9 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 				{
 					if (FVector::CrossProduct(player_rot, C_Point).Z > 0)
 					{
-						float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+						FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
+						cover_rot.Normalize();
+						float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
 						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
 						float AngPoint = 100 - (100 * (angle * DI_Ang));
 						if (AngPoint < 0)
@@ -736,7 +722,9 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 				{
 					if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
 					{
-						float Dot_Cover = FVector::DotProduct(Find_rot, C_Point);
+						FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
+						cover_rot.Normalize();
+						float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
 						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
 						float AngPoint = 100 - (100 * (angle * DI_Ang));
 						if (AngPoint < 0)
