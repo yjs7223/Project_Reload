@@ -26,6 +26,7 @@
 #include "WeaponDataAsset.h"
 #include "HitImapactDataAsset.h"
 #include "Perception/AISense_Hearing.h"
+#include "Components/WidgetComponent.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -234,6 +235,7 @@ void UPlayerWeaponComponent::Fire()
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		}
 	}
+	//UGameplayStatics::
 
 	if (m_result.GetActor())
 	{
@@ -260,6 +262,7 @@ void UPlayerWeaponComponent::Fire()
 						damageVlaue = FMath::RandRange(damage.X, damage.Y);
 						MyStat->Attacked(damageVlaue, m_result);
 					}
+					owner->CreateDamageWidget(damageVlaue);
 				}
 			}
 			else
@@ -281,7 +284,8 @@ void UPlayerWeaponComponent::Fire()
 	}
 
 	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	GameStatic->SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
+	//UGameplayStatics::SpawnEmitterAtLocation()
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
 	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotFXNiagara, start);
 	//shotFXComponent->SetNiagaraVariableVec3("Beam_end", m_result.Location);
 
@@ -322,6 +326,9 @@ void UPlayerWeaponComponent::StartAiming()
 	FVector end;
 	isAiming = true;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
+	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3, true, 0.0f);
+
 	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
@@ -329,6 +336,8 @@ void UPlayerWeaponComponent::StartAiming()
 void UPlayerWeaponComponent::StopAiming()
 {
 	isAiming = false;
+	owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
+	owner->GetWorldTimerManager().ClearTimer(AimingTimer);
 	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
@@ -365,7 +374,7 @@ void UPlayerWeaponComponent::StopFire()
 		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		isFire = false;
-
+		
 		OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 		OnVisibleAmmoUIDelegate.ExecuteIfBound();
 		StartRecovery();
@@ -376,6 +385,11 @@ void UPlayerWeaponComponent::StartReload()
 {
 	//ReloadAmmo();
 	StopFire();
+	if (isReload)
+	{
+		return;
+	}
+
 	switch (weapontype)
 	{
 	case EWeaponType::TE_Pistol:
@@ -780,6 +794,37 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
 
 	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location);//, m_rot);
+}
+
+void UPlayerWeaponComponent::Threaten()
+{
+	FVector start;
+	FRotator cameraRotation;
+	FVector end;
+	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	end = start + (cameraRotation.Vector() * 99999);
+	FCollisionQueryParams param(NAME_None, true, owner);
+	FHitResult result;
+	//GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(50.0f))
+	//DrawDebugSphere(GetWorld(), start, 50.0f, 50.0f, FColor::Red, true);
+	if (GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_GameTraceChannel3, FCollisionShape::MakeSphere(50.0f)))
+	{
+		//DrawDebugSphere(GetWorld(), result.Location, 50.0f, 50.0f, FColor::Red, true);
+		if (result.GetActor())
+		{
+			if (result.GetActor()->Tags.Num() > 0)
+			{
+				if (result.GetActor()->ActorHasTag("Enemy"))
+				{
+					UStatComponent* stat = result.GetActor()->FindComponentByClass<UStatComponent>();
+					if (stat)
+					{
+						stat->isThreat = true;
+					}
+				}
+			}
+		}
+	}
 }
 
 
