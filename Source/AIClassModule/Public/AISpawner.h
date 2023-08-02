@@ -74,8 +74,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AActor> lastPoint;
 
-	float pointTime;
-	bool pointSpawnCheck;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		float pointTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		bool pointSpawnCheck;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		ACharacter* player;
+
+	// LastPoint
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		AActor* cpyLastPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		class ASubEncounterSpace* suben;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -102,5 +114,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 		void SpawnLastPoint(float DeltaTime);
 
-	void SetNullSightOut();
+	void SetDataTable();
 };

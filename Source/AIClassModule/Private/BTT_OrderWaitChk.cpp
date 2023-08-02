@@ -16,46 +16,32 @@ UBTT_OrderWaitChk::UBTT_OrderWaitChk()
 
 EBTNodeResult::Type UBTT_OrderWaitChk::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	orderchk = false;
-	for (auto ai : Cast<AAICommander>(OwnerComp.GetAIOwner())->List_Division)
+	if (!commander)
 	{
-		AIController = nullptr;
-		ACharacter = Cast<AAICharacter>(ai.Key);
-		if (ACharacter)
+		commander = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	}
+	if (commander && commander->GetBlackboardComponent())
+	{
+		orderchk = false;
+		for (auto ai : commander->List_Division)
 		{
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-		}
-		if (AIController)
-		{
-			if (AIController->BlackboardComponent)
+			AIController = nullptr;
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
+			if (AIController)
 			{
-				BlackboardComponent = AIController->BlackboardComponent;
-				if (BlackboardComponent->GetValueAsBool("OrderWait"))
+				if (AIController->GetBlackboardComponent())
 				{
-					orderchk = true;
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("OrderWait"))
+					{
+						orderchk = true;
+					}
 				}
 			}
 		}
-	}
-	AIController = nullptr;
-	ACharacter = Cast<AAICharacter>(Cast<AAICommander>(OwnerComp.GetAIOwner()));
-	if (ACharacter)
-	{
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ACharacter)->GetController());
-	}
-	if (AIController)
-	{
-		if (AIController->BlackboardComponent)
+		
+		if(!orderchk)
 		{
-			BlackboardComponent = AIController->BlackboardComponent;
-			if (orderchk)
-			{
-				BlackboardComponent->SetValueAsBool("Cmd_OrderWait", true);
-			}
-			else
-			{
-				BlackboardComponent->SetValueAsBool("Cmd_OrderWait", false);
-			}
+			commander->GetBlackboardComponent()->SetValueAsBool("CmdAI_OrderWait", false);
 		}
 	}
 	

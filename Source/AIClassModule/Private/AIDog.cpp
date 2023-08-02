@@ -18,12 +18,12 @@ AAIDog::AAIDog()
 	{
 		explosionFX = ExplosionFX.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSound(TEXT("SoundCue'/Game/SGJ/Explosion_Dog_Cue.Explosion_Dog_Cue'"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSound(TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Dog_Cue.Explosion_Dog_Cue'"));
 	if (ExplosionSound.Succeeded())
 	{
 		explosionSound = ExplosionSound.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<USoundBase> FlashSound(TEXT("SoundCue'/Game/SGJ/Explosion_Timer_Cue.Explosion_Timer_Cue'"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> FlashSound(TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Timer_Cue.Explosion_Timer_Cue'"));
 	if (FlashSound.Succeeded())
 	{
 		flashSound = FlashSound.Object;

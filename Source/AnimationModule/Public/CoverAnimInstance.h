@@ -22,7 +22,6 @@ public:
 	virtual void NativeBeginPlay() override;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	void SetHandleing(float DeltaTime);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)

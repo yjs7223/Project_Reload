@@ -31,6 +31,7 @@ public:
 
 	void InitWidget(FViewport* viewport, uint32 value);
 	void UpdateWidget(float deltatime);
+	void WidgetShow();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -56,6 +57,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UCrosshair_Widget* Crosshair_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> Attacked_WidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAttacked_Widget* Attacked_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWidgetComponent* CoverWidgetComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> Cover_Widget;
     
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)

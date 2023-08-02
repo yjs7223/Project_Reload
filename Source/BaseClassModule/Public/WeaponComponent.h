@@ -48,10 +48,13 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		int maxAmmo;
+		int holdAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int curAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		int maxAmmo;
 		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isFire;
@@ -64,6 +67,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		bool isAiming;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Weapon)
+		bool m_CanShooting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		FVector2D damage;
@@ -77,6 +82,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMeshComponent* WeaponMesh;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class TSubclassOf<UAnimInstance> RifleAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class TSubclassOf<UAnimInstance> PistolAnimation;
+
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class USkeletalMesh* RifleMesh;

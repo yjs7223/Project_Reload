@@ -8,6 +8,9 @@
 
 UBTS_SupportState::UBTS_SupportState()
 {
+
+	//Interval = 0.5f;
+
 	NodeName = TEXT("SupportState");
 	Dis_start = false;
 }
@@ -21,15 +24,19 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	UWorld* World = ControllingPawn->GetWorld();
 	if (nullptr == World) return;
-	
-	for (auto sup : Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Suppression)
+	if (!aic)
+	{
+		aic = Cast<AAI_Controller>(OwnerComp.GetAIOwner());
+	}
+	for (auto sup : aic->commander->List_Suppression)
 	{
 		if (sup.Value >= 90.0f)
 		{
-			Sup_Vec = *Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Location.Find(sup.Key);
-			for (auto Loc : Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Location)
+			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
+			Dis_start = false;
+			for (auto Loc : aic->commander->List_Location)
 			{
-				if (Loc.Key != *Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Location.FindKey(Sup_Vec))
+				if (Loc.Key != *aic->commander->List_Location.FindKey(Sup_Vec))
 				{
 					if (!Dis_start)
 					{
@@ -49,19 +56,19 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				}
 				
 			}
-			Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->BlackboardComponent->SetValueAsBool("AI_Support", true);
-			Dis_start = false;
+			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
 		}
 		else
 		{
-			for (auto com : Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Combat)
+			for (auto com : aic->commander->List_Combat)
 			{
 				if (com.Value == ECombat::Move)
 				{
-					Com_Vec = *Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Location.Find(com.Key);
-					for (auto Loc : Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Location)
+					Com_Vec = *aic->commander->List_Location.Find(com.Key);
+					Dis_start = false;
+					for (auto Loc : aic->commander->List_Location)
 					{
-						if (Loc.Key != *Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->List_Location.FindKey(Com_Vec))
+						if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
 						{
 							if (!Dis_start)
 							{
@@ -82,9 +89,10 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 					}
 				}
 			}
-			Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander->BlackboardComponent->SetValueAsBool("AI_Support", true);			
-			Dis_start = false;
+			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
+			
 		}
 	}
+
 
 }

@@ -21,11 +21,11 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
-		UBlackboardComponent* BlackboardComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		class AAICommander* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		class AActor* commander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		class ACharacter* player;
 };

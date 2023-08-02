@@ -13,20 +13,26 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/AIPerceptionSystem.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "Perception/AISenseConfig_Hearing.h"
-
+#include "Math/Vector.h"
+#include "SubEncounterSpace.h"
+#include "AISpawner.h"
+#include "AICharacterMoveComponent.h"
+#include "Components/BoxComponent.h"
 
 AAI_Controller::AAI_Controller()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SightConfig = CreateOptionalDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+	HearingConfig = CreateOptionalDefaultSubobject<UAISenseConfig_Hearing>(TEXT("Hearing Config"));
 	SetPerceptionComponent(*CreateOptionalDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception")));
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Range.DT_Range'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
 	if (DT_RangeDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
@@ -34,7 +40,7 @@ AAI_Controller::AAI_Controller()
 	}
 
 	//BT
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/SGJ/BT_Main.BT_Main'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/BaseAI/BT/BT_Main.BT_Main'"));
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
@@ -42,121 +48,154 @@ AAI_Controller::AAI_Controller()
 	}
 	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackBoard'/Game/JHB/BB_BaseAI.BB_BaseAI'"));
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/BaseAI/BB/BB_BaseAI.BB_BaseAI'"));
 	if (BB_BaseAIObject.Succeeded())
 	{
 		BBAsset = BB_BaseAIObject.Object;
 	}
 
 	commander = nullptr;
-
+	em_normal = false;
 	SetEnemy("Rifle_E");
 }
+
 
 void AAI_Controller::BeginPlay()
 {
 	Super::BeginPlay();
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
-	RunBehaviorTree(btree);
-	behavior_tree_component->StartTree(*btree);
+	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	DistanceToPlayer = 0.0f;
 	UBlackboardComponent* BlackboardComp = Blackboard;
-	if (UseBlackboard(BBAsset, BlackboardComponent))
+	if (UseBlackboard(BBAsset, BlackboardComp))
 	{
-		if (!RunBehaviorTree(btree))
-			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));
+		/*if (!RunBehaviorTree(btree))
+			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));*/
 	}
 
 }
-void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus const Stimulus)
+void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
-	if (auto const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
+	switch (Stimulus.Type)
 	{
-		DistanceToPlayer = GetPawn()->GetDistanceTo(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-		if (actor->ActorHasTag("Player"))
+	case 0:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
+		if (player)
 		{
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-			if (BlackboardComponent->GetValueAsObject("Target") != nullptr)
+			DistanceToPlayer = GetPawn()->GetDistanceTo(player);
+			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+			if (actor->ActorHasTag("Player"))
 			{
-				if (Cast<AActor>(BlackboardComponent->GetValueAsObject("Target"))->ActorHasTag("Last"))
+				bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+				if (Blackboard->GetValueAsObject("Target") != nullptr)
 				{
-					GetWorld()->DestroyActor(Cast<AActor>(BlackboardComponent->GetValueAsObject("Target")));
+					if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+					{
+						GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+					}
+				}
+				Blackboard->SetValueAsObject("Target", player);
+			}
+
+		}
+		else {
+			bIsPlayerDetected = false;
+		}
+		break;
+		// react to sight stimulus
+	case 1:
+
+		if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X 
+			&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
+		{
+			if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y 
+				&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
+			{
+				if (Blackboard->GetValueAsBool("AI_Active"))
+				{
+					if (Stimulus.Tag.IsValid())
+					{
+						if (Stimulus.Tag == "Shooting")
+						{
+							Blackboard->SetValueAsObject("Target", player);
+						}
+					}
 				}
 			}
-			BlackboardComponent->SetValueAsObject("Target", Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)));
 		}
-		if (actor->ActorHasTag("Last"))
-		{
-			if (commander->BlackboardComponent)
-			{
-				
-				commander->BlackboardComponent->SetValueAsObject("Cmd_Target", NULL);
-				AActor* temp = Cast<AActor>(commander->BlackboardComponent->GetValueAsObject("Cmd_Target"));
-				GetWorld()->DestroyActor(temp);
-			}
-			bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-		}
-
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		break;
+		// react to hearing;
+	default:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		return;
 	}
-	else {
-		bIsPlayerDetected = false;
-	}
-
-	/*for (size_t i = 0; i < DetectedPawns.Num(); i++)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, DetectedPawns[i]->GetName());
-		if (DetectedPawns[i]->ActorHasTag("Player"))
-		{
-			DistanceToPlayer = GetPawn()->GetDistanceTo(DetectedPawns[i]);
-			UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-
-			bIsPlayerDetected = true;
-		}
-	}
-	if(SightConfig->age)*/
-
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
+	
 }
-
 void AAI_Controller::SetUseCover()
 {
-	//if (commander != nullptr)
-	//{
-	//	if (BlackboardComponent != nullptr)
-	//	{
-	//		if (commander->CoverEnemyArray.Num() > 0)
-	//		{
-	//			for (auto loc : commander->CoverEnemyArray)
-	//			{
-	//				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("rgrgrgrgrg")));
-	//				FVector a = loc;
-	//				/*if (FVector::Dist(loc, GetOwner()->GetActorLocation()) <= 50)
-	//				{
-	//					BlackboardComponent->SetValueAsBool("AI_UseCover", true);
-	//				}
-	//				else
-	//				{
-	//					BlackboardComponent->SetValueAsBool("AI_UseCover", false);
-	//				}*/
-	//			}
-	//		}
-	//	}
-	//}
+	if (commander != nullptr)
+	{
+		if (commander->GetBlackboardComponent() != nullptr)
+		{
+			if (commander->CoverEnemyArray.Num() > 0)
+			{
+				for (auto loc : commander->CoverEnemyArray)
+				{
+					FVector a = GetPawn()->GetActorLocation();
+					float b = FVector::Distance(loc, a);
+
+					if (FVector::Distance(loc, a) <= 150)
+					{
+						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, GetPawn()->GetActorLocation().ToString());
+						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+						return;
+					}
+					else
+					{
+						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+					}
+				}
+			}
+		}
+	}
+}
+
+void AAI_Controller::RunBTT()
+{
+	if (IsValid(btree)) 
+	{
+		RunBehaviorTree(btree);
+	}
 }
 
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	BlackboardComponent = Blackboard;
-
 
 	if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
-		BlackboardComponent->SetValueAsObject("Target", nullptr);
+		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}
-
-	BlackboardComponent->SetValueAsBool("Sight_In", bIsPlayerDetected);
+	if (!Blackboard->GetValueAsObject("Target"))
+	{
+		DistanceToPlayer = 0.0f;
+		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
+		{
+			if (em_normal == false)
+			{
+				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				em_normal = true;
+			}
+			
+		}
+		
+	}
+	Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 
 	SetUseCover();
 }
@@ -185,12 +224,17 @@ void AAI_Controller::SetEnemy(FName EnemyName)
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+		HearingConfig->HearingRange = 3000.0f;
+		HearingConfig->SetMaxAge(RangeData->Sight_Age);
+		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
+		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
-		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
-		/*SightConfig->SightRadius = RangeData->Sense_Radius;
-		SightConfig->SightRadius = 360.0f - RangeData->Sight_Angle;
-		SightConfig->SightRadius = RangeData->Sight_Age;*/
+		GetPerceptionComponent()->ConfigureSense(*HearingConfig);	
+		GetPerceptionComponent()->SetDominantSense(UAISenseConfig_Sight::StaticClass());
+		
+		
 	}
 }

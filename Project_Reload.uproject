@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.0",
+	"EngineAssociation": "{CBAA50F7-49C9-332C-DB93-69BF2DF9D828}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -79,16 +79,20 @@
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/0966972104ff4e94874096f15cf4f7f5"
 		},
 		{
-			"Name": "MotionWarping",
-			"Enabled": true
-		},
-		{
 			"Name": "DragonIKPlugin",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/3f3985e9eb40414aaabf645791fa4916"
 		},
 		{
 			"Name": "AnimationWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "MotionWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayInsights",
 			"Enabled": true
 		}
 	]

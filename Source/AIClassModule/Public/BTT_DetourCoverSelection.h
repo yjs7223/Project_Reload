@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
 		UBlackboardComponent* BlackboardComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
-		class AActor* commander;
+		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
 		class AAI_Controller* AIController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
@@ -34,4 +34,8 @@ public:
 		bool Detourchange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
 		class AActor* select_ai;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
+		class ACharacter* player; //cast
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_DetourCoverSelection)
+		bool B_distance;
 };

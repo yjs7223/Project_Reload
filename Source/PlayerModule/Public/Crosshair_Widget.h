@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WidgetVisibleInterface.h"
 #include "Blueprint/UserWidget.h"
 #include "Crosshair_Widget.generated.h"
 
@@ -10,7 +11,7 @@
  * 
  */
 UCLASS(Blueprintable)
-class PLAYERMODULE_API UCrosshair_Widget : public UUserWidget
+class PLAYERMODULE_API UCrosshair_Widget : public UUserWidget, public IWidgetVisibleInterface
 {
 	GENERATED_BODY()
 	
@@ -31,7 +32,15 @@ public:
 
 	bool CalcAlphaValue(float DeltaTime);
 
-	void CheckHit(float delta);
+	void CheckHit();
+
+	void CheckDie();
+
+	void SetAmmoImage();
+
+	void PlayReloadAnim();
+
+	virtual void SetWidgetVisible() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -41,6 +50,9 @@ public:
 		class UOverlay* Crosshair_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Reload_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Up_Cross_image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Down_Cross_image;
@@ -48,6 +60,16 @@ public:
 		class UImage* Left_Cross_image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Right_Cross_image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Up_Cross_image_s;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Down_Cross_image_s;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Left_Cross_image_s;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Right_Cross_image_s;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Dot_image;
 
@@ -55,11 +77,31 @@ public:
 		class UImage* Hit_image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* HeadHit_image;
+		class UImage* Kill_image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Cross_Ammo_Image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UMaterialInstanceDynamic* AmmoMat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* FadeOutAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* ReloadAnim;
 
 public:
 	float m_alpha;
 	float m_offset;
+	float m_offset_s;
 
 	float m_hitTime;
+
+	bool bWidgetVisible;
+	float widgetVisibleTime;
+	FTimerHandle VisibleTimer;
+	FTimerHandle HitTimer;
+	FTimerHandle DieTimer;
+	FTimerHandle ReloadTimer;
 };

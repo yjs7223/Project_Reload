@@ -2,10 +2,17 @@
 
 
 #include "Crosshair_Widget.h"
+#include "Materials/MaterialInstance.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/WidgetTree.h"
+#include "PlayerCharacter.h"
 #include "PlayerWeaponComponent.h"
 #include "UMG.h"
+#include "Animation/WidgetAnimation.h"
+#include "Kismet/GameplayStatics.h"
+#include "StatComponent.h"
+
 
 UCrosshair_Widget::UCrosshair_Widget(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
@@ -26,23 +33,26 @@ void UCrosshair_Widget::NativeConstruct()
 	m_offset = 0;
 	m_hitTime = 0;
 
-	UTexture2D* texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/T_crosshair.T_crosshair'"));
+	Crosshair_Overlay->SetRenderOpacity(1.0f);
+	Reload_Overlay->SetRenderOpacity(1.0f);
+
+	UTexture2D* texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/CrossHair_Texture/T_CrossHair_NormalHit.T_CrossHair_NormalHit'"));
 	FSlateBrush brush;
+	
 	brush.SetResourceObject(texture);
 	UOverlaySlot* hitslot;
 	if (Hit_image)
 	{
 		hitslot = Cast<UOverlaySlot>(Hit_image->Slot);
-		hitslot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
-		hitslot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
+		hitslot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
+		hitslot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 
+		brush.SetImageSize(FVector2D(45.f, 45.f));
 		Hit_image->SetBrush(brush);
-		Hit_image->SetRenderScale(FVector2D(3.0f, 3.0f));
-		Hit_image->SetRenderTransformAngle(45.0f);
 		Hit_image->SetRenderOpacity(0.0f);
 	}
 
-	if (HeadHit_image)
+	/*if (HeadHit_image)
 	{
 		hitslot = Cast<UOverlaySlot>(HeadHit_image->Slot);
 		hitslot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
@@ -53,14 +63,42 @@ void UCrosshair_Widget::NativeConstruct()
 		HeadHit_image->SetRenderScale(FVector2D(3.0f, 3.0f));
 		HeadHit_image->SetRenderTransformAngle(45.0f);
 		HeadHit_image->SetRenderOpacity(0.0f);
-	}
+	}*/
 	
+	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/yjs/UI/Materials/M_AmmoRadial.M_AmmoRadial'"));
+	if (mat)
+	{
+		AmmoMat = UMaterialInstanceDynamic::Create(mat, this);
+		if (AmmoMat)
+		{
+			AmmoMat->SetScalarParameterValue(FName(TEXT("Percent")), 1.0f);
+			Cross_Ammo_Image->SetBrushFromMaterial(AmmoMat);
+			Cross_Ammo_Image->SetRenderTranslation(FVector2D(8.0f, 8.0f));
+		}
+	}
+
+	if (APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
+	{
+		if (UPlayerWeaponComponent* MyWeaponComp = Cast<UPlayerWeaponComponent>(MyCharacter->weapon))
+		{
+			weapon = MyCharacter->weapon;
+			MyWeaponComp->OnChangedCrossHairAmmoDelegate.BindUObject(this, &UCrosshair_Widget::SetAmmoImage);
+			MyWeaponComp->OnChangedCrossHairHitDelegate.BindUObject(this, &UCrosshair_Widget::CheckHit);
+			MyWeaponComp->OnChangedCrossHairDieDelegate.BindUObject(this, &UCrosshair_Widget::CheckDie);
+			MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
+			MyWeaponComp->OnPlayReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::PlayReloadAnim);
+		}
+	}
+
+	bWidgetVisible = true;
+	widgetVisibleTime = 0;
 }
 
 void UCrosshair_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_alpha));
+	UpdateCrosshair(InDeltaTime);
 }
 
 void UCrosshair_Widget::UpdateCrosshair(float DeltaTime)
@@ -73,7 +111,7 @@ void UCrosshair_Widget::UpdateCrosshair(float DeltaTime)
 		}
 		CalcOffset(weapon->m_spreadPower);
 		SetCrosshairTranslation();
-		CheckHit(DeltaTime);
+		//SetAmmoImage();
 	}
 }
 
@@ -90,22 +128,48 @@ void UCrosshair_Widget::SetCrosshairTranslation()
 
 	FVector2D right = FVector2D(m_offset, 0);
 	Right_Cross_image->SetRenderTranslation(right);
+
+	FVector2D ammo = FVector2D(m_offset * 0.3f + 8.0f, m_offset * 0.3f + 8.0f);
+	Cross_Ammo_Image->SetRenderTranslation(ammo);
+
+
+	FVector2D up_s = FVector2D(0, -m_offset_s);
+	Up_Cross_image_s->SetRenderTranslation(up_s);
+
+	FVector2D down_s = FVector2D(0, m_offset_s);
+	Down_Cross_image_s->SetRenderTranslation(down_s);
+
+	FVector2D left_s = FVector2D(-m_offset_s, 0);
+	Left_Cross_image_s->SetRenderTranslation(left_s);
+
+	FVector2D right_s = FVector2D(m_offset_s, 0);
+	Right_Cross_image_s->SetRenderTranslation(right_s);
 }
 
 void UCrosshair_Widget::CalcOffset(float spreadpower)
 {
 	m_offset = FMath::Lerp(0.0f, spreadpower * 300.0f, m_alpha);
+	m_offset_s = FMath::Lerp(0.0f, spreadpower * 150.0f, m_alpha);
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_offset));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_alpha));
 }
 
 bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 {
 	if (weapon->bRecoil)
 	{
-		m_alpha += DeltaTime * 0.6f;
+		m_alpha += DeltaTime;// *0.6f;
 	}
 	else
 	{
-		m_alpha -= DeltaTime * 0.4f;
+		if (weapon->bRecovery)
+		{
+			m_alpha -= DeltaTime * 2.0f;
+		}
+		else
+		{
+			m_alpha -= DeltaTime * 0.8f;
+		}
 	}
 
 	if (m_alpha < 0)
@@ -118,34 +182,148 @@ bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 		m_alpha = 1;
 	}
 	return false;
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(m_alpha));
 }
 
-void UCrosshair_Widget::CheckHit(float delta)
+void UCrosshair_Widget::CheckHit()
 {
+	GetWorld()->GetTimerManager().ClearTimer(HitTimer);
+	weapon->m_result.Location;
+	FVector2D loc;
+	FIntVector2 screensize;
+	UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), weapon->m_result.Location, loc);
+	GetOwningPlayer()->GetViewportSize(screensize.X, screensize.Y);
+	loc.X -= screensize.X/2;
+	loc.Y -= screensize.Y/2;
+	Dot_image->SetRenderTranslation(loc);
+
 	if (weapon->isHit)
 	{
 		if (weapon->headhit)
 		{
 			weapon->isHit = false;
 			weapon->headhit = false;
-			HeadHit_image->SetRenderOpacity(1.0f);
+			Hit_image->SetBrushTintColor(FSlateColor(FColor::Red));
+			Hit_image->SetRenderOpacity(1.0f);
 		}
 		else
 		{
 			weapon->isHit = false;
+			Hit_image->SetBrushTintColor(FSlateColor(FColor::White));
 			Hit_image->SetRenderOpacity(1.0f);
 		}
 	}
 
-	if(Hit_image->RenderOpacity >= 1.0f || HeadHit_image->RenderOpacity >= 1.0f)
-	{
-		m_hitTime += delta;
-		if (m_hitTime > 0.5f)
+	GetWorld()->GetTimerManager().SetTimer(HitTimer,
+		FTimerDelegate::CreateLambda([&]()
 		{
-			m_hitTime = 0;
+			Dot_image->SetRenderTranslation(FVector2D(.0f, .0f));
 			Hit_image->SetRenderOpacity(0.0f);
-			HeadHit_image->SetRenderOpacity(0.0f);
+		}
+	), .3f, false);
+}
+
+void UCrosshair_Widget::CheckDie()
+{
+	//GetWorld()->GetTimerManager().ClearTimer(DieTimer);
+	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
+	if (stat)
+	{
+		if (stat->isDie)
+		{
+			Up_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
+			Down_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
+			Left_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
+			Right_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
+
+			GetWorld()->GetTimerManager().SetTimer(DieTimer,
+				FTimerDelegate::CreateLambda([&]()
+					{
+						Up_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
+						Down_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
+						Left_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
+						Right_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
+					}
+			), .3f, false);
+		}
+	}
+}
+
+void UCrosshair_Widget::SetAmmoImage()
+{
+	float ammovalue = 0;
+
+	switch (weapon->weapontype)
+	{
+	case EWeaponType::TE_Pistol:
+		ammovalue = weapon->curAmmo / 10.0f;
+		break;
+	case EWeaponType::TE_Rifle:
+		ammovalue = weapon->curAmmo / 30.0f;
+		break;
+	case EWeaponType::TE_Shotgun:
+		ammovalue = weapon->curAmmo / 7.0f;
+		break;
+	default:
+		ammovalue = weapon->curAmmo / 30.0f;
+		break;
+	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(ammovalue));
+	AmmoMat->SetScalarParameterValue(FName(TEXT("Percent")), ammovalue);
+	Cross_Ammo_Image->SetBrushFromMaterial(AmmoMat);
+}
+
+void UCrosshair_Widget::PlayReloadAnim()
+{
+	if (IsAnimationPlaying(FadeOutAnim))
+	{
+		StopAnimation(FadeOutAnim);
+	}
+	Reload_Overlay->SetRenderOpacity(1.0f);
+	
+	if (ReloadAnim)
+	{
+		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, FTimerDelegate::CreateLambda([&]()
+			{
+				if (ReloadAnim)
+				{
+					PlayAnimationForward(ReloadAnim);
+				}
+			}), 0.01f, false);
+	}
+}
+
+void UCrosshair_Widget::SetWidgetVisible()
+{
+	GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
+	//StopAllAnimations();
+	if (IsAnimationPlaying(FadeOutAnim))
+	{
+		StopAnimation(FadeOutAnim);
+	}
+	Crosshair_Overlay->SetRenderOpacity(1.0f);
+	Reload_Overlay->SetRenderOpacity(1.0f);
+	if (weapon)
+	{
+		if (weapon->isAiming || weapon->isFire)
+		{
+			bWidgetVisible = true;
+			GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
+			Crosshair_Overlay->SetRenderOpacity(1.0f);
+		}
+		else if(!weapon->isAiming && !weapon->isFire)
+		{
+			if (FadeOutAnim)
+			{
+				bWidgetVisible = false;
+				GetWorld()->GetTimerManager().SetTimer(VisibleTimer, FTimerDelegate::CreateLambda([&]()
+					{
+						if (FadeOutAnim)
+						{
+							PlayAnimationForward(FadeOutAnim);
+						}
+					}), 5.f, false);
+			}
 		}
 	}
 }

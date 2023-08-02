@@ -17,7 +17,7 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 	timeDeltaTime = 0.0;
 	lerpDeltaTime = 0.0;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MoveDataObject(TEXT("DataTable'/Game/Aws/AI_Stat/DT_Move.DT_Move'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MoveDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Move.DT_Move'"));
 	if (DT_MoveDataObject.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
@@ -31,9 +31,10 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 void UAICharacterMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	aicharacter = GetOwner<AAICharacter>();
 	SetEnemy("Rifle_E");
-	AI_Move = true;
-	Move_Normal = true;
+
+	e_move = EMove::Patrol;
 	// ...
 	
 }
@@ -42,50 +43,52 @@ void UAICharacterMoveComponent::BeginPlay()
 // Called every frame
 void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (AI_Move)
+	Time += DeltaTime;
+	switch (e_move)
 	{
-		if (Move_Normal)//�Ϲݰȱ��϶�
+	case EMove::Patrol:
+		Move_Speed = 100;
+		timeDeltaTime = 0;
+		lerpDeltaTime = 0;
+		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+		break;
+	case EMove::Normal:
+		timeDeltaTime += DeltaTime;
+		if (timeDeltaTime >= m_ChangeTime)
 		{
-			timeDeltaTime += DeltaTime;
-			if (timeDeltaTime >= m_ChangeTime)
-			{
-				timeDeltaTime = m_ChangeTime;
-			}
-			lerpDeltaTime = timeDeltaTime * 0.2;
-			Move_Speed = FMath::Lerp(100, m_SpdNomal, lerpDeltaTime);
-			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+			timeDeltaTime = m_ChangeTime;
 		}
-		else if (Move_Attack)
+		lerpDeltaTime = timeDeltaTime * 0.2;
+		Move_Speed = FMath::Lerp(100, m_SpdNomal, lerpDeltaTime);
+		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+		break;
+	case EMove::Attack:
+		timeDeltaTime += DeltaTime;
+		if (timeDeltaTime >= m_ParallelTime)
 		{
-			timeDeltaTime += DeltaTime;
-			if (timeDeltaTime >= m_ParallelTime)
-			{
-				timeDeltaTime = m_ParallelTime;
-			}
-			lerpDeltaTime = timeDeltaTime * 0.5;
-			Move_Speed = FMath::Lerp(100, m_SpdAttack, lerpDeltaTime);
-			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+			timeDeltaTime = m_ParallelTime;
 		}
-		else if (Move_Hit)
+		lerpDeltaTime = timeDeltaTime * 2;
+		Move_Speed = FMath::Lerp(100, m_SpdAttack, lerpDeltaTime);
+		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+		break;
+	case EMove::Hit:
+		timeDeltaTime += DeltaTime;
+		if (Time >= 1.0f)
 		{
-			timeDeltaTime += DeltaTime;
-			if (timeDeltaTime >= m_ParallelTime)
-			{
-				timeDeltaTime = m_ParallelTime;
-			}
-			lerpDeltaTime = timeDeltaTime * 0.5;
-			Move_Speed = FMath::Lerp(100, m_SpdHit, lerpDeltaTime);
-			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
-		}
-		else
-		{
-			Move_Speed = 100;
 			timeDeltaTime = 0;
-			lerpDeltaTime = 0;
-			GetOwner<AAICharacter>()->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+			e_move = EMove::Normal;
+			break;
 		}
+		if (timeDeltaTime >= m_ParallelTime)
+		{
+			timeDeltaTime = m_ParallelTime;
+		}
+		lerpDeltaTime = timeDeltaTime * 2;
+		Move_Speed = FMath::Lerp(100, m_SpdHit, lerpDeltaTime);
+		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
+		break;
 	}
 	// ...
 }
@@ -103,4 +106,9 @@ void UAICharacterMoveComponent::SetEnemy(FName EnemyName)
 		m_SpdAttack = MoveData->Spd_Attack;
 		m_SpdHit = MoveData->Spd_Hit;
 	}
+}
+
+void UAICharacterMoveComponent::MoveTimeReset()
+{
+	timeDeltaTime = 0;
 }

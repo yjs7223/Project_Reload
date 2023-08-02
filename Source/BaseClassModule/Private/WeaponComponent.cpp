@@ -13,6 +13,7 @@ UWeaponComponent::UWeaponComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	m_CanShooting = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
@@ -61,7 +62,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
-	maxAmmo = p_ammo;
+	holdAmmo = p_ammo;
 	switch (weapontype)
 	{
 	case EWeaponType::TE_Pistol:
@@ -81,7 +82,7 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 
 void UWeaponComponent::ReloadAmmo()
 {
-	if (maxAmmo <= 0)
+	if (holdAmmo <= 0)
 	{
 		return;
 	}
@@ -93,14 +94,14 @@ void UWeaponComponent::ReloadAmmo()
 
 
 	int m_ammo = 0;
-	if (maxAmmo < 30)
+	if (holdAmmo < 30)
 	{
-		m_ammo = maxAmmo;
+		m_ammo = holdAmmo;
 	}
 	else
 	{
 		m_ammo = 30;
-		maxAmmo -= m_ammo;
+		holdAmmo -= m_ammo;
 	}
 
 	isReload = true;

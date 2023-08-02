@@ -6,6 +6,9 @@
 #include "StatComponent.h"
 #include "AIStatComponent.generated.h"
 
+
+DECLARE_DELEGATE(FOnVisibleEnemyHPUIDelegate);
+DECLARE_DELEGATE(FOnChangeEnemyHPUIDelegate);
 /**
  * 
  */
@@ -16,6 +19,9 @@ class AICLASSMODULE_API UAIStatComponent : public UStatComponent
 public:
 	// Sets default values for this component's properties
 	UAIStatComponent();
+	FOnVisibleEnemyHPUIDelegate OnVisibleEnemyHPUIDelegate;
+	FOnChangeEnemyHPUIDelegate OnChangeEnemyHPUIDelegate;
+
 
 protected:
 	// Called when the game starts
@@ -37,10 +43,14 @@ public:
 		AActor* IndirectCollision;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		AActor* AICommander;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		AActor* Player;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class UDataTable* DT_Suppression;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class UDataTable* DT_Shot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class UDataTable* DT_AIBaseStat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_total;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
@@ -70,12 +80,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_DecTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float shot_MaxRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float shot_MinRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float shot_MaxDmg;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float shot_MinDmg;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float DI_ShotRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float DI_SupRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		bool PlayerAtt_ai;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		class UBlackboardComponent* BlackboardComponent;
+		float Def;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		class AAICharacter* ACharacter;
+
 
 };

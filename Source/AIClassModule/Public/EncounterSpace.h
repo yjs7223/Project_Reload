@@ -35,6 +35,10 @@ public:
 		int LevelActiveNum;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool subencheck;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ASubEncounterSpace* suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ASubEncounterSpace* suben2;
 
 public:
 	UFUNCTION()

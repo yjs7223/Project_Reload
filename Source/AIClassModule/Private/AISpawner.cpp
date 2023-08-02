@@ -7,7 +7,12 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include "AICommander.h"
-#include <Kismet/GameplayStatics.h>
+#include "Engine/World.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "EngineGlobals.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "SubEncounterSpace.h"
 
 // Sets default values
 AAISpawner::AAISpawner()
@@ -15,24 +20,18 @@ AAISpawner::AAISpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 데이터 테이블 삽입
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/SGJ/DT_Spawner.DT_Spawner'"));
-	if (DataTable.Succeeded())
-	{
-		spawnData = DataTable.Object;
-	}
-
-
-	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-
 }
 
 // Called when the game starts or when spawned
 void AAISpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(curWave), TEXT(""));
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	pointTime = 0;
+	pointSpawnCheck = false;
 }
 
 // Called every frame
@@ -41,6 +40,14 @@ void AAISpawner::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	WaveControl(DeltaTime);
+
+	if (commander != nullptr)
+	{
+		if (check_Overlap)
+		{
+			SpawnLastPoint(DeltaTime);
+		}
+	}
 }
 
 void AAISpawner::SpawnWave()
@@ -54,11 +61,12 @@ void AAISpawner::SpawnWave()
 		spawn_Pos = SetSpawnSpot(spawn_Pos);
 
 		// 생성
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Rifle, spawn_Spots[spawn_Pos]->GetActorLocation());
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		Cast<AAICharacter>(temp)->mySpawner = this;
+		commander->ListAdd(Cast<AActor>(temp));
 		rifleCount++;
 	}
 	else
@@ -84,7 +92,7 @@ void AAISpawner::SpawnWave()
 
 void AAISpawner::WaveControl(float DeltaTime)
 {
-	if (check_Overlap && !spawnCheck)
+	/*if (check_Overlap && !spawnCheck)
 	{
 		spawn_Timer += DeltaTime;
 		if (spawn_Timer >= (*curSpawnData).spawn_Delay)
@@ -92,7 +100,7 @@ void AAISpawner::WaveControl(float DeltaTime)
 			SpawnWave();
 			spawn_Timer = 0;
 		}
-	}
+	}*/
 
 	// 마지막 웨이브인지 확인
 	if (spawnCheck)
@@ -128,7 +136,7 @@ void AAISpawner::WaveControl(float DeltaTime)
 int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 {
 	// 플레이어와 가깝지 않다면 소환
-	if (spawn_Spots[(*curSpawnData).spawn_Spot]->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) >= 50)
+	if (spawn_Spots[(*curSpawnData).spawn_Spot]->GetDistanceTo(player) >= 50)
 	{
 		p_Spawn_Pos = (*curSpawnData).spawn_Spot;
 	}
@@ -137,7 +145,7 @@ int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 		for (int i = 0; i < spawn_Spots.Num(); i++)
 		{
 			// 플레이어 거리가 50보다 큰 스폰위치가
-			if (spawn_Spots[i]->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) > 50)
+			if (spawn_Spots[i]->GetDistanceTo(player) > 50)
 			{
 				// 처음 들어온 거라면 일단 넣기
 				if (p_Spawn_Pos == (*curSpawnData).spawn_Spot)
@@ -145,8 +153,8 @@ int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 					p_Spawn_Pos = i;
 				}
 				// 누가 더 작은 지 확인하고 작은 걸로 넣기
-				if (spawn_Spots[p_Spawn_Pos]->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) >
-					spawn_Spots[i]->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()))
+				if (spawn_Spots[p_Spawn_Pos]->GetDistanceTo(player) >
+					spawn_Spots[i]->GetDistanceTo(player))
 				{
 					p_Spawn_Pos = i;
 				}
@@ -172,21 +180,52 @@ void AAISpawner::SpawnEnable(bool p_flag)
 
 void AAISpawner::SpawnLastPoint(float DeltaTime)
 {
-	//if (commander->Cmd_SightOut)
-	//{
-	//	pointTime += DeltaTime;
-	//	if (pointTime >= 1 && !pointSpawnCheck)
-	//	{
-	//		FActorSpawnParameters SpawnParams;
-	//		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	if (commander->GetBlackboardComponent())
+	{
+		if (commander->Cmd_SightOut)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Point!"));
+			pointTime += DeltaTime;
+			if (pointTime >= 1 && !pointSpawnCheck)
+			{
+				if (commander->GetBlackboardComponent()->GetValueAsObject("Cmd_Target") != nullptr)
+				{
+					FActorSpawnParameters SpawnParams;
+					SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	//		// Spawn
-	//		AActor* temp = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
-	//		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
-	//		pointSpawnCheck = true;
-	//		pointTime = 0;
+					// Spawn
+					cpyLastPoint = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
+					pointSpawnCheck = true;
+					pointTime = 0;
 
-	//		commander->BlackboardComponent->SetValueAsObject("Cmd_Target", temp);
-	//	}
-	//}
+					for (auto& ai : suben->AIArray)
+					{
+						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+						if (AIController != nullptr)
+						{
+							AIController->GetBlackboardComponent()->SetValueAsObject("Target", cpyLastPoint);
+						}
+						else
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+						}
+					}
+				}
+			}
+		}
+		else if (!commander->Cmd_SightOut)
+		{
+			pointTime = 0;
+			pointSpawnCheck = false;
+			if (cpyLastPoint != nullptr)
+			{
+				GetWorld()->DestroyActor(cpyLastPoint);
+				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", player);
+			}
+
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
+
+		}
+	}
 }

@@ -24,8 +24,7 @@ protected:
 	virtual FRotator GetControlRotation()const override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		UBlackboardComponent* BlackboardComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBlackboardData* BBAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
@@ -37,22 +36,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UAISenseConfig_Sight* SightConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class UAISenseConfig_Hearing* HearingConfig;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICharacter* ACharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		float DistanceToPlayer = 0.0f;
+		float DistanceToPlayer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class ACharacter* player; //cast
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		bool em_normal;
 
 public:
 	UFUNCTION()//BlueprintCallable
 		void SetEnemy(FName EnemyName);
 	UFUNCTION()
-		void OnTargetDetected(AActor* actor, FAIStimulus const Stimulus);
+		void OnTargetDetected(AActor* actor, FAIStimulus Stimulus);
 	UFUNCTION()
 		void SetUseCover();
+
+	UFUNCTION()
+		void RunBTT();
 	
 };

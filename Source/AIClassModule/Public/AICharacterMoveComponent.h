@@ -5,6 +5,14 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "AICharacterMoveComponent.generated.h"
+UENUM(BlueprintType)
+enum class EMove : uint8
+{
+	Patrol 	UMETA(DisplayName = "Patrol"),
+	Normal UMETA(DisplayName = "Normal"),
+	Attack 	UMETA(DisplayName = "Attack"),
+	Hit 	UMETA(DisplayName = "Hit")
+};
 
 
 UCLASS()
@@ -26,17 +34,13 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetEnemy(FName EnemyName);
+	UFUNCTION(BlueprintCallable, Category = "AIMoveComponent")
+		void MoveTimeReset();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		class AAICharacter* aicharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Move_Speed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool AI_Move;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Normal; //�⺻ �̵��� 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Attack; //ai�� ���ݽ�
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		bool Move_Hit; //ai�� �ǰݽ�
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float timeDeltaTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
@@ -55,5 +59,8 @@ public:
 		float m_SpdAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_SpdHit;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float Time;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		EMove e_move;
 };

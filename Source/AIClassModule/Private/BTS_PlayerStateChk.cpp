@@ -17,32 +17,39 @@ UBTS_PlayerStateChk::UBTS_PlayerStateChk()
 
 void UBTS_PlayerStateChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	AIController = nullptr;
-	AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	if (!player)
+	{
+		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	}
+	//AIController = nullptr;
+	if (!AIController)
+	{
+		AIController = Cast<AAICommander>(OwnerComp.GetAIOwner());
+	}
+	
 	if (AIController)
 	{
-		if (AIController->BlackboardComponent)
+		if (AIController->GetBlackboardComponent())
 		{
-			UBaseInputComponent* Inputcomp = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UBaseInputComponent>();
-			UCoverComponent* Covercomp = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->FindComponentByClass<UCoverComponent>();
-			BlackboardComponent = AIController->BlackboardComponent;
+			UBaseInputComponent* Inputcomp = player->FindComponentByClass<UBaseInputComponent>();
+			UCoverComponent* Covercomp = player->FindComponentByClass<UCoverComponent>();
 
 			FInputData data;
 			memset(&data, 0, sizeof(FInputData));
 			if (Inputcomp->getInput()->IsFire || Inputcomp->getInput()->IsAiming)
 			{
-				BlackboardComponent->SetValueAsEnum("Target_State", 1);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Attack);
 			}
-			else if (Covercomp->IsCover())
+			else if (player->FindComponentByClass<UCoverComponent>()->IsCover())
 			{
-				BlackboardComponent->SetValueAsEnum("Target_State", 2);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Cover);
 			}
 			else if (Inputcomp->getInput()->IsRuning)
 			{
-				BlackboardComponent->SetValueAsEnum("Target_State", 3);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Move);
 			}
 			else if (!memcmp(Inputcomp->getInput(), &data, sizeof(FInputData))) {
-				BlackboardComponent->SetValueAsEnum("Target_State", 0);
+				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Idle);
 			}
 			
 		}

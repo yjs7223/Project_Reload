@@ -21,97 +21,56 @@
 #include "StatComponent.h"
 #include "PlayerWeaponData.h"
 #include "MatineeCameraShake.h"
+#include "PlayerInputComponent.h"
 #include "Field/FieldSystemActor.h"
+#include "WeaponDataAsset.h"
+#include "HitImapactDataAsset.h"
+#include "Perception/AISense_Hearing.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/yjs/PlayerWeaponData.PlayerWeaponData'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/yjs/DT_PlayerWeaponData.DT_PlayerWeaponData'"));
 	if (DataTable.Succeeded())
 	{
 		PlayerWeaponData = DataTable.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> Fire(TEXT("ParticleSystem'/Game/ThirdPersonKit/Particles/P_RealAssaultRifle_MF.P_AssaultRifle_MF'"));
-	if (Fire.Succeeded())
+
+	static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Rifle.DA_Rifle'"));
+	if (rifle_da.Succeeded())
 	{
-		MuzzleFireParticle = Fire.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> bullet(TEXT("ParticleSystem'/Game/yjs/P_BulletTracer.P_BulletTracer'"));
-	if (bullet.Succeeded())
-	{
-		BulletTracerParticle = bullet.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> decal(TEXT("MaterialInstanceConstant'/Game/yjs/Impact_Decal2.Impact_Decal2'"));
-	if (decal.Succeeded())
-	{
-		Decal = decal.Object;
+
+		RifleDataAssets = Cast<UWeaponDataAsset>(rifle_da.Object);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx1(TEXT("NiagaraSystem'/Game/yjs/NS_BulletProjectile.NS_BulletProjectile'"));
-	if (fx1.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UDataAsset> pistol_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Pistol.DA_Pistol'"));
+	if (pistol_da.Succeeded())
 	{
-		shotFXNiagara = fx1.Object;
+		PistolDataAssets = Cast<UWeaponDataAsset>(pistol_da.Object);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx2(TEXT("NiagaraSystem'/Game/Effect/Hit_Effect/Fx_Bullet_Wall_Impact.Fx_Bullet_Wall_Impact'"));
-	if (fx2.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
+	if (hitimpact.Succeeded())
 	{
-		hitFXNiagara = fx2.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> fx3(TEXT("NiagaraSystem'/Game/yjs/NS_BulletHeadHit.NS_BulletHeadHit'"));
-	if (fx3.Succeeded())
-	{
-		headhitFXNiagara = fx3.Object;
+		HitImpactDataAsset = Cast<UHitImapactDataAsset>(hitimpact.Object);
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundWave> sound1(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-001.burst_rifle-001'"));
-	if (sound1.Succeeded())
-	{
-		shotsound.Add(sound1.Object);
-	}
-	static ConstructorHelpers::FObjectFinder<USoundWave> sound2(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-002.burst_rifle-002'"));
-	if (sound2.Succeeded())
-	{
-		shotsound.Add(sound2.Object);
-	}
-	static ConstructorHelpers::FObjectFinder<USoundWave> sound3(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-003.burst_rifle-003'"));
-	if (sound3.Succeeded())
-	{
-		shotsound.Add(sound3.Object);
-	}
-	static ConstructorHelpers::FObjectFinder<USoundWave> sound4(TEXT("SoundWave'/Game/ThirdPersonKit/Audio/TPSKitOrginals/weapons/burst_rifle-004.burst_rifle-004'"));
-	if (sound4.Succeeded())
-	{
-		shotsound.Add(sound4.Object);
-	}
 	static ConstructorHelpers::FObjectFinder<UBlueprint> fActor(TEXT("Blueprint'/Game/Effect/Destruction/Bomb_Bp.Bomb_Bp'"));
 	if (fActor.Succeeded())
 	{
 		fieldActor = fActor.Object;
 	}
-	weapontype = EWeaponType::TE_Pistol;
+	weapontype = EWeaponType::TE_Rifle;
 
-	switch (weapontype)
-	{
-	case EWeaponType::TE_Pistol:
-		WeaponMesh->SetSkeletalMesh(PistolMesh);
-		break;
-	case EWeaponType::TE_Rifle:
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-		break;
-	case EWeaponType::TE_Shotgun:
-		WeaponMesh->SetSkeletalMesh(ShotgunMesh);
-		break;
-	default:
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-		break;
-	}
+	WeaponMeshSetting();
 }
 
 void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	InitData();
+	WeaponMeshSetting();
+	
 	// ...
 	//PlayerWeaponData.row
 }
@@ -125,10 +84,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoilTick(DeltaTime);
 	ReloadTick(DeltaTime);
 	RecoveryTick(DeltaTime);
-	if (isHit)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("hit"));
-	}
+	
 }
 
 void UPlayerWeaponComponent::InitData()
@@ -136,38 +92,52 @@ void UPlayerWeaponComponent::InitData()
 	owner = GetOwner<APlayerCharacter>();
 	if (PlayerWeaponData != nullptr)
 	{
-		FPlayerweaponStruct* data;
+		FPlayerweaponStruct* dataTable;
+		UWeaponDataAsset* WeapondataAsset = nullptr;
 		switch (weapontype)
 		{
 		case EWeaponType::TE_Pistol:
-			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Pistol"), FString(""));
+			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Pistol"), FString(""));
+			WeapondataAsset = PistolDataAssets;
 			break;
 		case EWeaponType::TE_Rifle:
-			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Rifle"), FString(""));
+			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Rifle"), FString(""));
+			WeapondataAsset = RifleDataAssets;
 			break;
 		case EWeaponType::TE_Shotgun:
-			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Shotgun"), FString(""));
+			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Shotgun"), FString(""));
 			break;
 		default:
-			data = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+			WeapondataAsset = RifleDataAssets;
 			break;
 		}
+		if (WeapondataAsset)
+		{
+			MuzzleFireParticle = WeapondataAsset->MuzzleFireParticle;
+			BulletTracerParticle = WeapondataAsset->BulletTracerParticle;
+			shotFXNiagara = WeapondataAsset->BulletTrailFXNiagara;
+
+			ShotSounds = WeapondataAsset->ShotSounds;
+
+			Decal = WeapondataAsset->Decals[0];
+		}
 		
-		SetAmmo(data->bullet_Num);
+		SetAmmo(dataTable->bullet_Num);
 
-		damage.X = data->max_Damage;
-		damage.Y = data->min_Damage;
+		damage.X = dataTable->max_Damage;
+		damage.Y = dataTable->min_Damage;
 
-		H_damage.X = data->max_H_Damage;
-		H_damage.Y = data->min_H_Damage;
+		H_damage.X = dataTable->max_H_Damage;
+		H_damage.Y = dataTable->min_H_Damage;
 
 		m_firecount = 0;
 		m_dValue = 0.f;
 		recoilTime = 0.0f;
-		m_spreadPower = data->spread_Power;
-		yawRange = FVector2D(data->min_Horizontal_Recoil, data->max_Horizontal_Recoil);
-		pitchRange = FVector2D(data->min_vertical_Recoil, data->max_vertical_Recoil);
-		m_firerate = data->fire_Rate;
+		m_spreadPower = dataTable->spread_Power;
+		yawRange = FVector2D(dataTable->min_Horizontal_Recoil, dataTable->max_Horizontal_Recoil);
+		pitchRange = FVector2D(dataTable->min_vertical_Recoil, dataTable->max_vertical_Recoil);
+		m_firerate = dataTable->fire_Rate;
 		TickCount = 1;
 		headhit = false;
 		reloadCount = 0;
@@ -179,6 +149,7 @@ void UPlayerWeaponComponent::InitData()
 
 void UPlayerWeaponComponent::Fire()
 {
+	if (!m_CanShooting) return;
 	if (curAmmo <= 0)
 	{
 		StopFire();
@@ -212,6 +183,7 @@ void UPlayerWeaponComponent::Fire()
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
+	//CameraHit
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 	{
@@ -222,6 +194,7 @@ void UPlayerWeaponComponent::Fire()
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		end = m_rot.Vector() * 99999;
 
+		//WeaponHit
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 		{
@@ -242,6 +215,7 @@ void UPlayerWeaponComponent::Fire()
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
 
+		//WeaponHit
 		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
@@ -255,6 +229,7 @@ void UPlayerWeaponComponent::Fire()
 		}
 		else
 		{
+			//NonHit
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		}
@@ -262,102 +237,117 @@ void UPlayerWeaponComponent::Fire()
 
 	if (m_result.GetActor())
 	{
-		if (m_result.GetActor()->ActorHasTag("Enemy"))
+		if (m_result.GetActor()->Tags.Num() > 0)
 		{
-			isHit = true;
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
-			//USkeletalMeshComponent* sm = m_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
-			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
-			if (s)
+			if (m_result.GetActor()->ActorHasTag("Enemy"))
 			{
-				float d = 0;
-				if (m_result.BoneName == "head")
+				isHit = true;
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+				UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+				if (MyStat)
 				{
-					d = FMath::RandRange(H_damage.X, H_damage.Y);
+					float damageVlaue = 0;
+					if (m_result.BoneName == "head")
+					{
+						damageVlaue = FMath::RandRange(H_damage.X, H_damage.Y);
 
-					s->Attacked(d, m_result);
+						MyStat->Attacked(damageVlaue, m_result);
 
-					headhit = true;
-					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, headhitFXNiagara, m_result.Location);
+						headhit = true;
+					}
+					else
+					{
+						damageVlaue = FMath::RandRange(damage.X, damage.Y);
+						MyStat->Attacked(damageVlaue, m_result);
+					}
 				}
-				else
-				{
-					d = FMath::RandRange(damage.X, damage.Y);
-					s->Attacked(d, m_result);
-					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
-				}
-				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(d));
 			}
-		}
-		else
-		{
-			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
-			FActorSpawnParameters spawnparam;
-			spawnparam.Owner = owner;
-			TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
-			GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);
+			else
+			{
+				FActorSpawnParameters spawnparam;
+				spawnparam.Owner = owner;
+				TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
+				GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);
 
+			}
+			OnChangedCrossHairHitDelegate.ExecuteIfBound();
+			OnChangedCrossHairDieDelegate.ExecuteIfBound();
+			//SpawnImpactEffect(m_result);
 		}
 	}
 	else
 	{
-		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
+		//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, m_result.Location);
 	}
+
+	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+	GameStatic->SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
+	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotFXNiagara, start);
+	//shotFXComponent->SetNiagaraVariableVec3("Beam_end", m_result.Location);
+
+	SpawnImpactEffect(m_result);
+	PlayRandomShotSound();
 
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel3, param))
 	{
-		if (m_result.GetActor()->ActorHasTag("Enemy"))
+		if (m_result.GetActor()->Tags.Num() > 0)
 		{
-			UStatComponent* s = m_result.GetActor()->FindComponentByClass<UStatComponent>();
-
-			if (s)
+			if (m_result.GetActor()->ActorHasTag("Enemy"))
 			{
-				float d = FMath::RandRange(H_damage.X, H_damage.Y);
-				s->Attacked(d);
+				UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+
+				if (MyStat)
+				{
+					float damageVlaue = FMath::RandRange(H_damage.X, H_damage.Y);
+					MyStat->Attacked(damageVlaue);
+				}
 			}
 		}
-	}
 
-	start = WeaponMesh->GetSocketLocation(TEXT("BulletTracerStart"));
-	GameStatic->SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
-	//shotFXComponent->SetNiagaraVariableVec3("BeamEnd", m_result.Location);
-	PlayRandomShotSound();
+	}
 
 	if(m_firecount < 10)
 	{
 		m_firecount += 1;
 	}
+	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	StartRecoil();
 }
 
 void UPlayerWeaponComponent::StartAiming()
 {
-
-	Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 60.0f;
-
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
 	isAiming = true;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
 
 void UPlayerWeaponComponent::StopAiming()
 {
 	isAiming = false;
-	//Cast<USpringArmComponent>(owner->GetComponentByClass(USpringArmComponent::StaticClass()))->TargetArmLength = 120.0f;
+	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
 
 void UPlayerWeaponComponent::StartFire()
 {
 	if(curAmmo <= 0)
 	{ 
+		owner->FindComponentByClass<UPlayerInputComponent>()->StartReload();
 		return;
 	}
 
 	StopRcovery();
 	Fire();
 	isFire = true;
+
+	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.ExecuteIfBound();
+
 	startRot = owner->GetController()->GetControlRotation();
 	if (weapontype == EWeaponType::TE_Rifle)
 	{
@@ -375,6 +365,9 @@ void UPlayerWeaponComponent::StopFire()
 		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		isFire = false;
+
+		OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+		OnVisibleAmmoUIDelegate.ExecuteIfBound();
 		StartRecovery();
 	}
 }
@@ -382,7 +375,7 @@ void UPlayerWeaponComponent::StopFire()
 void UPlayerWeaponComponent::StartReload()
 {
 	//ReloadAmmo();
-
+	StopFire();
 	switch (weapontype)
 	{
 	case EWeaponType::TE_Pistol:
@@ -397,7 +390,7 @@ void UPlayerWeaponComponent::StartReload()
 		curAmmo = 0;
 		break;
 	case EWeaponType::TE_Rifle:
-		if (maxAmmo <= 0)
+		if (holdAmmo <= 0)
 		{
 			isReload = false;
 			return;
@@ -410,14 +403,14 @@ void UPlayerWeaponComponent::StartReload()
 		}
 
 		reloadvalue = 30 - curAmmo;
-		if (maxAmmo < reloadvalue)
+		if (holdAmmo < reloadvalue)
 		{
-			reloadvalue = maxAmmo;
-			maxAmmo = 0;
+			reloadvalue = holdAmmo;
+			holdAmmo = 0;
 		}
 		else
 		{
-			maxAmmo -= reloadvalue;
+			holdAmmo -= reloadvalue;
 		}
 
 		curAmmo = 0;
@@ -426,7 +419,7 @@ void UPlayerWeaponComponent::StartReload()
 
 		break;
 	default:
-		if (maxAmmo <= 0)
+		if (holdAmmo <= 0)
 		{
 			isReload = false;
 			return;
@@ -439,20 +432,20 @@ void UPlayerWeaponComponent::StartReload()
 		}
 
 		reloadvalue = 30 - curAmmo;
-		if (maxAmmo < reloadvalue)
+		if (holdAmmo < reloadvalue)
 		{
-			reloadvalue = maxAmmo;
-			maxAmmo = 0;
+			reloadvalue = holdAmmo;
+			holdAmmo = 0;
 		}
 		else
 		{
-			maxAmmo -= reloadvalue;
+			holdAmmo -= reloadvalue;
 		}
 
 		curAmmo = 0;
 		break;
 	}
-
+	OnPlayReloadUIDelegate.ExecuteIfBound();
 	isReload = true;
 }
 
@@ -460,6 +453,35 @@ void UPlayerWeaponComponent::StopReload()
 {
 	reloadvalue = 0;
 	isReload = false;
+}
+
+void UPlayerWeaponComponent::WeaponMeshSetting()
+{
+	FVector location = FVector::ZeroVector;
+
+	switch (weapontype)
+	{
+	case EWeaponType::TE_Pistol:
+		WeaponMesh->SetSkeletalMesh(PistolMesh);
+		if (PistolAnimation) {
+			WeaponMesh->SetAnimInstanceClass(PistolAnimation);
+		}
+		break; 
+	case EWeaponType::TE_Rifle:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		if (RifleAnimation) {
+			WeaponMesh->SetAnimInstanceClass(RifleAnimation);
+		}
+		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
+		break;
+	case EWeaponType::TE_Shotgun:
+		WeaponMesh->SetSkeletalMesh(ShotgunMesh);
+		break;
+	default:
+		WeaponMesh->SetSkeletalMesh(RifleMesh);
+		break;
+	}	
+	WeaponMesh->SetRelativeLocation(location);
 }
 
 void UPlayerWeaponComponent::ReloadTick(float Deltatime)
@@ -471,6 +493,8 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 		{
 			curAmmo++;
 			reloadCount = 0;
+			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
+			OnChangedAmmoUIDelegate.ExecuteIfBound();
 		}
 
 		switch (weapontype)
@@ -482,7 +506,7 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 			}
 			break;
 		case EWeaponType::TE_Rifle:
-			if (maxAmmo == 0)
+			if (holdAmmo == 0)
 			{
 				if (curAmmo == reloadvalue)
 				{
@@ -498,7 +522,7 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 		case EWeaponType::TE_Shotgun:
 			break;
 		default:
-			if (maxAmmo == 0)
+			if (holdAmmo == 0)
 			{
 				if (curAmmo == reloadvalue)
 				{
@@ -544,8 +568,16 @@ void UPlayerWeaponComponent::StartRecoil()
 {
 	bRecovery = false;
 	bRecoil = true;
-	yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
-	pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
+	if (m_firecount == 1)
+	{
+		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
+		pitchRecoilValue = FMath::RandRange(pitchRange.X * 2.0f, pitchRange.Y * 1.5f);
+	}
+	else
+	{
+		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
+		pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
+	}
 	//yawRecoveryValue += yawRecoilValue;
 	//pitchRecoveryValue += pitchRecoilValue;
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("recoil start"));
@@ -634,9 +666,26 @@ float UPlayerWeaponComponent::easeOutExpo(float t, float b, float c, float d)
 
 void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 {
+	if (result.GetActor())
+	{
+		if (result.GetActor()->Tags.Num() > 0)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("t"));
+			if (result.GetActor()->ActorHasTag("Water"))
+			{
+				return;
+			}
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("f"));
+		}
+	}
+
 	FVector DecalSize(5.0f, 5.0f, 5.0f);
 	FRotator DecalRotation = result.Normal.Rotation();
 	FVector DecalLocation = result.Location;
+	
 
 	UDecalComponent* decal = UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
 	if (decal)
@@ -649,7 +698,9 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 void UPlayerWeaponComponent::PlayRandomShotSound()
 {
 	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, shotsound[r], WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket")));
+	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
+
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetOwner()->GetActorLocation(), 1.0f, GetOwner(), 0.0f, FName(TEXT("Shooting")));
 }
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)
@@ -659,6 +710,78 @@ void UPlayerWeaponComponent::PlayCameraShake(float scale)
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(fireShake, scale);
 	}
 }
+
+void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
+{
+	if (HitImpactDataAsset)
+	{
+		if (result.GetActor())
+		{
+			if (result.GetActor()->Tags.Num() > 0)
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.GetActor()->GetActorLocation().ToString());
+				//result.GetActor().tag
+				if (result.GetActor()->ActorHasTag("Enemy"))
+				{
+					if (result.GetActor()->ActorHasTag("Robot"))
+					{
+						hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+					}
+					else if (result.GetActor()->ActorHasTag("Human"))
+					{
+						hitFXNiagara = HitImpactDataAsset->HumanHitFXNiagara;
+					}
+					else
+					{
+						hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+					}
+				}
+				else
+				{
+					if (result.GetActor()->ActorHasTag("Metal"))
+					{
+						//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Metal"));
+						hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
+					}
+					else if (result.GetActor()->ActorHasTag("Rock"))
+					{
+						//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Rock"));
+						hitFXNiagara = HitImpactDataAsset->RockHitFXNiagara;
+					}
+					else if (result.GetActor()->ActorHasTag("Mud"))
+					{
+						hitFXNiagara = HitImpactDataAsset->MudHitFXNiagara;
+					}
+					else if (result.GetActor()->ActorHasTag("Glass"))
+					{
+						hitFXNiagara = HitImpactDataAsset->GlassHitFXNiagara;
+					}
+					else if (result.GetActor()->ActorHasTag("Water"))
+					{
+						hitFXNiagara = HitImpactDataAsset->WaterHitFXNiagara;
+					}
+					else
+					{
+						hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
+					}
+				}
+			}
+			else
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
+				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
+			}
+		}
+	}
+
+	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(result.Location, GetOwner()->GetActorLocation());
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, m_rot.ToString());
+	m_rot.Pitch -= 90.0f;
+	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+
+	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location);//, m_rot);
+}
+
 
 
 
