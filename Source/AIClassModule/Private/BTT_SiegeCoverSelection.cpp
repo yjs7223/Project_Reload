@@ -7,6 +7,7 @@
 #include "AICharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "SubEncounterSpace.h"
 
 UBTT_SiegeCoverSelection::UBTT_SiegeCoverSelection()
 {
@@ -47,6 +48,21 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 								if (coverpoint.Key != ai.Value)
 								{
 									if (FVector::Distance(commander->SiegeCoverArray[i], coverpoint.Value) < 200)
+									{
+										arraysame = true;
+									}
+								}
+							}
+							for (auto subAi : commander->m_suben->AIArray)
+							{
+								if (subAi != ai.Key)
+								{
+									if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
+									{
+										continue;
+									}
+									AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
+									if (FVector::Distance(commander->SiegeCoverArray[i], sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
 									{
 										arraysame = true;
 									}
