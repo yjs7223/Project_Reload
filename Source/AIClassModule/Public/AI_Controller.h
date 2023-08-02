@@ -51,7 +51,9 @@ public:
 		bool em_normal;
 
 	FHitResult result;
+	FHitResult headResult;
 
+	class USkeletalMeshComponent* playerMesh;
 public:
 	UFUNCTION()//BlueprintCallable
 		void SetEnemy(FName EnemyName);
