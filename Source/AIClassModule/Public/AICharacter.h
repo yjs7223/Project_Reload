@@ -55,7 +55,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatState")
 		CombatState combat;
 
-		class USkeletalMeshComponent* mesh;
+	class USkeletalMeshComponent* mesh;
 
 protected:
 	// Called when the game starts or when spawned
