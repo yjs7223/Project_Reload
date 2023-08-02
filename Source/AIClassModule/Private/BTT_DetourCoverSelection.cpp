@@ -95,8 +95,11 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 					{
 						if (AIController->GetBlackboardComponent())
 						{
+							FActorSpawnParameters spawnParams;
+							FRotator rotator;
+							FVector RedballLoc = cover + FVector(0, 0, 100);
 							AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", cover);
-							//GetWorld()->SpawnActor<AActor>(commander->redball, cover,0, NULL);
+							GetWorld()->SpawnActor<AActor>(commander->RedBallBlueprint, cover, rotator);
 							Cast<AAICharacter>(select_ai)->Detour = true;
 							commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
 						}

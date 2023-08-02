@@ -78,66 +78,69 @@ void AAI_Controller::BeginPlay()
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
-	switch (Stimulus.Type)
+	if (commander && commander->m_suben)
 	{
-	case 0:
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
-		if (player)
+		switch (Stimulus.Type)
 		{
+		case 0:
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
+			if (player)
+			{
+				if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X
+					&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
+				{
+					if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y
+						&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
+					{
+						DistanceToPlayer = GetPawn()->GetDistanceTo(player);
+						UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+						if (actor->ActorHasTag("Player"))
+						{
+							bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+							if (Blackboard->GetValueAsObject("Target") != nullptr)
+							{
+								if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+								{
+									GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+								}
+							}
+							Blackboard->SetValueAsObject("Target", player);
+						}
+					}
+				}
+			}
+			else {
+				bIsPlayerDetected = false;
+			}
+			break;
+			// react to sight stimulus
+		case 1:
+
 			if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X
 				&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
 			{
 				if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y
 					&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
 				{
-					DistanceToPlayer = GetPawn()->GetDistanceTo(player);
-					UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-					if (actor->ActorHasTag("Player"))
+					if (Blackboard->GetValueAsBool("AI_Active"))
 					{
-						bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-						if (Blackboard->GetValueAsObject("Target") != nullptr)
+						if (Stimulus.Tag.IsValid())
 						{
-							if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
+							if (Stimulus.Tag == "Shooting")
 							{
-								GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+								Blackboard->SetValueAsObject("Target", player);
 							}
 						}
-						Blackboard->SetValueAsObject("Target", player);
 					}
 				}
 			}
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+			break;
+			// react to hearing;
+		default:
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+			return;
 		}
-		else {
-			bIsPlayerDetected = false;
-		}
-		break;
-		// react to sight stimulus
-	case 1:
-
-		if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X 
-			&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
-		{
-			if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y 
-				&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
-			{
-				if (Blackboard->GetValueAsBool("AI_Active"))
-				{
-					if (Stimulus.Tag.IsValid())
-					{
-						if (Stimulus.Tag == "Shooting")
-						{
-							Blackboard->SetValueAsObject("Target", player);
-						}
-					}
-				}
-			}
-		}
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
-		break;
-		// react to hearing;
-	default:
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
-		return;
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
 	

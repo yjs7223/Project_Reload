@@ -45,7 +45,11 @@ AAICommander::AAICommander()
 	SightIn_CHK = false;
 	Cmd_SightOut = false;
 	//Patrol_CHK = false;
-
+	static ConstructorHelpers::FObjectFinder<UBlueprint> RedBallData(TEXT("Blueprint'/Game/JHB/RedBall.RedBall'"));
+	if (RedBallData.Succeeded())
+	{
+		RedBallBlueprint = (UClass*)RedBallData.Object->GeneratedClass;
+	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
 	if (DT_SuppressionDataObject.Succeeded())
 	{
