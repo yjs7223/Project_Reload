@@ -36,7 +36,7 @@ public:
 	void FindTargetEnemy();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPlayerStatComponent* stat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))

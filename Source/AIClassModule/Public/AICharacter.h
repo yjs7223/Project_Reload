@@ -82,7 +82,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool Detour;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> HP_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWidgetComponent* HPWidgetComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class ACharacter* player;
+
 public:
+	UFUNCTION()
+		void InitWidget();
+	UFUNCTION()
+		void UpdateWidget();
 
 
 	UFUNCTION()

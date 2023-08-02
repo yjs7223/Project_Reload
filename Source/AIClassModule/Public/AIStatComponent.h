@@ -6,6 +6,9 @@
 #include "StatComponent.h"
 #include "AIStatComponent.generated.h"
 
+
+DECLARE_DELEGATE(FOnVisibleEnemyHPUIDelegate);
+DECLARE_DELEGATE(FOnChangeEnemyHPUIDelegate);
 /**
  * 
  */
@@ -16,6 +19,9 @@ class AICLASSMODULE_API UAIStatComponent : public UStatComponent
 public:
 	// Sets default values for this component's properties
 	UAIStatComponent();
+	FOnVisibleEnemyHPUIDelegate OnVisibleEnemyHPUIDelegate;
+	FOnChangeEnemyHPUIDelegate OnChangeEnemyHPUIDelegate;
+
 
 protected:
 	// Called when the game starts

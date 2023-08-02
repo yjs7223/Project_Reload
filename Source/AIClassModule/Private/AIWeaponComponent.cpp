@@ -120,9 +120,11 @@ void UAIWeaponComponent::ShotAI()
 			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 			if (temp) {
 				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
-				temp->Attacked(shot_MaxDmg - (shot_MaxDmg - shot_MinDmg) * 
-					((owner->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) - shot_MinRange) / (shot_MaxRange - shot_MinRange)) 
-					+ deviation);
+				float dmg = shot_MaxDmg - (shot_MaxDmg - shot_MinDmg) *
+					((owner->GetDistanceTo(GetWorld()->GetFirstPlayerController()->GetPawn()) - shot_MinRange) / (shot_MaxRange - shot_MinRange))
+					+ deviation;
+
+				temp->Attacked(dmg, GetOwner<ABaseCharacter>());
 			}
 		}
 
@@ -156,6 +158,7 @@ void UAIWeaponComponent::ShotAI()
 	PlayRandomShotSound();
 
 	// 총알 생성
+
 	/*shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, rot + FRotator(x, y, 0));
 
 	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);*/

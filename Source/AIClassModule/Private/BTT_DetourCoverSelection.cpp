@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/World.h"
+#include "SubEncounterSpace.h"
 
 UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 {
@@ -34,8 +35,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 	}
 	if (player && player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
 	{
-		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
-		//commander->DetourCoverPoint();
+		commander->DetourCoverPoint();
 		if (!commander->DetourCoverArray.IsEmpty())
 		{
 			for (auto ai : commander->List_Division)
@@ -54,17 +54,31 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 						B_distance = true;
 					}
 				}
+				for (auto subAi : commander->m_suben->AIArray)
+				{
+					if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
+					{
+						continue;
+					}
+					AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
+					if (FVector::Distance(cover, sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
+					{
+						B_distance = true;
+					}
+				}
 				if (!B_distance)
 				{
-					
 					for (auto ai : commander->List_Division)
 					{
 						
 						if (!Cast<AAICharacter>(ai.Key)->Detour)
 						{
 							Detourchange = true;
-							if (commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, cover_rot)
-								|| !commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, cover_rot))
+							FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), cover).Vector();
+							Find_rot.Normalize();
+							float Dot_Cover = FVector::DotProduct(player->GetCapsuleComponent()->GetForwardVector(), Find_rot);
+							float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+							if (angle < commander->detour_angle && angle > commander->ndetour_angle)
 							{
 								if (*commander->List_Suppression.Find(ai.Value) < 30.0f)
 								{
