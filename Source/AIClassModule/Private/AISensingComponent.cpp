@@ -7,7 +7,6 @@
 #include "DrawDebugHelpers.h"
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
-#include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
 
 UAISensingComponent::UAISensingComponent()
@@ -38,7 +37,7 @@ void UAISensingComponent::BeginPlay()
 void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	//ShotSenseRange();
 }
 
 

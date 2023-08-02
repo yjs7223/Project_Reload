@@ -65,6 +65,7 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAICharacter::OnOverlapBegin);
 
+
 	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh());
 	HPWidgetComponent->SetRelativeLocation(FVector(.0f, .0f, 210.0f));
@@ -74,11 +75,16 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 void AAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	mesh = FindComponentByClass<USkeletalMeshComponent>();
+
 	if (AIStat)
 	{
 		AIStat->SetHP(100.0f);
 	}
 	InitWidget();
+
 }
 
 void AAICharacter::Tick(float DeltaTime)
