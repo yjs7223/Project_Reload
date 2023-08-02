@@ -34,8 +34,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 	}
 	if (player && player->FindComponentByClass<UCoverComponent>()->GetCoverWall())
 	{
-		FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
-		//commander->DetourCoverPoint();
+		commander->DetourCoverPoint();
 		if (!commander->DetourCoverArray.IsEmpty())
 		{
 			for (auto ai : commander->List_Division)
@@ -56,15 +55,17 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 				}
 				if (!B_distance)
 				{
-					
 					for (auto ai : commander->List_Division)
 					{
 						
 						if (!Cast<AAICharacter>(ai.Key)->Detour)
 						{
 							Detourchange = true;
-							if (commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 160, cover_rot)
-								|| !commander->IsPlayerInsideFanArea(ai.Key->GetActorLocation(), 2000, 240, cover_rot))
+							FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), cover).Vector();
+							Find_rot.Normalize();
+							float Dot_Cover = FVector::DotProduct(player->GetCapsuleComponent()->GetForwardVector(), Find_rot);
+							float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+							if (angle < commander->detour_angle && angle > commander->ndetour_angle)
 							{
 								if (*commander->List_Suppression.Find(ai.Value) < 30.0f)
 								{
