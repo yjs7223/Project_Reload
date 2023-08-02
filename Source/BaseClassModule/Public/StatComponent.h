@@ -60,7 +60,9 @@ public:
 	//When Character's currentHP <= 0  isDie = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isDie;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+		bool isThreat;
 
 protected:
 	UPROPERTY()

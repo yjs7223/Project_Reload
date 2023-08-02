@@ -53,6 +53,12 @@ public:
 		class UOverlay* Reload_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Hit_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Kill_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Up_Cross_image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Down_Cross_image;
@@ -74,10 +80,22 @@ public:
 		class UImage* Dot_image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* Hit_image;
+		class UImage* Hit_Image_NW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Hit_Image_NE;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Hit_Image_SW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Hit_Image_SE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* Kill_image;
+		class UImage* Kill_Image_NW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Kill_Image_NE;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Kill_Image_SW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Kill_Image_SE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Cross_Ammo_Image;
@@ -91,6 +109,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* ReloadAnim;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* HitAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* KillAnim;
+
 public:
 	float m_alpha;
 	float m_offset;
@@ -102,6 +126,6 @@ public:
 	float widgetVisibleTime;
 	FTimerHandle VisibleTimer;
 	FTimerHandle HitTimer;
-	FTimerHandle DieTimer;
+	FTimerHandle KillTimer;
 	FTimerHandle ReloadTimer;
 };

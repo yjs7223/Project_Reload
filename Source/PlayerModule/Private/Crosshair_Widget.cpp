@@ -35,11 +35,13 @@ void UCrosshair_Widget::NativeConstruct()
 
 	Crosshair_Overlay->SetRenderOpacity(1.0f);
 	Reload_Overlay->SetRenderOpacity(1.0f);
+	Hit_Overlay->SetRenderOpacity(0.0f);
+	Kill_Overlay->SetRenderOpacity(0.0f);
 
 	UTexture2D* texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/CrossHair_Texture/T_CrossHair_NormalHit.T_CrossHair_NormalHit'"));
 	FSlateBrush brush;
 	
-	brush.SetResourceObject(texture);
+	/*brush.SetResourceObject(texture);
 	UOverlaySlot* hitslot;
 	if (Hit_image)
 	{
@@ -50,7 +52,7 @@ void UCrosshair_Widget::NativeConstruct()
 		brush.SetImageSize(FVector2D(45.f, 45.f));
 		Hit_image->SetBrush(brush);
 		Hit_image->SetRenderOpacity(0.0f);
-	}
+	}*/
 
 	/*if (HeadHit_image)
 	{
@@ -73,7 +75,7 @@ void UCrosshair_Widget::NativeConstruct()
 		{
 			AmmoMat->SetScalarParameterValue(FName(TEXT("Percent")), 1.0f);
 			Cross_Ammo_Image->SetBrushFromMaterial(AmmoMat);
-			Cross_Ammo_Image->SetRenderTranslation(FVector2D(8.0f, 8.0f));
+			Cross_Ammo_Image->SetRenderTranslation(FVector2D(12.0f, 12.0f));
 		}
 	}
 
@@ -186,6 +188,12 @@ bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 
 void UCrosshair_Widget::CheckHit()
 {
+	if (IsAnimationPlaying(HitAnim))
+	{
+		StopAnimation(HitAnim);
+	}
+
+	Hit_Overlay->SetRenderOpacity(1.0f);
 	GetWorld()->GetTimerManager().ClearTimer(HitTimer);
 	weapon->m_result.Location;
 	FVector2D loc;
@@ -202,14 +210,26 @@ void UCrosshair_Widget::CheckHit()
 		{
 			weapon->isHit = false;
 			weapon->headhit = false;
-			Hit_image->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_image->SetRenderOpacity(1.0f);
+			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
+			Hit_Image_NW->SetRenderOpacity(1.0f);
+			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
+			Hit_Image_NE->SetRenderOpacity(1.0f);
+			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
+			Hit_Image_SW->SetRenderOpacity(1.0f);
+			Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
+			Hit_Image_SE->SetRenderOpacity(1.0f);
 		}
 		else
 		{
 			weapon->isHit = false;
-			Hit_image->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_image->SetRenderOpacity(1.0f);
+			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
+			Hit_Image_NW->SetRenderOpacity(1.0f);
+			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
+			Hit_Image_NE->SetRenderOpacity(1.0f);
+			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
+			Hit_Image_SW->SetRenderOpacity(1.0f);
+			Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
+			Hit_Image_SE->SetRenderOpacity(1.0f);
 		}
 	}
 
@@ -217,31 +237,31 @@ void UCrosshair_Widget::CheckHit()
 		FTimerDelegate::CreateLambda([&]()
 		{
 			Dot_image->SetRenderTranslation(FVector2D(.0f, .0f));
-			Hit_image->SetRenderOpacity(0.0f);
+			PlayAnimationForward(HitAnim);
 		}
-	), .3f, false);
+	), .01f, false);
 }
 
 void UCrosshair_Widget::CheckDie()
 {
-	GetWorld()->GetTimerManager().ClearTimer(DieTimer);
+	//GetWorld()->GetTimerManager().ClearTimer(DieTimer);
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{
 		if (stat->isDie)
 		{
-			Up_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
-			Down_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
-			Left_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
-			Right_Cross_image->SetBrushTintColor(FSlateColor(FColor::Red));
+			stat->isDie = false;
+			Kill_Overlay->SetRenderOpacity(1.0f);
+			GetWorld()->GetTimerManager().ClearTimer(KillTimer);
+			if (IsAnimationPlaying(KillAnim))
+			{
+				StopAnimation(KillAnim);
+			}
 
-			GetWorld()->GetTimerManager().SetTimer(DieTimer,
+			GetWorld()->GetTimerManager().SetTimer(KillTimer,
 				FTimerDelegate::CreateLambda([&]()
 					{
-						Up_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
-						Down_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
-						Left_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
-						Right_Cross_image->SetBrushTintColor(FSlateColor(FColor::White));
+						PlayAnimationForward(KillAnim);
 					}
 			), .3f, false);
 		}
