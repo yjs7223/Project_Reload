@@ -19,6 +19,13 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	void SetDelegate(class AAICharacter* character);
+
+	void SwitchVisibleWidget();
+
+	void SetPercent();
+	void SetBackPercent(float deltatime);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAIStatComponent* stat;
@@ -47,4 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UProgressBar* HP_BackBar;
+
+
+public:
+	FTimerHandle switchTimer;
+	FTimerHandle dieTimer;
 };
