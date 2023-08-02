@@ -45,6 +45,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->TargetArmLength = 120.f;
 	m_FollowSpringArm->SocketOffset = FVector(0, 60, 80);
+	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("spine_01"));
 	
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
@@ -83,14 +84,17 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector coverpoint = FindComponentByClass<UCoverComponent>()->getCanCoverPoint();
+	FVector coverpoint = m_CoverComponent->getCanCoverPoint();
+	FVector coverNormal = m_CoverComponent->GetPointNormal();
+	UCapsuleComponent* capsule = GetCapsuleComponent();
+
 	UPlayer_Cover_Widget* coverwidget = Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget());
 	if (coverpoint != FVector::ZeroVector)
 	{
-		coverpoint.Z -= 80.0f;
+		coverpoint -= coverNormal * capsule->GetScaledCapsuleRadius() * 0.5f;
 		//coverpoint.Y -= 30.0f;
 		CoverWidgetComponent->SetWorldLocation(coverpoint);
-		FRotator rot = FindComponentByClass<UCoverComponent>()->GetPointNormal().Rotation();
+		FRotator rot = coverNormal.Rotation();
 		CoverWidgetComponent->SetWorldRotation(rot);
 		if (coverwidget) {
 			coverwidget->SetOpacity(1.0f);
