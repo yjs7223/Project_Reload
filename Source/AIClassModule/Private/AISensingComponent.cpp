@@ -38,7 +38,7 @@ void UAISensingComponent::BeginPlay()
 void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	//ShotSenseRange();
 }
 
 

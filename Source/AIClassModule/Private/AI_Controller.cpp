@@ -74,6 +74,7 @@ void AAI_Controller::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));*/
 	}
 
+	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
@@ -151,22 +152,52 @@ void AAI_Controller::SetUseCover()
 	{
 		FCollisionQueryParams collisionParams;
 		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("pelvis"));
+		FVector headVec = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("head"));
 
 		collisionParams.AddIgnoredActor(GetPawn());
-		FVector playerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+
+		FVector playerLocation = playerMesh->GetSocketLocation(TEXT("head"));
+		
+		
+		// 엄폐 가능 지역 체크
 		if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover false"));
+				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover false"));
 				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover true"));
-				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
-				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+				// AI가 엄폐 중이면
+				if (GetBlackboardComponent()->GetValueAsBool("AI_InCover"))
+				{
+					// 머리가 보이는지 체크
+					if (GetWorld()->LineTraceSingleByChannel(headResult, headVec, playerLocation, ECC_Visibility, collisionParams))
+					{
+						// 플레이어면서 그 거리가 가깝다면
+						if (headResult.GetActor()->ActorHasTag("Player") && GetPawn()->GetDistanceTo(result.GetActor()) <= 500.0f)
+						{
+							GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+							DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Red, false, 0.1f);
+						}
+						else
+						{
+							GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+							DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Blue, false, 0.1f);
+						}
+					}
+				}
+				else
+				{
+					DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::White, false, 0.1f);
+					if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 100.0f)
+					{
+						DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
+						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+					}
+				}
 			}
 		}
 	}
