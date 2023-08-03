@@ -712,7 +712,7 @@ void UCoverComponent::StartPeeking()
 	if (!m_IsCover) return; 
 	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 80) return;
 
-
+	if(mPeekingState != EPeekingState::None) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
