@@ -68,81 +68,87 @@ void AAI_Controller::BeginPlay()
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	DistanceToPlayer = 0.0f;
 	UBlackboardComponent* BlackboardComp = Blackboard;
-	if (UseBlackboard(BBAsset, BlackboardComp))
-	{
-		/*if (!RunBehaviorTree(btree))
-			UE_LOG(LogTemp, Warning, TEXT("AIController couldn't run behavior tree!"));*/
-	}
-
+	UseBlackboard(BBAsset, BlackboardComp);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
-	if (commander && commander->m_suben)
+	if (commander == nullptr && commander->m_suben == nullptr)
 	{
-		switch (Stimulus.Type)
+		return;
+	}
+	switch (Stimulus.Type)
+	{
+	case 0:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
+		if (player == nullptr)
 		{
-		case 0:
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SIGHTSIGHT");
-			if (player)
+			bIsPlayerDetected = false;
+			break;
+		}
+		if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X
+			&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
+		{
+			if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y
+				&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
 			{
-				if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X
-					&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
+				DistanceToPlayer = GetPawn()->GetDistanceTo(player);
+				UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
+				if (actor->ActorHasTag("Player"))
 				{
-					if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y
-						&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
+					bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
+					if (Blackboard->GetValueAsObject("Target") != nullptr)
 					{
-						DistanceToPlayer = GetPawn()->GetDistanceTo(player);
-						UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), DistanceToPlayer);
-						if (actor->ActorHasTag("Player"))
+						if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
 						{
-							bIsPlayerDetected = Stimulus.WasSuccessfullySensed();
-							if (Blackboard->GetValueAsObject("Target") != nullptr)
-							{
-								if (Cast<AActor>(Blackboard->GetValueAsObject("Target"))->ActorHasTag("Last"))
-								{
-									GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
-								}
-							}
-							Blackboard->SetValueAsObject("Target", player);
+							GetWorld()->DestroyActor(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 						}
 					}
+					Blackboard->SetValueAsObject("Target", player);
+				}
+				else {
+					bIsPlayerDetected = false;
 				}
 			}
 			else {
 				bIsPlayerDetected = false;
 			}
-			break;
-			// react to sight stimulus
-		case 1:
+		}
+		else {
+			bIsPlayerDetected = false;
+		}
+		break;
+		// react to sight stimulus
+	case 1:
 
-			if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X
-				&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
+		if ((commander->m_suben->GetActorLocation().X - commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) <= player->GetActorLocation().X
+			&& (commander->m_suben->GetActorLocation().X + commander->m_suben->CollisionMesh->GetScaledBoxExtent().X) >= player->GetActorLocation().X)
+		{
+			if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y
+				&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
 			{
-				if ((commander->m_suben->GetActorLocation().Y - commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) <= player->GetActorLocation().Y
-					&& (commander->m_suben->GetActorLocation().Y + commander->m_suben->CollisionMesh->GetScaledBoxExtent().Y) >= player->GetActorLocation().Y)
+				if (Blackboard->GetValueAsBool("AI_Active"))
 				{
-					if (Blackboard->GetValueAsBool("AI_Active"))
+					if (!Stimulus.Tag.IsValid())
 					{
-						if (Stimulus.Tag.IsValid())
-						{
-							if (Stimulus.Tag == "Shooting")
-							{
-								Blackboard->SetValueAsObject("Target", player);
-							}
-						}
+						break;
+					}
+					if (Stimulus.Tag == "Shooting")
+					{
+						Blackboard->SetValueAsObject("Target", player);
 					}
 				}
 			}
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
-			break;
-			// react to hearing;
-		default:
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
-			return;
 		}
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		break;
+		// react to hearing;
+	default:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "HearingHearing");
+		return;
 	}
+	
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
 	
 }
