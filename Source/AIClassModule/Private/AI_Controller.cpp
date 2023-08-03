@@ -13,11 +13,11 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Perception/AIPerceptionSystem.h"
-#include "Perception/AISenseConfig_Sight.h"
-#include "Perception/AISenseConfig_Hearing.h"
-#include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include "Perception/AIPerceptionComponent.h"
+//#include "Perception/AIPerceptionSystem.h"
+//#include "Perception/AISenseConfig_Sight.h"
+//#include "Perception/AISenseConfig_Hearing.h"
+//#include "Perception/AIPerceptionStimuliSourceComponent.h"
+//#include "Perception/AIPerceptionComponent.h"
 #include "Math/Vector.h"
 #include "SubEncounterSpace.h"
 #include "AISpawner.h"
@@ -66,7 +66,7 @@ void AAI_Controller::BeginPlay()
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	DistanceToPlayer = 0.0f;
+	//DistanceToPlayer = 0.0f;
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BBAsset, BlackboardComp);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
@@ -239,7 +239,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	}*/
 	if (!Blackboard->GetValueAsObject("Target"))
 	{
-		DistanceToPlayer = 0.0f;
+		//DistanceToPlayer = 0.0f;
 		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
 		{
 			if (em_normal == false)
