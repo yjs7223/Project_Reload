@@ -148,7 +148,7 @@ void AAICommander::ListSet()
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
 					m_suben = Cast<ASubEncounterSpace>(sub);
-					if (!m_suben)
+					if (m_suben == nullptr)
 					{
 						continue;
 					}
@@ -198,11 +198,11 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	for (auto ai : sub->AIArray)
 	{
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-		if (!AIController)
+		if (AIController == nullptr)
 		{
 			continue;
 		}
-		if (!AIController->GetBlackboardComponent())
+		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
 		}
@@ -238,11 +238,11 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		Blackboard->SetValueAsBool("CmdAI_Active", true);
 
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
-		if (!AIController)
+		if (AIController == nullptr)
 		{
 			continue;
 		}
-		if (!AIController->GetBlackboardComponent())
+		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
 		}
@@ -268,11 +268,11 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AICOMMENDER"));
 			List_Location.Add(*FindActor, ai->GetActorLocation());
 			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-			if (!AIController)
+			if (AIController == nullptr)
 			{
 				continue;
 			}
-			if (!AIController->GetBlackboardComponent())
+			if (AIController->GetBlackboardComponent() == NULL)
 			{
 				continue;
 			}
@@ -328,11 +328,11 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 	for (auto& subAi : sub->AIArray)
 	{
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
-		if (!AIController)
+		if (AIController == nullptr)
 		{
 			continue;
 		}
-		if (!AIController->GetBlackboardComponent())
+		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
 		}
@@ -345,11 +345,11 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 				if (ai != subAi)
 				{
 					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-					if (!AIController)
+					if (AIController == nullptr)
 					{
 						continue;
 					}
-					if (!AIController->GetBlackboardComponent())
+					if (AIController->GetBlackboardComponent() == NULL)
 					{
 						continue;
 					}
@@ -372,11 +372,11 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 				if (aichk != subAi)
 				{
 					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(aichk)->GetController());
-					if (!AIController)
+					if (AIController == nullptr)
 					{
 						continue;
 					}
-					if (!AIController->GetBlackboardComponent())
+					if (AIController->GetBlackboardComponent() == NULL)
 					{
 						continue;
 					}
@@ -392,11 +392,11 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 				for (auto& sightai : sub->AIArray)
 				{
 					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(sightai)->GetController());
-					if (!AIController)
+					if (AIController == nullptr)
 					{
 						continue;
 					}
-					if (!AIController->GetBlackboardComponent())
+					if (AIController->GetBlackboardComponent() == NULL)
 					{
 						continue;
 					}
@@ -425,11 +425,11 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 			continue;
 		}
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ac)->GetController());
-		if (!AIController)
+		if (AIController == nullptr)
 		{
 			continue;
 		}
-		if (!AIController->GetBlackboardComponent())
+		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
 		}
