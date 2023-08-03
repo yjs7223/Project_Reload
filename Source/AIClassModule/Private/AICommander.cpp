@@ -436,7 +436,7 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 		if (*List_Location.Find(*FindAc) != MaxSupLoc)
 		{
 			sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
-			sup_value += (Sup_Array[0] / 10)
+			sup_value += (Sup_Array[0] / 15)
 				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / sup_sharerange));
 			if (sup_value >= Sup_Array[0])
 			{
