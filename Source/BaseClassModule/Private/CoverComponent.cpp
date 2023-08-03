@@ -183,7 +183,7 @@ bool UCoverComponent::StartAICover()
 	}
 
 	if (result.GetActor() == nullptr) return false;
-	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), result.GetActor()->GetActorLocation()));
+	 
 	RotateSet(0.0f);
 
 	owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
@@ -597,7 +597,7 @@ bool UCoverComponent::StartCover()
 	
 	if (result.GetActor() == nullptr) return false;
 
-	owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), result.GetActor()->GetActorLocation()));
+
 	RotateSet(0.0f);
 
 	//owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
