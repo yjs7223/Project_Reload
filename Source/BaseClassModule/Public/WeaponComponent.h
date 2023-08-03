@@ -9,9 +9,11 @@
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	TE_Pistol UMETA(DisplayName = "Pistol"),
-	TE_Rifle UMETA(DisplayName = "Rifle"),
-	TE_Shotgun UMETA(DisplayName = "Shotgun"),
+	None = 0	UMETA(Hidden),
+	TE_Pistol	UMETA(DisplayName = "Pistol"),
+	TE_Rifle	UMETA(DisplayName = "Rifle"),
+	TE_Shotgun	UMETA(DisplayName = "Shotgun"),
+	MAX			UMETA(Hidden)
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -37,14 +39,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ReloadAmmo();
 
-	// (void Fire() override)
-	//UFUNCTION(BlueprintCallable)
 		virtual void Fire();
 
 		float getAimYaw();
 		float getAimPitch();
 
 		void AimSetting();
+		UFUNCTION(BlueprintCallable)
+		void SetHandleing(bool isFaceRight, bool isCoverUse = false);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
@@ -101,4 +103,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		EWeaponType weapontype;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
+	FName Weapon_Handle_R_Name;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
+	FName Weapon_Handle_L_Name;
 };
