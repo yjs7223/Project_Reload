@@ -30,7 +30,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		float Dis;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
+		float support_default;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		FVector Com_Vec;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTS_SupportState)
 		class AAI_Controller* aic;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UDataTable* DT_Suppression;
+
+public:
+	UFUNCTION()
+		void SetDataTable(FName EnemyName);
 };
