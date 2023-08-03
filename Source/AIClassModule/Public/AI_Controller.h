@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "Perception/AIPerceptionTypes.h"
+//#include "Perception/AIPerceptionTypes.h"
 #include "AI_Controller.generated.h"
 
 /**
@@ -33,18 +33,18 @@ public:
 		class UBehaviorTree* btree;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBehaviorTreeComponent* behavior_tree_component;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class UAISenseConfig_Sight* SightConfig;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class UAISenseConfig_Hearing* HearingConfig;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	//	class UAISenseConfig_Sight* SightConfig;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	//	class UAISenseConfig_Hearing* HearingConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		float DistanceToPlayer;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		float DistanceToPlayer;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
