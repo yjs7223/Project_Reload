@@ -14,6 +14,8 @@ UWeaponComponent::UWeaponComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	m_CanShooting = true;
+	Weapon_Handle_R_Name = TEXT("hand_r_Socket");
+	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
@@ -152,5 +154,33 @@ void UWeaponComponent::AimSetting()
 	}
 
 
+}
+
+void UWeaponComponent::SetHandleing(bool isFaceRight, bool isCoverUse)
+{
+	FName handSocketName;
+	FRotator meshRotate;
+	FVector meshLocation;
+	ACharacter* character = GetOwner<ACharacter>();
+	if (isCoverUse) {
+		if (UCoverComponent* cover = character->FindComponentByClass<UCoverComponent>()) {
+			isFaceRight = cover->IsFaceRight();
+		}
+	}
+	if (isFaceRight) {
+		handSocketName = Weapon_Handle_R_Name;
+		meshRotate = FRotator(0.0, 0.0, 0.0);
+		meshLocation = WeaponMesh->GetRelativeLocation() * FVector(-1.0f, 1.0f, -1.0f);
+	}
+	else {
+		handSocketName = Weapon_Handle_L_Name;
+		meshRotate = FRotator(0.0, 180.0, 180.0);
+		meshLocation = WeaponMesh->GetRelativeLocation() * FVector(-1.0f, 1.0f, -1.0f);
+	}
+
+
+	WeaponMesh->AttachToComponent(GetOwner<ACharacter>()->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, handSocketName);
+	WeaponMesh->SetRelativeRotation(meshRotate);
+	WeaponMesh->SetRelativeLocation(meshLocation);
 }
 

@@ -137,47 +137,46 @@ void AAICommander::ListSet()
 {
 	for (auto& en : EncounterArray)
 	{
-		if (Cast<AEncounterSpace>(en)->LevelActive)
-		{
-			Blackboard->SetValueAsObject("Cmd_Space", en);
+		if (!Cast<AEncounterSpace>(en)->LevelActive) continue;
 
-			
-			
-			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
+		Blackboard->SetValueAsObject("Cmd_Space", en);
+
+
+
+		for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
+		{
+			if (!Cast<ASubEncounterSpace>(sub)->LevelActive) continue;
+
+			m_suben = Cast<ASubEncounterSpace>(sub);
+			if (m_suben == nullptr)
 			{
-				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
+				continue;
+			}
+			if (!m_suben->LevelActive)
+			{
+				ListReset(m_suben);
+			}
+			if (m_suben->spawn)
+			{
+				m_suben->spawn->check_Overlap = true;
+			}
+
+			if (!MapList_Start)
+			{
+				ListStartSet(m_suben);
+			}
+			else
+			{
+				ListTickSet(m_suben, Cast<AEncounterSpace>(en));
+				TargetTickSet(m_suben);
+				CoverPointSubEn(m_suben);
+				CoverPointEnemy();
+				if (List_Division.Num() <= 0)
 				{
-					m_suben = Cast<ASubEncounterSpace>(sub);
-					if (m_suben == nullptr)
-					{
-						continue;
-					}
-					if (!m_suben->LevelActive)
-					{
-						ListReset(m_suben);
-					}
-					if (m_suben->spawn)
-					{
-						m_suben->spawn->check_Overlap = true;
-					}
-					
-					if (!MapList_Start)
-					{
-						ListStartSet(m_suben);
-					}
-					else
-					{
-						ListTickSet(m_suben, Cast<AEncounterSpace>(en));
-						TargetTickSet(m_suben);
-						CoverPointSubEn(m_suben);
-						CoverPointEnemy();
-						if (List_Division.Num() <= 0)
-						{
-							ListReset(m_suben);
-						}
-					}
+					ListReset(m_suben);
 				}
 			}
+
 		}
 	}
 }

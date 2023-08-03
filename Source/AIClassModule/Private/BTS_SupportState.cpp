@@ -4,6 +4,7 @@
 #include "BTS_SupportState.h"
 #include "AI_Controller.h"
 #include "AICommander.h"
+#include "ST_Suppression.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTS_SupportState::UBTS_SupportState()
@@ -30,7 +31,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 	for (auto sup : aic->commander->List_Suppression)
 	{
-		if (sup.Value >= 90.0f)
+		if (sup.Value >= support_default)
 		{
 			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
 			Dis_start = false;
@@ -54,7 +55,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 						}
 					}
 				}
-				
+
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
 		}
@@ -90,9 +91,19 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				}
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-			
+
 		}
 	}
+}
 
+void UBTS_SupportState::SetDataTable(FName EnemyName)
+{
+	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
+	if (SuppressionData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+
+		support_default = SuppressionData->Support_Default;
+	}
 
 }

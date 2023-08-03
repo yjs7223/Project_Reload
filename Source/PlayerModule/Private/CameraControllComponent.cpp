@@ -42,7 +42,8 @@ void UCameraControllComponent::BeginPlay()
 	m_FollowCamera = owner->FindComponentByClass<UCameraComponent>();
 	m_FollowSpringArm = owner->FindComponentByClass<USpringArmComponent>();
 	m_FollowSpringArm->SocketOffset = m_Data->camerapos;
-	m_FollowSpringArm->SetRelativeLocation(owner->GetMesh()->GetBoneLocation(TEXT("spine_01"), EBoneSpaces::ComponentSpace));
+	
+
 }
 
 
