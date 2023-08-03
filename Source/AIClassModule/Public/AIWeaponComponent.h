@@ -40,10 +40,6 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		AAICharacter* owner;
 
-	// 총구 불꽃 파티클
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		UParticleSystem* shotFX;
-
 	// 현재 사격 반동 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float recoil_Radius;
@@ -117,9 +113,30 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UHitImapactDataAsset* HitImpactDataAsset;
 
+	// DA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* RifleDataAsset;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	class UWeaponDataAsset* RifleDataAssets;
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UMaterialInstance* Decal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* MuzzleFireParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* BulletTracerParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundWave*> ShotSounds;
+
+	// Main DA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* AIWeaponDataAsset;
+
+	class USkeletalMeshComponent* playerMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class ACharacter* player; //cast
 protected:
 	virtual void BeginPlay() override;
 
@@ -153,4 +170,6 @@ public:
 
 	void CheckTrace();
 	void AISpawnImpactEffect(FHitResult p_result);
+
+	void PlayRandomShotSound();
 };
