@@ -40,14 +40,14 @@ AAI_Controller::AAI_Controller()
 	//}
 
 	//BT
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/BaseAI/BT/BT_Main.BT_Main'"));
+	/*static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/BaseAI/BT/BT_Main.BT_Main'"));
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
 		UE_LOG(LogTemp, Warning, TEXT("BehaviorTree Succeed!"));
 	}
 	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
-
+	*/
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/BaseAI/BB/BB_BaseAI.BB_BaseAI'"));
 	if (BB_BaseAIObject.Succeeded())
 	{
@@ -220,13 +220,6 @@ void AAI_Controller::SetUseCover()
 	}
 }
 
-void AAI_Controller::RunBTT()
-{
-	if (IsValid(btree)) 
-	{
-		RunBehaviorTree(btree);
-	}
-}
 
 void AAI_Controller::Tick(float DeltaSeconds)
 {
