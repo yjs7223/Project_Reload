@@ -74,7 +74,11 @@ void AAI_Controller::BeginPlay()
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
-	if (commander == nullptr && commander->m_suben == nullptr)
+	if (commander == nullptr)
+	{
+		return;
+	}
+	if (commander->m_suben == nullptr)
 	{
 		return;
 	}
