@@ -135,48 +135,51 @@ void AAICommander::Tick(float DeltaTime)
 
 void AAICommander::ListSet()
 {
+	ASubEncounterSpace* MSuben = nullptr;
 	for (auto& en : EncounterArray)
 	{
 		if (!Cast<AEncounterSpace>(en)->LevelActive) continue;
 
 		Blackboard->SetValueAsObject("Cmd_Space", en);
-
-
-
-		for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
+		if (m_suben != nullptr)
 		{
-			if (!Cast<ASubEncounterSpace>(sub)->LevelActive) continue;
-
-			m_suben = Cast<ASubEncounterSpace>(sub);
-			if (m_suben == nullptr)
-			{
-				continue;
-			}
-			if (!m_suben->LevelActive)
+			if (m_suben->LevelActive == false)
 			{
 				ListReset(m_suben);
 			}
-			if (m_suben->spawn)
+		}
+		for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
+		{
+			if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 			{
-				m_suben->spawn->check_Overlap = true;
+				MSuben = Cast<ASubEncounterSpace>(sub);  
 			}
+		}
+		if (MSuben == nullptr)
+		{
+			continue;
+		}
+		m_suben = MSuben;
 
-			if (!MapList_Start)
-			{
-				ListStartSet(m_suben);
-			}
-			else
-			{
-				ListTickSet(m_suben, Cast<AEncounterSpace>(en));
-				TargetTickSet(m_suben);
-				CoverPointSubEn(m_suben);
-				CoverPointEnemy();
-				if (List_Division.Num() <= 0)
-				{
-					ListReset(m_suben);
-				}
-			}
+		if (m_suben->spawn)
+		{
+			m_suben->spawn->check_Overlap = true;
+		}
 
+		if (!MapList_Start)
+		{
+			ListStartSet(m_suben);
+		}
+		else
+		{
+			ListTickSet(m_suben, Cast<AEncounterSpace>(en));
+			TargetTickSet(m_suben);
+			CoverPointSubEn(m_suben);
+			CoverPointEnemy();
+			if (List_Division.Num() <= 0)
+			{
+				ListReset(m_suben);
+			}
 		}
 	}
 }
@@ -435,7 +438,7 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 		if (*List_Location.Find(*FindAc) != MaxSupLoc)
 		{
 			sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
-			sup_value += (Sup_Array[0] / 5)
+			sup_value += (Sup_Array[0] / 10)
 				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / sup_sharerange));
 			if (sup_value >= Sup_Array[0])
 			{
