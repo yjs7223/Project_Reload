@@ -74,7 +74,11 @@ void AAI_Controller::BeginPlay()
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
-	if (commander == nullptr && commander->m_suben == nullptr)
+	if (commander == nullptr)
+	{
+		return;
+	}
+	if (commander->m_suben == nullptr)
 	{
 		return;
 	}
@@ -183,15 +187,18 @@ void AAI_Controller::SetUseCover()
 					if (GetWorld()->LineTraceSingleByChannel(headResult, headVec, playerLocation, ECC_Visibility, collisionParams))
 					{
 						// �÷��̾�鼭 �� �Ÿ��� �����ٸ�
-						if (headResult.GetActor()->ActorHasTag("Player") && GetPawn()->GetDistanceTo(result.GetActor()) <= 500.0f)
+						if (headResult.GetActor()->ActorHasTag("Player"))
 						{
-							GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
-							DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Red, false, 0.1f);
-						}
-						else
-						{
-							GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-							DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Blue, false, 0.1f);
+							if (GetPawn()->GetDistanceTo(result.GetActor()) <= 500.0f)
+							{
+								GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+								DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Red, false, 0.1f);
+							}
+							else
+							{
+								GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+								DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Blue, false, 0.1f);
+							}
 						}
 					}
 				}
