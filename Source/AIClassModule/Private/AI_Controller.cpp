@@ -72,7 +72,7 @@ void AAI_Controller::BeginPlay()
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
-	SetEnemy("Rifle_E");
+	//SetEnemy("Rifle_E");
 }
 
 //void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
