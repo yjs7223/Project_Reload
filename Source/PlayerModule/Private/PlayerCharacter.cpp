@@ -41,7 +41,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	//GetMesh().setanimins
 
 	m_FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
-	m_FollowSpringArm->SetupAttachment(RootComponent);
+	//m_FollowSpringArm->SetupAttachment(RootComponent);
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->TargetArmLength = 120.f;
 	m_FollowSpringArm->SocketOffset = FVector(0, 60, 80);
