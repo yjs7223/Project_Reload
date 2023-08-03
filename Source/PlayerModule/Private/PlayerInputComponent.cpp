@@ -60,6 +60,10 @@ void UPlayerInputComponent::MoveRight(float Value)
 void UPlayerInputComponent::Runing()
 {
 	m_inputData.IsRuning ? m_inputData.IsRuning = false : m_inputData.IsRuning = true;
+	if (m_inputData.IsRuning) {
+
+		m_inputData.IsAiming = false;
+	}
 }
 
 void UPlayerInputComponent::Crouching()
@@ -94,6 +98,7 @@ void UPlayerInputComponent::StopFire()
 void UPlayerInputComponent::StartAiming()
 {
 	m_inputData.IsAiming = true;
+	m_inputData.IsRuning = false;
 	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartAiming();
 }
 

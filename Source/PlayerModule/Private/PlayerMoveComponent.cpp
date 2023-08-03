@@ -11,6 +11,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Navigation/PathFollowingComponent.h"
 
+
 // Sets default values for this component's properties
 UPlayerMoveComponent::UPlayerMoveComponent()
 {
@@ -96,35 +97,38 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	}
 
 	FVector MoveDirect;
-
-	MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
-
+		MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
 	if (m_CoverComp) {
 		m_CoverComp->SettingMoveVector(MoveDirect);
 	}
 
+
 	MoveDirect.Z = 0;
 	MoveDirect.Normalize();
+	MoveDirect *= m_Movement->GetMaxSpeed();
 	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
 	if (m_Inputdata->IsRuning) {
-		MoveDirect *= m_Movement->GetMaxSpeed();
-		//MoveDirect *= 2.0f;
 		targetRotate = MoveDirect.Rotation();
-
+	}
+	else {
+		MoveDirect *= 0.5;
 	}
 	
 	mTargetRotate = targetRotate;
 	
-	if (MoveDirect == FVector::ZeroVector) {
-		mMoveDirect = FVector::ZeroVector;
-		m_Movement->Velocity = FVector::ZeroVector;
-	}
-	else {
-		mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
-	}
+	//if (MoveDirect == FVector::ZeroVector) {
+	//	mMoveDirect = FVector::ZeroVector;
+	//	m_Movement->Velocity = FVector::ZeroVector;
+	//}
+	//else {
+	//	mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
+	//}
 
-	owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
+	m_Movement->Velocity = MoveDirect;
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("m_Movement %f"), m_Movement->Velocity.Length()), true, true, FColor::Magenta, DeltaTime);
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("MoveDirect %f"), MoveDirect.Length()), true, true, FColor::Magenta, DeltaTime);
+	//owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
 	//owner->AddMovementInput(mMoveDirect, 0.5f);
 	//owner->GetCharacterMovement()->Velocity = mMoveDirect;
 
