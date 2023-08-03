@@ -45,7 +45,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->TargetArmLength = 120.f;
 	m_FollowSpringArm->SocketOffset = FVector(0, 60, 80);
-	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("spine_01"));
+	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("root"));
 	
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
