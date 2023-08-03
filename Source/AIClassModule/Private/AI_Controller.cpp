@@ -72,7 +72,9 @@ void AAI_Controller::BeginPlay()
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
+	SetEnemy("Rifle_E");
 }
+
 //void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 //{
 //	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, FString::FromInt(Stimulus.Type.Index));
@@ -158,6 +160,7 @@ void AAI_Controller::BeginPlay()
 //	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, Stimulus.Tag.ToString());
 //	
 //}
+
 void AAI_Controller::SetUseCover()
 {
 	if (GetBlackboardComponent()->GetValueAsBool("AI_Active"))
