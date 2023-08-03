@@ -70,6 +70,8 @@ void AAI_Controller::BeginPlay()
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BBAsset, BlackboardComp);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
+	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
+	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
 }
 void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
 {
