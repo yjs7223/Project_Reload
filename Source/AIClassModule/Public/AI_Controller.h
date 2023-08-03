@@ -55,10 +55,10 @@ public:
 
 	class USkeletalMeshComponent* playerMesh;
 public:
-	UFUNCTION()//BlueprintCallable
-		void SetEnemy(FName EnemyName);
-	UFUNCTION()
-		void OnTargetDetected(AActor* actor, FAIStimulus Stimulus);
+	//UFUNCTION()//BlueprintCallable
+	//	void SetEnemy(FName EnemyName);
+	//UFUNCTION()
+	//	void OnTargetDetected(AActor* actor, FAIStimulus Stimulus);
 	UFUNCTION(BlueprintCallable, Category = "UseCover")
 		void SetUseCover();
 
