@@ -246,7 +246,6 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		{
 			continue;
 		}
-		AIController->RunBTT();
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 		AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));

@@ -27,10 +27,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBlackboardData* BBAsset;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class UDataTable* DT_Range;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class UBehaviorTree* btree;
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class UBehaviorTree* btree;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBehaviorTreeComponent* behavior_tree_component;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
@@ -62,7 +61,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UseCover")
 		void SetUseCover();
 
-	UFUNCTION()
-		void RunBTT();
+
 	
 };
