@@ -38,6 +38,14 @@ void AEncounterSpace::Tick(float DeltaTime)
 		{
 			SubEncounterCheck();
 		}
+		if (!LevelArray.IsEmpty())
+		{
+			for (auto sub : LevelArray)
+			{
+				Cast<ASubEncounterSpace>(sub)->en = this;
+			}
+		}
+		
 		LevelArrayActive();
 		if (LevelArray.Num() <= 0)
 		{

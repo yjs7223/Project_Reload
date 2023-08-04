@@ -92,6 +92,8 @@ public:
 		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* m_suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ASubEncounterSpace* Now_suben;
 
 	// DATA TABLE
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)

@@ -140,9 +140,13 @@ void AAICommander::ListSet()
 		if (Cast<AEncounterSpace>(en)->LevelActive)
 		{
 			Blackboard->SetValueAsObject("Cmd_Space", en);
-
-
-
+			if (Now_suben != nullptr)
+			{
+				if (!Now_suben->LevelActive)
+				{
+					ListReset(m_suben);
+				}
+			}
 			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
 			{
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
@@ -152,13 +156,10 @@ void AAICommander::ListSet()
 					{
 						continue;
 					}
-					if (!m_suben->LevelActive)
+					Now_suben = m_suben;
+					if (Now_suben->spawn)
 					{
-						ListReset(m_suben);
-					}
-					if (m_suben->spawn)
-					{
-						m_suben->spawn->check_Overlap = true;
+						Now_suben->spawn->check_Overlap = true;
 					}
 
 					if (!MapList_Start)
@@ -184,6 +185,19 @@ void AAICommander::ListSet()
 
 void AAICommander::ListReset(ASubEncounterSpace* sub)
 {
+	for (auto ai : List_Division)
+	{
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
+		if (AIController == nullptr)
+		{
+			continue;
+		}
+		if (AIController->GetBlackboardComponent() == NULL)
+		{
+			continue;
+		}
+		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+	}
 	List_Division.Reset();
 	List_Combat.Reset();
 	List_Location.Reset();
@@ -195,19 +209,7 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	{
 		sub->LevelActive = false;
 	}
-	for (auto ai : sub->AIArray)
-	{
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-		if (AIController == nullptr)
-		{
-			continue;
-		}
-		if (AIController->GetBlackboardComponent() == NULL)
-		{
-			continue;
-		}
-		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
-	}
+
 	AddIndex = 0;
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
@@ -258,15 +260,15 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 {
 	SightIn_CHK = false;
-	for (auto ai :sub->AIArray)
+	for (auto ai : List_Division)
 	{
-		auto FindActor = List_Division.Find(ai); 
+		auto FindActor = List_Division.Find(ai.Key); 
 		
 		if (FindActor)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AICOMMENDER"));
-			List_Location.Add(*FindActor, ai->GetActorLocation());
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+			List_Location.Add(*FindActor, ai.Key->GetActorLocation());
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
 			if (AIController == nullptr)
 			{
 				continue;
