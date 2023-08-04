@@ -245,7 +245,6 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		
 	}
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
-
 	SetUseCover();
 }
 
