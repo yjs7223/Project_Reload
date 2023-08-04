@@ -18,7 +18,6 @@ ASubEncounterSpace::ASubEncounterSpace()
 	RootComponent = CollisionMesh;
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapBegin);
-	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapEnd);
 	
 	LevelActive = false;
 }
@@ -52,16 +51,16 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
 	{
 		LevelActive = true;
+		for (auto suben : en->LevelArray)
+		{
+			if (suben != this)
+			{
+				Cast<ASubEncounterSpace>(suben)->LevelActive = false;
+			}
+		}
 	}
 }
 
-void ASubEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
-	{
-		LevelActive = false;
-	}
-}
 
 void ASubEncounterSpace::EnemyAICheck()
 {
