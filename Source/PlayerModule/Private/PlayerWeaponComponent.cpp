@@ -156,6 +156,9 @@ void UPlayerWeaponComponent::InitData()
 		H_damage.X = dataTable->max_H_Damage;
 		H_damage.Y = dataTable->min_H_Damage;
 
+		Deviation = dataTable->Deviation;
+		MaxRange = dataTable->MaxRange;
+
 		m_firecount = 0;
 		m_dValue = 0.f;
 		recoilTime = 0.0f;
@@ -274,15 +277,14 @@ void UPlayerWeaponComponent::Fire()
 				float damageVlaue = 0;
 				if (m_result.BoneName == "head")
 				{
-					damageVlaue = FMath::RandRange(H_damage.X, H_damage.Y);
-
+					damageVlaue = CalcDamage(m_result, H_damage);
 					MyStat->Attacked(damageVlaue, m_result);
 
 					headhit = true;
 				}
 				else
 				{
-					damageVlaue = FMath::RandRange(damage.X, damage.Y);
+					damageVlaue = CalcDamage(m_result, damage);
 					MyStat->Attacked(damageVlaue, m_result);
 				}
 				owner->CreateDamageWidget(damageVlaue, m_result);
@@ -826,6 +828,21 @@ void UPlayerWeaponComponent::Threaten()
 			}
 		}
 	}
+}
+
+float UPlayerWeaponComponent::CalcDamage(FHitResult result, FVector2D p_damage)
+{
+	if (MaxRange > 0)
+	{
+		FVector range = result.Location - owner->GetActorLocation();
+		float alpha = range.Length() / MaxRange;
+		alpha = FMath::Clamp(alpha, 0.0f, 1.0f);
+		float m_dmg = FMath::Lerp(p_damage.X, p_damage.Y, alpha);
+		m_dmg += FMath::RandRange(-Deviation, Deviation);
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(m_dmg));
+		return m_dmg;
+	}
+	return 0.0f;
 }
 
 bool UPlayerWeaponComponent::CheckActorTag(AActor* actor, FName tag)
