@@ -41,4 +41,6 @@ public:
 	// �÷��̾���� ��ġ �˻�
 	UFUNCTION(BlueprintCallable, Category = "Range")
 		bool MinRangeCheck();
+
+	void DrawSense();
 };

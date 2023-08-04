@@ -134,7 +134,7 @@ void UAIWeaponComponent::ShotAI()
 	// 점점 반동이 줄어듦
 	if (recoil_Radius > recoilMin_Radius)
 	{
-		recoil_Radius = recoilMax_Radius - recoilMin_Radius / cur_Shot_Count;
+		recoil_Radius -= (recoilMax_Radius - recoilMin_Radius) / shot_MaxCount;
 	}
 	else
 	{
