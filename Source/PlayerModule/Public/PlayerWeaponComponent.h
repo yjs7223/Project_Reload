@@ -63,7 +63,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
-	void WeaponMeshSetting();
+	void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
 
 
 	void ReloadTick(float Deltatime);
@@ -91,6 +91,8 @@ public:
 	void SpawnImpactEffect(FHitResult result);
 
 	void Threaten();
+
+	static bool CheckActorTag(AActor* actor, FName tag);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
