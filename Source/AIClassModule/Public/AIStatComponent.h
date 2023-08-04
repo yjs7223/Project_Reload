@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "StatComponent.h"
-#include "ST_Spawn.h"
 #include "AIStatComponent.generated.h"
 
 

@@ -57,6 +57,7 @@ void UAIWeaponComponent::BeginPlay()
 	owner = Cast<AAICharacter>(GetOwner());
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
+	AITypeSetting();
 	use_Shot_State = true;
 
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -217,13 +218,26 @@ void UAIWeaponComponent::ReloadAI()
 	use_Shot_State = true;
 }
 
-void UAIWeaponComponent::SetDataTable(FName EnemyName)
+void UAIWeaponComponent::AITypeSetting()
 {
 	if (AIShotData)
 	{
-		// 라이플 데이터 가져오기
-		curAIShotData = AIShotData->FindRow<FST_AIShot>(EnemyName, TEXT(""));
-		AIWeaponDataAsset = RifleDataAsset;
+		switch (type)
+		{
+		case Enemy_Name::RIFLE:
+			// 라이플 데이터 가져오기
+			curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
+			AIWeaponDataAsset = RifleDataAsset;
+			break;
+		case Enemy_Name::HEAVY:
+			// 라이플 데이터 가져오기
+			curAIShotData = AIShotData->FindRow<FST_AIShot>("Heavy_E", TEXT(""));
+			break;
+		case Enemy_Name::SNIPER:
+			// 라이플 데이터 가져오기
+			curAIShotData = AIShotData->FindRow<FST_AIShot>("Sniper_E", TEXT(""));
+			break;
+		}
 
 		// 가져온 데이터 삽입
 		recoil_Range = curAIShotData->Recoil_Range;
@@ -260,7 +274,7 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 
 bool UAIWeaponComponent::AITypeSniperCheck()
 {
-	if (Cast<AAICharacter>(GetOwner())->type == Enemy_Name::SNIPER)
+	if (type == Enemy_Name::SNIPER)
 	{
 		return true;
 	}

@@ -36,6 +36,8 @@ UAIStatComponent::UAIStatComponent()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
 	}
+	SetDataTable("Rifle_E");
+
 }
 
 void UAIStatComponent::BeginPlay()
@@ -48,8 +50,6 @@ void UAIStatComponent::BeginPlay()
 	DI_SupRange = 1 / sup_MaxRange;
 	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
 	//AICommander = AAICommander::aicinstance;
-	
-	//SetDataTable("Rifle_E");
 }
 
 void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

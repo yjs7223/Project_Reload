@@ -32,7 +32,7 @@ void UAICharacterMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	aicharacter = GetOwner<AAICharacter>();
-	//SetEnemy("Rifle_E");
+	SetEnemy("Rifle_E");
 
 	e_move = EMove::Patrol;
 	// ...
