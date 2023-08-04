@@ -8,6 +8,7 @@
 #include "Components/PointLightComponent.h"
 #include "LastPoint.h"
 #include "AISpawner.h"
+#include "ST_Spawn.h"
 //#include "NiagaraComponent.h"
 
 #include "AICharacter.generated.h"
@@ -31,7 +32,10 @@ public:
 	// 자신의 스포너
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AAISpawner* mySpawner;
-	
+
+	// 자신의 병과
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		Enemy_Name type;
 
 	//간접 공격 감지 캡슐 매쉬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
