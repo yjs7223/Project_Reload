@@ -141,14 +141,14 @@ void AAICommander::ListSet()
 		{
 			Blackboard->SetValueAsObject("Cmd_Space", en);
 
-			
-			
+
+
 			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
 			{
 				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
 					m_suben = Cast<ASubEncounterSpace>(sub);
-					if (m_suben == nullptr)
+					if (!m_suben)
 					{
 						continue;
 					}
@@ -160,7 +160,7 @@ void AAICommander::ListSet()
 					{
 						m_suben->spawn->check_Overlap = true;
 					}
-					
+
 					if (!MapList_Start)
 					{
 						ListStartSet(m_suben);
@@ -246,7 +246,6 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		{
 			continue;
 		}
-		AIController->RunBTT();
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 		AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
@@ -436,7 +435,7 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 		if (*List_Location.Find(*FindAc) != MaxSupLoc)
 		{
 			sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
-			sup_value += (Sup_Array[0] / 5)
+			sup_value += (Sup_Array[0] / 15)
 				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / sup_sharerange));
 			if (sup_value >= Sup_Array[0])
 			{
