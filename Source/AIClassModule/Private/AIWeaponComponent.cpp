@@ -42,6 +42,18 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		RifleDataAsset = Cast<UAIWeaponDataAsset>(rifle_da.Object);
 	}
+	// 스나이퍼
+	static ConstructorHelpers::FObjectFinder<UDataAsset> sniper_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AISniper.DA_AISniper'"));
+	if (sniper_da.Succeeded())
+	{
+		SniperDataAsset = Cast<UAIWeaponDataAsset>(sniper_da.Object);
+	}
+	// 헤비
+	static ConstructorHelpers::FObjectFinder<UDataAsset> heavy_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIHeavy.DA_AIHeavy'"));
+	if (heavy_da.Succeeded())
+	{
+		HeavyDataAsset = Cast<UAIWeaponDataAsset>(heavy_da.Object);
+	}
 
 	// 총 피격 이펙트
 	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
@@ -221,9 +233,20 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 {
 	if (AIShotData)
 	{
-		// 라이플 데이터 가져오기
+		// 데이터 가져오기
 		curAIShotData = AIShotData->FindRow<FST_AIShot>(EnemyName, TEXT(""));
-		AIWeaponDataAsset = RifleDataAsset;
+		switch (Cast<AAICharacter>(owner)->type)
+		{
+		case Enemy_Name::RIFLE:
+			AIWeaponDataAsset = RifleDataAsset;
+			break;
+		case Enemy_Name::SNIPER:
+			AIWeaponDataAsset = SniperDataAsset;
+			break;
+		case Enemy_Name::HEAVY:
+			AIWeaponDataAsset = HeavyDataAsset;
+			break;
+		}
 
 		// 가져온 데이터 삽입
 		recoil_Range = curAIShotData->Recoil_Range;
