@@ -183,6 +183,7 @@ bool UCoverComponent::StartAICover()
 	}
 
 	if (result.GetActor() == nullptr) return false;
+	 
 	RotateSet(0.0f);
 
 	owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
@@ -264,6 +265,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 
+	DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 	if (!result.bBlockingHit) return;
 
 	//벽이있다면 이동방향 체크
@@ -297,9 +299,10 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	if (FinalNormal == FVector::ZeroVector) {
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ERROR FinalNormal is Zero"), true,true, FColor::Red, 1000.0f);
 	}
+	DrawDebugLine(GetWorld(), start, start + FinalNormal * 100, FColor::Cyan, false, 15.0f);
 	//로테이션 가져와서 보간설정
 	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal);
-	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 11.0f));
+	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 0.0f));
 
 	//로테이션이 원하는수치에 비슷해지면 포즈세팅
 	if (owner->GetActorRotation().Vector().Dot(TargetRotation.Vector()) >= 0.999) {
@@ -593,6 +596,8 @@ bool UCoverComponent::StartCover()
 	}
 	
 	if (result.GetActor() == nullptr) return false;
+
+
 	RotateSet(0.0f);
 
 	//owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
@@ -712,7 +717,7 @@ void UCoverComponent::StartPeeking()
 	if (!m_IsCover) return; 
 	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 80) return;
 
-
+	if(mPeekingState != EPeekingState::None) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
@@ -729,16 +734,19 @@ void UCoverComponent::StartPeeking()
 		start = temppos;
 		end = start + RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
+		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
 		if (result.GetActor()) return;
 
 		start = end;
 		end = start + -upVector * 1.05f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start;
 		end = start + forwardVector * 1.1f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
+		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 
 		if (!result.GetActor()) {
 			if (owner->bIsCrouched) {
@@ -753,6 +761,7 @@ void UCoverComponent::StartPeeking()
 			start = temppos + upVector;
 			end = start + forwardVector * 1.1f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
 				mPeekingState = EPeekingState::FrontRightStart;
 				return;
@@ -763,16 +772,19 @@ void UCoverComponent::StartPeeking()
 		start = temppos;
 		end = start + -RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
+		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
 		if (result.GetActor()) return;
 
 		start = end;
 		end = start + -upVector * 1.05f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start;
 		end = start + forwardVector * 1.1f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
+		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 		if (!result.GetActor()) {
 			if (owner->bIsCrouched) {
 				mPeekingState = EPeekingState::LowLeftStart;
@@ -786,6 +798,7 @@ void UCoverComponent::StartPeeking()
 			start = temppos + upVector;
 			end = start + forwardVector * 1.1f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
+			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
 				mPeekingState = EPeekingState::FrontLeftStart;
 				return;

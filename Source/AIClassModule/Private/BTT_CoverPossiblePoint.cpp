@@ -33,11 +33,11 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 
 		//ACharacter = Cast<AAICharacter>();
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(enemy.Key)->GetController());
-		UBlackboardComponent* blackbordComponent = AIController->GetBlackboardComponent();
 		if (!AIController)
 		{
 			continue;
 		}
+		UBlackboardComponent* blackbordComponent = AIController->GetBlackboardComponent();
 		if (!blackbordComponent || !blackbordComponent->GetValueAsBool("OrderWait"))
 		{
 			continue;

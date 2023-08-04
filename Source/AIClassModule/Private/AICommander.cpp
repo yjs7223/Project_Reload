@@ -137,46 +137,47 @@ void AAICommander::ListSet()
 {
 	for (auto& en : EncounterArray)
 	{
-		if (!Cast<AEncounterSpace>(en)->LevelActive) continue;
-
-		Blackboard->SetValueAsObject("Cmd_Space", en);
-
-
-
-		for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
+		if (Cast<AEncounterSpace>(en)->LevelActive)
 		{
-			if (!Cast<ASubEncounterSpace>(sub)->LevelActive) continue;
+			Blackboard->SetValueAsObject("Cmd_Space", en);
 
-			m_suben = Cast<ASubEncounterSpace>(sub);
-			if (m_suben == nullptr)
-			{
-				continue;
-			}
-			if (!m_suben->LevelActive)
-			{
-				ListReset(m_suben);
-			}
-			if (m_suben->spawn)
-			{
-				m_suben->spawn->check_Overlap = true;
-			}
 
-			if (!MapList_Start)
+
+			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
 			{
-				ListStartSet(m_suben);
-			}
-			else
-			{
-				ListTickSet(m_suben, Cast<AEncounterSpace>(en));
-				TargetTickSet(m_suben);
-				CoverPointSubEn(m_suben);
-				CoverPointEnemy();
-				if (List_Division.Num() <= 0)
+				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
 				{
-					ListReset(m_suben);
+					m_suben = Cast<ASubEncounterSpace>(sub);
+					if (!m_suben)
+					{
+						continue;
+					}
+					if (!m_suben->LevelActive)
+					{
+						ListReset(m_suben);
+					}
+					if (m_suben->spawn)
+					{
+						m_suben->spawn->check_Overlap = true;
+					}
+
+					if (!MapList_Start)
+					{
+						ListStartSet(m_suben);
+					}
+					else
+					{
+						ListTickSet(m_suben, Cast<AEncounterSpace>(en));
+						TargetTickSet(m_suben);
+						CoverPointSubEn(m_suben);
+						CoverPointEnemy();
+						if (List_Division.Num() <= 0)
+						{
+							ListReset(m_suben);
+						}
+					}
 				}
 			}
-
 		}
 	}
 }
@@ -245,7 +246,6 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		{
 			continue;
 		}
-		AIController->RunBTT();
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 		AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
@@ -435,7 +435,7 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 		if (*List_Location.Find(*FindAc) != MaxSupLoc)
 		{
 			sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
-			sup_value += (Sup_Array[0] / 5)
+			sup_value += (Sup_Array[0] / 15)
 				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / sup_sharerange));
 			if (sup_value >= Sup_Array[0])
 			{

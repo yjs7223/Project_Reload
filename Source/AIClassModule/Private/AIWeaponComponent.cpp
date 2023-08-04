@@ -94,7 +94,21 @@ void UAIWeaponComponent::ShotAI()
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_04"));
+
 	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+	AActor* ac = player;
+
+	if (Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target") != nullptr)
+	{
+		ac = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+
+		// 타겟이 플레이어가 아니면
+		if (ac != player)
+		{
+			end = start + ((ac->GetActorLocation() - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+		}
+	}
+
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
@@ -134,7 +148,7 @@ void UAIWeaponComponent::ShotAI()
 	// 점점 반동이 줄어듦
 	if (recoil_Radius > recoilMin_Radius)
 	{
-		recoil_Radius = recoilMax_Radius - recoilMin_Radius / cur_Shot_Count;
+		recoil_Radius -= (recoilMax_Radius - recoilMin_Radius) / shot_MaxCount;
 	}
 	else
 	{
@@ -152,7 +166,7 @@ void UAIWeaponComponent::ShotAI()
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	// 총알 생성
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, (playerLocation - start).Rotation() + FRotator(x, y, 0));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, (ac->GetActorLocation() - start).Rotation() + FRotator(x, y, 0));
 
 	// 사운드 재생
 	PlayRandomShotSound();
