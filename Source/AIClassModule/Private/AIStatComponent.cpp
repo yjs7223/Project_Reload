@@ -92,7 +92,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
 	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
-	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
+	float dmg = (shot_MaxDmg - ((shot_MaxDmg - shot_MinDmg) * (dis - shot_MinRange) / (shot_MaxRange - shot_MinRange)));
 	float total_dmg;
 	total_dmg = dmg - (dmg * 0.01f) * Def;
 	curHP -= total_dmg;
