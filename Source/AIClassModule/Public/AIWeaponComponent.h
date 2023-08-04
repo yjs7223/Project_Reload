@@ -20,10 +20,6 @@ class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 public :
 	UAIWeaponComponent();
 
-	// 현재 캐릭터 타입
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		Enemy_Name type;
-
 	// 사격 대상
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* target;
@@ -162,7 +158,7 @@ public:
 	
 	// AI Type Setting
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void AITypeSetting();
+		void SetDataTable(FName EnemyName);
 
 	// AI Sniper Check
 	UFUNCTION(BlueprintCallable, Category = "Attack")
