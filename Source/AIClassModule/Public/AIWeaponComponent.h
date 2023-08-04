@@ -112,6 +112,10 @@ public :
 	// DA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAIWeaponDataAsset* RifleDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* SniperDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* HeavyDataAsset;
 
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
