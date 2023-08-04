@@ -92,6 +92,8 @@ public:
 
 	void Threaten();
 
+	float CalcDamage(FHitResult result, FVector2D p_damage);
+
 	static bool CheckActorTag(AActor* actor, FName tag);
 
 public:
@@ -202,4 +204,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
+
+	float MaxRange;
+	float Deviation;
 };

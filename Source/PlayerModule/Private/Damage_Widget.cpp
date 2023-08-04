@@ -9,7 +9,7 @@ void UDamage_Widget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-
+	Damage_Overlay->SetRenderOpacity(1.0f);
 }
 
 void UDamage_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -20,7 +20,7 @@ void UDamage_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		SetWidgetLocation(InDeltaTime);
 	}
-
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("create"));
 }
 
 void UDamage_Widget::SetDamageText(float value, FHitResult result)
