@@ -188,7 +188,7 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		//CoverWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
 		//AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 		CoverWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		CoverWidgetComponent->SetDrawSize(FVector2D(32.0f, 16.0f));
+		CoverWidgetComponent->SetDrawSize(FVector2D(64.0f, 64.0f));
 
 		if (Cover_Widget)
 		{
@@ -230,14 +230,18 @@ void APlayerCharacter::WidgetShow()
 	}
 }
 
-void APlayerCharacter::CreateDamageWidget(float value)
+void APlayerCharacter::CreateDamageWidget(float value, FHitResult result)
 {
 	if (Damage_Widget)
 	{
+		/*UWidgetComponent* DWidgetComponent = NewObject<UWidgetComponent>(this);
+		DWidgetComponent->SetWidgetClass(Damage_Widget);
+		DWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+		DWidgetComponent->SetWorldLocation(result.Location);*/
 		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_Widget);
 		if (dwidget)
 		{
-			dwidget->SetDamageText(value);
+			dwidget->SetDamageText(value, result);
 			dwidget->AddToViewport();
 		}
 	}
