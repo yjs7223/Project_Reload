@@ -137,6 +137,10 @@ public :
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class ACharacter* player; //cast
+
+	AActor* blackboardTarget;
+
+	FTimerHandle timer;
 protected:
 	virtual void BeginPlay() override;
 
