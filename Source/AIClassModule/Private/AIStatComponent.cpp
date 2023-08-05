@@ -101,8 +101,8 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	total_dmg = dmg - (dmg * 0.01f) * Def;
 	curHP -= total_dmg;
 	Def -= (total_dmg * 0.05f);
-	Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
-	if (curHP < 0.0f)
+	AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
+	if (curHP <= 0.0f)
 	{
 		curHP = 0.0f;
 		isDie = true;
@@ -110,9 +110,18 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		{
 			Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
 		}
+		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+		}
 		if (AIController->commander->List_Division.Find(GetOwner()))
 		{
+			int aikey = *AIController->commander->List_Division.Find(GetOwner());
 			AIController->commander->List_Division.Remove(GetOwner());
+			//AIController->commander->List_Combat.Remove(aikey);
+			AIController->commander->List_CoverPoint.Remove(aikey);
+			AIController->commander->List_Location.Remove(aikey);
+			AIController->commander->List_Suppression.Remove(aikey);
 		}
 	}
 	if (Def < 0.0f)

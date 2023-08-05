@@ -4,8 +4,10 @@
 #include "SubEncounterSpace.h"
 #include "AICharacter.h"
 #include "AISpawner.h"
+#include "AI_Controller.h"
 #include "EncounterSpace.h"
 #include "Components/BoxComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Engine.h"
 #include "AICommander.h"
 #include "Kismet/GameplayStatics.h"
@@ -56,13 +58,6 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 		if (commander != nullptr)
 		{
 			LevelActive = true;
-			for (auto suben : en->LevelArray)
-			{
-				if (suben != this)
-				{
-					commander->ListReset(Cast<ASubEncounterSpace>(suben));
-				}
-			}
 			commander->m_suben = this;
 		}
 		
@@ -72,8 +67,27 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 
 void ASubEncounterSpace::EnemyAICheck()
 {
-	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
-	
+	this->GetOverlappingActors(M_AIArray,AAICharacter::StaticClass());
+	for (auto AI : M_AIArray)
+	{
+		//INDEX_NONE
+		if(AIArray.Find(AI) == INDEX_NONE)
+		{
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(AI)->GetController());
+			if (AIController)
+			{
+				if (AIController->GetBlackboardComponent())
+				{
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active"))
+					{
+						AIArray.Add(AI);
+					}
+
+				}
+			}
+		}
+		
+	}
 }
 
 

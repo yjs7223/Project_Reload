@@ -79,7 +79,7 @@ void AAICharacter::BeginPlay()
 
 	if (AIStat)
 	{
-		AIStat->SetHP(100.0f);
+		AIStat->SetHP(200.0f); ////
 	}
 	InitWidget();
 

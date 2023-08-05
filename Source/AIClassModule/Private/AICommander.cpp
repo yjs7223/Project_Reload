@@ -152,8 +152,13 @@ void AAICommander::ListSet()
 	}
 	if (m_suben != nullptr)
 	{
-		Now_suben = m_suben;
+		if (Now_suben != m_suben)
+		{
+			ListReset(Now_suben);
+			Now_suben = m_suben;
+		}
 	}
+	
 	
 	if (Now_suben->spawn)
 	{
@@ -191,7 +196,7 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
 	}
 	List_Division.Reset();
-	List_Combat.Reset();
+	//List_Combat.Reset();
 	List_Location.Reset();
 	List_Suppression.Reset();
 	List_CoverPoint.Reset();
@@ -211,21 +216,30 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 void AAICommander::ListAdd(AActor* ac)
 {
 	List_Division.Add(ac, AddIndex);
-	List_Combat.Add(AddIndex, ECombat::Patrol);
+	//List_Combat.Add(AddIndex, ECombat::Patrol);
 	List_Location.Add(AddIndex, ac->GetActorLocation());
 	List_Suppression.Add(AddIndex, 0.0f);
 	List_CoverPoint.Add(AddIndex, FVector(0, 0, 0));
-
+	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ac)->GetController());
+	if (AIController)
+	{
+		if (AIController->GetBlackboardComponent())
+		{
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
+			AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
+			//AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
+		}
+	}
 	AddIndex++;
 }
 
 void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, sub->GetName());
-	for (auto& subAi : sub->AIArray)
+	for (auto& subAi : sub->M_AIArray)
 	{
 		List_Division.Add(subAi, AddIndex);
-		List_Combat.Add(AddIndex, ECombat::Patrol);
+		//List_Combat.Add(AddIndex, ECombat::Patrol);
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
 		List_CoverPoint.Add(AddIndex, FVector(0,0,0));
@@ -242,7 +256,7 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		}
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
-		AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
+		//AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
 		AddIndex++;
 	}
