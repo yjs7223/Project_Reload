@@ -23,6 +23,7 @@
 #include "AISpawner.h"
 #include "AICharacterMoveComponent.h"
 #include "Components/BoxComponent.h"
+#include "Engine/EngineTypes.h"
 
 AAI_Controller::AAI_Controller()
 {
@@ -72,6 +73,9 @@ void AAI_Controller::BeginPlay()
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
+
+	GetWorldTimerManager().ClearTimer(timer);
+	GetWorldTimerManager().SetTimer(timer, this, &AAI_Controller::SetUseCover, 0.6, true, 0.0f);
 }
 
 //void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
@@ -247,8 +251,6 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		
 	}
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
-
-	SetUseCover();
 }
 
 FRotator AAI_Controller::GetControlRotation() const

@@ -53,6 +53,8 @@ public:
 	FHitResult headResult;
 
 	class USkeletalMeshComponent* playerMesh;
+
+	FTimerHandle timer;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);
