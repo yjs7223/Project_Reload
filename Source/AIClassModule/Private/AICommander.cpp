@@ -335,77 +335,33 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 		{
 			continue;
 		}
-		if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
+		if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
 		{
-			Blackboard->SetValueAsObject("Cmd_Target", AIController->GetBlackboardComponent()->GetValueAsObject("Target"));
-
-			for (auto& ai : sub->AIArray)
-			{
-				if (ai != subAi)
-				{
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-					if (AIController == nullptr)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent() == NULL)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
-					{
-						AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
-					}
-
-				}
-			}
-
-
+			continue;
 		}
-		else
+		Blackboard->SetValueAsObject("Cmd_Target", AIController->GetBlackboardComponent()->GetValueAsObject("Target"));
+
+		for (auto& ai : sub->AIArray)
 		{
-			sightin = false;
-
-			for (auto& aichk : sub->AIArray)
+			if (ai != subAi)
 			{
-				if (aichk != subAi)
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController == nullptr)
 				{
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(aichk)->GetController());
-					if (AIController == nullptr)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent() == NULL)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
-					{
-						sightin = true;
-					}
-
+					continue;
 				}
-			}
-			if (sightin == false)
-			{
-				for (auto& sightai : sub->AIArray)
+				if (AIController->GetBlackboardComponent() == NULL)
 				{
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(sightai)->GetController());
-					if (AIController == nullptr)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent() == NULL)
-					{
-						continue;
-					}
-					AIController->GetBlackboardComponent()->SetValueAsBool("Sight_In", false);
+					continue;
 				}
-			}
+				if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+				}
 
+			}
 		}
 	}
-	
 }
 
 void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
@@ -441,8 +397,7 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 			{
 				sup_value = Sup_Array[0];
 			}
-			AIController->GetBlackboardComponent()->SetValueAsFloat
-			("Sup_TotalPoint", sup_value);
+			AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_value);
 		}
 	}
 }
@@ -490,7 +445,7 @@ void AAICommander::CoverPointEnemy()
 		collisionParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(result, subencover, player->GetActorLocation(), ECC_Visibility, collisionParams))
 		{
-			enemycover = false;
+
 			if (result.GetActor()->ActorHasTag("Cover"))
 			{
 				if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
@@ -499,13 +454,10 @@ void AAICommander::CoverPointEnemy()
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
 					if (FVector::Distance(subencover, player->GetActorLocation()) >= 500.0f)
 					{
-						enemycover = true;
+
+						CoverEnemyArray.Add(subencover);
 					}
 				}
-			}
-			if (enemycover)
-			{
-				CoverEnemyArray.Add(subencover);
 			}
 		}
 	}
