@@ -61,7 +61,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						}
 					}
 				}
-				for (auto subAi : commander->m_suben->AIArray)
+				for (auto subAi : commander->Now_suben->AIArray)
 				{
 					if (subAi != enemy.Key)
 					{

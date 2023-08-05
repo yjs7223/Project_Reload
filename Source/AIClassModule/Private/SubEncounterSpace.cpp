@@ -7,6 +7,9 @@
 #include "EncounterSpace.h"
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
+#include "AICommander.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
 ASubEncounterSpace::ASubEncounterSpace()
@@ -26,7 +29,7 @@ ASubEncounterSpace::ASubEncounterSpace()
 void ASubEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
-
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	// add
 	if (spawn != nullptr)
 	{
@@ -50,14 +53,19 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
 	{
-		LevelActive = true;
-		for (auto suben : en->LevelArray)
+		if (commander != nullptr)
 		{
-			if (suben != this)
+			LevelActive = true;
+			for (auto suben : en->LevelArray)
 			{
-				Cast<ASubEncounterSpace>(suben)->LevelActive = false;
+				if (suben != this)
+				{
+					commander->ListReset(Cast<ASubEncounterSpace>(suben));
+				}
 			}
+			commander->m_suben = this;
 		}
+		
 	}
 }
 

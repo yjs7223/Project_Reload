@@ -94,6 +94,8 @@ public:
 		class ASubEncounterSpace* m_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* Now_suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* Now_en;
 
 	// DATA TABLE
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
