@@ -7,6 +7,9 @@
 #include "EncounterSpace.h"
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
+#include "AICommander.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
 ASubEncounterSpace::ASubEncounterSpace()
@@ -18,7 +21,6 @@ ASubEncounterSpace::ASubEncounterSpace()
 	RootComponent = CollisionMesh;
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapBegin);
-	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapEnd);
 	
 	LevelActive = false;
 }
@@ -27,7 +29,7 @@ ASubEncounterSpace::ASubEncounterSpace()
 void ASubEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
-
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	// add
 	if (spawn != nullptr)
 	{
@@ -51,17 +53,22 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
 	{
-		LevelActive = true;
+		if (commander != nullptr)
+		{
+			LevelActive = true;
+			for (auto suben : en->LevelArray)
+			{
+				if (suben != this)
+				{
+					commander->ListReset(Cast<ASubEncounterSpace>(suben));
+				}
+			}
+			commander->m_suben = this;
+		}
+		
 	}
 }
 
-void ASubEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
-	{
-		LevelActive = false;
-	}
-}
 
 void ASubEncounterSpace::EnemyAICheck()
 {

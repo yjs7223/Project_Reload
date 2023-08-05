@@ -42,6 +42,18 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		RifleDataAsset = Cast<UAIWeaponDataAsset>(rifle_da.Object);
 	}
+	// 스나이퍼
+	static ConstructorHelpers::FObjectFinder<UDataAsset> sniper_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AISniper.DA_AISniper'"));
+	if (sniper_da.Succeeded())
+	{
+		SniperDataAsset = Cast<UAIWeaponDataAsset>(sniper_da.Object);
+	}
+	// 헤비
+	static ConstructorHelpers::FObjectFinder<UDataAsset> heavy_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIHeavy.DA_AIHeavy'"));
+	if (heavy_da.Succeeded())
+	{
+		HeavyDataAsset = Cast<UAIWeaponDataAsset>(heavy_da.Object);
+	}
 
 	// 총 피격 이펙트
 	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
@@ -57,7 +69,6 @@ void UAIWeaponComponent::BeginPlay()
 	owner = Cast<AAICharacter>(GetOwner());
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
-	AITypeSetting();
 	use_Shot_State = true;
 
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -94,7 +105,21 @@ void UAIWeaponComponent::ShotAI()
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_04"));
+
 	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+	AActor* ac = player;
+
+	if (Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target") != nullptr)
+	{
+		ac = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+
+		// 타겟이 플레이어가 아니면
+		if (ac != player)
+		{
+			end = start + ((ac->GetActorLocation() - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+		}
+	}
+
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
@@ -152,7 +177,7 @@ void UAIWeaponComponent::ShotAI()
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	// 총알 생성
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, (playerLocation - start).Rotation() + FRotator(x, y, 0));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, (ac->GetActorLocation() - start).Rotation() + FRotator(x, y, 0));
 
 	// 사운드 재생
 	PlayRandomShotSound();
@@ -204,24 +229,22 @@ void UAIWeaponComponent::ReloadAI()
 	use_Shot_State = true;
 }
 
-void UAIWeaponComponent::AITypeSetting()
+void UAIWeaponComponent::SetDataTable(FName EnemyName)
 {
 	if (AIShotData)
 	{
-		switch (type)
+		// 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>(EnemyName, TEXT(""));
+		switch (Cast<AAICharacter>(owner)->type)
 		{
 		case Enemy_Name::RIFLE:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
 			AIWeaponDataAsset = RifleDataAsset;
 			break;
-		case Enemy_Name::HEAVY:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Heavy_E", TEXT(""));
-			break;
 		case Enemy_Name::SNIPER:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Sniper_E", TEXT(""));
+			AIWeaponDataAsset = SniperDataAsset;
+			break;
+		case Enemy_Name::HEAVY:
+			AIWeaponDataAsset = HeavyDataAsset;
 			break;
 		}
 
@@ -260,7 +283,7 @@ void UAIWeaponComponent::AITypeSetting()
 
 bool UAIWeaponComponent::AITypeSniperCheck()
 {
-	if (type == Enemy_Name::SNIPER)
+	if (Cast<AAICharacter>(GetOwner())->type == Enemy_Name::SNIPER)
 	{
 		return true;
 	}
@@ -273,12 +296,12 @@ void UAIWeaponComponent::CheckTrace()
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 
 	if (commander == nullptr) return;
-	if (commander->m_suben == nullptr) return;
-	if (commander->m_suben->spawn == nullptr) return;
-	if (commander->m_suben->spawn->cpyLastPoint == nullptr) return;
+	if (commander->Now_suben == nullptr) return;
+	if (commander->Now_suben->spawn == nullptr) return;
+	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
 	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
-	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{
@@ -287,7 +310,7 @@ void UAIWeaponComponent::CheckTrace()
 		}
 	}
 
-	DrawDebugLine(GetWorld(), start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
+	DrawDebugLine(GetWorld(), start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
 }
 
 void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
