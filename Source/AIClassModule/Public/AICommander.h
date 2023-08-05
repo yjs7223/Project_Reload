@@ -48,8 +48,8 @@ public:
 	// TMAP_LIST
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, ECombat> List_Combat;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		//TMap<int, ECombat> List_Combat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)

@@ -27,10 +27,10 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 	{
 		return EBTNodeResult::Succeeded;
 	}
+	
 	for (auto enemy : commander->List_Division)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetPawn()->GetName());
-
 		//ACharacter = Cast<AAICharacter>();
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(enemy.Key)->GetController());
 		if (!AIController)
@@ -42,7 +42,11 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 		{
 			continue;
 		}
-
+		if (commander->CoverEnemyArray.IsEmpty())
+		{
+			blackbordComponent->SetValueAsBool("OrderWait", false);
+			return EBTNodeResult::Succeeded;
+		}
 
 		beforelocation = mindislocation;
 		if (*commander->List_CoverPoint.Find(enemy.Value) == FVector::ZeroVector)
@@ -100,10 +104,10 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 			coverpossible = false;
 			for (auto coverenemy : commander->CoverEnemyArray)
 			{
-				if (*commander->List_CoverPoint.Find(enemy.Value) == coverenemy)
+				if (FVector::Distance(enemy.Key->GetActorLocation(), coverenemy) < 10)
 				{
 					coverpossible = true;
-					blackbordComponent->SetValueAsVector("AI_CoverLocation", *commander->List_CoverPoint.Find(enemy.Value));
+					blackbordComponent->SetValueAsVector("AI_CoverLocation", coverenemy);
 					blackbordComponent->SetValueAsBool("OrderWait", false);
 					return EBTNodeResult::Succeeded;
 				}
