@@ -152,8 +152,13 @@ void AAICommander::ListSet()
 	}
 	if (m_suben != nullptr)
 	{
-		Now_suben = m_suben;
+		if (Now_suben != m_suben)
+		{
+			ListReset(Now_suben);
+			Now_suben = m_suben;
+		}
 	}
+	
 	
 	if (Now_suben->spawn)
 	{

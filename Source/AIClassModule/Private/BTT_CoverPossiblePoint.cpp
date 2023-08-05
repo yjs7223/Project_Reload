@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 	{
 		return EBTNodeResult::Succeeded;
 	}
-	
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, mindislocation.ToString());
 	for (auto enemy : commander->List_Division)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetPawn()->GetName());
@@ -145,18 +145,15 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 					}
 				}
 			}
-			else {
-				blackbordComponent->SetValueAsBool("OrderWait", false);
-				return EBTNodeResult::Succeeded;
-			}
 		}
-		if (mindislocation == FVector::ZeroVector || beforelocation == mindislocation)
+		if (mindislocation == FVector::ZeroVector)
 		{
 			blackbordComponent->SetValueAsBool("OrderWait", false);
 			return EBTNodeResult::Succeeded;
 		}
 		blackbordComponent->SetValueAsVector("AI_CoverLocation", mindislocation);
 		commander->List_CoverPoint.Add(enemy.Value, mindislocation);
+		
 		blackbordComponent->SetValueAsBool("OrderWait", false);
 	}
 

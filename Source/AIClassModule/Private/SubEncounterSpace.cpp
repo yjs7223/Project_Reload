@@ -58,13 +58,6 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 		if (commander != nullptr)
 		{
 			LevelActive = true;
-			for (auto suben : en->LevelArray)
-			{
-				if (suben != this)
-				{
-					commander->ListReset(Cast<ASubEncounterSpace>(suben));
-				}
-			}
 			commander->m_suben = this;
 		}
 		
