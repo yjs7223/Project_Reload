@@ -54,7 +54,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 						B_distance = true;
 					}
 				}
-				for (auto subAi : commander->m_suben->AIArray)
+				for (auto subAi : commander->Now_suben->AIArray)
 				{
 					if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
 					{

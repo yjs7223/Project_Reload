@@ -35,10 +35,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> AIArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TArray<AActor*> M_AIArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAI_Controller* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* en;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAISpawner* spawn;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICommander* commander;
 
 public:
 	UFUNCTION()

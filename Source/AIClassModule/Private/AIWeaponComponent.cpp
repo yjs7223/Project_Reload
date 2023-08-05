@@ -295,9 +295,9 @@ bool UAIWeaponComponent::AITypeSniperCheck()
 void UAIWeaponComponent::CheckTrace()
 {
 	if (commander == nullptr) return;
-	if (commander->m_suben == nullptr) return;
-	if (commander->m_suben->spawn == nullptr) return;
-	if (commander->m_suben->spawn->cpyLastPoint == nullptr) return;
+	if (commander->Now_suben == nullptr) return;
+	if (commander->Now_suben->spawn == nullptr) return;
+	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
 	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	FCollisionQueryParams collisionParams;

@@ -39,6 +39,8 @@ public:
 		class ASubEncounterSpace* suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* suben2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICommander* commander;
 
 public:
 	UFUNCTION()

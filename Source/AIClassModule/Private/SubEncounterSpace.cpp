@@ -4,9 +4,14 @@
 #include "SubEncounterSpace.h"
 #include "AICharacter.h"
 #include "AISpawner.h"
+#include "AI_Controller.h"
 #include "EncounterSpace.h"
 #include "Components/BoxComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Engine.h"
+#include "AICommander.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
 ASubEncounterSpace::ASubEncounterSpace()
@@ -26,7 +31,7 @@ ASubEncounterSpace::ASubEncounterSpace()
 void ASubEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
-
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	// add
 	if (spawn != nullptr)
 	{
@@ -50,22 +55,39 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
 	{
-		LevelActive = true;
-		for (auto suben : en->LevelArray)
+		if (commander != nullptr)
 		{
-			if (suben != this)
-			{
-				Cast<ASubEncounterSpace>(suben)->LevelActive = false;
-			}
+			LevelActive = true;
+			commander->m_suben = this;
 		}
+		
 	}
 }
 
 
 void ASubEncounterSpace::EnemyAICheck()
 {
-	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
-	
+	this->GetOverlappingActors(M_AIArray,AAICharacter::StaticClass());
+	for (auto AI : M_AIArray)
+	{
+		//INDEX_NONE
+		if(AIArray.Find(AI) == INDEX_NONE)
+		{
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(AI)->GetController());
+			if (AIController)
+			{
+				if (AIController->GetBlackboardComponent())
+				{
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active"))
+					{
+						AIArray.Add(AI);
+					}
+
+				}
+			}
+		}
+		
+	}
 }
 
 
