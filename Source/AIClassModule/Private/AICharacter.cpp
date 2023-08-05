@@ -52,8 +52,6 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
-	
-	SetDataTable("Rifle_E");
 
 	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule")); //CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
 	CollisionMesh->SetupAttachment(RootComponent);
@@ -85,6 +83,7 @@ void AAICharacter::BeginPlay()
 	}
 	InitWidget();
 
+	SetDataTable("Rifle_E");
 }
 
 void AAICharacter::Tick(float DeltaTime)
@@ -134,7 +133,10 @@ void AAICharacter::SetDataTable(FName EnemyName)
 		sup_HitRadius = RangeData->Sup_HitRadius;
 		sup_HitHeight = RangeData->Sup_HitHeight;
 	}
-	
+
+	AIMovement->SetEnemy(EnemyName);
+	AIWeapon->SetDataTable(EnemyName);
+	AIStat->SetDataTable(EnemyName);
 }
 
 void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -172,9 +172,11 @@ void AAI_Controller::SetUseCover()
 
 		FVector playerLocation = playerMesh->GetSocketLocation(TEXT("head"));
 		
-		
-		// ���� ���� ���� üũ
-		if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
+		if (GetPawn()->GetDistanceTo(player) <= 500)
+		{
+			GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+		}
+		else if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{

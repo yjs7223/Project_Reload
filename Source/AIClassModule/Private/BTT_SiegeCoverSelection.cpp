@@ -53,7 +53,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 									}
 								}
 							}
-							for (auto subAi : commander->m_suben->AIArray)
+							for (auto subAi : commander->Now_suben->AIArray)
 							{
 								if (subAi != ai.Key)
 								{
