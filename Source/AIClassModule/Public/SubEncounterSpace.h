@@ -38,7 +38,8 @@ public:
 		class AEncounterSpace* en;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAISpawner* spawn;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICommander* commander;
 
 public:
 	UFUNCTION()

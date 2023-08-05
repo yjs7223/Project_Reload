@@ -135,50 +135,42 @@ void AAICommander::Tick(float DeltaTime)
 
 void AAICommander::ListSet()
 {
-	for (auto& en : EncounterArray)
-	{
-		if (Cast<AEncounterSpace>(en)->LevelActive)
-		{
-			Blackboard->SetValueAsObject("Cmd_Space", en);
-			if (Now_suben != nullptr)
-			{
-				if (!Now_suben->LevelActive)
-				{
-					ListReset(m_suben);
-				}
-			}
-			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
-			{
-				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
-				{
-					m_suben = Cast<ASubEncounterSpace>(sub);
-					if (!m_suben)
-					{
-						continue;
-					}
-					Now_suben = m_suben;
-					if (Now_suben->spawn)
-					{
-						Now_suben->spawn->check_Overlap = true;
-					}
 
-					if (!MapList_Start)
-					{
-						ListStartSet(m_suben);
-					}
-					else
-					{
-						ListTickSet(m_suben, Cast<AEncounterSpace>(en));
-						TargetTickSet(m_suben);
-						CoverPointSubEn(m_suben);
-						CoverPointEnemy();
-						if (List_Division.Num() <= 0)
-						{
-							ListReset(m_suben);
-						}
-					}
-				}
-			}
+	if (Now_en == nullptr)
+	{
+		return;
+	}
+	if (Now_suben == nullptr)
+	{
+		return;
+	}
+	
+	Blackboard->SetValueAsObject("Cmd_Space", Now_en);
+	if (!Now_suben->LevelActive)
+	{
+		ListReset(Now_suben);
+	}
+	if (m_suben != nullptr)
+	{
+		Now_suben = m_suben;
+	}
+	
+	if (Now_suben->spawn)
+	{
+		Now_suben->spawn->check_Overlap = true;
+	}
+	if (!MapList_Start)
+	{
+		ListStartSet(Now_suben);
+	}
+	else
+	{
+		ListTickSet(Now_suben, Cast<AEncounterSpace>(Now_en));
+		TargetTickSet(Now_suben);
+		CoverPointEnemy();
+		if (List_Division.Num() <= 0)
+		{
+			ListReset(Now_suben);
 		}
 	}
 }
@@ -253,6 +245,12 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
 		AddIndex++;
+	}
+	CoverPointSubEn(Now_suben);
+	if (CoverSubEnArray.IsEmpty())
+	{
+		MapList_Start = false;
+		return;
 	}
 	MapList_Start = true;
 }
