@@ -36,6 +36,7 @@ UAIStatComponent::UAIStatComponent()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
 	}
+	
 }
 
 void UAIStatComponent::BeginPlay()
@@ -45,11 +46,12 @@ void UAIStatComponent::BeginPlay()
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
-	DI_SupRange = 1 / sup_MaxRange;
+	SetDataTable("Rifle_E");
 	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
+	DI_SupRange = 1 / sup_MaxRange;
 	//AICommander = AAICommander::aicinstance;
 	
-	//SetDataTable("Rifle_E");
+	
 }
 
 void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -87,12 +89,14 @@ void UAIStatComponent::Attacked(float p_damage)
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("ckck"));
+	
+	
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
 	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
-	float dmg = (shot_MaxDmg - ((shot_MaxDmg - shot_MinDmg) * (dis - shot_MinRange) / (shot_MaxRange - shot_MinRange)));
+	float dmg = (shot_MaxDmg - ((shot_MaxDmg - shot_MinDmg) * (dis - shot_MinRange) * DI_ShotRange));
+	
 	float total_dmg;
 	total_dmg = dmg - (dmg * 0.01f) * Def;
 	curHP -= total_dmg;
@@ -115,7 +119,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	{
 		Def = 0.0f;
 	}
-	sup_Input = dmg;
+	sup_Input = total_dmg;
 	Time = 0;
 	PlayerAtt_ai = true;
 	SuppresionPoint();
@@ -135,7 +139,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 void UAIStatComponent::SuppresionPoint()
 {
 	//
-
+	
 	if (AIController && AIController->GetBlackboardComponent())
 	{
 		AI_PlayerDis = GetOwner()->GetDistanceTo(player);
@@ -166,7 +170,7 @@ void UAIStatComponent::SuppresionPoint()
 			PlayerAtt_ai = false;
 		}
 		sup_total += sup_Input * sup_middlePoint;
-		//SuppresionPoint();
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(AI_PlayerDis));
 		if (sup_total >= sup_MaxPoint)
 		{
 			sup_total = sup_MaxPoint;
