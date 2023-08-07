@@ -182,7 +182,6 @@ void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
 	rotator.Roll = Find_rotator.Roll;
 	rotator.Yaw = Find_rotator.Yaw;
 	rotator.Pitch = UKismetMathLibrary::DegAtan((sqrt(M_Velocity) + (Velocity * Velocity)) * D_Gra_Leng);
-//UKismetMathLibrary::FindLookAtRotation((player->GetActorLocation(), myai->GetActorLocation());
 	if (M_Velocity >= 0)
 	{
 		GetWorld()->SpawnActor<AActor>(GrenadeBlueprint, myai->GetActorLocation(), rotator);
