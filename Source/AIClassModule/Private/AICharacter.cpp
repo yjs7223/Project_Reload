@@ -4,6 +4,7 @@
 
 #include "AICharacter.h"
 #include "AI_Controller.h"
+#include "AICommander.h"
 #include "AIWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "AICharacterMoveComponent.h"
@@ -12,6 +13,7 @@
 #include "ST_Suppression.h"
 #include "Animation/AnimInstance.h"
 #include "Math/UnrealMathUtility.h"
+#include "Math/Vector2D.h"
 #include "AISensingComponent.h"
 #include "LastPoint.h"
 #include "AISpawner.h"
@@ -52,6 +54,11 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_Grenade.BP_Grenade'"));
+	if (GrenadeData.Succeeded())
+	{
+		GrenadeBlueprint = (UClass*)GrenadeData.Object->GeneratedClass;
+	}
 
 	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule")); //CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
 	CollisionMesh->SetupAttachment(RootComponent);
@@ -81,6 +88,16 @@ void AAICharacter::BeginPlay()
 	{
 		AIStat->SetHP(200.0f); ////
 	}
+	if (!player_G)
+	{
+		player_G = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	}
+	
+	/*if (!commander)
+	{
+		commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+	}*/
+
 	InitWidget();
 
 	SetDataTable("Rifle_E");
@@ -149,4 +166,28 @@ void AAICharacter::IdleAnim()
 	//PlayAnimMontage(idle_Montage, 1.0f);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
+
+void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
+{
+	float Gravity = 980.0f;
+	float Length_PlayerAI_XY = FVector2D((player_G->GetActorLocation().X - myai->GetActorLocation().X), (player_G->GetActorLocation().Y - myai->GetActorLocation().Y)).Length();
+	float M_PlayerAI_Z = player_G->GetActorLocation().Z - myai->GetActorLocation().Z;
+	float Gra_Leng = (Length_PlayerAI_XY * Length_PlayerAI_XY) * Gravity;
+	float Velocity_Z = (M_PlayerAI_Z * (Velocity * Velocity)) * 2;
+	float FourthSquare_Velocity = Velocity * Velocity * Velocity * Velocity;
+	float M_Velocity = FourthSquare_Velocity - ((Gra_Leng + Velocity_Z) * Gravity);
+	float D_Gra_Leng = 1 / (Length_PlayerAI_XY*Gravity);
+	FRotator Find_rotator = UKismetMathLibrary::FindLookAtRotation( myai->GetActorLocation(), player_G->GetActorLocation());
+	FRotator rotator = FRotator::ZeroRotator;
+	rotator.Roll = Find_rotator.Roll;
+	rotator.Yaw = Find_rotator.Yaw;
+	rotator.Pitch = UKismetMathLibrary::DegAtan((sqrt(M_Velocity) + (Velocity * Velocity)) * D_Gra_Leng);
+//UKismetMathLibrary::FindLookAtRotation((player->GetActorLocation(), myai->GetActorLocation());
+	if (M_Velocity >= 0)
+	{
+		GetWorld()->SpawnActor<AActor>(GrenadeBlueprint, myai->GetActorLocation(), rotator);
+	}
+
+}
+
 
