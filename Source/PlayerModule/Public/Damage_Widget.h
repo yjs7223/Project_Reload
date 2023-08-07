@@ -20,7 +20,8 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void SetDamageText(float value);
+	void SetDamageText(float value, FHitResult result);
+	void SetWidgetLocation(float InDeltaTime);
 
 
 public:
@@ -29,4 +30,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UTextBlock* Damage_Text;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* DamageAnim;
+
+public:
+	FVector hitLocation;
+	FVector2D damageLocation;
+	FVector2D addValue;
+	FTimerHandle DamageTimer;
 };
