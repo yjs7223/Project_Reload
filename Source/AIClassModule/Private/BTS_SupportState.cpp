@@ -4,6 +4,8 @@
 #include "BTS_SupportState.h"
 #include "AI_Controller.h"
 #include "AICommander.h"
+#include "AICharacter.h"
+#include "AI_Controller.h"
 #include "ST_Suppression.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -61,34 +63,42 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		}
 		else
 		{
-			for (auto com : aic->commander->List_Combat)
+			for (auto com : aic->commander->List_Division)
 			{
-				if (com.Value == ECombat::Move)
+				aic = Cast<AAI_Controller>(Cast<AAICharacter>(com.Key)->GetController());
+				if (aic)
 				{
-					Com_Vec = *aic->commander->List_Location.Find(com.Key);
-					Dis_start = false;
-					for (auto Loc : aic->commander->List_Location)
+					if (aic->GetBlackboardComponent())
 					{
-						if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
+						if (aic->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::Move)
 						{
-							if (!Dis_start)
+							Com_Vec = *aic->commander->List_Location.Find(com.Value);
+							Dis_start = false;
+							for (auto Loc : aic->commander->List_Location)
 							{
-								Min_Dis = FVector::Distance(Com_Vec, Loc.Value);
-								Min_Dis_Key = Loc.Key;
-								Dis_start = true;
-							}
-							else
-							{
-								Dis = FVector::Distance(Com_Vec, Loc.Value);
-								if (Dis <= Min_Dis)
+								if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
 								{
-									Min_Dis = Dis;
-									Min_Dis_Key = Loc.Key;
+									if (!Dis_start)
+									{
+										Min_Dis = FVector::Distance(Com_Vec, Loc.Value);
+										Min_Dis_Key = Loc.Key;
+										Dis_start = true;
+									}
+									else
+									{
+										Dis = FVector::Distance(Com_Vec, Loc.Value);
+										if (Dis <= Min_Dis)
+										{
+											Min_Dis = Dis;
+											Min_Dis_Key = Loc.Key;
+										}
+									}
 								}
 							}
 						}
 					}
 				}
+				
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
 

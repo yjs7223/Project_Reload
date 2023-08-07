@@ -22,6 +22,10 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 	{
 		commander = Cast<AAICommander>(OwnerComp.GetAIOwner());
 	}
+	if (commander->SiegeCoverArray.IsEmpty())
+	{
+		return EBTNodeResult::Succeeded;
+	}
 	commander->SiegeCoverPoint();
 	maplistnum = commander->SiegeCoverArray.Num();
 	enemyActivenum = 0;
