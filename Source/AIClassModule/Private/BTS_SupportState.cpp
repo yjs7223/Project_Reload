@@ -4,6 +4,9 @@
 #include "BTS_SupportState.h"
 #include "AI_Controller.h"
 #include "AICommander.h"
+#include "AICharacter.h"
+#include "AI_Controller.h"
+#include "ST_Suppression.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTS_SupportState::UBTS_SupportState()
@@ -30,9 +33,10 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 	for (auto sup : aic->commander->List_Suppression)
 	{
-		if (sup.Value >= 90.0f)
+		if (sup.Value >= support_default)
 		{
 			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
+			Dis_start = false;
 			for (auto Loc : aic->commander->List_Location)
 			{
 				if (Loc.Key != *aic->commander->List_Location.FindKey(Sup_Vec))
@@ -53,45 +57,63 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 						}
 					}
 				}
-				
+
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-			Dis_start = false;
 		}
 		else
 		{
-			for (auto com : aic->commander->List_Combat)
+			for (auto com : aic->commander->List_Division)
 			{
-				if (com.Value == ECombat::Move)
+				aic = Cast<AAI_Controller>(Cast<AAICharacter>(com.Key)->GetController());
+				if (aic)
 				{
-					Com_Vec = *aic->commander->List_Location.Find(com.Key);
-					for (auto Loc : aic->commander->List_Location)
+					if (aic->GetBlackboardComponent())
 					{
-						if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
+						if (aic->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::Move)
 						{
-							if (!Dis_start)
+							Com_Vec = *aic->commander->List_Location.Find(com.Value);
+							Dis_start = false;
+							for (auto Loc : aic->commander->List_Location)
 							{
-								Min_Dis = FVector::Distance(Com_Vec, Loc.Value);
-								Min_Dis_Key = Loc.Key;
-								Dis_start = true;
-							}
-							else
-							{
-								Dis = FVector::Distance(Com_Vec, Loc.Value);
-								if (Dis <= Min_Dis)
+								if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
 								{
-									Min_Dis = Dis;
-									Min_Dis_Key = Loc.Key;
+									if (!Dis_start)
+									{
+										Min_Dis = FVector::Distance(Com_Vec, Loc.Value);
+										Min_Dis_Key = Loc.Key;
+										Dis_start = true;
+									}
+									else
+									{
+										Dis = FVector::Distance(Com_Vec, Loc.Value);
+										if (Dis <= Min_Dis)
+										{
+											Min_Dis = Dis;
+											Min_Dis_Key = Loc.Key;
+										}
+									}
 								}
 							}
 						}
 					}
 				}
+				
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-			Dis_start = false;
+
 		}
 	}
+}
 
+void UBTS_SupportState::SetDataTable(FName EnemyName)
+{
+	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
+	if (SuppressionData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+
+		support_default = SuppressionData->Support_Default;
+	}
 
 }

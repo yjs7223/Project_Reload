@@ -63,7 +63,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
-	void WeaponMeshSetting();
+	void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
 
 
 	void ReloadTick(float Deltatime);
@@ -89,6 +89,12 @@ public:
 	void PlayCameraShake(float scale);
 
 	void SpawnImpactEffect(FHitResult result);
+
+	void Threaten();
+
+	float CalcDamage(FHitResult result, FVector2D p_damage);
+
+	static bool CheckActorTag(AActor* actor, FName tag);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -137,6 +143,8 @@ public:
 		float m_dValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FTimerHandle fHandle;
+
+	FTimerHandle AimingTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bRecoil;
@@ -196,4 +204,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
+
+	float MaxRange;
+	float Deviation;
 };

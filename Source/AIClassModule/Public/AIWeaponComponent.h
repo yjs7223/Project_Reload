@@ -20,10 +20,6 @@ class AICLASSMODULE_API UAIWeaponComponent : public UWeaponComponent
 public :
 	UAIWeaponComponent();
 
-	// 현재 캐릭터 타입
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		Enemy_Name type;
-
 	// 사격 대상
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* target;
@@ -39,10 +35,6 @@ public :
 	// AI 캐릭터
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		AAICharacter* owner;
-
-	// 총구 불꽃 파티클
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		UParticleSystem* shotFX;
 
 	// 현재 사격 반동 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -116,6 +108,35 @@ public :
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UHitImapactDataAsset* HitImpactDataAsset;
+
+	// DA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* RifleDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* SniperDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* HeavyDataAsset;
+
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UMaterialInstance* Decal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* MuzzleFireParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UParticleSystem* BulletTracerParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundWave*> ShotSounds;
+
+	// Main DA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAIWeaponDataAsset* AIWeaponDataAsset;
+
+	class USkeletalMeshComponent* playerMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class ACharacter* player; //cast
 protected:
 	virtual void BeginPlay() override;
 
@@ -141,7 +162,7 @@ public:
 	
 	// AI Type Setting
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void AITypeSetting();
+		void SetDataTable(FName EnemyName);
 
 	// AI Sniper Check
 	UFUNCTION(BlueprintCallable, Category = "Attack")
@@ -149,4 +170,6 @@ public:
 
 	void CheckTrace();
 	void AISpawnImpactEffect(FHitResult p_result);
+
+	void PlayRandomShotSound();
 };

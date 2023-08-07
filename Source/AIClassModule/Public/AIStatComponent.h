@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "StatComponent.h"
+#include "ST_Spawn.h"
 #include "AIStatComponent.generated.h"
 
+
+DECLARE_DELEGATE(FOnVisibleEnemyHPUIDelegate);
+DECLARE_DELEGATE(FOnChangeEnemyHPUIDelegate);
 /**
  * 
  */
@@ -16,6 +20,9 @@ class AICLASSMODULE_API UAIStatComponent : public UStatComponent
 public:
 	// Sets default values for this component's properties
 	UAIStatComponent();
+	FOnVisibleEnemyHPUIDelegate OnVisibleEnemyHPUIDelegate;
+	FOnChangeEnemyHPUIDelegate OnChangeEnemyHPUIDelegate;
+
 
 protected:
 	// Called when the game starts
@@ -43,6 +50,8 @@ public:
 		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class UDataTable* DT_Shot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class UDataTable* DT_AIBaseStat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_total;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
@@ -85,6 +94,8 @@ public:
 		float DI_SupRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		bool PlayerAtt_ai;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float Def;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class AAI_Controller* AIController;
 

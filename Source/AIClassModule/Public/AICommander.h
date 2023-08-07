@@ -48,8 +48,8 @@ public:
 	// TMAP_LIST
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, ECombat> List_Combat;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		//TMap<int, ECombat> List_Combat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -92,6 +92,10 @@ public:
 		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* m_suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ASubEncounterSpace* Now_suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* Now_en;
 
 	// DATA TABLE
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -137,7 +141,10 @@ public:
 		bool SightIn_CHK;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TSubclassOf<class AActor> RedBallBlueprint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AActor* redball;
 
 public:
 	UFUNCTION()
@@ -168,6 +175,7 @@ public:
 		void DetourCoverPoint();
 	UFUNCTION()
 		bool IsPlayerInsideFanArea(FVector CoverPoint, float LocationRadius, float FanAngle, FVector FanDirection); //위치, 범위, 각도, 방향
+
 	UFUNCTION()
 		bool IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVector FanDirection);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")

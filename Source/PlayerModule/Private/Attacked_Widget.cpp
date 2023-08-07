@@ -159,7 +159,7 @@ void UAttacked_Widget::Play_Attacked_Anim(int index)
 				{
 					PlayAnimationForward(Attacked_Anims[index]);
 				}
-			}), .5f, false);
+			}), .01f, false);
 	}
 }
 
@@ -189,7 +189,7 @@ void UAttacked_Widget::SetAttackedAngle()
 
 void UAttacked_Widget::StartAttacked()
 {
-	FindTargetEnemy();
+	//FindTargetEnemy();
 	int index = 0;
 	index = TargetEnemys.Find(stat->TargetEnemy);
 	if (index == INDEX_NONE)
