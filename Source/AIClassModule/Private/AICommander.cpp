@@ -144,7 +144,6 @@ void AAICommander::ListSet()
 	{
 		return;
 	}
-	
 	Blackboard->SetValueAsObject("Cmd_Space", Now_en);
 	if (!Now_suben->LevelActive)
 	{
@@ -158,8 +157,7 @@ void AAICommander::ListSet()
 			Now_suben = m_suben;
 		}
 	}
-	
-	
+
 	if (Now_suben->spawn)
 	{
 		Now_suben->spawn->check_Overlap = true;

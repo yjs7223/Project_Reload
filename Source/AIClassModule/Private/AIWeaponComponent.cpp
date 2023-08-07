@@ -303,7 +303,7 @@ void UAIWeaponComponent::CheckTrace()
 	FCollisionQueryParams collisionParams;
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 
-	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{
