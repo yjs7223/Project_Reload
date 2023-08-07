@@ -226,6 +226,11 @@ void AAI_Controller::SetUseCover()
 	}
 }
 
+void AAI_Controller::RunBTT()
+{
+	RunBehaviorTree(btree);
+}
+
 
 void AAI_Controller::Tick(float DeltaSeconds)
 {
