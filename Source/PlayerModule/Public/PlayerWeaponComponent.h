@@ -63,7 +63,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
-	void WeaponMeshSetting();
+	void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
 
 
 	void ReloadTick(float Deltatime);
@@ -91,6 +91,10 @@ public:
 	void SpawnImpactEffect(FHitResult result);
 
 	void Threaten();
+
+	float CalcDamage(FHitResult result, FVector2D p_damage);
+
+	static bool CheckActorTag(AActor* actor, FName tag);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -200,4 +204,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
+
+	float MaxRange;
+	float Deviation;
 };

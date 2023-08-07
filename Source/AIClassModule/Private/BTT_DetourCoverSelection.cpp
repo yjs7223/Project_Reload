@@ -70,7 +70,6 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 				{
 					for (auto ai : commander->List_Division)
 					{
-						
 						if (!Cast<AAICharacter>(ai.Key)->Detour)
 						{
 							Detourchange = true;
@@ -118,7 +117,6 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 				}
 				if (!Detourchange)
 				{
-					
 					return EBTNodeResult::Succeeded;
 				}
 				if (select_ai)

@@ -85,7 +85,7 @@ void UCrosshair_Widget::NativeConstruct()
 		{
 			weapon = MyCharacter->weapon;
 			MyWeaponComp->OnChangedCrossHairAmmoDelegate.BindUObject(this, &UCrosshair_Widget::SetAmmoImage);
-			MyWeaponComp->OnChangedCrossHairHitDelegate.BindUObject(this, &UCrosshair_Widget::CheckHit);
+			MyWeaponComp->OnChangedCrossHairHitDelegate.BindUObject(this, &UCrosshair_Widget::MoveDot);
 			MyWeaponComp->OnChangedCrossHairDieDelegate.BindUObject(this, &UCrosshair_Widget::CheckDie);
 			MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 			MyWeaponComp->OnPlayReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::PlayReloadAnim);
@@ -186,15 +186,9 @@ bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 	return false;
 }
 
-void UCrosshair_Widget::CheckHit()
+void UCrosshair_Widget::MoveDot()
 {
-	if (IsAnimationPlaying(HitAnim))
-	{
-		StopAnimation(HitAnim);
-	}
-
-	Hit_Overlay->SetRenderOpacity(1.0f);
-	GetWorld()->GetTimerManager().ClearTimer(HitTimer);
+	GetWorld()->GetTimerManager().ClearTimer(DotTimer);
 	weapon->m_result.Location;
 	FVector2D loc;
 	FIntVector2 screensize;
@@ -203,7 +197,20 @@ void UCrosshair_Widget::CheckHit()
 	loc.X -= screensize.X/2;
 	loc.Y -= screensize.Y/2;
 	Dot_image->SetRenderTranslation(loc);
+	//weapon->m_result
+	GetWorld()->GetTimerManager().SetTimer(DotTimer,
+		FTimerDelegate::CreateLambda([&]()
+			{
+				Dot_image->SetRenderTranslation(FVector2D(.0f, .0f));
 
+			}
+	), .3f, false);
+
+
+}
+
+void UCrosshair_Widget::CheckDie()
+{
 	if (weapon->isHit)
 	{
 		if (weapon->headhit)
@@ -211,46 +218,41 @@ void UCrosshair_Widget::CheckHit()
 			weapon->isHit = false;
 			weapon->headhit = false;
 			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_Image_NW->SetRenderOpacity(1.0f);
 			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_Image_NE->SetRenderOpacity(1.0f);
 			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_Image_SW->SetRenderOpacity(1.0f);
 			Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_Image_SE->SetRenderOpacity(1.0f);
 		}
 		else
 		{
 			weapon->isHit = false;
 			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_Image_NW->SetRenderOpacity(1.0f);
 			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_Image_NE->SetRenderOpacity(1.0f);
 			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_Image_SW->SetRenderOpacity(1.0f);
 			Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_Image_SE->SetRenderOpacity(1.0f);
 		}
+
+		GetWorld()->GetTimerManager().ClearTimer(HitTimer);
+		if (IsAnimationPlaying(HitAnim))
+		{
+			//Hit_Overlay->SetRenderOpacity(0.0f);
+			StopAnimation(HitAnim);
+		}
+
+		GetWorld()->GetTimerManager().SetTimer(HitTimer,
+			FTimerDelegate::CreateLambda([&]()
+				{
+					PlayAnimationForward(HitAnim);
+				}
+		), .01f, false);
+		
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(HitTimer,
-		FTimerDelegate::CreateLambda([&]()
-		{
-			Dot_image->SetRenderTranslation(FVector2D(.0f, .0f));
-			PlayAnimationForward(HitAnim);
-		}
-	), .01f, false);
-}
-
-void UCrosshair_Widget::CheckDie()
-{
-	//GetWorld()->GetTimerManager().ClearTimer(DieTimer);
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{
 		if (stat->isDie)
 		{
-			stat->isDie = false;
+			//stat->isDie = false;
 			Kill_Overlay->SetRenderOpacity(1.0f);
 			GetWorld()->GetTimerManager().ClearTimer(KillTimer);
 			if (IsAnimationPlaying(KillAnim))
@@ -263,7 +265,7 @@ void UCrosshair_Widget::CheckDie()
 					{
 						PlayAnimationForward(KillAnim);
 					}
-			), .3f, false);
+			), .01f, false);
 		}
 	}
 }

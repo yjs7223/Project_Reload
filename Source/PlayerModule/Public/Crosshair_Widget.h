@@ -32,7 +32,7 @@ public:
 
 	bool CalcAlphaValue(float DeltaTime);
 
-	void CheckHit();
+	void MoveDot();
 
 	void CheckDie();
 
@@ -125,6 +125,7 @@ public:
 	bool bWidgetVisible;
 	float widgetVisibleTime;
 	FTimerHandle VisibleTimer;
+	FTimerHandle DotTimer;
 	FTimerHandle HitTimer;
 	FTimerHandle KillTimer;
 	FTimerHandle ReloadTimer;
