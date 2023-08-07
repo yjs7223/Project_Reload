@@ -140,6 +140,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool En_AIActive;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TSubclassOf<class AActor> RedBallBlueprint;
@@ -153,6 +155,8 @@ public:
 		void ListReset(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void ListAdd(AActor* ac);
+	UFUNCTION()
+		void AIActive(AEncounterSpace* en);
 	UFUNCTION()
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()

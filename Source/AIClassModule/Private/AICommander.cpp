@@ -135,7 +135,6 @@ void AAICommander::Tick(float DeltaTime)
 
 void AAICommander::ListSet()
 {
-
 	if (Now_en == nullptr)
 	{
 		return;
@@ -145,6 +144,10 @@ void AAICommander::ListSet()
 		return;
 	}
 	Blackboard->SetValueAsObject("Cmd_Space", Now_en);
+	if (En_AIActive)
+	{
+		AIActive(Now_en);
+	}
 	if (!Now_suben->LevelActive)
 	{
 		ListReset(Now_suben);
@@ -176,6 +179,27 @@ void AAICommander::ListSet()
 			ListReset(Now_suben);
 		}
 	}
+}
+void AAICommander::AIActive(AEncounterSpace* en)
+{
+	for (auto sub : en->LevelArray)
+	{
+		ASubEncounterSpace* suben = Cast<ASubEncounterSpace>(sub);
+
+		for (auto ai : suben->M_AIArray)
+		{
+			AAICharacter* subai = Cast<AAICharacter>(ai);
+			AIController = Cast<AAI_Controller>(subai->GetController());
+			if (AIController)
+			{
+				if (AIController->GetBlackboardComponent())
+				{
+					AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
+				}
+			}
+		}
+	}
+	En_AIActive = false;
 }
 
 void AAICommander::ListReset(ASubEncounterSpace* sub)
@@ -231,6 +255,7 @@ void AAICommander::ListAdd(AActor* ac)
 	AddIndex++;
 }
 
+
 void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, sub->GetName());
@@ -256,7 +281,6 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		{
 			AIController->RunBTT();
 		}
-		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 		//AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));

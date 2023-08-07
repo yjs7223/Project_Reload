@@ -49,6 +49,7 @@ void UPlayerMoveComponent::BeginPlay()
 	}
 
 	mCanMove = true;
+	//turningspped
 }
 
 
