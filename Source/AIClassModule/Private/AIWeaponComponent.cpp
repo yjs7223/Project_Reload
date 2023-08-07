@@ -19,6 +19,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
 #include "AIWeaponDataAsset.h"
+#include "Engine/EngineTypes.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -73,6 +74,10 @@ void UAIWeaponComponent::BeginPlay()
 
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
+	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+
+	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
+	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
 }
 
 
@@ -86,8 +91,6 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		ShotAITimer(DeltaTime);
 	}*/
 	// ...
-
-	CheckTrace();
 }
 
 void UAIWeaponComponent::ShotAI()
@@ -107,16 +110,13 @@ void UAIWeaponComponent::ShotAI()
 	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_04"));
 
 	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
-	AActor* ac = player;
 
-	if (Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target") != nullptr)
+	if (blackboardTarget != nullptr)
 	{
-		ac = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
-
 		// 타겟이 플레이어가 아니면
-		if (ac != player)
+		if (blackboardTarget != player)
 		{
-			end = start + ((ac->GetActorLocation() - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+			end = start + ((blackboardTarget->GetActorLocation() - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
 		}
 	}
 
@@ -125,6 +125,7 @@ void UAIWeaponComponent::ShotAI()
 	// 조준 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
 	{
+		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		// AI가 앞을 막고 있을 때 사격 불가능
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
@@ -154,6 +155,7 @@ void UAIWeaponComponent::ShotAI()
 		}
 
 		AISpawnImpactEffect(m_result);
+		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 	}
 
 	// 점점 반동이 줄어듦
@@ -177,7 +179,7 @@ void UAIWeaponComponent::ShotAI()
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	// 총알 생성
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, (ac->GetActorLocation() - start).Rotation() + FRotator(x, y, 0));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, rot);
 
 	// 사운드 재생
 	PlayRandomShotSound();
@@ -292,25 +294,25 @@ bool UAIWeaponComponent::AITypeSniperCheck()
 
 void UAIWeaponComponent::CheckTrace()
 {
-	FCollisionQueryParams collisionParams;
-	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-
 	if (commander == nullptr) return;
 	if (commander->Now_suben == nullptr) return;
 	if (commander->Now_suben->spawn == nullptr) return;
 	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
 	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
-	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
+	FCollisionQueryParams collisionParams;
+	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+
+	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CheckTrace()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CheckTrace()"));
 			GetWorld()->DestroyActor(result.GetActor());
 		}
 	}
 
-	DrawDebugLine(GetWorld(), start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
+	//DrawDebugLine(GetWorld(), start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
 }
 
 void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
