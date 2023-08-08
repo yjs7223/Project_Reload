@@ -12,10 +12,8 @@ struct FInputData
 {
 	GENERATED_USTRUCT_BODY()
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
-	FVector movevec;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
-	uint8 IsRuning : 1;
+	FVector movevec;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	uint8 IsFire : 1;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)

@@ -35,6 +35,7 @@ public:
 	class UCoverComponent* m_Cover;
 	class UWeaponComponent* m_Weapon;
 	class UBaseInputComponent* m_Input;
+	class UBaseCharacterMovementComponent* m_Movement;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* m_CameraControllData;
@@ -48,8 +49,13 @@ struct FCameraControllData : public FTableRowBase
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector camerapos;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<FString, FVector> camerplusvectors;
+		FVector camerapos_Runing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector camerapos_Cover;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector camerapos_Aiming;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

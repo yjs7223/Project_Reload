@@ -88,16 +88,39 @@ void UPlayerMoveComponent::Turn()
 void UPlayerMoveComponent::Moving(float DeltaTime)
 {
 	if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
-		mTargetRotate = owner->GetVelocity().Rotation();
-		return;
+		if (m_Inputdata->movevec == FVector::ZeroVector) {
+			mTargetRotate = owner->GetVelocity().Rotation();
+			return;
+		}
+		else {
+			m_CoverComp->StopCover();
+		}
 	}
+
 	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
-		m_Movement->SetMovementMode(MOVE_Walking);
-		m_Inputdata->IsRuning = false;
 
 		return;
 	}
+
+
+	//if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
+	//	mTargetRotate = owner->GetVelocity().Rotation();
+	//	return;
+	//}
+
+	//if (m_Inputdata->movevec == FVector::ZeroVector) {
+	//	mMoveDirect = FVector::ZeroVector;
+
+	//	return;
+	//}
+	//else {
+	//	if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
+
+	//		m_CoverComp->StopCover();
+
+	//	}
+	//}
 
 	FVector MoveDirect;
 		MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
@@ -111,12 +134,10 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	MoveDirect *= m_Movement->GetMaxSpeed();
 	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
-	if (m_Inputdata->IsRuning) {
+	if (m_Movement->isRuning()) {
 		targetRotate = MoveDirect.Rotation();
 	}
-	else {
-		MoveDirect *= 0.5;
-	}
+
 	
 	mTargetRotate = targetRotate;
 
