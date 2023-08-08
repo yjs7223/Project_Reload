@@ -64,6 +64,9 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
 
+	HPWidgetComponent_back = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget_back"));
+	HPWidgetComponent_back->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+
 	AmmoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerAmmo_Widget"));
 	AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 
@@ -109,7 +112,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		}
 
 	}
-	UpdateWidget(DeltaTime);
+	//UpdateWidget(DeltaTime);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
@@ -166,6 +169,22 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		if (HP_Widget)
 		{
 			HPWidgetComponent->SetWidgetClass(HP_Widget);
+			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
+			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
+		}
+	}
+
+	if (HPWidgetComponent_back)
+	{
+		HPWidgetComponent_back->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
+		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+		HPWidgetComponent_back->SetWidgetSpace(EWidgetSpace::World);
+		HPWidgetComponent_back->SetDrawSize(FVector2D(160.0f, 160.0f));
+
+		if (HP_Widget)
+		{
+			HPWidgetComponent_back->SetWidgetClass(HP_Widget);
+			Cast<UPlayer_HP_Widget>(HPWidgetComponent_back->GetWidget())->SetBackMat();
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
 		}
