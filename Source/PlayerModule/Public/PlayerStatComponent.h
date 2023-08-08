@@ -29,6 +29,8 @@ protected:
 public:
 	void SetHP(float p_HP) override;
 	void Attacked(float p_damage) override;
+
+	UFUNCTION(BlueprintCallable)
 	void Attacked(float p_damage, class ABaseCharacter* character) override;
 
 public:
