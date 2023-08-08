@@ -23,6 +23,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetPercent(float percent);
 	void MoveCircle(float deltatime);
+	void SetBackMat();
 
 	void SetWidgetVisible() override;
 
@@ -64,6 +65,7 @@ public:
 
 public:
 	bool bWidgetVisible;
+	bool bHpBack;
 	float widgetVisibleTime;
 	float moveValue1;
 	float moveValue2;

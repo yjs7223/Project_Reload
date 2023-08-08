@@ -188,25 +188,27 @@ bool UCrosshair_Widget::CalcAlphaValue(float DeltaTime)
 
 void UCrosshair_Widget::MoveDot()
 {
-	GetWorld()->GetTimerManager().ClearTimer(DotTimer);
-	weapon->m_result.Location;
-	FVector2D loc;
-	FIntVector2 screensize;
-	UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), weapon->m_result.Location, loc);
-	GetOwningPlayer()->GetViewportSize(screensize.X, screensize.Y);
-	loc.X -= screensize.X/2;
-	loc.Y -= screensize.Y/2;
-	Dot_image->SetRenderTranslation(loc);
-	//weapon->m_result
-	GetWorld()->GetTimerManager().SetTimer(DotTimer,
-		FTimerDelegate::CreateLambda([&]()
-			{
-				Dot_image->SetRenderTranslation(FVector2D(.0f, .0f));
+	if (weapon->m_result.bBlockingHit)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DotTimer);
+		weapon->m_result.Location;
+		FVector2D loc;
+		FIntVector2 screensize;
+		UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), weapon->m_result.Location, loc);
+		GetOwningPlayer()->GetViewportSize(screensize.X, screensize.Y);
+		loc.X -= screensize.X / 2;
+		loc.Y -= screensize.Y / 2;
+		Dot_image->SetRenderTranslation(loc);
+		//weapon->m_result
+		GetWorld()->GetTimerManager().SetTimer(DotTimer,
+			FTimerDelegate::CreateLambda([&]()
+				{
+					Dot_image->SetRenderTranslation(FVector2D(.0f, .0f));
 
-			}
-	), .3f, false);
+				}
+		), .3f, false);
 
-
+	}
 }
 
 void UCrosshair_Widget::CheckDie()
