@@ -108,11 +108,11 @@ void UCoverComponent::PlayCover()
 
 		//////
 
+		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 
 		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
-		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		return;
 	}
 	else {
@@ -605,6 +605,7 @@ bool UCoverComponent::StartCover()
 	RotateSet(0.0f);
 
 	//owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
+	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
 	SetIsFaceRight(true);

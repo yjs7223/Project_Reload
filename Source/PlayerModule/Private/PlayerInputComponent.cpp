@@ -111,8 +111,9 @@ void UPlayerInputComponent::StartAiming()
 {
 	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	m_inputData.IsAiming = true;
-	movement->SetMovementMode(MOVE_Walking);
-
+	if (movement->isRuning()) {
+		movement->SetMovementMode(MOVE_Walking);
+	}
 	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartAiming();
 }
 
