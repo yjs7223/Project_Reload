@@ -30,6 +30,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
+#include "AIPatrolComponent.h"
+#include "AISensingComponent.h"
+#include "Components/PrimitiveComponent.h"
 
 
 // Sets default values
@@ -196,6 +199,28 @@ void AAICommander::AIActive(AEncounterSpace* en)
 				{
 					AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 				}
+
+				//// 액터 활성화
+				subai->SetActorHiddenInGame(false);
+				subai->SetActorEnableCollision(true);
+				subai->SetActorTickEnabled(true);
+
+				//// 컴포넌트 활성화
+				subai->AIPatrol->SetComponentTickEnabled(true);
+				subai->AISensing->SetComponentTickEnabled(true);
+				subai->AIMovement
+				/*	subai->AIWeapon
+					subai->AIPatrol
+					subai->AISensing
+					subai->AIStat
+					subai->m_InputComponent
+					subai->m_CoverComponent
+					subai->AIControllerClass*/
+
+
+				/*	->SetVisibility();
+				subai->SetCollisionEnabled();
+				subai->SetComponentTickEnabled();*/
 			}
 		}
 	}
