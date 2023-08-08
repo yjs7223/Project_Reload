@@ -43,12 +43,11 @@ void ASubEncounterSpace::BeginPlay()
 void ASubEncounterSpace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (LevelActive)
-	{
-		EnemyAICheck();
-		
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
-	}
+
+	EnemyAICheck();
+
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
+
 }
 
 void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -60,7 +59,7 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 			LevelActive = true;
 			commander->m_suben = this;
 		}
-		
+
 	}
 }
 
