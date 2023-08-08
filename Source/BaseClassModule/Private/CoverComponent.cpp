@@ -18,6 +18,8 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "BaseCharacterMovementComponent.h"
+
 
 
 #define LOCTEXT_NAMESPACE "CoverComponent"
@@ -44,7 +46,7 @@ void UCoverComponent::BeginPlay()
 	m_IsCover = false;
 	m_CoverWall = nullptr;
 
-	m_Movement = owner->GetCharacterMovement();
+	m_Movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
 	capsule = owner->GetCapsuleComponent();
@@ -69,7 +71,8 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	if (!m_IsCover) return;
-	m_Inputdata->IsRuning = false;
+
+	m_Movement->SetMovementMode(MOVE_Walking);
 
 	RotateSet(DeltaTime);
 	AimSetting(DeltaTime);
@@ -97,7 +100,6 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 void UCoverComponent::PlayCover()
 {
 	if (EPathFollowingStatus::Type::Moving == m_PathFollowingComp->GetStatus()) {
-		m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 		StopCover();
 		return;
 	}
@@ -106,8 +108,8 @@ void UCoverComponent::PlayCover()
 
 		//////
 
+		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 
-		m_Inputdata->IsRuning = true;
 		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
@@ -613,13 +615,14 @@ bool UCoverComponent::StartCover()
 
 void UCoverComponent::StopCover()
 {
-	m_Inputdata->IsRuning = false;
+	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;
 	mCoverShootingState = ECoverShootingState::None;
 	mPeekingState = EPeekingState::None;
 	SetIsFaceRight(true);
 
+	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
 }
 

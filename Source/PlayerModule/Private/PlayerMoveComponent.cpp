@@ -94,7 +94,6 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
 		m_Movement->SetMovementMode(MOVE_Walking);
-		m_Inputdata->IsRuning = false;
 
 		return;
 	}
@@ -111,12 +110,10 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	MoveDirect *= m_Movement->GetMaxSpeed();
 	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
-	if (m_Inputdata->IsRuning) {
+	if (m_Movement->isRuning()) {
 		targetRotate = MoveDirect.Rotation();
 	}
-	else {
-		MoveDirect *= 0.5;
-	}
+
 	
 	mTargetRotate = targetRotate;
 

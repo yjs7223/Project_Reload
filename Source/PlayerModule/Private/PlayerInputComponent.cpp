@@ -60,20 +60,21 @@ void UPlayerInputComponent::MoveRight(float Value)
 
 void UPlayerInputComponent::Runing()
 {
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 
 
-	m_inputData.IsRuning ? m_inputData.IsRuning = false : m_inputData.IsRuning = true;
-	if (m_inputData.IsRuning) {
+
+	if (movement->isRuning()) {
 
 		m_inputData.IsAiming = false;
 	}
 
-	if (m_inputData.IsRuning) {
-		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
+	if (movement->isRuning()) {
+		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Walking);
 	}
 	else {
+		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 
-		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Walking);
 	}
 }
 
@@ -108,8 +109,10 @@ void UPlayerInputComponent::StopFire()
 
 void UPlayerInputComponent::StartAiming()
 {
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	m_inputData.IsAiming = true;
-	m_inputData.IsRuning = false;
+	movement->SetMovementMode(MOVE_Walking);
+
 	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartAiming();
 }
 
