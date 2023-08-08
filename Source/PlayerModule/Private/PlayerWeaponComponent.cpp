@@ -29,6 +29,7 @@
 #include "Components/WidgetComponent.h"
 #include "PlayerMoveComponent.h"
 #include "CoverComponent.h"
+#include "EmptyShellSpawnable.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -89,6 +90,19 @@ void UPlayerWeaponComponent::BeginPlay()
 	
 	// ...
 	//PlayerWeaponData.row
+}
+
+void UPlayerWeaponComponent::BeginDestroy()
+{
+	OnChangedCrossHairAmmoDelegate.Unbind();
+	OnChangedCrossHairHitDelegate.Unbind();
+	OnChangedCrossHairDieDelegate.Unbind();
+	OnVisibleCrossHairUIDelegate.Unbind();
+	OnVisibleAmmoUIDelegate.Unbind();
+	OnChangedAmmoUIDelegate.Unbind();
+	OnPlayReloadUIDelegate.Unbind();
+
+	Super::BeginDestroy();
 }
 
 
@@ -212,7 +226,7 @@ void UPlayerWeaponComponent::Fire()
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	//CameraHit
-	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
@@ -243,26 +257,27 @@ void UPlayerWeaponComponent::Fire()
 	}
 	else
 	{
+		m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
 
 		//WeaponHit
-		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-		end = cameraRotation.Vector() * 999999.0f;
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
-		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
-			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
+		//start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+		//end = cameraRotation.Vector() * 999999.0f;
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
+		//if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
+		//{
+		//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
+		//	//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-			SpawnDecal(m_result);
-		}
-		else
-		{
-			//NonHit
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
-		}
+		//	m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+		//	SpawnDecal(m_result);
+		//}
+		//else
+		//{
+		//	//NonHit
+		//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
+		//	m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
+		//}
 	}
 
 	
@@ -338,9 +353,13 @@ void UPlayerWeaponComponent::Fire()
 	{
 		m_firecount += 1;
 	}
+
+
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	StartRecoil();
+
+	IEmptyShellSpawnable::Execute_EmptyShellSpawn((WeaponMesh->GetAnimInstance()));
 
 	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 	{
