@@ -103,6 +103,10 @@ void UCoverComponent::PlayCover()
 	}
 
 	if (m_CanCoverPoint != FVector::ZeroVector) {
+
+		//////
+
+
 		m_Inputdata->IsRuning = true;
 		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
@@ -265,7 +269,6 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	end = start + (owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.0f);
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params);
 
-	DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 	if (!result.bBlockingHit) return;
 
 	//벽이있다면 이동방향 체크
@@ -299,7 +302,6 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	if (FinalNormal == FVector::ZeroVector) {
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ERROR FinalNormal is Zero"), true,true, FColor::Red, 1000.0f);
 	}
-	DrawDebugLine(GetWorld(), start, start + FinalNormal * 100, FColor::Cyan, false, 15.0f);
 	//로테이션 가져와서 보간설정
 	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal);
 	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 0.0f));
@@ -357,7 +359,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		true,
 		{m_CoverWall},
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		results,
 		true
 	)) return FVector::ZeroVector;
