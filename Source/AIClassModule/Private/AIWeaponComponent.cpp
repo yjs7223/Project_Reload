@@ -151,6 +151,7 @@ void UAIWeaponComponent::ShotAI()
 					+ deviation;
 
 				temp->Attacked(dmg, GetOwner<ABaseCharacter>());
+				temp->hitNormal = m_result.ImpactNormal;
 			}
 		}
 
