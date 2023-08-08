@@ -32,6 +32,7 @@ public:
 	void InitWidget(FViewport* viewport, uint32 value);
 	void UpdateWidget(float deltatime);
 	void WidgetShow();
+	void CreateDamageWidget(float value, FHitResult result);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -42,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UWidgetComponent* HPWidgetComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWidgetComponent* HPWidgetComponent_back;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UWidgetComponent* AmmoWidgetComponent;
@@ -69,6 +73,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UUserWidget> Cover_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> Damage_Widget;
+
+	FTimerHandle DamageTimer;
     
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)

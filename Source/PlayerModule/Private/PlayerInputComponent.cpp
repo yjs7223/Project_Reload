@@ -11,6 +11,7 @@
 #include "Components/WidgetComponent.h"
 #include "PlayerHUDWidget.h"
 #include "Player_HP_Widget.h"
+#include "BaseCharacterMovementComponent.h"
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -59,7 +60,21 @@ void UPlayerInputComponent::MoveRight(float Value)
 
 void UPlayerInputComponent::Runing()
 {
+
+
 	m_inputData.IsRuning ? m_inputData.IsRuning = false : m_inputData.IsRuning = true;
+	if (m_inputData.IsRuning) {
+
+		m_inputData.IsAiming = false;
+	}
+
+	if (m_inputData.IsRuning) {
+		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
+	}
+	else {
+
+		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Walking);
+	}
 }
 
 void UPlayerInputComponent::Crouching()
@@ -94,6 +109,7 @@ void UPlayerInputComponent::StopFire()
 void UPlayerInputComponent::StartAiming()
 {
 	m_inputData.IsAiming = true;
+	m_inputData.IsRuning = false;
 	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartAiming();
 }
 

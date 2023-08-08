@@ -159,7 +159,7 @@ void UAttacked_Widget::Play_Attacked_Anim(int index)
 				{
 					PlayAnimationForward(Attacked_Anims[index]);
 				}
-			}), .5f, false);
+			}), .01f, false);
 	}
 }
 

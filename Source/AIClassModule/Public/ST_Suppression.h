@@ -47,7 +47,8 @@ public:
 		float Sup_AimPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
 		float Sup_AimDelay;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AISuppressionDataBase)
+		float Support_Default;
 };
 
 

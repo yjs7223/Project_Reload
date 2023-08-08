@@ -48,8 +48,8 @@ public:
 	// TMAP_LIST
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, ECombat> List_Combat;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		//TMap<int, ECombat> List_Combat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -92,6 +92,10 @@ public:
 		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* m_suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class ASubEncounterSpace* Now_suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* Now_en;
 
 	// DATA TABLE
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -136,9 +140,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool En_AIActive;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AActor* blueball;
+		TSubclassOf<class AActor> RedBallBlueprint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AActor* redball;
 
@@ -149,6 +155,8 @@ public:
 		void ListReset(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void ListAdd(AActor* ac);
+	UFUNCTION()
+		void AIActive(AEncounterSpace* en);
 	UFUNCTION()
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()
@@ -171,6 +179,7 @@ public:
 		void DetourCoverPoint();
 	UFUNCTION()
 		bool IsPlayerInsideFanArea(FVector CoverPoint, float LocationRadius, float FanAngle, FVector FanDirection); //위치, 범위, 각도, 방향
+
 	UFUNCTION()
 		bool IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVector FanDirection);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")

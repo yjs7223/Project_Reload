@@ -54,4 +54,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float spread_Power;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Deviation;
 };
