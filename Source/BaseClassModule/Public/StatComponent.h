@@ -64,6 +64,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isThreat;
 
+	FVector hitNormal;
+
 protected:
 	UPROPERTY()
 		class ABaseCharacter* owner;

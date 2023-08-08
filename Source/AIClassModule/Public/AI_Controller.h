@@ -28,8 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBlackboardData* BBAsset;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		class UBehaviorTree* btree;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class UBehaviorTree* btree;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBehaviorTreeComponent* behavior_tree_component;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
@@ -50,9 +50,10 @@ public:
 		bool em_normal;
 
 	FHitResult result;
-	FHitResult headResult;
 
 	class USkeletalMeshComponent* playerMesh;
+
+	FTimerHandle timer;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);
@@ -60,6 +61,10 @@ public:
 	//	void OnTargetDetected(AActor* actor, FAIStimulus Stimulus);
 	UFUNCTION(BlueprintCallable, Category = "UseCover")
 		void SetUseCover();
+
+	UFUNCTION(BlueprintCallable, Category = "AI_Controller")
+		void RunBTT();
+
 
 
 	

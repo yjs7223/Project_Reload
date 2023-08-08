@@ -23,6 +23,7 @@
 #include "AISpawner.h"
 #include "AICharacterMoveComponent.h"
 #include "Components/BoxComponent.h"
+#include "Engine/EngineTypes.h"
 
 AAI_Controller::AAI_Controller()
 {
@@ -72,6 +73,9 @@ void AAI_Controller::BeginPlay()
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
+
+	GetWorldTimerManager().ClearTimer(timer);
+	GetWorldTimerManager().SetTimer(timer, this, &AAI_Controller::SetUseCover, 0.6, true, 0.0f);
 }
 
 //void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
@@ -166,7 +170,6 @@ void AAI_Controller::SetUseCover()
 	{
 		FCollisionQueryParams collisionParams;
 		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("pelvis"));
-		FVector headVec = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("head"));
 
 		collisionParams.AddIgnoredActor(GetPawn());
 
@@ -180,46 +183,29 @@ void AAI_Controller::SetUseCover()
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("SetUseCover false"));
-				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+				//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 			}
 			else
 			{
-				// AI�� ���� ���̸�
-				if (GetBlackboardComponent()->GetValueAsBool("AI_InCover"))
+				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 100.0f)
 				{
-					// �Ӹ��� ���̴��� üũ
-					if (GetWorld()->LineTraceSingleByChannel(headResult, headVec, playerLocation, ECC_Visibility, collisionParams))
-					{
-						// �÷��̾�鼭 �� �Ÿ��� �����ٸ�
-						if (headResult.GetActor()->ActorHasTag("Player"))
-						{
-							if (GetPawn()->GetDistanceTo(result.GetActor()) <= 500.0f)
-							{
-								GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
-								DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Red, false, 0.1f);
-							}
-							else
-							{
-								GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-								DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::Blue, false, 0.1f);
-							}
-						}
-					}
+					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
+					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
 				}
 				else
 				{
-					DrawDebugLine(GetWorld(), headVec, playerLocation, FColor::White, false, 0.1f);
-					if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 100.0f)
-					{
-						DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
-						GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
-					}
+					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				}
 			}
 		}
 	}
+}
+
+void AAI_Controller::RunBTT()
+{
+	RunBehaviorTree(btree);
 }
 
 
@@ -247,8 +233,6 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		
 	}
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
-
-	SetUseCover();
 }
 
 FRotator AAI_Controller::GetControlRotation() const

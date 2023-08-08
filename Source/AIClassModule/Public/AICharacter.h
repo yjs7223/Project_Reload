@@ -79,6 +79,10 @@ public:
 		class UAISensingComponent* AISensing;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class UAIStatComponent* AIStat;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
+		class AAICommander* commander;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		TSubclassOf<class AActor> GrenadeBlueprint;
 
 	// 몽타주
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -111,4 +115,6 @@ public:
 	// 순찰 대기 행동
 	UFUNCTION(BlueprintCallable, Category = "Anim")
 		void IdleAnim();
+	UFUNCTION(BlueprintCallable, Category = "Grenade")
+		void FireInTheHole(AActor* myai, float Velocity);
 };
