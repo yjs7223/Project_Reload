@@ -72,7 +72,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		m_Data->TargetArmLenght = m_Data->IdleArmLength;
 	}
 	if (m_Movement->isRuning()) {
-		tempCamerapos += m_Data->camerapos_Aiming;
+		tempCamerapos += m_Data->camerapos_Runing;
 	}
 
 	if (m_Cover && m_Cover->isPeeking()) {
