@@ -210,4 +210,20 @@ void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
 
 }
 
+void AAICharacter::Init()
+{
+	// 액터 비활성화
+	SetActorHiddenInGame(false);
+	SetActorTickEnabled(true);
+
+	// 컴포넌트 비활성화
+	AIPatrol->SetComponentTickEnabled(true);
+	AISensing->SetComponentTickEnabled(true);
+	AIMovement->SetComponentTickEnabled(true);
+	AIWeapon->SetComponentTickEnabled(true);
+	AIStat->SetComponentTickEnabled(true);
+	m_InputComponent->SetComponentTickEnabled(true);
+	m_CoverComponent->SetComponentTickEnabled(true);
+}
+
 

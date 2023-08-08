@@ -203,23 +203,7 @@ void AAICommander::AIActive(AEncounterSpace* en)
 					AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 				}
 
-				// 액터 활성화
-				subai->SetActorHiddenInGame(false);
-				subai->SetActorTickEnabled(true);
-
-				// 컴포넌트 활성화
-				subai->AIPatrol->SetComponentTickEnabled(true);
-				subai->AISensing->SetComponentTickEnabled(true);
-				subai->AIMovement->SetComponentTickEnabled(true);
-				subai->AIWeapon->SetComponentTickEnabled(true);
-				subai->AIStat->SetComponentTickEnabled(true);
-				subai->m_InputComponent->SetComponentTickEnabled(true);
-				subai->m_CoverComponent->SetComponentTickEnabled(true);
-
-
-				/*	->SetVisibility();
-				subai->SetCollisionEnabled();
-				subai->SetComponentTickEnabled();*/
+				subai->Init();
 			}
 		}
 	}

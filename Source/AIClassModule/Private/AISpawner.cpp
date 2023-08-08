@@ -27,11 +27,16 @@ void AAISpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(curWave), TEXT(""));
-	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+	if (Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass())) != nullptr)
+	{
+		commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+	}
+
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	pointTime = 0;
 	pointSpawnCheck = false;
+
+	SetDataTable(curWave);
 }
 
 // Called every frame
@@ -52,22 +57,50 @@ void AAISpawner::Tick(float DeltaTime)
 
 void AAISpawner::SpawnWave()
 {
-	// 기본 소환 위치
-	int spawn_Pos = (*curSpawnData).spawn_Spot;
 	// 라이플
-	if (rifleCount < (*curSpawnData).spawn_Wave[Enemy_Name::RIFLE])
+	if (rifleCount < spawn_Wave[Enemy_Name::RIFLE])
 	{
 		// 스폰 위치 검사 후 변경
-		spawn_Pos = SetSpawnSpot(spawn_Pos);
+		spawn_Spot = SetSpawnSpot(spawn_Spot);
 
 		// 생성
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
-		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Rifle, spawn_Spots[spawn_Pos]->GetActorLocation());
+		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
+
+		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
+		Cast<AAICharacter>(temp)->mySpawner = this;
+		Cast<AAICharacter>(temp)->Init();
+
+		commander->ListAdd(Cast<AActor>(temp));
+		rifleCount++;
+	}
+	else if (sniperCount < spawn_Wave[Enemy_Name::SNIPER])
+	{
+		// 스폰 위치 검사 후 변경
+		spawn_Spot = SetSpawnSpot(spawn_Spot);
+
+		// 생성
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Sniper, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		Cast<AAICharacter>(temp)->mySpawner = this;
 		commander->ListAdd(Cast<AActor>(temp));
-		rifleCount++;
+		sniperCount++;
+	}
+	else if (heavyCount < spawn_Wave[Enemy_Name::HEAVY])
+	{
+		// 스폰 위치 검사 후 변경
+		spawn_Spot = SetSpawnSpot(spawn_Spot);
+
+		// 생성
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Heavy, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
+
+		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
+		Cast<AAICharacter>(temp)->mySpawner = this;
+		commander->ListAdd(Cast<AActor>(temp));
+		heavyCount++;
 	}
 	else
 	{
@@ -77,22 +110,18 @@ void AAISpawner::SpawnWave()
 	}
 
 	spawn_Timer = 0;
-	
 
-	// 댕댕이
-	/*int dogCount = (*curSpawnData).spawn_Wave[Enemy_Name::DOG];
-	if (dogCount > 0)
-	{
-		for (int i = 0; i < dogCount; i++)
-		{
-			APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Dog, GetActorLocation());
-		}
-	}*/
 }
 
 void AAISpawner::WaveControl(float DeltaTime)
 {
-	/*if (check_Overlap && !spawnCheck)
+	if (curSpawnData == nullptr)
+	{
+		return;
+	}
+
+	// 스폰
+	if (check_Overlap && !spawnCheck)
 	{
 		spawn_Timer += DeltaTime;
 		if (spawn_Timer >= (*curSpawnData).spawn_Delay)
@@ -100,21 +129,21 @@ void AAISpawner::WaveControl(float DeltaTime)
 			SpawnWave();
 			spawn_Timer = 0;
 		}
-	}*/
+	}
 
 	// 마지막 웨이브인지 확인
 	if (spawnCheck)
 	{
-		if ((*curSpawnData).last_Spawn)
+		if (last_Spawn)
 		{
 			check_Overlap = false;
 		}
 		else
 		{
-			switch ((*curSpawnData).spawn_Type)
+			switch (spawn_Type)
 			{
 			case Spawn_Type::KILL:
-				if (count_Kill >= (*curSpawnData).spawn_Condition)
+				if (count_Kill >= spawn_Condition)
 				{
 					// 다음 웨이브
 					NextWave();
@@ -122,7 +151,7 @@ void AAISpawner::WaveControl(float DeltaTime)
 				break;
 			case Spawn_Type::SECONDS:
 				spawn_Timer += DeltaTime;
-				if (spawn_Timer >= (*curSpawnData).spawn_Condition)
+				if (spawn_Timer >= spawn_Condition)
 				{
 					// 다음 웨이브
 					NextWave();
@@ -136,9 +165,9 @@ void AAISpawner::WaveControl(float DeltaTime)
 int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 {
 	// 플레이어와 가깝지 않다면 소환
-	if (spawn_Spots[(*curSpawnData).spawn_Spot]->GetDistanceTo(player) >= 50)
+	if (spawn_Spots[spawn_Spot]->GetDistanceTo(player) >= 50)
 	{
-		p_Spawn_Pos = (*curSpawnData).spawn_Spot;
+		p_Spawn_Pos = spawn_Spot;
 	}
 	else
 	{
@@ -148,7 +177,7 @@ int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 			if (spawn_Spots[i]->GetDistanceTo(player) > 50)
 			{
 				// 처음 들어온 거라면 일단 넣기
-				if (p_Spawn_Pos == (*curSpawnData).spawn_Spot)
+				if (p_Spawn_Pos == spawn_Spot)
 				{
 					p_Spawn_Pos = i;
 				}
@@ -168,7 +197,7 @@ int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 void AAISpawner::NextWave()
 {
 	// 다음 웨이브로 넘기기
-	curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(++curWave), TEXT(""));
+	SetDataTable(++curWave);
 	count_Kill = 0;
 	spawnCheck = false;
 }
@@ -227,5 +256,20 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
 
 		}
+	}
+}
+
+void AAISpawner::SetDataTable(int p_curWave)
+{
+	if (spawnData != nullptr)
+	{
+		curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(p_curWave), TEXT(""));
+
+		last_Spawn = curSpawnData->last_Spawn;
+		spawn_Condition = curSpawnData->spawn_Condition;
+		spawn_Delay = curSpawnData->spawn_Delay;
+		spawn_Spot = curSpawnData->spawn_Spot;
+		spawn_Type = curSpawnData->spawn_Type;
+		spawn_Wave = curSpawnData->spawn_Wave;
 	}
 }
