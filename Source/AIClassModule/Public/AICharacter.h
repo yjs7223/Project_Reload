@@ -99,8 +99,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class ACharacter* player;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class ACharacter* player_G;
 
 public:
 	UFUNCTION()

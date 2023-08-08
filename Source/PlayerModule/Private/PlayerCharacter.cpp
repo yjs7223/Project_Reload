@@ -109,6 +109,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		}
 
 	}
+	UpdateWidget(DeltaTime);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
@@ -202,17 +203,14 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 {
 	if (HPWidgetComponent)
 	{
-		UPlayer_HP_Widget* hpw = Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget());
-		if (hpw)
-		{
-			hpw->SetPercent(stat->curHP / stat->maxHP);
-			hpw->MoveCircle(deltatime);
-		}
-	}
-
-	if (Crosshair_Widget)
-	{
-		Crosshair_Widget->UpdateCrosshair(deltatime);
+		float yaw = GetControlRotation().Yaw;// * 0.3f;
+		FRotator widrot = HPWidgetComponent->GetRelativeRotation();
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
+		//widrot.Yaw *= 0.3f;
+		widrot.Yaw = (yaw + 180);// * 0.3f;//+60;
+		widrot.Yaw *= 0.3f;
+		//widrot.Yaw -= 120;
+		HPWidgetComponent->SetRelativeRotation(widrot);
 	}
 }
 

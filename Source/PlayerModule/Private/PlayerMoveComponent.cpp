@@ -10,6 +10,7 @@
 #include "Pakurable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "BaseCharacterMovementComponent.h"
 
 
 // Sets default values for this component's properties
@@ -35,7 +36,7 @@ void UPlayerMoveComponent::BeginPlay()
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
-	m_Movement = owner->GetCharacterMovement();
+	m_Movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 
 	if (m_PathFollowingComp == nullptr) {
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]() {
@@ -92,6 +93,7 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	}
 	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
+		m_Movement->SetMovementMode(MOVE_Walking);
 		m_Inputdata->IsRuning = false;
 
 		return;
@@ -117,24 +119,8 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	}
 	
 	mTargetRotate = targetRotate;
-	
-	//if (MoveDirect == FVector::ZeroVector) {
-	//	mMoveDirect = FVector::ZeroVector;
-	//	m_Movement->Velocity = FVector::ZeroVector;
-	//}
-	//else {
-	//	mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
-	//}
 
-	m_Movement->Velocity = MoveDirect;
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("m_Movement %f"), m_Movement->Velocity.Length()), true, true, FColor::Magenta, DeltaTime);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("MoveDirect %f"), MoveDirect.Length()), true, true, FColor::Magenta, DeltaTime);
-	//owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
-	//owner->AddMovementInput(mMoveDirect, 0.5f);
-	//owner->GetCharacterMovement()->Velocity = mMoveDirect;
-
-	
-
+	owner->AddMovementInput(MoveDirect);
 }
 
 void UPlayerMoveComponent::SetCanMove(bool canmove)
