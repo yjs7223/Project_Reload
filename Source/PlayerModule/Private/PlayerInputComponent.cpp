@@ -65,16 +65,16 @@ void UPlayerInputComponent::Runing()
 
 
 	if (movement->isRuning()) {
-
-		m_inputData.IsAiming = false;
-	}
-
-	if (movement->isRuning()) {
 		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Walking);
 	}
 	else {
 		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 
+	}
+
+	if (movement->isRuning()) {
+
+		m_inputData.IsAiming = false;
 	}
 }
 

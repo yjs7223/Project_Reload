@@ -87,15 +87,19 @@ void UPlayerMoveComponent::Turn()
 
 void UPlayerMoveComponent::Moving(float DeltaTime)
 {
-	if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
-		mTargetRotate = owner->GetVelocity().Rotation();
-		return;
-	}
+
 	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
 		m_Movement->SetMovementMode(MOVE_Walking);
 
 		return;
+	}
+	else {
+		if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
+
+			m_CoverComp->StopCover();
+
+		}
 	}
 
 	FVector MoveDirect;

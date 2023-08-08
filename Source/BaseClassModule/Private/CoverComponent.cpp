@@ -108,11 +108,11 @@ void UCoverComponent::PlayCover()
 
 		//////
 
-		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 
 		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
+		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		return;
 	}
 	else {
