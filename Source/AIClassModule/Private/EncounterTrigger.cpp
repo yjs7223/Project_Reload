@@ -48,6 +48,7 @@ void AEncounterTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 		{
 			en->LevelActive = true;
 			commander->Now_en = en;
+			commander->En_AIActive = true;
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("encounter"));
 		}
 		
