@@ -91,16 +91,11 @@ public:
 		class ASubEncounterSpace* suben;
 
 	// 데이터 테이블 정보
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool last_Spawn;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float spawn_Condition;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float spawn_Delay;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int spawn_Spot;
 	enum Spawn_Type spawn_Type;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<Enemy_Name, int> spawn_Wave;
 
 protected:
