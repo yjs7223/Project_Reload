@@ -46,7 +46,7 @@ void UAIStatComponent::BeginPlay()
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
-	SetDataTable("Rifle_E");
+	//SetDataTable("Rifle_E");
 	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
 	DI_SupRange = 1 / sup_MaxRange;
 	//AICommander = AAICommander::aicinstance;
@@ -94,11 +94,9 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
-	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
-	float dmg = (shot_MaxDmg - ((shot_MaxDmg - shot_MinDmg) * (dis - shot_MinRange) * DI_ShotRange));
 	
 	float total_dmg;
-	total_dmg = dmg - (dmg * 0.01f) * Def;
+	total_dmg = p_damage - (p_damage * 0.01f) * Def;
 	curHP -= total_dmg;
 	Def -= (total_dmg * 0.05f);
 	AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
