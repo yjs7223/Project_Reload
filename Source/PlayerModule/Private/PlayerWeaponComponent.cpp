@@ -284,7 +284,7 @@ void UPlayerWeaponComponent::Fire()
 	if (CheckActorTag(m_result.GetActor(), TEXT("Enemy")))
 	{
 		
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
 		{
