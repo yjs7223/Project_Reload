@@ -62,7 +62,7 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_Grenade.BP_Grenade'"));
+	ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_GrenadeDummy.BP_GrenadeDummy'"));
 	if (GrenadeData.Succeeded())
 	{
 		GrenadeBlueprint = (UClass*)GrenadeData.Object->GeneratedClass;
@@ -208,6 +208,22 @@ void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
 		GetWorld()->SpawnActor<AActor>(GrenadeBlueprint, myai->GetActorLocation(), rotator);
 	}
 
+}
+
+void AAICharacter::Init()
+{
+	// 액터 비활성화
+	SetActorHiddenInGame(false);
+	SetActorTickEnabled(true);
+
+	// 컴포넌트 비활성화
+	AIPatrol->SetComponentTickEnabled(true);
+	AISensing->SetComponentTickEnabled(true);
+	AIMovement->SetComponentTickEnabled(true);
+	AIWeapon->SetComponentTickEnabled(true);
+	AIStat->SetComponentTickEnabled(true);
+	m_InputComponent->SetComponentTickEnabled(true);
+	m_CoverComponent->SetComponentTickEnabled(true);
 }
 
 
