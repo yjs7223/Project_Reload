@@ -120,24 +120,13 @@ void AAISpawner::SpawnWave()
 
 void AAISpawner::WaveControl(float DeltaTime)
 {
-	if (curSpawnData == nullptr)
+	if (curSpawnData == nullptr || spawn_Spots.Num() <= 0)
 	{
 		return;
 	}
 
-	// 스폰
+	// 마지막 웨이브인지 확인 및 스폰
 	if (check_Overlap && !spawnCheck)
-	{
-		spawn_Timer += DeltaTime;
-		if (spawn_Timer >= (*curSpawnData).spawn_Delay)
-		{
-			SpawnWave();
-			spawn_Timer = 0;
-		}
-	}
-
-	// 마지막 웨이브인지 확인
-	if (spawnCheck)
 	{
 		if (last_Spawn)
 		{
@@ -145,24 +134,35 @@ void AAISpawner::WaveControl(float DeltaTime)
 		}
 		else
 		{
-			switch (spawn_Type)
+			spawn_Timer += DeltaTime;
+			if (spawn_Timer >= (*curSpawnData).spawn_Delay)
 			{
-			case Spawn_Type::KILL:
-				if (count_Kill >= spawn_Condition)
-				{
-					// 다음 웨이브
-					NextWave();
-				}
-				break;
-			case Spawn_Type::SECONDS:
-				spawn_Timer += DeltaTime;
-				if (spawn_Timer >= spawn_Condition)
-				{
-					// 다음 웨이브
-					NextWave();
-				}
-				break;
+				SpawnWave();
+				spawn_Timer = 0;
 			}
+		}
+	}
+
+	// 다음 웨이브
+	if (spawnCheck)
+	{
+		switch (spawn_Type)
+		{
+		case Spawn_Type::KILL:
+			if (count_Kill >= spawn_Condition)
+			{
+				// 다음 웨이브
+				NextWave();
+			}
+			break;
+		case Spawn_Type::SECONDS:
+			spawn_Timer += DeltaTime;
+			if (spawn_Timer >= spawn_Condition)
+			{
+				// 다음 웨이브
+				NextWave();
+			}
+			break;
 		}
 	}
 }
@@ -201,9 +201,10 @@ int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 
 void AAISpawner::NextWave()
 {
+	// 한번에 다 잡힐걸 대비해서 스폰에 필요한만큼만 깎기 (근데 전체기 있나)
+	count_Kill -= spawn_Condition;
 	// 다음 웨이브로 넘기기
 	SetDataTable(++curWave);
-	count_Kill = 0;
 	spawnCheck = false;
 }
 
