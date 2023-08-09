@@ -39,7 +39,10 @@ public:
 
 	// 각 웨이브마다 소환할 유닛들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<Enemy_Name, int> spawn_Wave;
+		TMap<Enemy_Name, int> spawn_Wave = 
+		{ {Enemy_Name::RIFLE, 0}
+		, {Enemy_Name::SNIPER, 0}
+		, {Enemy_Name::HEAVY, 0} };
 
 	// 스폰 조건
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
