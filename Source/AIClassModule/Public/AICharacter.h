@@ -124,4 +124,5 @@ public:
 		void FireInTheHole(AActor* myai, float Velocity);
 
 	void Init();
+	void Dead();
 };

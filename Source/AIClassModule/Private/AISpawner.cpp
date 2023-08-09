@@ -134,11 +134,31 @@ void AAISpawner::WaveControl(float DeltaTime)
 		}
 		else
 		{
-			spawn_Timer += DeltaTime;
-			if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+			switch (spawn_Type)
 			{
-				SpawnWave();
-				spawn_Timer = 0;
+			case Spawn_Type::KILL:
+				if (count_Kill >= spawn_Condition)
+				{
+					spawn_Timer += DeltaTime;
+					if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+					{
+						SpawnWave();
+						spawn_Timer = 0;
+					}
+				}
+				break;
+			case Spawn_Type::SECONDS:
+				spawn_Timer += DeltaTime;
+				if (spawn_Timer >= spawn_Condition)
+				{
+					spawn_Timer += DeltaTime;
+					if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+					{
+						SpawnWave();
+						spawn_Timer = 0;
+					}
+				}
+				break;
 			}
 		}
 	}
@@ -146,24 +166,7 @@ void AAISpawner::WaveControl(float DeltaTime)
 	// 다음 웨이브
 	if (spawnCheck)
 	{
-		switch (spawn_Type)
-		{
-		case Spawn_Type::KILL:
-			if (count_Kill >= spawn_Condition)
-			{
-				// 다음 웨이브
-				NextWave();
-			}
-			break;
-		case Spawn_Type::SECONDS:
-			spawn_Timer += DeltaTime;
-			if (spawn_Timer >= spawn_Condition)
-			{
-				// 다음 웨이브
-				NextWave();
-			}
-			break;
-		}
+		NextWave();
 	}
 }
 

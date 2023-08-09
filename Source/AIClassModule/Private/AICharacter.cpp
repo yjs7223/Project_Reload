@@ -201,6 +201,7 @@ void AAICharacter::SetDataTable(FName EnemyName)
 	AIMovement->SetEnemy(EnemyName);
 	AIWeapon->SetDataTable(EnemyName);
 	AIStat->SetDataTable(EnemyName);
+	AISensing->SetDataTable(EnemyName);
 }
 
 void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -243,6 +244,20 @@ void AAICharacter::Init()
 	SetActorTickEnabled(true);
 
 	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È°ï¿½ï¿½È­
+	AIPatrol->SetComponentTickEnabled(true);
+	AISensing->SetComponentTickEnabled(true);
+	AIMovement->SetComponentTickEnabled(true);
+	AIWeapon->SetComponentTickEnabled(true);
+	AIStat->SetComponentTickEnabled(true);
+	m_InputComponent->SetComponentTickEnabled(true);
+	m_CoverComponent->SetComponentTickEnabled(true);
+}
+
+void AAICharacter::Dead()
+{
+	SetActorTickEnabled(true);
+
+	// ÄÄÆ÷³ÍÆ® ºñÈ°¼ºÈ­
 	AIPatrol->SetComponentTickEnabled(true);
 	AISensing->SetComponentTickEnabled(true);
 	AIMovement->SetComponentTickEnabled(true);
