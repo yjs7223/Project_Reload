@@ -129,7 +129,7 @@ void UAISensingComponent::DrawSense()
 
 void UAISensingComponent::SetDataTable(FName EnemyName)
 {
-	curAIRangeData = AIRangeData->FindRow<FST_Range>("Rifle_E", TEXT(""));
+	curAIRangeData = AIRangeData->FindRow<FST_Range>(EnemyName, TEXT(""));
 
 	AimBwd_Radius = curAIRangeData->AimBwd_Radius;
 	AimFwd_Radius = curAIRangeData->AimFwd_Radius;
