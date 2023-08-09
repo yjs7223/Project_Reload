@@ -257,7 +257,7 @@ void AAICharacter::Dead()
 {
 	SetActorTickEnabled(true);
 
-	// ÄÄÆ÷³ÍÆ® ºñÈ°¼ºÈ­
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È°ï¿½ï¿½È­
 	AIPatrol->SetComponentTickEnabled(true);
 	AISensing->SetComponentTickEnabled(true);
 	AIMovement->SetComponentTickEnabled(true);
