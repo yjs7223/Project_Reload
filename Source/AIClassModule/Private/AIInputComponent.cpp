@@ -6,6 +6,7 @@
 #include "CoverComponent.h"
 #include "AIWeaponComponent.h"
 #include "AICharacterMoveComponent.h"
+#include "BaseCharacterMovementComponent.h"
 
 void UAIInputComponent::BeginPlay()
 {
@@ -26,19 +27,20 @@ void UAIInputComponent::AIMoveRight(float Value)
 
 void UAIInputComponent::AIRuning()
 {
-	m_inputData.IsRuning = true;
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 }
 
 void UAIInputComponent::AIStopRuning()
 {
-	m_inputData.IsRuning = false;
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Walking);
 }
 
 void UAIInputComponent::AICrouching()
 {
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
 
-	cover->StartAICover();
 
 	if (owner->CanCrouch()) {
 		owner->Crouch();
@@ -49,7 +51,6 @@ void UAIInputComponent::AIStopCrouching()
 {
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
 
-	cover->StopCover();
 	owner->UnCrouch();
 
 }
@@ -95,4 +96,18 @@ void UAIInputComponent::AIStartReload()
 	moveoncmp->e_move = EMove::Normal;
 	m_inputData.IsReload = true;
 
+}
+
+void UAIInputComponent::AIStartCover()
+{
+	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+
+	cover->StartAICover();
+}
+
+void UAIInputComponent::AIStopCover()
+{
+	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+
+	cover->StopCover();
 }

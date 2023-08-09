@@ -28,6 +28,8 @@ public:
 		class UBoxComponent* CollisionMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* en;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICommander* commander;
 
 public:
 	UFUNCTION()

@@ -7,7 +7,6 @@
 #include "DrawDebugHelpers.h"
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
-#include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
 
 UAISensingComponent::UAISensingComponent()
@@ -38,7 +37,7 @@ void UAISensingComponent::BeginPlay()
 void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	//ShotSenseRange();
 }
 
 
@@ -83,31 +82,25 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 
 bool UAISensingComponent::ShotSenseRange()
 {
-	// �ĸ�
 	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
-	// ����
 	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
-	// ����
 	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
 
-	// ���� ����� �ĸ���� �˻�
 	if (IsPlayerInsideFanArea(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
-	// ���� ���� �˻�
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
-	// ������ ���� �˻�
 	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
@@ -128,4 +121,11 @@ bool UAISensingComponent::MinRangeCheck()
 	}
 
 	return false;
+}
+
+void UAISensingComponent::DrawSense()
+{
+	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
+	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
+	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
 }

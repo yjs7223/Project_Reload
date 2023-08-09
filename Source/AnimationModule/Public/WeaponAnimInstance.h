@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "WeaponAnimDataAsset.h"
 #include "WeaponAnimInstance.generated.h"
 
 /**
@@ -21,13 +22,14 @@ public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	void AnimationSetting();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UBaseInputComponent* m_Input;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 		class UWeaponComponent* mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		class UPlayerMoveComponent* mPlayerMove;
+	class UBaseCharacterMovementComponent* m_Movement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		float mAimYaw;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
@@ -43,17 +45,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		bool mIsRuning;
 
-	UPROPERTY(EditAnywhere, Category = Montage)
-		UAnimMontage* mFireMontage;
-	UPROPERTY(EditAnywhere, Category = Montage)
-		UAnimMontage* mReloadMontage;
-	UPROPERTY(EditAnywhere, Category = Montage)
-		UAnimMontage* mAimingMontage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = animation)
-	class UWeaponAnimDataAsset* test;
-private:
-	UPROPERTY(VisibleAnywhere, Category = molu)
-		float mfireTime;
-	UPROPERTY(VisibleAnywhere, Category = molu)
-		float mReloadingTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UDataTable* m_AnimationTable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	struct FWeaponAnimation m_CurrentAnimation;
+
+
+
+
 };

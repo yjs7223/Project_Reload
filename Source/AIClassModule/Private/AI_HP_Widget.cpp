@@ -29,6 +29,10 @@ void UAI_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
+	if (stat->isThreat)
+	{
+		SwitchVisibleWidget();
+	}
 	SetBackPercent(InDeltaTime);
 }
 
@@ -83,7 +87,7 @@ void UAI_HP_Widget::SetBackPercent(float deltatime)
 	{
 		if (HP_BackBar->Percent != HP_Bar->Percent)
 		{
-			float value = FMath::Lerp(HP_BackBar->Percent, HP_Bar->Percent, .05f);
+			float value = FMath::Lerp(HP_BackBar->Percent, HP_Bar->Percent, .02f);
 			HP_BackBar->SetPercent(value);
 		}
 	}

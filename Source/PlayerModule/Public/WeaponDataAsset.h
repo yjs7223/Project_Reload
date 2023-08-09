@@ -17,6 +17,10 @@ class PLAYERMODULE_API UWeaponDataAsset : public UPrimaryDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* WeaponSkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class TSubclassOf<UAnimInstance> weaponAnim;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USoundWave*> ShotSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -17,6 +17,7 @@
 #include "Crosshair_Widget.h"
 #include "Player_Cover_Widget.h"
 #include "Attacked_Widget.h"
+#include "Damage_Widget.h"
 #include "CameraControllComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 //#include "Kismet/GameplayStatics.h"
@@ -41,10 +42,11 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	//GetMesh().setanimins
 
 	m_FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
-	m_FollowSpringArm->SetupAttachment(RootComponent);
+	//m_FollowSpringArm->SetupAttachment(RootComponent);
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->TargetArmLength = 120.f;
 	m_FollowSpringArm->SocketOffset = FVector(0, 60, 80);
+	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("root"));
 	
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
@@ -61,6 +63,9 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 
 	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+
+	HPWidgetComponent_back = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget_back"));
+	HPWidgetComponent_back->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
 
 	AmmoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerAmmo_Widget"));
 	AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
@@ -83,14 +88,17 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector coverpoint = FindComponentByClass<UCoverComponent>()->getCanCoverPoint();
+	FVector coverpoint = m_CoverComponent->getCanCoverPoint();
+	FVector coverNormal = m_CoverComponent->GetPointNormal();
+	UCapsuleComponent* capsule = GetCapsuleComponent();
+
 	UPlayer_Cover_Widget* coverwidget = Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget());
 	if (coverpoint != FVector::ZeroVector)
 	{
-		coverpoint.Z -= 80.0f;
+		coverpoint -= coverNormal * capsule->GetScaledCapsuleRadius() * 0.5f;
 		//coverpoint.Y -= 30.0f;
 		CoverWidgetComponent->SetWorldLocation(coverpoint);
-		FRotator rot = FindComponentByClass<UCoverComponent>()->GetPointNormal().Rotation();
+		FRotator rot = coverNormal.Rotation();
 		CoverWidgetComponent->SetWorldRotation(rot);
 		if (coverwidget) {
 			coverwidget->SetOpacity(1.0f);
@@ -104,6 +112,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		}
 
 	}
+	//UpdateWidget(DeltaTime);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
@@ -164,6 +173,22 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
 		}
 	}
+
+	if (HPWidgetComponent_back)
+	{
+		HPWidgetComponent_back->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
+		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+		HPWidgetComponent_back->SetWidgetSpace(EWidgetSpace::World);
+		HPWidgetComponent_back->SetDrawSize(FVector2D(160.0f, 160.0f));
+
+		if (HP_Widget)
+		{
+			HPWidgetComponent_back->SetWidgetClass(HP_Widget);
+			Cast<UPlayer_HP_Widget>(HPWidgetComponent_back->GetWidget())->SetBackMat();
+			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
+			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
+		}
+	}
 	if (AmmoWidgetComponent)
 	{
 		AmmoWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
@@ -183,7 +208,7 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		//CoverWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
 		//AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 		CoverWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		CoverWidgetComponent->SetDrawSize(FVector2D(32.0f, 16.0f));
+		CoverWidgetComponent->SetDrawSize(FVector2D(64.0f, 64.0f));
 
 		if (Cover_Widget)
 		{
@@ -197,17 +222,14 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 {
 	if (HPWidgetComponent)
 	{
-		UPlayer_HP_Widget* hpw = Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget());
-		if (hpw)
-		{
-			hpw->SetPercent(stat->curHP / stat->maxHP);
-			hpw->MoveCircle(deltatime);
-		}
-	}
-
-	if (Crosshair_Widget)
-	{
-		Crosshair_Widget->UpdateCrosshair(deltatime);
+		float yaw = GetControlRotation().Yaw;// * 0.3f;
+		FRotator widrot = HPWidgetComponent->GetRelativeRotation();
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
+		//widrot.Yaw *= 0.3f;
+		widrot.Yaw = (yaw + 180);// * 0.3f;//+60;
+		widrot.Yaw *= 0.3f;
+		//widrot.Yaw -= 120;
+		HPWidgetComponent->SetRelativeRotation(widrot);
 	}
 }
 
@@ -222,6 +244,23 @@ void APlayerCharacter::WidgetShow()
 	if (Crosshair_Widget)
 	{
 		Crosshair_Widget->SetWidgetVisible();
+	}
+}
+
+void APlayerCharacter::CreateDamageWidget(float value, FHitResult result)
+{
+	if (Damage_Widget)
+	{
+		/*UWidgetComponent* DWidgetComponent = NewObject<UWidgetComponent>(this);
+		DWidgetComponent->SetWidgetClass(Damage_Widget);
+		DWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+		DWidgetComponent->SetWorldLocation(result.Location);*/
+		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_Widget);
+		if (dwidget)
+		{
+			dwidget->SetDamageText(value, result);
+			dwidget->AddToViewport();
+		}
 	}
 }
 

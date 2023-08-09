@@ -6,8 +6,9 @@
 #include "StatComponent.h"
 #include "PlayerStatComponent.generated.h"
 
-DECLARE_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
-DECLARE_DELEGATE(FOnVisibleHPUIDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
+//DECLARE_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
+DECLARE_MULTICAST_DELEGATE(FOnVisibleHPUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAttackedUIDelegate);
 
 /**
@@ -29,6 +30,8 @@ protected:
 public:
 	void SetHP(float p_HP) override;
 	void Attacked(float p_damage) override;
+
+	UFUNCTION(BlueprintCallable)
 	void Attacked(float p_damage, class ABaseCharacter* character) override;
 
 public:

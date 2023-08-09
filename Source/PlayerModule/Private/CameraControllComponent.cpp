@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "WeaponComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "BaseCharacterMovementComponent.h"
 #include "BaseInputComponent.h"
 
 // Sets default values for this component's properties
@@ -42,7 +43,9 @@ void UCameraControllComponent::BeginPlay()
 	m_FollowCamera = owner->FindComponentByClass<UCameraComponent>();
 	m_FollowSpringArm = owner->FindComponentByClass<USpringArmComponent>();
 	m_FollowSpringArm->SocketOffset = m_Data->camerapos;
-	m_FollowSpringArm->SetRelativeLocation(owner->GetMesh()->GetBoneLocation(TEXT("spine_01"), EBoneSpaces::ComponentSpace));
+	m_FollowSpringArm->SetRelativeLocation(FVector(0.0, 0.0, owner->GetDefaultHalfHeight() * 1.5));
+	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+
 }
 
 
@@ -52,6 +55,11 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	FVector tempCamerapos = m_Data->camerapos;
+
+	if (m_Cover && m_Cover->IsCover()) {
+		tempCamerapos = m_Data->camerapos_Cover;
+	}
+
 	FRotator tempCameraRot = FRotator(0, 0, 0);
 	tempCamerapos.Z -= owner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 
@@ -63,6 +71,10 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	else {
 		m_Data->TargetArmLenght = m_Data->IdleArmLength;
 	}
+	if (m_Movement->isRuning()) {
+		tempCamerapos += m_Data->camerapos_Runing;
+	}
+
 	if (m_Cover && m_Cover->isPeeking()) {
 		EPeekingState peekstate = m_Cover->getPeekingState();
 		if (peekstate == EPeekingState::FrontRightStart) {
@@ -114,21 +126,9 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		}
 	}
 
-
-
-
-	for (auto& item : m_Data->camerplusvectors)
-	{
-		tempCamerapos += item.Value;
-	}
-
 	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(m_FollowSpringArm->SocketOffset, tempCamerapos, DeltaTime, m_Data->m_PosSpeed);
 	m_FollowCamera->SetRelativeRotation(FMath::RInterpTo(m_FollowCamera->GetRelativeRotation(), tempCameraRot, DeltaTime, m_Data->m_RotSpeed));
 	m_FollowSpringArm->TargetArmLength = FMath::FInterpTo(m_FollowSpringArm->TargetArmLength, m_Data->TargetArmLenght, DeltaTime, m_Data->m_LengthSpeed);
-	//m_FollowSpringArm->SocketOffset = tempCamerapos;
-	//m_FollowCamera->SetRelativeRotation(tempCameraRot);
-	//m_FollowSpringArm->TargetArmLength = TargetArmLenght;
-
 }
 
 
