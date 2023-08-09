@@ -23,8 +23,12 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+		class ACharacter* owner;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UBaseInputComponent* m_Input;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+		class UBaseCharacterMovementComponent* m_Movement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		float mMoveSpeed;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)

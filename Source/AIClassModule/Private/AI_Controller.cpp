@@ -74,8 +74,6 @@ void AAI_Controller::BeginPlay()
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
 
-	movementComponent = GetPawn()->FindComponentByClass<UAICharacterMoveComponent>();
-
 	GetWorldTimerManager().ClearTimer(timer);
 	GetWorldTimerManager().SetTimer(timer, this, &AAI_Controller::SetUseCover, 0.6, true, 0.0f);
 }
@@ -220,14 +218,14 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}*/
-	if (!Blackboard->GetValueAsObject("Target"))
+	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
 		//DistanceToPlayer = 0.0f;
-		if (movementComponent)
+		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
 		{
 			if (em_normal == false)
 			{
-				movementComponent->e_move = EMove::Normal;
+				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
 				em_normal = true;
 			}
 			
