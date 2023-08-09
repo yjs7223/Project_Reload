@@ -25,6 +25,14 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "AI_HP_Widget.h"
 
+#include "AIPatrolComponent.h"
+#include "AISensingComponent.h"
+#include "AIWeaponComponent.h"
+#include "AIInputComponent.h"
+#include "CoverComponent.h"
+#include "AIStatComponent.h"
+#include "AICharacterMoveComponent.h"
+
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	AIMovement = CreateDefaultSubobject<UAICharacterMoveComponent>(TEXT("AIMovement"));
@@ -101,6 +109,19 @@ void AAICharacter::BeginPlay()
 	InitWidget();
 
 	SetDataTable("Rifle_E");
+
+	// ���� ��Ȱ��ȭ
+	SetActorHiddenInGame(true);
+	SetActorTickEnabled(false);
+
+	// ������Ʈ ��Ȱ��ȭ
+	AIPatrol->SetComponentTickEnabled(false);
+	AISensing->SetComponentTickEnabled(false);
+	AIMovement->SetComponentTickEnabled(false);
+	AIWeapon->SetComponentTickEnabled(false);
+	AIStat->SetComponentTickEnabled(false);
+	m_InputComponent->SetComponentTickEnabled(false);
+	m_CoverComponent->SetComponentTickEnabled(false);
 }
 
 void AAICharacter::Tick(float DeltaTime)

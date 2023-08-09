@@ -29,6 +29,7 @@
 #include "Components/WidgetComponent.h"
 #include "PlayerMoveComponent.h"
 #include "CoverComponent.h"
+#include "EmptyShellSpawnable.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -89,6 +90,19 @@ void UPlayerWeaponComponent::BeginPlay()
 	
 	// ...
 	//PlayerWeaponData.row
+}
+
+void UPlayerWeaponComponent::BeginDestroy()
+{
+	OnChangedCrossHairAmmoDelegate.Unbind();
+	OnChangedCrossHairHitDelegate.Unbind();
+	OnChangedCrossHairDieDelegate.Unbind();
+	OnVisibleCrossHairUIDelegate.Unbind();
+	OnVisibleAmmoUIDelegate.Unbind();
+	OnChangedAmmoUIDelegate.Unbind();
+	OnPlayReloadUIDelegate.Unbind();
+
+	Super::BeginDestroy();
 }
 
 
@@ -212,25 +226,27 @@ void UPlayerWeaponComponent::Fire()
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	//CameraHit
-	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
-		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
+		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		end = m_rot.Vector() * 99999;
+		FVector dis = start - m_result.Location;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
+		end = m_rot.Vector() * 1000000.0f;
 
 		//WeaponHit
-		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
 		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
-			end = m_rot.Vector() * 99999;
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
+			end = m_rot.Vector() * 99999;
 			SpawnDecal(m_result);
 		}
 		else
@@ -241,32 +257,33 @@ void UPlayerWeaponComponent::Fire()
 	}
 	else
 	{
+		m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
 
 		//WeaponHit
-		start = WeaponMesh->GetSocketLocation(TEXT("SilencerMuzzleFlashSocket"));
+		//start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+		//end = cameraRotation.Vector() * 999999.0f;
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
-		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
-			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
+		//if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
+		//{
+		//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
+		//	//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-			end = m_rot.Vector() * 99999;
-			SpawnDecal(m_result);
-		}
-		else
-		{
-			//NonHit
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
-		}
+		//	m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+		//	SpawnDecal(m_result);
+		//}
+		//else
+		//{
+		//	//NonHit
+		//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
+		//	m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
+		//}
 	}
-	//UGameplayStatics::
 
 	
 	if (CheckActorTag(m_result.GetActor(), TEXT("Enemy")))
 	{
+		
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
@@ -279,7 +296,6 @@ void UPlayerWeaponComponent::Fire()
 				{
 					damageVlaue = CalcDamage(m_result, H_damage);
 					MyStat->Attacked(damageVlaue, m_result);
-
 					headhit = true;
 				}
 				else
@@ -287,8 +303,13 @@ void UPlayerWeaponComponent::Fire()
 					damageVlaue = CalcDamage(m_result, damage);
 					MyStat->Attacked(damageVlaue, m_result);
 				}
-				owner->CreateDamageWidget(damageVlaue, m_result);
-				OnChangedCrossHairDieDelegate.ExecuteIfBound();
+
+				if (isHit)
+				{
+					owner->CreateDamageWidget(damageVlaue, m_result);
+					MyStat->hitNormal = m_result.ImpactNormal;
+					OnChangedCrossHairDieDelegate.ExecuteIfBound();
+				}
 			}
 		}
 	}
@@ -332,9 +353,13 @@ void UPlayerWeaponComponent::Fire()
 	{
 		m_firecount += 1;
 	}
+
+
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	StartRecoil();
+
+	IEmptyShellSpawnable::Execute_EmptyShellSpawn((WeaponMesh->GetAnimInstance()));
 
 	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 	{
@@ -792,10 +817,21 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 	}
 
 	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(result.Location, GetOwner()->GetActorLocation());
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, m_rot.ToString());
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.BoneName.ToString());
 	m_rot.Pitch -= 90.0f;
-	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
-
+	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+	if (!result.BoneName.IsNone())
+	{
+		USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+		if (mesh)
+		{
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+		}
+	}
+	else
+	{
+		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+	}
 	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location);//, m_rot);
 }
 

@@ -151,6 +151,7 @@ void UAIWeaponComponent::ShotAI()
 					+ deviation;
 
 				temp->Attacked(dmg, GetOwner<ABaseCharacter>());
+				temp->hitNormal = m_result.ImpactNormal;
 			}
 		}
 
@@ -298,7 +299,7 @@ void UAIWeaponComponent::CheckTrace()
 	if (commander->Now_suben == nullptr) return;
 	if (commander->Now_suben->spawn == nullptr) return;
 	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
-	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
+	//if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	FCollisionQueryParams collisionParams;
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
@@ -307,12 +308,12 @@ void UAIWeaponComponent::CheckTrace()
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CheckTrace()"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CheckTrace()"));
 			GetWorld()->DestroyActor(result.GetActor());
 		}
 	}
 
-	//DrawDebugLine(GetWorld(), start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
+	DrawDebugLine(GetWorld(), start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
 }
 
 void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)

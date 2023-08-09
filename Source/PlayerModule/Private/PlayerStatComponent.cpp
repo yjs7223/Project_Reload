@@ -16,8 +16,8 @@ void UPlayerStatComponent::BeginPlay()
 
 void UPlayerStatComponent::BeginDestroy()
 {
-	OnVisibleHPUIDelegate.Unbind();
-	OnChangedHealthDelegate.Unbind();
+	OnVisibleHPUIDelegate.Clear();
+	OnChangedHealthDelegate.Clear();
 
 
 
@@ -28,15 +28,16 @@ void UPlayerStatComponent::SetHP(float p_HP)
 {
 	Super::SetHP(p_HP);
 
-	OnChangedHealthDelegate.ExecuteIfBound(curHP / maxHP);
+	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
+	//OnChangedHealthDelegate.ExecuteIfBound(curHP / maxHP);
 }
 
 void UPlayerStatComponent::Attacked(float p_damage)
 {
 	Super::Attacked(p_damage);
 
-	OnVisibleHPUIDelegate.ExecuteIfBound();
-	OnChangedHealthDelegate.ExecuteIfBound(curHP / maxHP);
+	OnVisibleHPUIDelegate.Broadcast();
+	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 	
 }
@@ -47,7 +48,7 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* character)
 
 	TargetEnemy = character;
 
-	OnVisibleHPUIDelegate.ExecuteIfBound();
-	OnChangedHealthDelegate.ExecuteIfBound(curHP / maxHP);
+	OnVisibleHPUIDelegate.Broadcast();
+	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 }

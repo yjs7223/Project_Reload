@@ -64,6 +64,9 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
 
+	HPWidgetComponent_back = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget_back"));
+	HPWidgetComponent_back->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+
 	AmmoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerAmmo_Widget"));
 	AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 
@@ -109,6 +112,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		}
 
 	}
+	//UpdateWidget(DeltaTime);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
@@ -169,6 +173,22 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
 		}
 	}
+
+	if (HPWidgetComponent_back)
+	{
+		HPWidgetComponent_back->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
+		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
+		HPWidgetComponent_back->SetWidgetSpace(EWidgetSpace::World);
+		HPWidgetComponent_back->SetDrawSize(FVector2D(160.0f, 160.0f));
+
+		if (HP_Widget)
+		{
+			HPWidgetComponent_back->SetWidgetClass(HP_Widget);
+			Cast<UPlayer_HP_Widget>(HPWidgetComponent_back->GetWidget())->SetBackMat();
+			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
+			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
+		}
+	}
 	if (AmmoWidgetComponent)
 	{
 		AmmoWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
@@ -202,17 +222,14 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 {
 	if (HPWidgetComponent)
 	{
-		UPlayer_HP_Widget* hpw = Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget());
-		if (hpw)
-		{
-			hpw->SetPercent(stat->curHP / stat->maxHP);
-			hpw->MoveCircle(deltatime);
-		}
-	}
-
-	if (Crosshair_Widget)
-	{
-		Crosshair_Widget->UpdateCrosshair(deltatime);
+		float yaw = GetControlRotation().Yaw;// * 0.3f;
+		FRotator widrot = HPWidgetComponent->GetRelativeRotation();
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
+		//widrot.Yaw *= 0.3f;
+		widrot.Yaw = (yaw + 180);// * 0.3f;//+60;
+		widrot.Yaw *= 0.3f;
+		//widrot.Yaw -= 120;
+		HPWidgetComponent->SetRelativeRotation(widrot);
 	}
 }
 
