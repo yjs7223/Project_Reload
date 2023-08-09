@@ -85,7 +85,7 @@ protected:
 
 private:
 	//
-	class UCharacterMovementComponent* m_Movement;
+	class UBaseCharacterMovementComponent* m_Movement;
 	struct FInputData* m_Inputdata;
 	class UWeaponComponent* m_Weapon;
 	class UCapsuleComponent* capsule;

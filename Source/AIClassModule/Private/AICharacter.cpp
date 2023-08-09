@@ -110,11 +110,11 @@ void AAICharacter::BeginPlay()
 
 	SetDataTable("Rifle_E");
 
-	// ¾×ÅÍ ºñÈ°¼ºÈ­
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
 	SetActorHiddenInGame(true);
 	SetActorTickEnabled(false);
 
-	// ÄÄÆ÷³ÍÆ® ºñÈ°¼ºÈ­
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È°ï¿½ï¿½È­
 	AIPatrol->SetComponentTickEnabled(false);
 	AISensing->SetComponentTickEnabled(false);
 	AIMovement->SetComponentTickEnabled(false);

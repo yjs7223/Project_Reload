@@ -45,6 +45,9 @@ public:
 		class UWidgetComponent* HPWidgetComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UWidgetComponent* HPWidgetComponent_back;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UWidgetComponent* AmmoWidgetComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

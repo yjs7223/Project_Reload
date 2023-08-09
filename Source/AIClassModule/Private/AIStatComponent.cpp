@@ -114,7 +114,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		{
 			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
 		}
-		if (AIController->commander->List_Division.Find(GetOwner()))
+		if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
 		{
 			int aikey = *AIController->commander->List_Division.Find(GetOwner());
 			AIController->commander->List_Division.Remove(GetOwner());

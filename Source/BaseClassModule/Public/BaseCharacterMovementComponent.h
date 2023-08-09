@@ -36,6 +36,7 @@ public:
 
 	virtual float GetMaxSpeed() const override;
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
 	virtual void PhysCustom(float deltaTime, int32 Iterations);

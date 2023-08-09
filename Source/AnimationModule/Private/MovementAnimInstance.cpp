@@ -6,6 +6,7 @@
 #include "PlayerMoveComponent.h"
 #include "KismetAnimationLibrary.h"
 #include "BaseInputComponent.h"
+#include "BaseCharacterMovementComponent.h"
 
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -15,22 +16,23 @@ UMovementAnimInstance::UMovementAnimInstance()
 
 void UMovementAnimInstance::NativeBeginPlay()
 {
-	m_Input = dynamic_cast<UBaseInputComponent*>(TryGetPawnOwner()->FindComponentByClass<UBaseInputComponent>());
-
+	owner = Cast<ACharacter>(TryGetPawnOwner());
+	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
+	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 }
 
 void UMovementAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
-		FVector tempVelocity = charcter->GetVelocity();
+	if (owner) {
+		FVector tempVelocity = owner->GetVelocity();
 		mMoveSpeed = tempVelocity.Length();
-		mDirection = UKismetAnimationLibrary::CalculateDirection(tempVelocity, charcter->GetActorRotation());
+		mDirection = UKismetAnimationLibrary::CalculateDirection(tempVelocity, owner->GetActorRotation());
 
 		mIsMoving = mMoveSpeed > 0;
-		mIsCrouching = charcter->bIsCrouched;
+		mIsCrouching = owner->bIsCrouched;
 	}
-	if (m_Input) {
-		mIsRuning =m_Input->getInput()->IsRuning;
+	if (m_Movement) {
+		mIsRuning = m_Movement->isRuning();
 	}
 }
 
