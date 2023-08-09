@@ -173,6 +173,7 @@ void AAICharacter::SetDataTable(FName EnemyName)
 	AIMovement->SetEnemy(EnemyName);
 	AIWeapon->SetDataTable(EnemyName);
 	AIStat->SetDataTable(EnemyName);
+	AISensing->SetDataTable(EnemyName);
 }
 
 void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -212,6 +213,20 @@ void AAICharacter::Init()
 {
 	// 액터 비활성화
 	SetActorHiddenInGame(false);
+	SetActorTickEnabled(true);
+
+	// 컴포넌트 비활성화
+	AIPatrol->SetComponentTickEnabled(true);
+	AISensing->SetComponentTickEnabled(true);
+	AIMovement->SetComponentTickEnabled(true);
+	AIWeapon->SetComponentTickEnabled(true);
+	AIStat->SetComponentTickEnabled(true);
+	m_InputComponent->SetComponentTickEnabled(true);
+	m_CoverComponent->SetComponentTickEnabled(true);
+}
+
+void AAICharacter::Dead()
+{
 	SetActorTickEnabled(true);
 
 	// 컴포넌트 비활성화
