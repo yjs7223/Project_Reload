@@ -234,9 +234,9 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 					pointSpawnCheck = true;
 					pointTime = 0;
 
-					for (auto& ai : commander->List_Division)
+					for (auto& ai : suben->AIArray)
 					{
-						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
+						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
 						if (AIController != nullptr)
 						{
 							AIController->GetBlackboardComponent()->SetValueAsObject("Target", cpyLastPoint);

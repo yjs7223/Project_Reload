@@ -299,6 +299,7 @@ void UAIWeaponComponent::CheckTrace()
 	if (commander->Now_suben == nullptr) return;
 	if (commander->Now_suben->spawn == nullptr) return;
 	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
+	if (owner->combat == CombatState::PATROL) return;
 	//if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	FCollisionQueryParams collisionParams;
