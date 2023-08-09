@@ -218,7 +218,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}*/
-	if (!Blackboard->GetValueAsObject("Target"))
+	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
 		//DistanceToPlayer = 0.0f;
 		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())

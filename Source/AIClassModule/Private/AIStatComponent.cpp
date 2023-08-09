@@ -47,8 +47,7 @@ void UAIStatComponent::BeginPlay()
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
 	//SetDataTable("Rifle_E");
-	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
-	DI_SupRange = 1 / sup_MaxRange;
+	
 	//AICommander = AAICommander::aicinstance;
 	
 	
@@ -65,9 +64,9 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		{
 			sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
 			sup_total -= sup_DecPoint;
-			if (sup_total <= 0)
+			if (sup_total <= sup_MinPoint)
 			{
-				sup_total = 0;
+				sup_total = sup_MinPoint;
 			}
 			AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
 		}
@@ -89,8 +88,8 @@ void UAIStatComponent::Attacked(float p_damage)
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
-	
-	
+	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
+	DI_SupRange = 1 / sup_MaxRange;
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
@@ -202,6 +201,7 @@ void UAIStatComponent::SetDataTable(FName EnemyName)
 		sup_Multi = SuppressionData->Sup_Multi;
 		sup_DelayTime = SuppressionData->Sup_DelayTime;
 		sup_MaxPoint = SuppressionData->Sup_MaxPoint;
+		sup_MinPoint = SuppressionData->Sup_MinPoint;
 		sup_DecPoint = SuppressionData->Sup_DecPoint;
 		sup_DecTime = SuppressionData->Sup_DecTime;
 	}

@@ -48,7 +48,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	switch (e_move)
 	{
 	case EMove::Patrol:
-		Move_Speed = 100;
+		Move_Speed = 250;
 		timeDeltaTime = 0;
 		lerpDeltaTime = 0;
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
