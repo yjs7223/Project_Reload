@@ -85,6 +85,8 @@ void AAISpawner::SpawnWave()
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		Cast<AAICharacter>(temp)->mySpawner = this;
+		Cast<AAICharacter>(temp)->Init();
+
 		commander->ListAdd(Cast<AActor>(temp));
 		sniperCount++;
 	}
@@ -99,6 +101,7 @@ void AAISpawner::SpawnWave()
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		Cast<AAICharacter>(temp)->mySpawner = this;
+		Cast<AAICharacter>(temp)->Init();
 		commander->ListAdd(Cast<AActor>(temp));
 		heavyCount++;
 	}
@@ -107,6 +110,8 @@ void AAISpawner::SpawnWave()
 		// 스폰 완료
 		spawnCheck = true;
 		rifleCount = 0;
+		sniperCount = 0;
+		heavyCount = 0;
 	}
 
 	spawn_Timer = 0;
