@@ -197,6 +197,7 @@ void UPlayerWeaponComponent::Fire()
 		StopFire();
 		return;
 	}
+	Super::Fire();
 
 	if (!ammoinfinite)
 	{
