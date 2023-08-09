@@ -10,26 +10,6 @@
 /**
  * 
  */
-UCLASS(Blueprintable)
-class ANIMATIONMODULE_API UWeaponAnimDataAsset : public UDataAsset
-{
-
-	GENERATED_BODY()
-
-public:
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming_Shooting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Reload;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	class UAimOffsetBlendSpace* AimOffset;
-};
-
-
 USTRUCT(Atomic, BlueprintType)
 struct FWeaponAnimation : public FTableRowBase 
 {
@@ -41,6 +21,8 @@ public:
 		UAnimSequence* Aiming;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		UAnimSequence* Aiming_Shooting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		UAnimMontage* shooting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		UAnimSequence* Reload;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")

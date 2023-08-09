@@ -21,6 +21,8 @@ class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	DECLARE_DELEGATE(FShotting);
 public:	
 	// Sets default values for this component's properties
 	UWeaponComponent();

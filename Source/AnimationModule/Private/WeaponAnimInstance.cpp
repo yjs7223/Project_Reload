@@ -63,3 +63,8 @@ void UWeaponAnimInstance::AnimationSetting()
 
 	}
 }
+
+void UWeaponAnimInstance::PlayShootingAnimation()
+{
+	Montage_Play(m_CurrentAnimation.shooting);
+}

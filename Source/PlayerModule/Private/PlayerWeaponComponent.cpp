@@ -358,9 +358,12 @@ void UPlayerWeaponComponent::Fire()
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	StartRecoil();
-
-	IEmptyShellSpawnable::Execute_EmptyShellSpawn((WeaponMesh->GetAnimInstance()));
-
+	UAnimInstance* animinstatce = WeaponMesh->GetAnimInstance();
+	if (animinstatce->GetClass()->ImplementsInterface(UEmptyShellSpawnable::StaticClass())) {
+		IEmptyShellSpawnable::Execute_EmptyShellSpawn((animinstatce));
+	}
+	//Cast<UWeaponAnimInstance>(owner->GetMesh()->GetAnimInstance()).
+	//PlayShootingAnimation
 	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 	{
 		owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
