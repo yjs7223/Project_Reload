@@ -19,9 +19,6 @@ UAISensingComponent::UAISensingComponent()
 	{
 		AIRangeData = DataTable.Object;
 	}
-
-	// ������ ������ ��������
-	curAIRangeData = AIRangeData->FindRow<FST_Range>("Rifle_E", TEXT(""));
 }
 
 
@@ -82,23 +79,23 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 
 bool UAISensingComponent::ShotSenseRange()
 {
-	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
+	DrawCircleSector(AimBwd_Radius, AimBwd_Angle, 50);
+	DrawCircleSector(AimFwd_Radius, AimFwd_Angle, 50);
+	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
 
-	if (IsPlayerInsideFanArea(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, GetOwner()->GetActorForwardVector()))
+	if (IsPlayerInsideFanArea(AimBwd_Radius, AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
-	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
+	else if (IsPlayerInsideFanArea(AimFwd_Radius, AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
 		return true;
 	}
-	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
+	else if (IsPlayerInsideFanArea(AimSide_Radius, AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
@@ -125,7 +122,20 @@ bool UAISensingComponent::MinRangeCheck()
 
 void UAISensingComponent::DrawSense()
 {
-	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
+	DrawCircleSector(AimBwd_Radius, AimBwd_Angle, 50);
+	DrawCircleSector(AimFwd_Radius, AimFwd_Angle, 50);
+	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
+}
+
+void UAISensingComponent::SetDataTable(FName EnemyName)
+{
+	curAIRangeData = AIRangeData->FindRow<FST_Range>("Rifle_E", TEXT(""));
+
+	AimBwd_Radius = curAIRangeData->AimBwd_Radius;
+	AimFwd_Radius = curAIRangeData->AimFwd_Radius;
+	AimSide_Radius = curAIRangeData->AimSide_Radius;
+
+	AimBwd_Angle = curAIRangeData->AimBwd_Angle;
+	AimFwd_Angle = curAIRangeData->AimFwd_Angle;
+	AimSide_Angle = curAIRangeData->AimSide_Angle;
 }
