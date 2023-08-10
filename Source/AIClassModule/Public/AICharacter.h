@@ -55,9 +55,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UDataTable* DT_AIBaseStat;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharerange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float sup_sharetime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float ai_HP;
 
 
 	// Combat State
