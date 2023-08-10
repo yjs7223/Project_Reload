@@ -59,7 +59,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		{
 			timeDeltaTime = m_ChangeTime;
 		}
-		lerpDeltaTime = timeDeltaTime * 0.2;
+		lerpDeltaTime = timeDeltaTime * 0.5;
 		Move_Speed = FMath::Lerp(500, m_SpdNomal, lerpDeltaTime);
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
