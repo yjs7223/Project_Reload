@@ -56,7 +56,6 @@ public:
 		TMap<int, FVector> List_CoverPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, float> List_Suppression;
-
 	// TArray
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
@@ -141,6 +140,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AActor* redball;
 
+	class ACoverManager* covermanager;
+
 public:
 	UFUNCTION()
 		void ListSet();
@@ -178,6 +179,8 @@ public:
 		FVector OptimumPoint(FVector FinalLocation, AActor* AIactor, FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
 		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
+
+
 
 };
 
