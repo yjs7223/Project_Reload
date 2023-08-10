@@ -54,11 +54,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_ParallelTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		float m_SpdNomal;
+		float m_HitTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_SpdNormal;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_SpdAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_SpdHit;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_SpdPatrol;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_NormalMulti;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_AttackMulti;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_HitMulti;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)

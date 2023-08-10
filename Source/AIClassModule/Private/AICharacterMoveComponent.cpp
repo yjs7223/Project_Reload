@@ -13,7 +13,7 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	Move_Speed = 500.0f;
+	Move_Speed = 100.0f;
 	timeDeltaTime = 0.0;
 	lerpDeltaTime = 0.0;
 
@@ -48,7 +48,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	switch (e_move)
 	{
 	case EMove::Patrol:
-		Move_Speed = 250;
+		Move_Speed = m_SpdPatrol;
 		timeDeltaTime = 0;
 		lerpDeltaTime = 0;
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
@@ -59,8 +59,8 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		{
 			timeDeltaTime = m_ChangeTime;
 		}
-		lerpDeltaTime = timeDeltaTime * 0.5;
-		Move_Speed = FMath::Lerp(500, m_SpdNomal, lerpDeltaTime);
+		lerpDeltaTime = timeDeltaTime * m_NormalMulti;
+		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdNormal, lerpDeltaTime);
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
 	case EMove::Attack:
@@ -69,8 +69,8 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		{
 			timeDeltaTime = m_ParallelTime;
 		}
-		lerpDeltaTime = timeDeltaTime * 2;
-		Move_Speed = FMath::Lerp(100, m_SpdAttack, lerpDeltaTime);
+		lerpDeltaTime = timeDeltaTime * m_AttackMulti;
+		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdAttack, lerpDeltaTime);
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
 	case EMove::Hit:
@@ -85,8 +85,8 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		{
 			timeDeltaTime = m_ParallelTime;
 		}
-		lerpDeltaTime = timeDeltaTime * 2;
-		Move_Speed = FMath::Lerp(100, m_SpdHit, lerpDeltaTime);
+		lerpDeltaTime = timeDeltaTime * m_HitMulti;
+		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdHit, lerpDeltaTime);
 		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
 	}
@@ -102,9 +102,14 @@ void UAICharacterMoveComponent::SetEnemy(FName EnemyName)
 
 		m_ChangeTime = MoveData->Move_ChangeTime;
 		m_ParallelTime = MoveData->Move_ParallelTime;
-		m_SpdNomal = MoveData->Spd_Normal;
+		m_HitTime = MoveData->Move_HitTime;
+		m_SpdNormal = MoveData->Spd_Normal;
 		m_SpdAttack = MoveData->Spd_Attack;
 		m_SpdHit = MoveData->Spd_Hit;
+		m_SpdPatrol = MoveData->Spd_Patrol;
+		m_NormalMulti = MoveData->Multi_NormalTime;
+		m_AttackMulti = MoveData->Multi_AttackTime;
+		m_HitMulti = MoveData->Multi_HitTime;
 	}
 }
 
