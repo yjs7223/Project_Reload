@@ -8,6 +8,25 @@
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
 #include "GameFramework/Character.h"
+#include "TimerManager.h"
+#include "AICharacter.h"
+#include "UObject/ConstructorHelpers.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Engine/DataTable.h"
+#include "StatComponent.h"
+#include "ST_AIShot.h"
+#include <Kismet/GameplayStatics.h>
+#include "ST_Spawn.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "AICommander.h"
+#include "SubEncounterSpace.h"
+#include "AISpawner.h"
+#include "HitImapactDataAsset.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AI_Controller.h"
+#include "AIWeaponDataAsset.h"
+#include "Engine/EngineTypes.h"
 
 UAISensingComponent::UAISensingComponent()
 {
@@ -25,8 +44,6 @@ UAISensingComponent::UAISensingComponent()
 void UAISensingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }	
 
 
@@ -34,6 +51,7 @@ void UAISensingComponent::BeginPlay()
 void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 	ShotSenseRange();
 }
 

@@ -25,6 +25,8 @@ public:
 	float AimBwd_Angle;
 	float AimSide_Angle;
 
+	FTimerHandle sensingTimer;
+
 protected:
 	virtual void BeginPlay() override;
 
