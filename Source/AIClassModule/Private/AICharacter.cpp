@@ -11,6 +11,7 @@
 #include "AIPatrolComponent.h"
 #include "ST_Range.h"
 #include "ST_Suppression.h"
+#include "ST_AIBaseStat.h"
 #include "Animation/AnimInstance.h"
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector2D.h"
@@ -24,7 +25,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AI_HP_Widget.h"
-
+#include "BehaviorTree/BlackboardComponent.h"
 #include "AIPatrolComponent.h"
 #include "AISensingComponent.h"
 #include "AIWeaponComponent.h"
@@ -69,6 +70,12 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
+	if (DT_AIBaseStatDataObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
+		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
+	}
 
 	ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_GrenadeDummy.BP_GrenadeDummy'"));
 	if (GrenadeData.Succeeded())
@@ -100,9 +107,23 @@ void AAICharacter::BeginPlay()
 
 	mesh = FindComponentByClass<USkeletalMeshComponent>();
 
+	switch (type)
+	{
+	case Enemy_Name::RIFLE:
+		SetDataTable("Rifle_E");
+		break;
+	case Enemy_Name::HEAVY:
+		SetDataTable("Heavy_E");
+		break;
+	case Enemy_Name::SNIPER:
+		SetDataTable("Sniper_E");
+		break;
+	}
+
 	if (AIStat)
 	{
-		AIStat->SetHP(200.0f); ////
+		AIStat->SetHP(ai_HP); ////
+		Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", AIStat->maxHP);
 	}
 	if (!player)
 	{
@@ -116,18 +137,7 @@ void AAICharacter::BeginPlay()
 
 	InitWidget();
 
-	switch (type)
-	{
-	case Enemy_Name::RIFLE:
-		SetDataTable("Rifle_E");
-		break;
-	case Enemy_Name::HEAVY:
-		SetDataTable("Heavy_E");
-		break;
-	case Enemy_Name::SNIPER:
-		SetDataTable("Sniper_E");
-		break;
-	}
+	
 
 	SetActorHiddenInGame(true);
 	SetActorTickEnabled(false);
@@ -180,6 +190,10 @@ void AAICharacter::UpdateWidget()
 
 void AAICharacter::SetDataTable(FName EnemyName)
 {
+	AIMovement->SetEnemy(EnemyName);
+	AIWeapon->SetDataTable(EnemyName);
+	AIStat->SetDataTable(EnemyName);
+	AISensing->SetDataTable(EnemyName);
 	FST_Range* RangeData = DT_Range->FindRow<FST_Range>(EnemyName, FString(""));
 	if (RangeData)
 	{
@@ -198,10 +212,15 @@ void AAICharacter::SetDataTable(FName EnemyName)
 		sup_sharetime = SuppressionData->Sup_ShareTime;
 	}
 
-	AIMovement->SetEnemy(EnemyName);
-	AIWeapon->SetDataTable(EnemyName);
-	AIStat->SetDataTable(EnemyName);
-	AISensing->SetDataTable(EnemyName);
+	FST_AIBaseStat* AIBaseStatData = DT_AIBaseStat->FindRow<FST_AIBaseStat>(EnemyName, FString(""));
+	if (AIBaseStatData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+
+		ai_HP = AIBaseStatData->AI_HP;
+	}
+
+	
 }
 
 void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
