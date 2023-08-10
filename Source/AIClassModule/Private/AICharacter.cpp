@@ -258,11 +258,9 @@ void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
 
 void AAICharacter::Init()
 {
-	// ���� ��Ȱ��ȭ
 	SetActorHiddenInGame(false);
 	SetActorTickEnabled(true);
 
-	// ������Ʈ ��Ȱ��ȭ
 	AIPatrol->SetComponentTickEnabled(true);
 	AISensing->SetComponentTickEnabled(true);
 	AIMovement->SetComponentTickEnabled(true);
@@ -274,16 +272,21 @@ void AAICharacter::Init()
 
 void AAICharacter::Dead()
 {
-	SetActorTickEnabled(true);
+	SetActorTickEnabled(false);
 
-	// ������Ʈ ��Ȱ��ȭ
-	AIPatrol->SetComponentTickEnabled(true);
-	AISensing->SetComponentTickEnabled(true);
-	AIMovement->SetComponentTickEnabled(true);
-	AIWeapon->SetComponentTickEnabled(true);
-	AIStat->SetComponentTickEnabled(true);
-	m_InputComponent->SetComponentTickEnabled(true);
-	m_CoverComponent->SetComponentTickEnabled(true);
+	AIPatrol->SetComponentTickEnabled(false);
+
+	AISensing->SetComponentTickEnabled(false);
+	AISensing->GetOwner()->GetWorldTimerManager().ClearTimer(AISensing->sensingTimer);
+
+	AIMovement->SetComponentTickEnabled(false);
+
+	AIWeapon->SetComponentTickEnabled(false);
+	AIWeapon->GetOwner()->GetWorldTimerManager().ClearTimer(AIWeapon->timer);
+
+	AIStat->SetComponentTickEnabled(false);
+	m_InputComponent->SetComponentTickEnabled(false);
+	m_CoverComponent->SetComponentTickEnabled(false);
 }
 
 

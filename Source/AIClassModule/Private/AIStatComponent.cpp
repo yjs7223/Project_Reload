@@ -58,7 +58,6 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Time += DeltaTime;
-
 	if (Time >= sup_DecTime)
 	{
 		if (AIController && AIController->GetBlackboardComponent())
@@ -104,6 +103,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	{
 		curHP = 0.0f;
 		isDie = true;
+		Cast<AAICharacter>(GetOwner())->Dead();
 		if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
 		{
 			Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
