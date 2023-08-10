@@ -54,8 +54,6 @@ public:
 	class USkeletalMeshComponent* playerMesh;
 
 	FTimerHandle timer;
-
-	class UAICharacterMoveComponent* movementComponent;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);

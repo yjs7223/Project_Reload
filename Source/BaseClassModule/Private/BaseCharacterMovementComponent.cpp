@@ -2,6 +2,7 @@
 
 
 #include "BaseCharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 bool UBaseCharacterMovementComponent::isRuning() const
 {
@@ -22,6 +23,15 @@ bool UBaseCharacterMovementComponent::CheckFall(const FFindFloorResult& OldFloor
 
 float UBaseCharacterMovementComponent::GetMaxSpeed() const
 {
+	switch (MovementMode)
+	{
+	case MOVE_NavWalking:
+		return MaxRuningSpeed;
+		break;
+	default:
+		break;
+	}
+
 	switch (CustomMovementMode)
 	{
 	case CMOVE_Runing:
@@ -31,6 +41,17 @@ float UBaseCharacterMovementComponent::GetMaxSpeed() const
 		break;
 	}
 	return Super::GetMaxSpeed();
+}
+
+void UBaseCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (MovementMode != MOVE_Custom) {
+		UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("EMovementMode"), true)->GetNameStringByValue(MovementMode), true, true, FColor::Red, DeltaTime);
+	}
+	else{
+		UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("ECustomMovementMode"), true)->GetNameStringByValue(CustomMovementMode), true, true, FColor::Red, DeltaTime);
+	}
 }
 
 void UBaseCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)

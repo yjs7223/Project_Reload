@@ -29,6 +29,7 @@
 #include "Components/WidgetComponent.h"
 #include "PlayerMoveComponent.h"
 #include "CoverComponent.h"
+#include "EmptyShellSpawnable.h"
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -283,7 +284,7 @@ void UPlayerWeaponComponent::Fire()
 	if (CheckActorTag(m_result.GetActor(), TEXT("Enemy")))
 	{
 		
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
 		{
@@ -352,9 +353,13 @@ void UPlayerWeaponComponent::Fire()
 	{
 		m_firecount += 1;
 	}
+
+
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	StartRecoil();
+
+	IEmptyShellSpawnable::Execute_EmptyShellSpawn((WeaponMesh->GetAnimInstance()));
 
 	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 	{

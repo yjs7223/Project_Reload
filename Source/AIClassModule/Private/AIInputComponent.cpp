@@ -6,6 +6,7 @@
 #include "CoverComponent.h"
 #include "AIWeaponComponent.h"
 #include "AICharacterMoveComponent.h"
+#include "BaseCharacterMovementComponent.h"
 
 void UAIInputComponent::BeginPlay()
 {
@@ -26,12 +27,14 @@ void UAIInputComponent::AIMoveRight(float Value)
 
 void UAIInputComponent::AIRuning()
 {
-	m_inputData.IsRuning = true;
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 }
 
 void UAIInputComponent::AIStopRuning()
 {
-	m_inputData.IsRuning = false;
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Walking);
 }
 
 void UAIInputComponent::AICrouching()

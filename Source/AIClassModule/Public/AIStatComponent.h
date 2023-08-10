@@ -75,6 +75,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_MaxPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float sup_MinPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_middlePoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_DecPoint;

@@ -62,7 +62,15 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Range = DT_RangeDataObject.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_Grenade.BP_Grenade'"));
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
+	if (DT_SuppressionDataObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
+		DT_Suppression = DT_SuppressionDataObject.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_GrenadeDummy.BP_GrenadeDummy'"));
 	if (GrenadeData.Succeeded())
 	{
 		GrenadeBlueprint = (UClass*)GrenadeData.Object->GeneratedClass;
@@ -108,13 +116,22 @@ void AAICharacter::BeginPlay()
 
 	InitWidget();
 
-	SetDataTable("Rifle_E");
+	switch (type)
+	{
+	case Enemy_Name::RIFLE:
+		SetDataTable("Rifle_E");
+		break;
+	case Enemy_Name::HEAVY:
+		SetDataTable("Heavy_E");
+		break;
+	case Enemy_Name::SNIPER:
+		SetDataTable("Sniper_E");
+		break;
+	}
 
-	// ���� ��Ȱ��ȭ
 	SetActorHiddenInGame(true);
 	SetActorTickEnabled(false);
 
-	// ������Ʈ ��Ȱ��ȭ
 	AIPatrol->SetComponentTickEnabled(false);
 	AISensing->SetComponentTickEnabled(false);
 	AIMovement->SetComponentTickEnabled(false);
@@ -172,9 +189,19 @@ void AAICharacter::SetDataTable(FName EnemyName)
 		sup_HitHeight = RangeData->Sup_HitHeight;
 	}
 
+	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
+	if (SuppressionData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
+
+		sup_sharerange = SuppressionData->Sup_ShareRange;
+		sup_sharetime = SuppressionData->Sup_ShareTime;
+	}
+
 	AIMovement->SetEnemy(EnemyName);
 	AIWeapon->SetDataTable(EnemyName);
 	AIStat->SetDataTable(EnemyName);
+	AISensing->SetDataTable(EnemyName);
 }
 
 void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -208,6 +235,36 @@ void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
 		GetWorld()->SpawnActor<AActor>(GrenadeBlueprint, myai->GetActorLocation(), rotator);
 	}
 
+}
+
+void AAICharacter::Init()
+{
+	// ���� ��Ȱ��ȭ
+	SetActorHiddenInGame(false);
+	SetActorTickEnabled(true);
+
+	// ������Ʈ ��Ȱ��ȭ
+	AIPatrol->SetComponentTickEnabled(true);
+	AISensing->SetComponentTickEnabled(true);
+	AIMovement->SetComponentTickEnabled(true);
+	AIWeapon->SetComponentTickEnabled(true);
+	AIStat->SetComponentTickEnabled(true);
+	m_InputComponent->SetComponentTickEnabled(true);
+	m_CoverComponent->SetComponentTickEnabled(true);
+}
+
+void AAICharacter::Dead()
+{
+	SetActorTickEnabled(true);
+
+	// ������Ʈ ��Ȱ��ȭ
+	AIPatrol->SetComponentTickEnabled(true);
+	AISensing->SetComponentTickEnabled(true);
+	AIMovement->SetComponentTickEnabled(true);
+	AIWeapon->SetComponentTickEnabled(true);
+	AIStat->SetComponentTickEnabled(true);
+	m_InputComponent->SetComponentTickEnabled(true);
+	m_CoverComponent->SetComponentTickEnabled(true);
 }
 
 

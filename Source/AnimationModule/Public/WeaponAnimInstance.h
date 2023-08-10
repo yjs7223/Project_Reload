@@ -29,7 +29,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 		class UWeaponComponent* mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		class UPlayerMoveComponent* mPlayerMove;
+	class UBaseCharacterMovementComponent* m_Movement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		float mAimYaw;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
