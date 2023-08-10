@@ -46,6 +46,7 @@ void UAIStatComponent::BeginPlay()
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+	
 	//SetDataTable("Rifle_E");
 	
 	//AICommander = AAICommander::aicinstance;
