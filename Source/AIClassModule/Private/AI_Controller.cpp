@@ -235,15 +235,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
-FRotator AAI_Controller::GetControlRotation() const
-{
-	if (GetPawn() == nullptr)
-	{
-		return FRotator(0.f, 0.f, 0.f);
-	}
-
-	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
-}
+//FRotator AAI_Controller::GetControlRotation() const
+//{
+//	if (GetPawn() == nullptr)
+//	{
+//		return FRotator(0.f, 0.f, 0.f);
+//	}
+//
+//	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
+//}
 
 //void AAI_Controller::SetEnemy(FName EnemyName)
 //{
