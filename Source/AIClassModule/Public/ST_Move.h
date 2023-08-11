@@ -21,6 +21,16 @@ public:
 		float Spd_Attack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMoveDataBase)
 		float Spd_Hit;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMoveDataBase)
+		float Spd_Patrol;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMoveDataBase)
+		float Move_HitTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMoveDataBase)
+		float Multi_NormalTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMoveDataBase)
+		float Multi_AttackTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMoveDataBase)
+		float Multi_HitTime;
 };
 
 UCLASS()

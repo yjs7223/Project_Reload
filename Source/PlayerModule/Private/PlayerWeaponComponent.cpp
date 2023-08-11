@@ -31,6 +31,7 @@
 #include "CoverComponent.h"
 #include "CharacterSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "EmptyShellSpawnable.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -197,6 +198,7 @@ void UPlayerWeaponComponent::Fire()
 		StopFire();
 		return;
 	}
+	Super::Fire();
 
 	if (isReload)
 	{
@@ -290,7 +292,7 @@ void UPlayerWeaponComponent::Fire()
 	if (CheckActorTag(m_result.GetActor(), TEXT("Enemy")))
 	{
 		
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
 		{
@@ -359,10 +361,17 @@ void UPlayerWeaponComponent::Fire()
 	{
 		m_firecount += 1;
 	}
+
+
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	StartRecoil();
-
+	UAnimInstance* animinstatce = WeaponMesh->GetAnimInstance();
+	if (animinstatce->GetClass()->ImplementsInterface(UEmptyShellSpawnable::StaticClass())) {
+		IEmptyShellSpawnable::Execute_EmptyShellSpawn((animinstatce));
+	}
+	//Cast<UWeaponAnimInstance>(owner->GetMesh()->GetAnimInstance()).
+	//PlayShootingAnimation
 	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 	{
 		owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();

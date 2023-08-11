@@ -64,6 +64,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isThreat;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	FVector hitNormal;
 
 protected:

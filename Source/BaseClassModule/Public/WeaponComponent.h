@@ -21,6 +21,10 @@ class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	DECLARE_MULTICAST_DELEGATE(FPlayShottingAinmationDelegate);
+public:
+	FPlayShottingAinmationDelegate shootingAnimation;
 public:	
 	// Sets default values for this component's properties
 	UWeaponComponent();
