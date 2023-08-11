@@ -74,8 +74,6 @@ void AAI_Controller::BeginPlay()
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
 
-	movementComponent = GetPawn()->FindComponentByClass<UAICharacterMoveComponent>();
-
 	GetWorldTimerManager().ClearTimer(timer);
 	GetWorldTimerManager().SetTimer(timer, this, &AAI_Controller::SetUseCover, 0.6, true, 0.0f);
 }
@@ -171,34 +169,38 @@ void AAI_Controller::SetUseCover()
 	if (GetBlackboardComponent()->GetValueAsBool("AI_Active"))
 	{
 		FCollisionQueryParams collisionParams;
-		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("pelvis"));
+		FVector start = GetPawn()->GetActorLocation() - FVector(0, 0, 50);
 
 		collisionParams.AddIgnoredActor(GetPawn());
 
 		FVector playerLocation = playerMesh->GetSocketLocation(TEXT("head"));
-		
+			
+
 		if (GetPawn()->GetDistanceTo(player) <= 500)
 		{
 			GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("false"));
 		}
 		else if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{
-				//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("false"));
 			}
 			else
 			{
-				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 100.0f)
+				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 250.0f)
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
-					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
+					DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
 				}
 				else
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
+					DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				}
 			}
 		}
@@ -220,14 +222,14 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}*/
-	if (!Blackboard->GetValueAsObject("Target"))
+	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
 		//DistanceToPlayer = 0.0f;
-		if (movementComponent)
+		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
 		{
 			if (em_normal == false)
 			{
-				movementComponent->e_move = EMove::Normal;
+				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
 				em_normal = true;
 			}
 			
@@ -237,15 +239,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
-FRotator AAI_Controller::GetControlRotation() const
-{
-	if (GetPawn() == nullptr)
-	{
-		return FRotator(0.f, 0.f, 0.f);
-	}
-
-	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
-}
+//FRotator AAI_Controller::GetControlRotation() const
+//{
+//	if (GetPawn() == nullptr)
+//	{
+//		return FRotator(0.f, 0.f, 0.f);
+//	}
+//
+//	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
+//}
 
 //void AAI_Controller::SetEnemy(FName EnemyName)
 //{

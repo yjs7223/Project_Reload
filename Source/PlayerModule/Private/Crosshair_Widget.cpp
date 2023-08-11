@@ -12,7 +12,7 @@
 #include "Animation/WidgetAnimation.h"
 #include "Kismet/GameplayStatics.h"
 #include "StatComponent.h"
-
+#include "CharacterSoundDataAsset.h"
 
 UCrosshair_Widget::UCrosshair_Widget(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
@@ -89,6 +89,7 @@ void UCrosshair_Widget::NativeConstruct()
 			MyWeaponComp->OnChangedCrossHairDieDelegate.BindUObject(this, &UCrosshair_Widget::CheckDie);
 			MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 			MyWeaponComp->OnPlayReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::PlayReloadAnim);
+			MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 		}
 	}
 
@@ -213,12 +214,16 @@ void UCrosshair_Widget::MoveDot()
 
 void UCrosshair_Widget::CheckDie()
 {
+
+	APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn());
+
 	if (weapon->isHit)
 	{
 		if (weapon->headhit)
 		{
 			weapon->isHit = false;
 			weapon->headhit = false;
+			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
 			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
 			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
 			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
@@ -227,6 +232,7 @@ void UCrosshair_Widget::CheckDie()
 		else
 		{
 			weapon->isHit = false;
+			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
 			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
 			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
 			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
@@ -254,6 +260,7 @@ void UCrosshair_Widget::CheckDie()
 	{
 		if (stat->isDie)
 		{
+			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
 			//stat->isDie = false;
 			Kill_Overlay->SetRenderOpacity(1.0f);
 			GetWorld()->GetTimerManager().ClearTimer(KillTimer);

@@ -109,7 +109,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UWeaponDataAsset* PistolDataAssets;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* ShotgunDataAssets;
+		class UWeaponDataAsset* WeaponDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UHitImapactDataAsset* HitImpactDataAsset;

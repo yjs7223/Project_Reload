@@ -94,6 +94,7 @@ private:
 	class AActor* m_CoverWall;
 	class UPathFollowingComponent* m_PathFollowingComp;
 	enum class ECoverShootingState mCoverShootingState;
+	UPROPERTY(VisibleInstanceOnly, meta = (AllowPrivateAccess = true))
 	EPeekingState mPeekingState;
 public :
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)

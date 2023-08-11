@@ -36,6 +36,7 @@
 #include "AIWeaponComponent.h"
 #include "AIInputComponent.h"
 #include "CoverComponent.h"
+#include "CoverManager.h"
 
 
 // Sets default values
@@ -57,12 +58,7 @@ AAICommander::AAICommander()
 	{
 		RedBallBlueprint = (UClass*)RedBallData.Object->GeneratedClass;
 	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
-	if (DT_SuppressionDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
+
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_CommanderDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Commander.DT_Commander'"));
 	if (DT_CommanderDataObject.Succeeded())
 	{
@@ -95,26 +91,19 @@ void AAICommander::BeginPlay()
 	Super::BeginPlay();
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEncounterSpace::StaticClass(), EncounterArray);
+	
+	CoverManager = Cast<ACoverManager>
+		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverManager::StaticClass()));
+
+	
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BB_AICommander, BlackboardComp);
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
-	SetDataTable("Rifle_E");
+
 	SetCommanderDataTable("Commander");
 }
 
-void AAICommander::SetDataTable(FName EnemyName)
-{
-	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
-	if (SuppressionData)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
-
-		sup_sharerange = SuppressionData->Sup_ShareRange;
-		sup_sharetime = SuppressionData->Sup_ShareTime;
-	}
-	
-}
 
 void AAICommander::SetCommanderDataTable(FName EnemyName)
 {
@@ -203,23 +192,7 @@ void AAICommander::AIActive(AEncounterSpace* en)
 					AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 				}
 
-				// 액터 활성화
-				subai->SetActorHiddenInGame(false);
-				subai->SetActorTickEnabled(true);
-
-				// 컴포넌트 활성화
-				subai->AIPatrol->SetComponentTickEnabled(true);
-				subai->AISensing->SetComponentTickEnabled(true);
-				subai->AIMovement->SetComponentTickEnabled(true);
-				subai->AIWeapon->SetComponentTickEnabled(true);
-				subai->AIStat->SetComponentTickEnabled(true);
-				subai->m_InputComponent->SetComponentTickEnabled(true);
-				subai->m_CoverComponent->SetComponentTickEnabled(true);
-
-
-				/*	->SetVisibility();
-				subai->SetCollisionEnabled();
-				subai->SetComponentTickEnabled();*/
+				subai->Init();
 			}
 		}
 	}
@@ -344,7 +317,7 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 				AIController->commander = this;
 			}
 			List_Suppression.Add(*FindActor, AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint"));
-			if (s_time >= sup_sharetime)
+			if (s_time >= Cast<AAICharacter>(ai.Key)->sup_sharetime)
 			{
 				SuppressionShare(sub);
 
@@ -456,7 +429,7 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 		{
 			sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
 			sup_value += (Sup_Array[0] / 15)
-				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / sup_sharerange));
+				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / Cast<AAICharacter>(ac)->sup_sharerange));
 			if (sup_value >= Sup_Array[0])
 			{
 				sup_value = Sup_Array[0];

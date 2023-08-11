@@ -59,9 +59,9 @@ void UCoverComponent::BeginPlay()
 		m_PathFollowingComp->RegisterComponentWithWorld(owner->GetController()->GetWorld());
 		m_PathFollowingComp->Initialize();
 
-		m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 		m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	}
+	m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 }
 
 
@@ -611,9 +611,12 @@ bool UCoverComponent::StartCover()
 	}
 	
 	if (result.GetActor() == nullptr) return false;
+	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
+		m_CanCoverPointNormal = result.Normal;
+
+	}
 
 
-	//owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
@@ -897,7 +900,7 @@ void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 
 
 	if(!StartCover()) return;
-
+	
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
 	RotateSet(0.0f);
 }

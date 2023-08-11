@@ -71,6 +71,7 @@ void UAIWeaponComponent::BeginPlay()
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
 	use_Shot_State = true;
+	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
 
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
@@ -95,9 +96,8 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UAIWeaponComponent::ShotAI()
 {
+	//owner->bUseControllerRotationYaw = true;
 	Super::Fire();
-
-	owner->bUseControllerRotationYaw = true;
 	
 	FVector loc;
 	FRotator rot;
@@ -301,7 +301,8 @@ void UAIWeaponComponent::CheckTrace()
 	if (commander->Now_suben == nullptr) return;
 	if (commander->Now_suben->spawn == nullptr) return;
 	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
-	//if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
+	if (owner->combat == CombatState::PATROL) return;
+	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	FCollisionQueryParams collisionParams;
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
