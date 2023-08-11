@@ -11,20 +11,23 @@
  * 
  */
 USTRUCT(Atomic, BlueprintType)
-struct FWeaponAnimation : public FTableRowBase 
+struct FWeaponAnimation : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
 	bool IsVaild();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming;
+	UAnimSequence* Aiming;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming_Shooting;
+	UAnimSequence* Aiming_Shooting;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimMontage* shooting;
+	UAnimSequence* Shooting_Base;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Reload;
+	UAnimMontage* Shooting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		class UAimOffsetBlendSpace* AimOffset;
+	UAnimSequence* Reload;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	class UAimOffsetBlendSpace* AimOffset;
 };
