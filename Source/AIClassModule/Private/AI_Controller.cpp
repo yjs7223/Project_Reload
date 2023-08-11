@@ -169,7 +169,7 @@ void AAI_Controller::SetUseCover()
 	if (GetBlackboardComponent()->GetValueAsBool("AI_Active"))
 	{
 		FCollisionQueryParams collisionParams;
-		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("pelvis"));
+		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("calf_r"));
 
 		collisionParams.AddIgnoredActor(GetPawn());
 
