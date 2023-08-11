@@ -169,7 +169,7 @@ void AAI_Controller::SetUseCover()
 	if (GetBlackboardComponent()->GetValueAsBool("AI_Active"))
 	{
 		FCollisionQueryParams collisionParams;
-		FVector start = GetPawn()->GetActorLocation() - FVector(0, 0, 50);
+		FVector start = GetPawn()->GetActorLocation() - FVector(0, 0, 20);
 
 		collisionParams.AddIgnoredActor(GetPawn());
 
