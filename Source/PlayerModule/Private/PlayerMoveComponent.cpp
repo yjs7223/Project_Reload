@@ -100,7 +100,11 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 
 	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
-		m_Movement->SetMovementMode(MOVE_Walking);
+
+		if (m_Movement->isRuning()) {
+			m_Movement->SetMovementMode(MOVE_Walking);
+		}
+
 
 		return;
 	}

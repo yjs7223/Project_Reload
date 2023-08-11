@@ -602,8 +602,6 @@ bool UCoverComponent::StartCover()
 	if (result.GetActor() == nullptr) return false;
 
 
-	RotateSet(0.0f);
-
 	//owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
@@ -833,10 +831,7 @@ void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 
 
 	if(!StartCover()) return;
-	FRotator rot = UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CoverWall->GetActorLocation());
-	rot.Pitch = 0.0;
-	rot.Roll = 0.0;
-	owner->SetActorRotation(rot);
 
+	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
 	RotateSet(0.0f);
 }

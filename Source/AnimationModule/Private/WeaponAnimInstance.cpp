@@ -4,7 +4,7 @@
 #include "WeaponAnimInstance.h"
 #include "WeaponComponent.h"
 #include "BaseCharacterMovementComponent.h"
-
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
 #include "PlayerMoveComponent.h"
@@ -26,8 +26,9 @@ void UWeaponAnimInstance::NativeBeginPlay()
 	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 
 	mWeapon = owner->FindComponentByClass<UWeaponComponent>(); 
-	mWeapon->shootingAnimation.BindLambda([this]() {
-		Montage_Play(m_CurrentAnimation.shooting);
+	mWeapon->shootingAnimation.AddLambda(
+		[this]() {
+			Montage_Play(m_CurrentAnimation.Shooting);
 		}
 	);
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
@@ -47,9 +48,6 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 	if (m_Movement) {
 		mIsRuning = m_Movement->isRuning();
-	}
-	if (Montage_IsPlaying(m_CurrentAnimation.shooting)) {
-		int a = 5;
 	}
 }
 	
@@ -72,5 +70,5 @@ void UWeaponAnimInstance::AnimationSetting()
 
 void UWeaponAnimInstance::PlayShootingAnimation()
 {
-	Montage_Play(m_CurrentAnimation.shooting);
+	Montage_Play(m_CurrentAnimation.Shooting);
 }
