@@ -74,8 +74,6 @@ void AAI_Controller::BeginPlay()
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
 
-	movementComponent = GetPawn()->FindComponentByClass<UAICharacterMoveComponent>();
-
 	GetWorldTimerManager().ClearTimer(timer);
 	GetWorldTimerManager().SetTimer(timer, this, &AAI_Controller::SetUseCover, 0.6, true, 0.0f);
 }
@@ -171,7 +169,7 @@ void AAI_Controller::SetUseCover()
 	if (GetBlackboardComponent()->GetValueAsBool("AI_Active"))
 	{
 		FCollisionQueryParams collisionParams;
-		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("pelvis"));
+		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("calf_r"));
 
 		collisionParams.AddIgnoredActor(GetPawn());
 
@@ -220,14 +218,14 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}*/
-	if (!Blackboard->GetValueAsObject("Target"))
+	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
 		//DistanceToPlayer = 0.0f;
-		if (movementComponent)
+		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
 		{
 			if (em_normal == false)
 			{
-				movementComponent->e_move = EMove::Normal;
+				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
 				em_normal = true;
 			}
 			
@@ -237,15 +235,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
-FRotator AAI_Controller::GetControlRotation() const
-{
-	if (GetPawn() == nullptr)
-	{
-		return FRotator(0.f, 0.f, 0.f);
-	}
-
-	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
-}
+//FRotator AAI_Controller::GetControlRotation() const
+//{
+//	if (GetPawn() == nullptr)
+//	{
+//		return FRotator(0.f, 0.f, 0.f);
+//	}
+//
+//	return FRotator(0.f, GetPawn()->GetActorRotation().Yaw, 0.0f);
+//}
 
 //void AAI_Controller::SetEnemy(FName EnemyName)
 //{

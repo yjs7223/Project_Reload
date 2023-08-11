@@ -16,6 +16,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool sensing;
+
+	float AimFwd_Radius;
+	float AimBwd_Radius;
+	float AimSide_Radius;
+
+	float AimFwd_Angle;
+	float AimBwd_Angle;
+	float AimSide_Angle;
+
+	FTimerHandle sensingTimer;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -36,11 +47,13 @@ public:
 
 	// ��� ����
 	UFUNCTION(BlueprintCallable, Category = "Sense")
-		bool ShotSenseRange();
+		void ShotSenseRange();
 
 	// �÷��̾���� ��ġ �˻�
 	UFUNCTION(BlueprintCallable, Category = "Range")
 		bool MinRangeCheck();
 
 	void DrawSense();
+
+	void SetDataTable(FName EnemyName);
 };

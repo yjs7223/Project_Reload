@@ -93,7 +93,7 @@ void UAIInputComponent::AIStopAiming()
 void UAIInputComponent::AIStartReload()
 {
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	moveoncmp->e_move = EMove::Normal;
+	moveoncmp->e_move = EMove::Attack;
 	m_inputData.IsReload = true;
 
 }
