@@ -141,6 +141,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AActor* redball;
 
+	class ACoverManager* CoverManager;
+
 public:
 	UFUNCTION()
 		void ListSet();
