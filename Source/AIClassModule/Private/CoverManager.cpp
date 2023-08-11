@@ -36,6 +36,17 @@ bool ACoverManager::ChangeEncounter()
 
 	this->SetActorLocation(NowSub->GetActorLocation());
 	CoverSystem->SetActorLocation(NowSub->GetActorLocation());
+
+	ChangeCoverSystem();
+	//commander->RestoreArr();
 	
 	return true;
+}
+
+void ACoverManager::ChangeCoverSystem()
+{
+
+	//CoverSystem->GenerateCovers(true, false);
+	CoverSystem->custom_GenerateCovers(true, false, true,2000);
+		
 }

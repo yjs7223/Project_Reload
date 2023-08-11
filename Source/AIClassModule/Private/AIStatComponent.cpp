@@ -78,7 +78,7 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAIStatComponent::Attacked(float p_damage)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
 	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
 	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
 	sup_Input = dmg * sup_DecInput;
@@ -94,7 +94,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
-	
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
 	float total_dmg;
 	total_dmg = p_damage - (p_damage * 0.01f) * Def;
 	curHP -= total_dmg;
