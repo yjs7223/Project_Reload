@@ -36,6 +36,7 @@
 #include "AIWeaponComponent.h"
 #include "AIInputComponent.h"
 #include "CoverComponent.h"
+#include "CoverManager.h"
 
 
 // Sets default values
@@ -90,6 +91,11 @@ void AAICommander::BeginPlay()
 	Super::BeginPlay();
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEncounterSpace::StaticClass(), EncounterArray);
+	
+	CoverManager = Cast<ACoverManager>
+		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverManager::StaticClass()));
+
+	
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BB_AICommander, BlackboardComp);
 	RunBehaviorTree(btree);
