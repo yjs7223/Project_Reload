@@ -63,9 +63,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIStartReload();
 
-	UFUNCTION(BlueprintCallable, Category = "AIAnim")
-		void AIStopReload();
-
 
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 		void AIStartCover();

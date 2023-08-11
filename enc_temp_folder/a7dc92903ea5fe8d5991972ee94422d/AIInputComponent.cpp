@@ -98,11 +98,6 @@ void UAIInputComponent::AIStartReload()
 
 }
 
-void UAIInputComponent::AIStopReload()
-{
-	m_inputData.IsReload = false;
-}
-
 void UAIInputComponent::AIStartCover()
 {
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
