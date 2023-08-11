@@ -169,34 +169,38 @@ void AAI_Controller::SetUseCover()
 	if (GetBlackboardComponent()->GetValueAsBool("AI_Active"))
 	{
 		FCollisionQueryParams collisionParams;
-		FVector start = Cast<AAICharacter>(GetPawn())->mesh->GetSocketLocation(TEXT("calf_r"));
+		FVector start = GetPawn()->GetActorLocation() - FVector(0, 0, 50);
 
 		collisionParams.AddIgnoredActor(GetPawn());
 
 		FVector playerLocation = playerMesh->GetSocketLocation(TEXT("head"));
-		
+			
+
 		if (GetPawn()->GetDistanceTo(player) <= 500)
 		{
 			GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("false"));
 		}
 		else if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{
-				//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("false"));
 			}
 			else
 			{
-				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 100.0f)
+				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 250.0f)
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
-					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
+					DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
 				}
 				else
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
+					DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 				}
 			}
 		}

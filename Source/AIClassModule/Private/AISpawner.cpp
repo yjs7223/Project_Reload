@@ -232,7 +232,9 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 					SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 					// Spawn
-					cpyLastPoint = GetWorld()->SpawnActor<AActor>(lastPoint, GetWorld()->GetFirstPlayerController()->GetPawn()->GetTransform(), SpawnParams);
+					cpyLastPoint = GetWorld()->SpawnActor<AActor>(lastPoint, player->GetTransform(), SpawnParams);
+					//cpyLastPoint->SetActorLocation(cpyLastPoint->GetActorLocation() - FVector(0, 0, 30));
+
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 					pointSpawnCheck = true;
 					pointTime = 0;

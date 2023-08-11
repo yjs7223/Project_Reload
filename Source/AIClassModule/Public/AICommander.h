@@ -181,5 +181,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
 		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void RestoreArr();
+
 };
 
