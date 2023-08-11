@@ -19,6 +19,9 @@ public:
 	virtual void BeginPlay() override;
 
 	bool ChangeEncounter();
+
+	void ChangeCoverSystem();
+
 public:
 
 	class ACoverSystem* CoverSystem;

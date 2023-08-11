@@ -105,6 +105,7 @@ void AEncounterSpace::LevelArrayActive()
 							//next encounter begin
 							commander->CoverManager->ChangeEncounter();
 
+
 						}
 					}
 				}

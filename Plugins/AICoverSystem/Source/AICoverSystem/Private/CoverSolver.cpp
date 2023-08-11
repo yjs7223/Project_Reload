@@ -7,7 +7,8 @@
 
 namespace CoverSolver
 {
-	static ECollisionChannel SolverTraceChannel = ECC_WorldStatic;
+	//static ECollisionChannel SolverTraceChannel = ECC_WorldStatic;
+	static ECollisionChannel SolverTraceChannel = ECC_GameTraceChannel2;
 	static float AgentWidth = 80.0f;
 	static float AgentHeightStand = 180.0f;
 	static float AgentHeightCrouch = 80.0f;
