@@ -8,6 +8,9 @@
 #include "Perception/AISightTargetInterface.h"
 #include "PlayerCharacter.generated.h"
 
+
+DECLARE_MULTICAST_DELEGATE(FOnVisibleAllUIDelegate);
+
 /**
  * 
  */
@@ -19,6 +22,7 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
+	FOnVisibleAllUIDelegate OnVisibleAllUIDelegate;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,6 +32,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual bool CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor = nullptr, const bool* bWasVisible = nullptr, int32* UserData = nullptr) const;
+
+	//static void Play
 
 	void InitWidget(FViewport* viewport, uint32 value);
 	void UpdateWidget(float deltatime);
@@ -72,10 +78,16 @@ public:
 		class UWidgetComponent* CoverWidgetComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Cover_Widget;
+		TSubclassOf<class UUserWidget> Cover_WidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Damage_Widget;
+		TSubclassOf<class UUserWidget> Damage_WidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class ULineNaviWidget* LineNavi_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UCharacterSoundDataAsset* CharacterSound;
 
 	FTimerHandle DamageTimer;
     
