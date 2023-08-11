@@ -25,8 +25,11 @@ void UWeaponAnimInstance::NativeBeginPlay()
 	ACharacter* owner = Cast<ACharacter>(TryGetPawnOwner());
 	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 
-	mWeapon = owner->FindComponentByClass<UWeaponComponent>();
-
+	mWeapon = owner->FindComponentByClass<UWeaponComponent>(); 
+	mWeapon->shootingAnimation.BindLambda([this]() {
+		Montage_Play(m_CurrentAnimation.shooting);
+		}
+	);
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	AnimationSetting();
 }
@@ -45,8 +48,11 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (m_Movement) {
 		mIsRuning = m_Movement->isRuning();
 	}
+	if (Montage_IsPlaying(m_CurrentAnimation.shooting)) {
+		int a = 5;
+	}
 }
-
+	
 void UWeaponAnimInstance::AnimationSetting()
 {
 	if (!m_AnimationTable) return;
@@ -62,4 +68,9 @@ void UWeaponAnimInstance::AnimationSetting()
 	else {
 
 	}
+}
+
+void UWeaponAnimInstance::PlayShootingAnimation()
+{
+	Montage_Play(m_CurrentAnimation.shooting);
 }

@@ -112,6 +112,7 @@ void UWeaponComponent::ReloadAmmo()
 
 void UWeaponComponent::Fire()
 {
+	shootingAnimation.ExecuteIfBound();
 	//fire
 	return;
 }
