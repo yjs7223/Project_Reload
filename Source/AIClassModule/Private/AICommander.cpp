@@ -780,6 +780,11 @@ bool AAICommander::SameDetourPoint(FVector FinalLocation, FVector MiddleLocation
 	return false;
 }
 
+void AAICommander::ZeroListCoverPoint(AActor* AIActor)
+{
+	List_CoverPoint.Add(*List_Division.Find(AIActor), FVector::ZeroVector);
+}
+
 
 
 
