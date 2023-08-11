@@ -56,6 +56,7 @@ public:
 	FVector getCanCoverPoint();
 	FVector GetPointNormal();
 	void StartPeeking();
+	void peekingCheck(FRotator& aimOffset);
 	void StopPeeking();
 	AActor* GetCoverWall();
 	UFUNCTION(BlueprintCallable)
@@ -86,6 +87,7 @@ protected:
 private:
 	//
 	class UBaseCharacterMovementComponent* m_Movement;
+	class UBaseInputComponent* m_Input;
 	struct FInputData* m_Inputdata;
 	class UWeaponComponent* m_Weapon;
 	class UCapsuleComponent* capsule;

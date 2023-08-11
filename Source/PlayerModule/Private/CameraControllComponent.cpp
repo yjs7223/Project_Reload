@@ -77,27 +77,27 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	if (m_Cover && m_Cover->isPeeking()) {
 		EPeekingState peekstate = m_Cover->getPeekingState();
-		if (peekstate == EPeekingState::FrontRightStart) {
+		if (peekstate == EPeekingState::FrontRight) {
 			tempCamerapos += m_Data->camerapos_FrontRightPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
-		else if (peekstate == EPeekingState::FrontLeftStart) {
+		else if (peekstate == EPeekingState::FrontLeft) {
 			tempCamerapos += m_Data->camerapos_FrontLeftPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
-		else if (peekstate == EPeekingState::HighRightStart) {
+		else if (peekstate == EPeekingState::HighRight) {
 			tempCamerapos += m_Data->camerapos_HighRightPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
-		else if (peekstate == EPeekingState::HighLeftStart) {
+		else if (peekstate == EPeekingState::HighLeft) {
 			tempCamerapos += m_Data->camerapos_HighLeftPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
-		else if (peekstate == EPeekingState::LowRightStart) {
+		else if (peekstate == EPeekingState::LowRight) {
 			tempCamerapos += m_Data->camerapos_LowRightPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
-		else if (peekstate == EPeekingState::LowLeftStart) {
+		else if (peekstate == EPeekingState::LowLeft) {
 			tempCamerapos += m_Data->camerapos_LowLeftPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}

@@ -47,7 +47,8 @@ void UCoverComponent::BeginPlay()
 	m_CoverWall = nullptr;
 
 	m_Movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
-	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
+	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
+	m_Inputdata = m_Input->getInput();
 	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
@@ -78,7 +79,6 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	AimSetting(DeltaTime);
 	TurnCheck(DeltaTime);
 	BeCrouch(DeltaTime);
-
 	if (m_IsCornering) {
 
 		if (owner->GetVelocity().Length() == 0) {
@@ -95,6 +95,8 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	}
 
 	CalculateCoverShoot();
+	UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("EPeekingState"), true)->GetNameStringByValue((int8)mPeekingState), true, true, FColor::Red, DeltaTime);
+
 }
 
 void UCoverComponent::PlayCover()
@@ -215,10 +217,19 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	FRotator& aimOffset = m_Weapon->aimOffset;
 
 	if (!m_IsCover) return;
+
+	if (m_Inputdata->IsAiming && FMath::Abs(m_Weapon->aimOffset.Yaw) < 80) {
+		peekingCheck(aimOffset);
+	}
+	else {
+		mPeekingState = EPeekingState::None;
+	}
 	if (isPeeking()) {
 		if (!IsFaceRight()) aimOffset.Yaw *= -1.0f;
 		return;
 	}
+
+
 	//if (aimOffset.Yaw > 45) {
 	//	aimOffset.Yaw -= 180;
 	//	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
@@ -234,12 +245,12 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	//	}
 	//}
 	
-	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw > 45) {
+	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw > 0) {
 		aimOffset.Yaw -= 180;
 		SetIsFaceRight(true);
 
 	}
-	else if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw < -45) {
+	else if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw < 0) {
 		aimOffset.Yaw += 180;
 		aimOffset.Yaw *= -1.0f;
 		SetIsFaceRight(false);
@@ -346,7 +357,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	{
 		return FVector::ZeroVector;
 	}
-
+	if (EPathFollowingStatus::Type::Moving == m_PathFollowingComp->GetStatus()) return  FVector::ZeroVector;
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 
 	UCameraComponent* camera = owner->FindComponentByClass<UCameraComponent>();
@@ -625,7 +636,7 @@ void UCoverComponent::StopCover()
 	SetIsFaceRight(true);
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
-	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
+	m_Input->m_CanUnCrouch = true;
 }
 
 void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
@@ -650,7 +661,7 @@ void UCoverComponent::PlayCornering()
 
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, traceChanel, params);
 	if (!result2.bBlockingHit) return;
-
+	m_CanCoverPointNormal = result2.Normal;
 	FVector targetPoint = result2.Location + result2.Normal * capsule->GetScaledCapsuleRadius() * 1.01f;
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), targetPoint);
 
@@ -689,6 +700,7 @@ void UCoverComponent::PlayingCornering(float DeltaTim)
 
 void UCoverComponent::BeCrouch(float deltaTime)
 {
+	if (mPeekingState != EPeekingState::None) return;
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.01f;
 	FVector upVector = owner->GetActorUpVector() * capsule->GetUnscaledCapsuleHalfHeight() * 1.01f;
 	owner->bIsCrouched ? upVector *= 2.0f : upVector;
@@ -709,10 +721,10 @@ void UCoverComponent::BeCrouch(float deltaTime)
 		result, start, end, traceChanel, param);
 
 	if (result.bBlockingHit) {
-		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
+		m_Input->m_CanUnCrouch = true;
 	}
 	else {
-		owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = false;
+		m_Input->m_CanUnCrouch = false;
 		if (!owner->bIsCrouched) {
 			owner->Crouch();
 		}
@@ -757,10 +769,10 @@ void UCoverComponent::StartPeeking()
 
 		if (!result.GetActor()) {
 			if (owner->bIsCrouched) {
-				mPeekingState |= EPeekingState::LowRightStart;
+				mPeekingState |= EPeekingState::LowRight;
 			}
 			else {
-				mPeekingState = EPeekingState::HighRightStart;
+				mPeekingState = EPeekingState::HighRight;
 			}
 			return;
 		}
@@ -770,7 +782,7 @@ void UCoverComponent::StartPeeking()
 			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
-				mPeekingState = EPeekingState::FrontRightStart;
+				mPeekingState = EPeekingState::FrontRight;
 				return;
 			}
 		}
@@ -794,10 +806,10 @@ void UCoverComponent::StartPeeking()
 		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 		if (!result.GetActor()) {
 			if (owner->bIsCrouched) {
-				mPeekingState = EPeekingState::LowLeftStart;
+				mPeekingState = EPeekingState::LowLeft;
 			}
 			else {
-				mPeekingState = EPeekingState::HighLeftStart;
+				mPeekingState = EPeekingState::HighLeft;
 			}
 			return;
 		}
@@ -807,7 +819,7 @@ void UCoverComponent::StartPeeking()
 			GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
-				mPeekingState = EPeekingState::FrontLeftStart;
+				mPeekingState = EPeekingState::FrontLeft;
 				return;
 			}
 		}
@@ -816,6 +828,60 @@ void UCoverComponent::StartPeeking()
 
 	mPeekingState = EPeekingState::None;
 }
+
+void UCoverComponent::peekingCheck(FRotator& aimOffset)
+{
+
+	switch (mPeekingState)
+	{
+	case EPeekingState::None:
+		StartPeeking();
+		break;
+	case EPeekingState::FrontRight:
+		break;
+	case EPeekingState::FrontLeft:
+		break;
+	case EPeekingState::HighRight:
+		if (aimOffset.Yaw >= 0) {
+			if (!m_Input->m_CanUnCrouch) {
+				mPeekingState = EPeekingState::LowRight;
+				owner->Crouch();
+			}
+		}
+		break;
+	case EPeekingState::HighLeft:
+		if (aimOffset.Yaw <= -20) {
+			if (!m_Input->m_CanUnCrouch) {
+				mPeekingState = EPeekingState::LowLeft;
+				owner->Crouch();
+			}
+		}
+		break;
+	case EPeekingState::LowRight:
+		if (aimOffset.Yaw < -10) {
+			mPeekingState = EPeekingState::HighRight;
+			if (owner->bIsCrouched) {
+				owner->UnCrouch();
+			}
+		}
+		break;
+	case EPeekingState::LowLeft:
+		if (aimOffset.Yaw > -10) {
+			mPeekingState = EPeekingState::HighLeft;
+			if (owner->bIsCrouched) {
+				owner->UnCrouch();
+			}
+		}
+		break;
+	case EPeekingState::MAX:
+		break;
+	default:
+		break;
+	}
+
+
+}
+
 
 void UCoverComponent::StopPeeking()
 {
