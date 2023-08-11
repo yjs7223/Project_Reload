@@ -29,8 +29,9 @@
 #include "Components/WidgetComponent.h"
 #include "PlayerMoveComponent.h"
 #include "CoverComponent.h"
+#include "CharacterSoundDataAsset.h"
+#include "Sound/SoundCue.h"
 #include "EmptyShellSpawnable.h"
-
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -130,36 +131,36 @@ void UPlayerWeaponComponent::InitData()
 	if (PlayerWeaponData != nullptr)
 	{
 		FPlayerweaponStruct* dataTable;
-		UWeaponDataAsset* WeapondataAsset = nullptr;
+		//UWeaponDataAsset* WeapondataAsset = nullptr;
 		switch (weapontype)
 		{
 		case EWeaponType::TE_Pistol:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Pistol"), FString(""));
-			WeapondataAsset = PistolDataAssets;
+			WeaponDataAsset = PistolDataAssets;
 			break;
 		case EWeaponType::TE_Rifle:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Rifle"), FString(""));
-			WeapondataAsset = RifleDataAssets;
+			WeaponDataAsset = RifleDataAssets;
 			break;
 		case EWeaponType::TE_Shotgun:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Shotgun"), FString(""));
 			break;
 		default:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
-			WeapondataAsset = RifleDataAssets;
+			WeaponDataAsset = RifleDataAssets;
 			break;
 		}
-		if (WeapondataAsset)
+		if (WeaponDataAsset)
 		{
 			//WeaponMesh.set
-			WeaponMeshSetting(WeapondataAsset);
-			MuzzleFireParticle = WeapondataAsset->MuzzleFireParticle;
-			BulletTracerParticle = WeapondataAsset->BulletTracerParticle;
-			shotFXNiagara = WeapondataAsset->BulletTrailFXNiagara;
+			WeaponMeshSetting(WeaponDataAsset);
+			MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
+			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
+			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;
 
-			ShotSounds = WeapondataAsset->ShotSounds;
+			//ShotSounds = WeaponDataAsset->ShotSounds;
 
-			Decal = WeapondataAsset->Decals[0];
+			Decal = WeaponDataAsset->Decals[0];
 		}
 		
 		SetAmmo(dataTable->bullet_Num);
@@ -198,6 +199,12 @@ void UPlayerWeaponComponent::Fire()
 		return;
 	}
 	Super::Fire();
+
+	if (isReload)
+	{
+		StopFire();
+		return;
+	}
 
 	if (!ammoinfinite)
 	{
@@ -381,6 +388,8 @@ void UPlayerWeaponComponent::StartAiming()
 	owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
 	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3, true, 0.0f);
 
+	UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
+
 	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
@@ -390,6 +399,9 @@ void UPlayerWeaponComponent::StopAiming()
 	isAiming = false;
 	owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
 	owner->GetWorldTimerManager().ClearTimer(AimingTimer);
+
+	UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
+
 	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
@@ -398,6 +410,7 @@ void UPlayerWeaponComponent::StartFire()
 {
 	if(curAmmo <= 0)
 	{ 
+		//UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->EmptySound_Cue, GetOwner()->GetActorLocation());
 		owner->FindComponentByClass<UPlayerInputComponent>()->StartReload();
 		return;
 	}
@@ -441,7 +454,6 @@ void UPlayerWeaponComponent::StartReload()
 	{
 		return;
 	}
-
 	switch (weapontype)
 	{
 	case EWeaponType::TE_Pistol:
@@ -511,6 +523,8 @@ void UPlayerWeaponComponent::StartReload()
 		curAmmo = 0;
 		break;
 	}
+
+	UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
 	OnPlayReloadUIDelegate.ExecuteIfBound();
 	isReload = true;
 }
@@ -518,6 +532,7 @@ void UPlayerWeaponComponent::StartReload()
 void UPlayerWeaponComponent::StopReload()
 {
 	reloadvalue = 0;
+	UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->ReloadCliplockedSound, owner->GetActorLocation());
 	isReload = false;
 }
 
@@ -557,11 +572,28 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 {
 	if (isReload)
 	{
-		reloadCount += Deltatime * 20;
+		switch (weapontype)
+		{
+		case EWeaponType::TE_Pistol:
+			reloadCount += Deltatime * 6;
+			break;
+		case EWeaponType::TE_Rifle:
+			reloadCount += Deltatime * 20;
+			break;
+
+		default:
+			reloadCount += Deltatime * 20;
+			break;
+		}
+
 		if (reloadCount >= 1)
 		{
 			curAmmo++;
 			reloadCount = 0;
+			if (curAmmo == maxAmmo / 2)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->ReloadMagInSound, owner->GetActorLocation());
+			}
 			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 			OnChangedAmmoUIDelegate.ExecuteIfBound();
 		}
@@ -737,6 +769,7 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 {
 	if (CheckActorTag(result.GetActor(), TEXT("Water")))
 	{
+		UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->bullet_impacts_water_cue, result.Location, 0.5f);
 		return;
 	}
 
@@ -749,14 +782,16 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 	if (decal)
 	{
 		decal->SetFadeScreenSize(0.0f);
+		UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->bullet_impacts_concrete_cue, result.Location, 0.5f);
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("decal_spawn"));
 }
 
 void UPlayerWeaponComponent::PlayRandomShotSound()
 {
-	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
+	float pitch = FMath::RandRange(0.9f, 1.2f);
+	//int r = FMath::RandRange(0, 3);
+	UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->ShotSound, GetOwner()->GetActorLocation(), 1.0f, pitch);
 
 	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetOwner()->GetActorLocation(), 1.0f, GetOwner(), 0.0f, FName(TEXT("Shooting")));
 }
