@@ -746,7 +746,7 @@ void UCoverComponent::StartPeeking()
 	FVector start;
 	FVector end;
 	FHitResult result;
-	FCollisionQueryParams param(NAME_None, true, GetOwner());
+	FCollisionQueryParams param(NAME_None, true, GetOwner())
 	mPeekingState = EPeekingState::None;
 
 	if (IsFaceRight()) {
