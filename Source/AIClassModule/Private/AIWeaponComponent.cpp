@@ -97,6 +97,7 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 void UAIWeaponComponent::ShotAI()
 {
 	//owner->bUseControllerRotationYaw = true;
+	Super::Fire();
 	
 	FVector loc;
 	FRotator rot;
