@@ -106,6 +106,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		isDie = true;
 		if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
 		{
+			Cast<AAICharacter>(GetOwner())->Dead();
 			Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
 		}
 		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
