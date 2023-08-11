@@ -44,6 +44,9 @@ UAISensingComponent::UAISensingComponent()
 void UAISensingComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetOwner()->GetWorldTimerManager().ClearTimer(sensingTimer);
+	GetOwner()->GetWorldTimerManager().SetTimer(sensingTimer, this, &UAISensingComponent::ShotSenseRange, 0.5f, true, 0.0f);
 }	
 
 
@@ -52,7 +55,7 @@ void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ShotSenseRange();
+	//ShotSenseRange();
 }
 
 
@@ -95,37 +98,31 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 	return false;
 }
 
-bool UAISensingComponent::ShotSenseRange()
+void UAISensingComponent::ShotSenseRange()
 {
-	DrawCircleSector(AimBwd_Radius, AimBwd_Angle, 50);
-	DrawCircleSector(AimFwd_Radius, AimFwd_Angle, 50);
-	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
+	DrawSense();
 
 	if (IsPlayerInsideFanArea(AimBwd_Radius, AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
-		return true;
+		return;
 	}
 	else if (IsPlayerInsideFanArea(AimFwd_Radius, AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
-		return true;
+		return;
 	}
 	else if (IsPlayerInsideFanArea(AimSide_Radius, AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
-		return true;
+		return;
 	}
-	else
-	{
-		sensing = false;
-	}
+	sensing = false;
 
-
-	return false;
+	return;
 }
 
 bool UAISensingComponent::MinRangeCheck()

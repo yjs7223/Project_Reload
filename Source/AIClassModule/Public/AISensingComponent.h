@@ -47,7 +47,7 @@ public:
 
 	// ��� ����
 	UFUNCTION(BlueprintCallable, Category = "Sense")
-		bool ShotSenseRange();
+		void ShotSenseRange();
 
 	// �÷��̾���� ��ġ �˻�
 	UFUNCTION(BlueprintCallable, Category = "Range")
