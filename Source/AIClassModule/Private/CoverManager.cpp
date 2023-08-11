@@ -38,6 +38,7 @@ bool ACoverManager::ChangeEncounter()
 	CoverSystem->SetActorLocation(NowSub->GetActorLocation());
 
 	ChangeCoverSystem();
+	//commander->RestoreArr();
 	
 	return true;
 }
@@ -45,6 +46,7 @@ bool ACoverManager::ChangeEncounter()
 void ACoverManager::ChangeCoverSystem()
 {
 
-	CoverSystem->GenerateCovers(true, false);
-
+	//CoverSystem->GenerateCovers(true, false);
+	CoverSystem->custom_GenerateCovers(true, false, true,2000);
+		
 }

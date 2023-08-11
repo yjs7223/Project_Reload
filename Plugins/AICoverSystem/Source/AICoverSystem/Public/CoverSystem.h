@@ -20,7 +20,10 @@ UCLASS(Blueprintable)
 class AICOVERSYSTEM_API ACoverSystem : public AInfo
 {
 	GENERATED_BODY()
-	
+
+public:
+	void custom_GenerateCovers(bool bForceRegenerate = false, bool bAsync = true, bool bDeferGenerationIfBusy = true, float custom_OctreeExtent = 1000);
+
 public:
 
 	ACoverSystem();
