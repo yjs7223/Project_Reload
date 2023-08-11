@@ -115,7 +115,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 			coverpossible = false;
 			for (auto coverenemy : commander->CoverEnemyArray)
 			{
-				if (FVector::Distance(enemy.Key->GetActorLocation(), coverenemy) < 10)
+				if (FVector::Distance(enemy.Key->GetActorLocation(), coverenemy) < 200)
 				{
 					coverpossible = true;
 					blackbordComponent->SetValueAsVector("AI_CoverLocation", coverenemy);
