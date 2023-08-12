@@ -59,8 +59,8 @@ void UCoverComponent::BeginPlay()
 		m_PathFollowingComp->RegisterComponentWithWorld(owner->GetController()->GetWorld());
 		m_PathFollowingComp->Initialize();
 
-		m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	}
+	m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 }
 
