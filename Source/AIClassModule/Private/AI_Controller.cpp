@@ -24,6 +24,7 @@
 #include "AICharacterMoveComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
+#include "DrawDebugHelpers.h"
 
 AAI_Controller::AAI_Controller()
 {
@@ -186,28 +187,39 @@ void AAI_Controller::SetUseCover()
 		if (GetPawn()->GetDistanceTo(player) <= 500)
 		{
 			GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("false"));
+			DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+				, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
 		}
-		else if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, ECC_Visibility, collisionParams))
+		else if (GetWorld()->SweepSingleByChannel(result, start, playerLocation, GetPawn()->GetActorRotation().Quaternion(), ECC_Visibility,
+			FCollisionShape::MakeSphere(2.0f), collisionParams))
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{
-				DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+				//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("false"));
+
+				DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+					, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
 			}
 			else
 			{
 				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 250.0f)
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
-					DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
+					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
+
+					DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+						, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Cyan, false, 0.6f);
 				}
 				else
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
-					DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
+
+					DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+						, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
 				}
 			}
 		}
