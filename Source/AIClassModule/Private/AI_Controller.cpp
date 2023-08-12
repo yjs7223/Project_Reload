@@ -171,20 +171,16 @@ void AAI_Controller::SetUseCover()
 		FCollisionQueryParams collisionParams;
 
 		FVector correction;
-		if (GetBlackboardComponent()->GetValueAsBool("AI_InCover"))
-		{
-			correction = FVector(0, 0, 20);
-		}
-		else
-		{
-			correction = FVector(0, 0, 50);
-		}
+	
+		correction = FVector(0, 0, 20);
+		
 
 		FVector start = GetPawn()->GetActorLocation() - correction;
 
 		collisionParams.AddIgnoredActor(GetPawn());
 
-		FVector playerLocation = playerMesh->GetSocketLocation(TEXT("head"));
+		//FVector playerLocation = playerMesh->GetSocketLocation(TEXT("head"));
+		FVector playerLocation = player->GetActorLocation();
 			
 
 		if (GetPawn()->GetDistanceTo(player) <= 500)
@@ -200,7 +196,7 @@ void AAI_Controller::SetUseCover()
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("false"));
 			}
-			else if (GetWorld()->LineTraceSingleByChannel(result, start, playerLocation, coverWallType, collisionParams))
+			else
 			{
 				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 250.0f)
 				{
