@@ -184,14 +184,16 @@ void AAI_Controller::SetUseCover()
 		FVector playerLocation = player->GetActorLocation();
 			
 
+		float size = 3;
+
 		if (GetPawn()->GetDistanceTo(player) <= 500)
 		{
 			GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 			DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-				, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
+				, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
 		}
 		else if (GetWorld()->SweepSingleByChannel(result, start, playerLocation, GetPawn()->GetActorRotation().Quaternion(), ECC_Visibility,
-			FCollisionShape::MakeSphere(2.0f), collisionParams))
+			FCollisionShape::MakeSphere(size), collisionParams))
 		{
 			if (result.GetActor()->ActorHasTag("Player"))
 			{
@@ -200,7 +202,7 @@ void AAI_Controller::SetUseCover()
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 
 				DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-					, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
+					, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
 			}
 			else
 			{
@@ -210,7 +212,7 @@ void AAI_Controller::SetUseCover()
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
 
 					DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-						, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Cyan, false, 0.6f);
+						, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Cyan, false, 0.6f);
 				}
 				else
 				{
@@ -219,7 +221,7 @@ void AAI_Controller::SetUseCover()
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 
 					DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-						, 2.0f, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
+						, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
 				}
 			}
 		}
