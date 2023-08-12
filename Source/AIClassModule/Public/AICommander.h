@@ -182,6 +182,8 @@ public:
 		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
 		void ZeroListCoverPoint(AActor* AIActor);
+	UFUNCTION(BlueprintImplementableEvent)
+		void RestoreArr();
 
 };
 
