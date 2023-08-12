@@ -898,9 +898,11 @@ void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 {
 	if (!Result.IsSuccess()) return;
 
+	if (!owner->ActorHasTag("Enemy"))
+	{
+		if (!StartCover()) return;
 
-	if(!StartCover()) return;
-	
-	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
-	RotateSet(0.0f);
+		owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
+		RotateSet(0.0f);
+	}
 }
