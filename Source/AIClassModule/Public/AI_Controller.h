@@ -54,6 +54,9 @@ public:
 	class USkeletalMeshComponent* playerMesh;
 
 	FTimerHandle timer;
+
+	//엄폐오브젝트타입채널 입니다
+	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);
