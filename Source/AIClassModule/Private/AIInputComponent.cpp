@@ -80,6 +80,8 @@ void UAIInputComponent::AIStartAiming()
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
 	m_inputData.IsAiming = true;
 	cover->StartPeeking();
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	moveoncmp->e_move = EMove::Attack;
 }
 
 void UAIInputComponent::AIStopAiming()
