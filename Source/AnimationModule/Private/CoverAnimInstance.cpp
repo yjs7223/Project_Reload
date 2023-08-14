@@ -8,7 +8,11 @@
 #include "BaseInputComponent.h"
 #include <Kismet/KismetSystemLibrary.h>
 
-
+bool FCoverAnimationTable::IsVaild()
+{
+	static FCoverAnimationTable emptyAnimation = FCoverAnimationTable();
+	return 0 != memcmp(this, &emptyAnimation, sizeof(FCoverAnimationTable));
+}
 
 UCoverAnimInstance::UCoverAnimInstance()
 {
@@ -61,3 +65,4 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
 	}
 }
+

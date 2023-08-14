@@ -6,8 +6,37 @@
 #include "Animation/AnimInstance.h"
 #include "EPeekingState.h"
 #include "ECoverShootingState.h"
+#include "Engine/DataTable.h"
 #include "CoverAnimInstance.generated.h"
+/**
+ *
+ */
+USTRUCT(Atomic, BlueprintType)
+struct FCoverAnimationTable : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	bool IsVaild();
 
+public:
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_LowToLow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_HighToHigh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_HighToLow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EndCover_LowToLow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EndCover_HighToHigh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EndCover_HighToLow;
+
+
+};
 /**
  * 
  */

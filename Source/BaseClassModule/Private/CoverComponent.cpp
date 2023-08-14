@@ -218,15 +218,16 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 	if (!m_IsCover) return;
 
-	if (m_Inputdata->IsAiming && FMath::Abs(m_Weapon->aimOffset.Yaw) < 100) {
+	if (m_Inputdata->IsAiming) {
 		peekingCheck(aimOffset);
+		if (isPeeking() && !(!IsFaceRight() && m_Inputdata->IsFire)) {
+
+			if (!IsFaceRight()) aimOffset.Yaw *= -1.0f;
+		}
+		return;
 	}
 	else {
 		mPeekingState = EPeekingState::None;
-	}
-	if (isPeeking()) {
-		if (!IsFaceRight()) aimOffset.Yaw *= -1.0f;
-		return;
 	}
 
 
@@ -244,16 +245,21 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	//		SetIsFaceRight(false);
 	//	}
 	//}
-	
 	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw > 0) {
 		aimOffset.Yaw -= 180;
-		SetIsFaceRight(true);
 
+		if (mCoverShootingState == ECoverShootingState::None) {
+
+			SetIsFaceRight(true);
+		}
 	}
 	else if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw < 0) {
 		aimOffset.Yaw += 180;
 		aimOffset.Yaw *= -1.0f;
-		SetIsFaceRight(false);
+		if (mCoverShootingState == ECoverShootingState::None) {
+
+			SetIsFaceRight(false);
+		}
 	}
 
 }
@@ -520,7 +526,7 @@ void UCoverComponent::CalculateCoverShoot()
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
-	if (!m_Inputdata->IsFire || FMath::Abs(aimoffset.Yaw) > 45.0f) return;
+	if (!m_Inputdata->IsFire || FMath::Abs(aimoffset.Yaw) < 45.0f) return;
 	if (!IsFaceRight()) {
 		aimoffset.Yaw *= -1.0f;
 	}
@@ -616,7 +622,7 @@ bool UCoverComponent::StartCover()
 
 	}
 
-
+	PlayMontageStartCover.Broadcast();
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
@@ -628,6 +634,7 @@ bool UCoverComponent::StartCover()
 
 void UCoverComponent::StopCover()
 {
+	PlayMontageEndCover.Broadcast();
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;

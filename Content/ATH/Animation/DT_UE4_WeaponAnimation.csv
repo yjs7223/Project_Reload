@@ -1,4 +1,4 @@
----,Aiming,Aiming_Shooting,shooting,Reload,AimOffset
-TE_Pistol,"AnimSequence'/Game/EnemyAnim/Weapon/AS_IdleRifleAiming_01.AS_IdleRifleAiming_01'","AnimSequence'/Game/EnemyAnim/Weapon/AS_RifleRecoil_01.AS_RifleRecoil_01'","None","AnimSequence'/Game/EnemyAnim/Anim/AS_ReloadRifle.AS_ReloadRifle'","AimOffsetBlendSpace'/Game/EnemyAnim/Weapon/AO_RifleAiming.AO_RifleAiming'"
-TE_Rifle,"AnimSequence'/Game/EnemyAnim/Weapon/AS_IdleRifleAiming_01.AS_IdleRifleAiming_01'","AnimSequence'/Game/EnemyAnim/Weapon/AS_RifleRecoil_01.AS_RifleRecoil_01'","None","AnimSequence'/Game/EnemyAnim/Anim/AS_ReloadRifle.AS_ReloadRifle'","AimOffsetBlendSpace'/Game/EnemyAnim/Weapon/AO_RifleAiming.AO_RifleAiming'"
-TE_Shotgun,"None","None","None","None","None"
+---,Aiming,Aiming_Shooting,Shooting_Base,Shooting,Reload,AimOffset
+TE_Pistol,"AnimSequence'/Game/EnemyAnim/Weapon/AS_IdleRifleAiming_01.AS_IdleRifleAiming_01'","AnimSequence'/Game/EnemyAnim/Weapon/AS_RifleRecoil_01.AS_RifleRecoil_01'","None","None","AnimSequence'/Game/EnemyAnim/Anim/AS_ReloadRifle.AS_ReloadRifle'","AimOffsetBlendSpace'/Game/EnemyAnim/Weapon/AO_RifleAiming.AO_RifleAiming'"
+TE_Rifle,"AnimSequence'/Game/EnemyAnim/Weapon/AS_IdleRifleAiming_01.AS_IdleRifleAiming_01'","AnimSequence'/Game/EnemyAnim/Weapon/AS_RifleRecoil_01.AS_RifleRecoil_01'","None","None","AnimSequence'/Game/EnemyAnim/Anim/AS_ReloadRifle.AS_ReloadRifle'","AimOffsetBlendSpace'/Game/EnemyAnim/Weapon/AO_RifleAiming.AO_RifleAiming'"
+TE_Shotgun,"None","None","None","None","None","None"

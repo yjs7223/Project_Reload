@@ -11,7 +11,6 @@ bool UBaseCharacterMovementComponent::isRuning() const
 
 bool UBaseCharacterMovementComponent::CheckFall(const FFindFloorResult& OldFloor, const FHitResult& Hit, const FVector& Delta, const FVector& OldLocation, float remainingTime, float timeTick, int32 Iterations, bool bMustJump)
 {
-	return Super::CheckFall(OldFloor, Hit, Delta, OldLocation, remainingTime, timeTick, Iterations, bMustJump);
 	if (!Super::CheckFall(OldFloor, Hit, Delta, OldLocation, remainingTime, timeTick, Iterations, bMustJump)) return false;
 	// 상위에서 트루 반환후 런상태 떨어지기 체크를 합니다
 	if (isRuning()) {

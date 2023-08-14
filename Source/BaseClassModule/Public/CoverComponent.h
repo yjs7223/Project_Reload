@@ -14,7 +14,12 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BASECLASSMODULE_API UCoverComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
+public:
+	DECLARE_MULTICAST_DELEGATE(FStartCoverEventDelegate);
+	DECLARE_MULTICAST_DELEGATE(FEndCoverEventDelegate);
+public:
+	FStartCoverEventDelegate PlayMontageStartCover;
+	FEndCoverEventDelegate PlayMontageEndCover;
 public:
 	UCoverComponent();
 
