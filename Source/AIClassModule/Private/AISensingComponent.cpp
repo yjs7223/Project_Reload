@@ -8,6 +8,25 @@
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
 #include "GameFramework/Character.h"
+#include "TimerManager.h"
+#include "AICharacter.h"
+#include "UObject/ConstructorHelpers.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Engine/DataTable.h"
+#include "StatComponent.h"
+#include "ST_AIShot.h"
+#include <Kismet/GameplayStatics.h>
+#include "ST_Spawn.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "AICommander.h"
+#include "SubEncounterSpace.h"
+#include "AISpawner.h"
+#include "HitImapactDataAsset.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AI_Controller.h"
+#include "AIWeaponDataAsset.h"
+#include "Engine/EngineTypes.h"
 
 UAISensingComponent::UAISensingComponent()
 {
@@ -19,9 +38,6 @@ UAISensingComponent::UAISensingComponent()
 	{
 		AIRangeData = DataTable.Object;
 	}
-
-	// ������ ������ ��������
-	curAIRangeData = AIRangeData->FindRow<FST_Range>("Rifle_E", TEXT(""));
 }
 
 
@@ -29,7 +45,8 @@ void UAISensingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	GetOwner()->GetWorldTimerManager().ClearTimer(sensingTimer);
+	GetOwner()->GetWorldTimerManager().SetTimer(sensingTimer, this, &UAISensingComponent::ShotSenseRange, 0.5f, true, 0.0f);
 }	
 
 
@@ -37,7 +54,8 @@ void UAISensingComponent::BeginPlay()
 void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	ShotSenseRange();
+
+	//ShotSenseRange();
 }
 
 
@@ -80,37 +98,31 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 	return false;
 }
 
-bool UAISensingComponent::ShotSenseRange()
+void UAISensingComponent::ShotSenseRange()
 {
-	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
+	DrawSense();
 
-	if (IsPlayerInsideFanArea(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, GetOwner()->GetActorForwardVector()))
+	if (IsPlayerInsideFanArea(AimBwd_Radius, AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
-		return true;
+		return;
 	}
-	else if (IsPlayerInsideFanArea(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, GetOwner()->GetActorForwardVector()))
+	else if (IsPlayerInsideFanArea(AimFwd_Radius, AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
-		return true;
+		return;
 	}
-	else if (IsPlayerInsideFanArea(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, GetOwner()->GetActorForwardVector()))
+	else if (IsPlayerInsideFanArea(AimSide_Radius, AimSide_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));
 		sensing = true;
-		return true;
+		return;
 	}
-	else
-	{
-		sensing = false;
-	}
+	sensing = false;
 
-
-	return false;
+	return;
 }
 
 bool UAISensingComponent::MinRangeCheck()
@@ -125,7 +137,20 @@ bool UAISensingComponent::MinRangeCheck()
 
 void UAISensingComponent::DrawSense()
 {
-	DrawCircleSector(curAIRangeData->AimBwd_Radius, curAIRangeData->AimBwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimFwd_Radius, curAIRangeData->AimFwd_Angle, 50);
-	DrawCircleSector(curAIRangeData->AimSide_Radius, curAIRangeData->AimSide_Angle, 50);
+	DrawCircleSector(AimBwd_Radius, AimBwd_Angle, 50);
+	DrawCircleSector(AimFwd_Radius, AimFwd_Angle, 50);
+	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
+}
+
+void UAISensingComponent::SetDataTable(FName EnemyName)
+{
+	curAIRangeData = AIRangeData->FindRow<FST_Range>(EnemyName, TEXT(""));
+
+	AimBwd_Radius = curAIRangeData->AimBwd_Radius;
+	AimFwd_Radius = curAIRangeData->AimFwd_Radius;
+	AimSide_Radius = curAIRangeData->AimSide_Radius;
+
+	AimBwd_Angle = curAIRangeData->AimBwd_Angle;
+	AimFwd_Angle = curAIRangeData->AimFwd_Angle;
+	AimSide_Angle = curAIRangeData->AimSide_Angle;
 }

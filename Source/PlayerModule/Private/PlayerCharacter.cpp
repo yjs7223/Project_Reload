@@ -153,7 +153,9 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			Crosshair_Widget->RemoveFromViewport();
 		}
 		Crosshair_Widget = CreateWidget<UCrosshair_Widget>(Cast<APlayerController>(GetController()), Crosshair_WidgetClass);
-		Crosshair_Widget->AddToViewport();
+		if (Crosshair_Widget) {
+			Crosshair_Widget->AddToViewport();
+		}
 		//Crosshair_Widget->weapon = weapon;
 	}
 	if (Attacked_WidgetClass)
@@ -163,7 +165,9 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			Attacked_Widget->RemoveFromViewport();
 		}
 		Attacked_Widget = CreateWidget<UAttacked_Widget>(Cast<APlayerController>(GetController()), Attacked_WidgetClass);
-		Attacked_Widget->AddToViewport();
+		if (Attacked_Widget) {
+			Attacked_Widget->AddToViewport();
+		}
 		//Crosshair_Widget->weapon = weapon;
 	}
 

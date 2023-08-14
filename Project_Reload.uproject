@@ -44,6 +44,19 @@
 			]
 		},
 		{
+			"Name": "BossModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"BaseClassModule",
+				"CoreUObject",
+				"Slate",
+				"SlateCore",
+				"UMG"
+			]
+		},
+		{
 			"Name": "AIClassModule",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

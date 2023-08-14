@@ -3,7 +3,8 @@
 
 #include "WeaponAnimInstance.h"
 #include "WeaponComponent.h"
-
+#include "BaseCharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
 #include "PlayerMoveComponent.h"
@@ -21,12 +22,16 @@ UWeaponAnimInstance::UWeaponAnimInstance()
 
 void UWeaponAnimInstance::NativeBeginPlay()
 {
-	m_Input = dynamic_cast<UBaseInputComponent*>(TryGetPawnOwner()->FindComponentByClass<UBaseInputComponent>());
-
 	ACharacter* owner = Cast<ACharacter>(TryGetPawnOwner());
-	mWeapon = owner->FindComponentByClass<UWeaponComponent>();
-	mPlayerMove = owner->FindComponentByClass<UPlayerMoveComponent>();
+	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 
+	mWeapon = owner->FindComponentByClass<UWeaponComponent>(); 
+	mWeapon->shootingAnimation.AddLambda(
+		[this]() {
+			Montage_Play(m_CurrentAnimation.Shooting);
+		}
+	);
+	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	AnimationSetting();
 }
 
@@ -36,14 +41,16 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsAiming = m_Input->getInput()->IsAiming;
 		mIsFire = m_Input->getInput()->IsFire;
 		mIsReload = m_Input->getInput()->IsReload;
-		mIsRuning = m_Input->getInput()->IsRuning;
 	}
 	if (mWeapon) {
 		mAimYaw = mWeapon->getAimYaw();
 		mAimPitch = mWeapon->getAimPitch();
 	}
+	if (m_Movement) {
+		mIsRuning = m_Movement->isRuning();
+	}
 }
-
+	
 void UWeaponAnimInstance::AnimationSetting()
 {
 	if (!m_AnimationTable) return;
@@ -59,4 +66,9 @@ void UWeaponAnimInstance::AnimationSetting()
 	else {
 
 	}
+}
+
+void UWeaponAnimInstance::PlayShootingAnimation()
+{
+	Montage_Play(m_CurrentAnimation.Shooting);
 }

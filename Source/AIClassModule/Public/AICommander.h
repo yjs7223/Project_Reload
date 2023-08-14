@@ -48,8 +48,8 @@ public:
 	// TMAP_LIST
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<AActor*, int> List_Division;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TMap<int, ECombat> List_Combat;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		//TMap<int, ECombat> List_Combat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TMap<int, FVector> List_Location;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -75,8 +75,6 @@ public:
 
 	//Class
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UDataTable* DT_Suppression;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBehaviorTreeComponent* behavior_tree_component;
@@ -97,11 +95,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* Now_en;
 
-	// DATA TABLE
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float sup_sharerange;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float sup_sharetime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float env_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -140,11 +133,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool En_AIActive;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TSubclassOf<class AActor> RedBallBlueprint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AActor* redball;
+
+	class ACoverManager* CoverManager;
 
 public:
 	UFUNCTION()
@@ -154,13 +151,14 @@ public:
 	UFUNCTION()
 		void ListAdd(AActor* ac);
 	UFUNCTION()
+		void AIActive(AEncounterSpace* en);
+	UFUNCTION()
 		void ListStartSet(ASubEncounterSpace* sub);
 	UFUNCTION()
 		void ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en);
 	UFUNCTION()
 		void SuppressionShare(ASubEncounterSpace* sub);
-	UFUNCTION()
-		void SetDataTable(FName EnemyName);
+
 	UFUNCTION()
 		void SetCommanderDataTable(FName EnemyName);
 	UFUNCTION()

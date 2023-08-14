@@ -8,6 +8,8 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
+#include "CoverManager.h"
+
 // Sets default values
 AEncounterSpace::AEncounterSpace()
 {
@@ -74,7 +76,13 @@ void AEncounterSpace::LevelArrayActive()
 				}
 				commander->Now_suben = suben;
 				ActiveStart = true;
+
 				//return Cast<ASubEncounterSpace>(sub);
+
+				//first encounter begin
+				commander->CoverManager->ChangeEncounter();
+
+
 			}
 		}
 		else {
@@ -92,6 +100,11 @@ void AEncounterSpace::LevelArrayActive()
 							suben2->LevelActive = true;
 							commander->Now_suben = suben2;
 							//return Cast<ASubEncounterSpace>(sub2);
+
+							
+							//next encounter begin
+							commander->CoverManager->ChangeEncounter();
+
 						}
 					}
 				}

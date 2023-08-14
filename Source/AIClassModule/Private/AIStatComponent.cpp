@@ -46,9 +46,9 @@ void UAIStatComponent::BeginPlay()
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
-	SetDataTable("Rifle_E");
-	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
-	DI_SupRange = 1 / sup_MaxRange;
+	
+	//SetDataTable("Rifle_E");
+	
 	//AICommander = AAICommander::aicinstance;
 	
 	
@@ -65,9 +65,9 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		{
 			sup_total = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
 			sup_total -= sup_DecPoint;
-			if (sup_total <= 0)
+			if (sup_total <= sup_MinPoint)
 			{
-				sup_total = 0;
+				sup_total = sup_MinPoint;
 			}
 			AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_total);
 		}
@@ -89,30 +89,38 @@ void UAIStatComponent::Attacked(float p_damage)
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
-	
-	
+	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
+	DI_SupRange = 1 / sup_MaxRange;
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
-	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
-	float dmg = (shot_MaxDmg - ((shot_MaxDmg - shot_MinDmg) * (dis - shot_MinRange) * DI_ShotRange));
 	
 	float total_dmg;
-	total_dmg = dmg - (dmg * 0.01f) * Def;
+	total_dmg = p_damage - (p_damage * 0.01f) * Def;
 	curHP -= total_dmg;
 	Def -= (total_dmg * 0.05f);
-	Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
-	if (curHP < 0.0f)
+	AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
+	if (curHP <= 0.0f)
 	{
 		curHP = 0.0f;
 		isDie = true;
 		if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
 		{
+			Cast<AAICharacter>(GetOwner())->Dead();
 			Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
 		}
-		if (AIController->commander->List_Division.Find(GetOwner()))
+		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
 		{
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+		}
+		if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+		{
+			int aikey = *AIController->commander->List_Division.Find(GetOwner());
 			AIController->commander->List_Division.Remove(GetOwner());
+			//AIController->commander->List_Combat.Remove(aikey);
+			AIController->commander->List_CoverPoint.Remove(aikey);
+			AIController->commander->List_Location.Remove(aikey);
+			AIController->commander->List_Suppression.Remove(aikey);
 		}
 	}
 	if (Def < 0.0f)
@@ -195,6 +203,7 @@ void UAIStatComponent::SetDataTable(FName EnemyName)
 		sup_Multi = SuppressionData->Sup_Multi;
 		sup_DelayTime = SuppressionData->Sup_DelayTime;
 		sup_MaxPoint = SuppressionData->Sup_MaxPoint;
+		sup_MinPoint = SuppressionData->Sup_MinPoint;
 		sup_DecPoint = SuppressionData->Sup_DecPoint;
 		sup_DecTime = SuppressionData->Sup_DecTime;
 	}
