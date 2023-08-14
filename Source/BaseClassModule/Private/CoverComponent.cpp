@@ -218,7 +218,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 	if (!m_IsCover) return;
 
-	if (m_Inputdata->IsAiming && FMath::Abs(m_Weapon->aimOffset.Yaw) < 100) {
+	if (m_Inputdata->IsAiming && FMath::Abs(m_Weapon->aimOffset.Yaw) < 80) {
 		peekingCheck(aimOffset);
 	}
 	else {
@@ -763,7 +763,7 @@ void UCoverComponent::StartPeeking()
 		if (!result.GetActor()) return;
 
 		start = start;
-		end = start + forwardVector * 1.5f;
+		end = start + forwardVector * 1.1f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 
@@ -778,7 +778,7 @@ void UCoverComponent::StartPeeking()
 		}
 		else {
 			start = temppos + upVector;
-			end = start + forwardVector * 1.5f;
+			end = start + forwardVector * 1.1f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
@@ -801,7 +801,7 @@ void UCoverComponent::StartPeeking()
 		if (!result.GetActor()) return;
 
 		start = start;
-		end = start + forwardVector * 1.5f;
+		end = start + forwardVector * 1.1f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 		if (!result.GetActor()) {
@@ -815,7 +815,7 @@ void UCoverComponent::StartPeeking()
 		}
 		else {
 			start = temppos + upVector;
-			end = start + forwardVector * 1.5f;
+			end = start + forwardVector * 1.1f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
