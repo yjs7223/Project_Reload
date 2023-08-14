@@ -23,6 +23,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void AnimationSetting();
+	void PlayShootingAnimation();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UBaseInputComponent* m_Input;

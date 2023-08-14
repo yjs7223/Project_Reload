@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 	{
 		return EBTNodeResult::Succeeded;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, mindislocation.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, mindislocation.ToString());
 	for (auto enemy : commander->List_Division)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetPawn()->GetName());
@@ -78,6 +78,17 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						{
 							B_distance = true;
 						}
+						if (FVector::Distance(coverenemy, subAi->GetActorLocation()) < 200)
+						{
+							B_distance = true;
+						}
+					}
+					else
+					{
+						if (FVector::Distance(coverenemy, subAi->GetActorLocation()) < 50)
+						{
+							B_distance = true;
+						}
 					}
 				}
 				if (!B_distance)
@@ -104,7 +115,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 			coverpossible = false;
 			for (auto coverenemy : commander->CoverEnemyArray)
 			{
-				if (FVector::Distance(enemy.Key->GetActorLocation(), coverenemy) < 10)
+				if (FVector::Distance(enemy.Key->GetActorLocation(), coverenemy) < 200)
 				{
 					coverpossible = true;
 					blackbordComponent->SetValueAsVector("AI_CoverLocation", coverenemy);
@@ -119,9 +130,32 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 					B_distance = false;
 					for (auto coverlist : commander->List_CoverPoint)
 					{
-						if (enemy.Value != coverlist.Key)
+						if (FVector::Distance(coverenemy, coverlist.Value) < 200)
 						{
-							if (FVector::Distance(coverenemy, coverlist.Value) < 200)
+							B_distance = true;
+						}
+					}
+					for (auto subAi : commander->Now_suben->AIArray)
+					{
+						if (subAi != enemy.Key)
+						{
+							if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
+							{
+								continue;
+							}
+							AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
+							if (FVector::Distance(sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation"), coverenemy) < 200)
+							{
+								B_distance = true;
+							}
+							if (FVector::Distance(coverenemy, subAi->GetActorLocation()) < 200)
+							{
+								B_distance = true;
+							}
+						}
+						else
+						{
+							if (FVector::Distance(coverenemy, subAi->GetActorLocation()) < 50)
 							{
 								B_distance = true;
 							}

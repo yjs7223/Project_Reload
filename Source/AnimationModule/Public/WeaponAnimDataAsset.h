@@ -10,39 +10,24 @@
 /**
  * 
  */
-UCLASS(Blueprintable)
-class ANIMATIONMODULE_API UWeaponAnimDataAsset : public UDataAsset
-{
-
-	GENERATED_BODY()
-
-public:
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming_Shooting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Reload;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	class UAimOffsetBlendSpace* AimOffset;
-};
-
-
 USTRUCT(Atomic, BlueprintType)
-struct FWeaponAnimation : public FTableRowBase 
+struct FWeaponAnimation : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
 	bool IsVaild();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming;
+	UAnimSequence* Aiming;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming_Shooting;
+	UAnimSequence* Aiming_Shooting;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Reload;
+	UAnimSequence* Shooting_Base;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		class UAimOffsetBlendSpace* AimOffset;
+	UAnimMontage* Shooting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimSequence* Reload;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	class UAimOffsetBlendSpace* AimOffset;
 };

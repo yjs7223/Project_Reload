@@ -71,6 +71,7 @@ void UAIWeaponComponent::BeginPlay()
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
 	use_Shot_State = true;
+	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
 
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
@@ -95,7 +96,8 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UAIWeaponComponent::ShotAI()
 {
-	owner->bUseControllerRotationYaw = true;
+	//owner->bUseControllerRotationYaw = true;
+	Super::Fire();
 	
 	FVector loc;
 	FRotator rot;
@@ -134,7 +136,7 @@ void UAIWeaponComponent::ShotAI()
 	}
 	
 	// 사격 방향 체크
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, traceParams))
 	{
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
@@ -299,7 +301,8 @@ void UAIWeaponComponent::CheckTrace()
 	if (commander->Now_suben == nullptr) return;
 	if (commander->Now_suben->spawn == nullptr) return;
 	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
-	//if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
+	if (owner->combat == CombatState::PATROL) return;
+	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	FCollisionQueryParams collisionParams;
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
@@ -381,8 +384,18 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 
 	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(p_result.Location, GetOwner()->GetActorLocation());
 	m_rot.Pitch -= 90.0f;
-
-	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, p_result.Location);
+	if (!p_result.BoneName.IsNone())
+	{
+		USkeletalMeshComponent* mesh = p_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+		if (mesh)
+		{
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, mesh->GetBoneLocation(p_result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+		}
+	}
+	else
+	{
+		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, p_result.Location, m_rot);
+	}
 }
 
 void UAIWeaponComponent::PlayRandomShotSound()

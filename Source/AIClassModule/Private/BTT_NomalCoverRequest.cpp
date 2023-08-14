@@ -15,7 +15,7 @@ UBTT_NomalCoverRequest::UBTT_NomalCoverRequest()
 EBTNodeResult::Type UBTT_NomalCoverRequest::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetName());
-	OwnerComp.GetAIOwner()->GetBlackboardComponent()->SetValueAsBool("OrderWait", true);
+	
 	if (Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander)
 	{
 		AIController = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander;
@@ -24,6 +24,7 @@ EBTNodeResult::Type UBTT_NomalCoverRequest::ExecuteTask(UBehaviorTreeComponent& 
 	{
 		if (AIController->GetBlackboardComponent())
 		{
+			OwnerComp.GetAIOwner()->GetBlackboardComponent()->SetValueAsBool("OrderWait", true);
 			AIController->GetBlackboardComponent()->SetValueAsBool("CmdAI_OrderWait", true);
 		}
 	}

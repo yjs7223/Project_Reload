@@ -21,7 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
-	virtual FRotator GetControlRotation()const override;
+	/*virtual FRotator GetControlRotation()const override;*/
 
 public:
 
@@ -55,7 +55,8 @@ public:
 
 	FTimerHandle timer;
 
-	class UAICharacterMoveComponent* movementComponent;
+	//엄폐오브젝트타입채널 입니다
+	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);

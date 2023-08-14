@@ -21,10 +21,10 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		class UStatComponent* mStats;
+	class UStatComponent* mStats;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		bool mIsDie;
+	bool mIsDie;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		bool mIsHit;
-	
+	bool mIsHit;
+
 };
