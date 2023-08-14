@@ -235,7 +235,7 @@ void UPlayerWeaponComponent::Fire()
 
 	//CameraHit
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
@@ -248,7 +248,7 @@ void UPlayerWeaponComponent::Fire()
 
 		//WeaponHit
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
-		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
+		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
