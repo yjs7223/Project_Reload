@@ -485,7 +485,7 @@ void AAICommander::CoverPointEnemy()
 
 			if (result.GetActor()->ActorHasTag("Cover"))
 			{
-				if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
+				if (FVector::Distance(subencover, result.ImpactPoint) < 50.0f)
 				{
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
@@ -778,6 +778,11 @@ bool AAICommander::SameDetourPoint(FVector FinalLocation, FVector MiddleLocation
 		return true;
 	}
 	return false;
+}
+
+void AAICommander::ZeroListCoverPoint(AActor* AIActor)
+{
+	List_CoverPoint.Add(*List_Division.Find(AIActor), FVector::ZeroVector);
 }
 
 

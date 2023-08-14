@@ -180,7 +180,8 @@ public:
 		FVector OptimumPoint(FVector FinalLocation, AActor* AIactor, FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
 		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
-
+	UFUNCTION(BlueprintCallable, Category = "AICommander")
+		void ZeroListCoverPoint(AActor* AIActor);
 	UFUNCTION(BlueprintImplementableEvent)
 		void RestoreArr();
 

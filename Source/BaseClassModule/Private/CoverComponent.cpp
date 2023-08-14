@@ -59,8 +59,8 @@ void UCoverComponent::BeginPlay()
 		m_PathFollowingComp->RegisterComponentWithWorld(owner->GetController()->GetWorld());
 		m_PathFollowingComp->Initialize();
 
-		m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	}
+	m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 }
 
@@ -898,9 +898,11 @@ void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 {
 	if (!Result.IsSuccess()) return;
 
+	if (!owner->ActorHasTag("Enemy"))
+	{
+		if (!StartCover()) return;
 
-	if(!StartCover()) return;
-	
-	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
-	RotateSet(0.0f);
+		owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
+		RotateSet(0.0f);
+	}
 }

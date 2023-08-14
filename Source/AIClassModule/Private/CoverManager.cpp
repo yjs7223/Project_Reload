@@ -38,7 +38,7 @@ bool ACoverManager::ChangeEncounter()
 	CoverSystem->SetActorLocation(NowSub->GetActorLocation());
 
 	ChangeCoverSystem();
-	//commander->RestoreArr();
+	commander->RestoreArr();
 	
 	return true;
 }
