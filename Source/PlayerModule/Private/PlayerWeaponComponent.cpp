@@ -315,7 +315,7 @@ void UPlayerWeaponComponent::Fire()
 				if (isHit)
 				{
 					owner->CreateDamageWidget(damageVlaue, m_result);
-					MyStat->hitNormal = m_result.ImpactNormal;
+					MyStat->hitNormal = m_result.TraceEnd - m_result.TraceStart;
 					OnChangedCrossHairDieDelegate.ExecuteIfBound();
 				}
 			}
