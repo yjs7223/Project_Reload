@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 	{
 		return EBTNodeResult::Succeeded;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, mindislocation.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, mindislocation.ToString());
 	for (auto enemy : commander->List_Division)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetPawn()->GetName());
@@ -115,7 +115,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 			coverpossible = false;
 			for (auto coverenemy : commander->CoverEnemyArray)
 			{
-				if (FVector::Distance(enemy.Key->GetActorLocation(), coverenemy) < 10)
+				if (FVector::Distance(enemy.Key->GetActorLocation(), coverenemy) < 200)
 				{
 					coverpossible = true;
 					blackbordComponent->SetValueAsVector("AI_CoverLocation", coverenemy);
@@ -130,12 +130,9 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 					B_distance = false;
 					for (auto coverlist : commander->List_CoverPoint)
 					{
-						if (enemy.Value != coverlist.Key)
+						if (FVector::Distance(coverenemy, coverlist.Value) < 200)
 						{
-							if (FVector::Distance(coverenemy, coverlist.Value) < 200)
-							{
-								B_distance = true;
-							}
+							B_distance = true;
 						}
 					}
 					for (auto subAi : commander->Now_suben->AIArray)
