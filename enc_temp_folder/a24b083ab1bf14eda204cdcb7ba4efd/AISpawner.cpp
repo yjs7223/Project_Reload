@@ -128,40 +128,43 @@ void AAISpawner::WaveControl(float DeltaTime)
 	// 마지막 웨이브인지 확인 및 스폰
 	if (check_Overlap && !spawnCheck)
 	{
-		switch (spawn_Type)
+		if (last_Spawn)
 		{
-		case Spawn_Type::KILL:
-			if (count_Kill >= spawn_Condition)
+			check_Overlap = false;
+		}
+		else
+		{
+			switch (spawn_Type)
 			{
-				spawn_Timer += DeltaTime;
-				if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+			case Spawn_Type::KILL:
+				if (count_Kill >= spawn_Condition)
 				{
-					SpawnWave();
-					spawn_Timer = 0;
+					spawn_Timer += DeltaTime;
+					if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+					{
+						SpawnWave();
+						spawn_Timer = 0;
+					}
 				}
-			}
-			break;
-		case Spawn_Type::SECONDS:
-			spawn_Timer += DeltaTime;
-			if (spawn_Timer >= spawn_Condition)
-			{
+				break;
+			case Spawn_Type::SECONDS:
 				spawn_Timer += DeltaTime;
-				if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+				if (spawn_Timer >= spawn_Condition)
 				{
-					SpawnWave();
-					spawn_Timer = 0;
+					spawn_Timer += DeltaTime;
+					if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+					{
+						SpawnWave();
+						spawn_Timer = 0;
+					}
 				}
+				break;
 			}
-			break;
 		}
 	}
 
-	if (last_Spawn)
-	{
-		check_Overlap = false;
-	}
 	// 다음 웨이브
-	else if (spawnCheck)
+	if (spawnCheck)
 	{
 		NextWave();
 	}
