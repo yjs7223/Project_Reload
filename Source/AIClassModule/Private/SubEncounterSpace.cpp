@@ -4,9 +4,14 @@
 #include "SubEncounterSpace.h"
 #include "AICharacter.h"
 #include "AISpawner.h"
+#include "AI_Controller.h"
 #include "EncounterSpace.h"
 #include "Components/BoxComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Engine.h"
+#include "AICommander.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
 ASubEncounterSpace::ASubEncounterSpace()
@@ -18,7 +23,6 @@ ASubEncounterSpace::ASubEncounterSpace()
 	RootComponent = CollisionMesh;
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapBegin);
-	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapEnd);
 	
 	LevelActive = false;
 }
@@ -27,7 +31,7 @@ ASubEncounterSpace::ASubEncounterSpace()
 void ASubEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
-
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	// add
 	if (spawn != nullptr)
 	{
@@ -39,34 +43,50 @@ void ASubEncounterSpace::BeginPlay()
 void ASubEncounterSpace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (LevelActive)
-	{
-		EnemyAICheck();
-		
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
-	}
+
+	EnemyAICheck();
+
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
+
 }
 
 void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
 	{
-		LevelActive = true;
+		if (commander != nullptr)
+		{
+			LevelActive = true;
+			commander->m_suben = this;
+		}
+
 	}
 }
 
-void ASubEncounterSpace::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
-	{
-		LevelActive = false;
-	}
-}
 
 void ASubEncounterSpace::EnemyAICheck()
 {
-	this->GetOverlappingActors(AIArray,AAICharacter::StaticClass());
-	
+	this->GetOverlappingActors(M_AIArray,AAICharacter::StaticClass());
+	for (auto AI : M_AIArray)
+	{
+		//INDEX_NONE
+		if(AIArray.Find(AI) == INDEX_NONE)
+		{
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(AI)->GetController());
+			if (AIController)
+			{
+				if (AIController->GetBlackboardComponent())
+				{
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active"))
+					{
+						AIArray.Add(AI);
+					}
+
+				}
+			}
+		}
+		
+	}
 }
 
 

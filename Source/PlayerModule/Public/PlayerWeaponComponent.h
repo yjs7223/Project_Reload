@@ -41,6 +41,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 
 public:
 	// Called every frame
@@ -63,7 +64,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
-	void WeaponMeshSetting();
+	void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
 
 
 	void ReloadTick(float Deltatime);
@@ -92,6 +93,10 @@ public:
 
 	void Threaten();
 
+	float CalcDamage(FHitResult result, FVector2D p_damage);
+
+	static bool CheckActorTag(AActor* actor, FName tag);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class APlayerCharacter* owner;
@@ -104,7 +109,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UWeaponDataAsset* PistolDataAssets;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* ShotgunDataAssets;
+		class UWeaponDataAsset* WeaponDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UHitImapactDataAsset* HitImpactDataAsset;
@@ -200,4 +205,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
+
+	float MaxRange;
+	float Deviation;
 };

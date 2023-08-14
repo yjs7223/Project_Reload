@@ -19,7 +19,8 @@ public class Project_Reload : ModuleRules
             "PlayerModule",
             "AnimationModule",
             "AIClassModule", 
-			"MotionWarping"
+			"MotionWarping",
+			"BossModule"
         });
 	}
 }

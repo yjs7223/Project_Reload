@@ -19,6 +19,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI_Controller.h"
 #include "AIWeaponDataAsset.h"
+#include "Engine/EngineTypes.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -42,6 +43,18 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		RifleDataAsset = Cast<UAIWeaponDataAsset>(rifle_da.Object);
 	}
+	// 스나이퍼
+	static ConstructorHelpers::FObjectFinder<UDataAsset> sniper_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AISniper.DA_AISniper'"));
+	if (sniper_da.Succeeded())
+	{
+		SniperDataAsset = Cast<UAIWeaponDataAsset>(sniper_da.Object);
+	}
+	// 헤비
+	static ConstructorHelpers::FObjectFinder<UDataAsset> heavy_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIHeavy.DA_AIHeavy'"));
+	if (heavy_da.Succeeded())
+	{
+		HeavyDataAsset = Cast<UAIWeaponDataAsset>(heavy_da.Object);
+	}
 
 	// 총 피격 이펙트
 	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
@@ -57,11 +70,15 @@ void UAIWeaponComponent::BeginPlay()
 	owner = Cast<AAICharacter>(GetOwner());
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
-	AITypeSetting();
 	use_Shot_State = true;
+	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
 
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
+	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+
+	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
+	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
 }
 
 
@@ -75,13 +92,12 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		ShotAITimer(DeltaTime);
 	}*/
 	// ...
-
-	CheckTrace();
 }
 
 void UAIWeaponComponent::ShotAI()
 {
-	owner->bUseControllerRotationYaw = true;
+	//owner->bUseControllerRotationYaw = true;
+	Super::Fire();
 	
 	FVector loc;
 	FRotator rot;
@@ -94,12 +110,24 @@ void UAIWeaponComponent::ShotAI()
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_04"));
+
 	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+
+	if (blackboardTarget != nullptr)
+	{
+		// 타겟이 플레이어가 아니면
+		if (blackboardTarget != player)
+		{
+			end = start + ((blackboardTarget->GetActorLocation() - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+		}
+	}
+
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
 	{
+		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		// AI가 앞을 막고 있을 때 사격 불가능
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
@@ -108,7 +136,7 @@ void UAIWeaponComponent::ShotAI()
 	}
 	
 	// 사격 방향 체크
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, traceParams))
 	{
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
@@ -125,16 +153,18 @@ void UAIWeaponComponent::ShotAI()
 					+ deviation;
 
 				temp->Attacked(dmg, GetOwner<ABaseCharacter>());
+				temp->hitNormal = m_result.ImpactNormal;
 			}
 		}
 
 		AISpawnImpactEffect(m_result);
+		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 	}
 
 	// 점점 반동이 줄어듦
 	if (recoil_Radius > recoilMin_Radius)
 	{
-		recoil_Radius = recoilMax_Radius - recoilMin_Radius / cur_Shot_Count;
+		recoil_Radius -= (recoilMax_Radius - recoilMin_Radius) / shot_MaxCount;
 	}
 	else
 	{
@@ -152,7 +182,7 @@ void UAIWeaponComponent::ShotAI()
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	// 총알 생성
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, (playerLocation - start).Rotation() + FRotator(x, y, 0));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, rot);
 
 	// 사운드 재생
 	PlayRandomShotSound();
@@ -204,24 +234,22 @@ void UAIWeaponComponent::ReloadAI()
 	use_Shot_State = true;
 }
 
-void UAIWeaponComponent::AITypeSetting()
+void UAIWeaponComponent::SetDataTable(FName EnemyName)
 {
 	if (AIShotData)
 	{
-		switch (type)
+		// 데이터 가져오기
+		curAIShotData = AIShotData->FindRow<FST_AIShot>(EnemyName, TEXT(""));
+		switch (Cast<AAICharacter>(owner)->type)
 		{
 		case Enemy_Name::RIFLE:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Rifle_E", TEXT(""));
 			AIWeaponDataAsset = RifleDataAsset;
 			break;
-		case Enemy_Name::HEAVY:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Heavy_E", TEXT(""));
-			break;
 		case Enemy_Name::SNIPER:
-			// 라이플 데이터 가져오기
-			curAIShotData = AIShotData->FindRow<FST_AIShot>("Sniper_E", TEXT(""));
+			AIWeaponDataAsset = SniperDataAsset;
+			break;
+		case Enemy_Name::HEAVY:
+			AIWeaponDataAsset = HeavyDataAsset;
 			break;
 		}
 
@@ -260,7 +288,7 @@ void UAIWeaponComponent::AITypeSetting()
 
 bool UAIWeaponComponent::AITypeSniperCheck()
 {
-	if (type == Enemy_Name::SNIPER)
+	if (Cast<AAICharacter>(GetOwner())->type == Enemy_Name::SNIPER)
 	{
 		return true;
 	}
@@ -269,16 +297,17 @@ bool UAIWeaponComponent::AITypeSniperCheck()
 
 void UAIWeaponComponent::CheckTrace()
 {
+	if (commander == nullptr) return;
+	if (commander->Now_suben == nullptr) return;
+	if (commander->Now_suben->spawn == nullptr) return;
+	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
+	if (owner->combat == CombatState::PATROL) return;
+	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
+
 	FCollisionQueryParams collisionParams;
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 
-	if (commander == nullptr) return;
-	if (commander->m_suben == nullptr) return;
-	if (commander->m_suben->spawn == nullptr) return;
-	if (commander->m_suben->spawn->cpyLastPoint == nullptr) return;
-	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
-
-	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{
@@ -287,7 +316,7 @@ void UAIWeaponComponent::CheckTrace()
 		}
 	}
 
-	DrawDebugLine(GetWorld(), start, commander->m_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
+	DrawDebugLine(GetWorld(), start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
 }
 
 void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
@@ -355,8 +384,18 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 
 	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(p_result.Location, GetOwner()->GetActorLocation());
 	m_rot.Pitch -= 90.0f;
-
-	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, p_result.Location);
+	if (!p_result.BoneName.IsNone())
+	{
+		USkeletalMeshComponent* mesh = p_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+		if (mesh)
+		{
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, mesh->GetBoneLocation(p_result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+		}
+	}
+	else
+	{
+		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, p_result.Location, m_rot);
+	}
 }
 
 void UAIWeaponComponent::PlayRandomShotSound()

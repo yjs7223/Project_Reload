@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BaseCharacterMovementComponent.h"
 
 UBTS_PlayerStateChk::UBTS_PlayerStateChk()
 {
@@ -33,9 +34,11 @@ void UBTS_PlayerStateChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		{
 			UBaseInputComponent* Inputcomp = player->FindComponentByClass<UBaseInputComponent>();
 			UCoverComponent* Covercomp = player->FindComponentByClass<UCoverComponent>();
-
+			UBaseCharacterMovementComponent* movement = player->FindComponentByClass<UBaseCharacterMovementComponent>();
 			FInputData data;
+
 			memset(&data, 0, sizeof(FInputData));
+
 			if (Inputcomp->getInput()->IsFire || Inputcomp->getInput()->IsAiming)
 			{
 				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Attack);
@@ -44,7 +47,7 @@ void UBTS_PlayerStateChk::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 			{
 				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Cover);
 			}
-			else if (Inputcomp->getInput()->IsRuning)
+			else if (movement->isRuning())
 			{
 				AIController->GetBlackboardComponent()->SetValueAsEnum("Target_State", (uint8)ETarget_State::Move);
 			}

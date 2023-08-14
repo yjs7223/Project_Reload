@@ -23,13 +23,15 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void AnimationSetting();
+	void PlayShootingAnimation();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UBaseInputComponent* m_Input;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 		class UWeaponComponent* mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		class UPlayerMoveComponent* mPlayerMove;
+	class UBaseCharacterMovementComponent* m_Movement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		float mAimYaw;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)

@@ -20,6 +20,7 @@ UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 	Detourchange = false;
 	B_distance = false;
 	select_ai = nullptr;
+	Dis_Loc = 0.0f;
 }
 
 EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -45,6 +46,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 			for (auto cover : commander->DetourCoverArray)
 			{
 				select_ai = nullptr;
+				Dis_Loc = 0.0f;
 				Detourchange = false;
 				B_distance = false;
 				for (auto coverlist : commander->List_CoverPoint)
@@ -54,13 +56,13 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 						B_distance = true;
 					}
 				}
-				for (auto subAi : commander->m_suben->AIArray)
+				for (auto subAi : commander->List_Division)
 				{
-					if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
+					if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi.Key)->GetController()))
 					{
 						continue;
 					}
-					AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
+					AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi.Key)->GetController());
 					if (FVector::Distance(cover, sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
 					{
 						B_distance = true;
@@ -70,7 +72,6 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 				{
 					for (auto ai : commander->List_Division)
 					{
-						
 						if (!Cast<AAICharacter>(ai.Key)->Detour)
 						{
 							Detourchange = true;
@@ -118,7 +119,6 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 				}
 				if (!Detourchange)
 				{
-					
 					return EBTNodeResult::Succeeded;
 				}
 				if (select_ai)

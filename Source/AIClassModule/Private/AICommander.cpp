@@ -30,6 +30,13 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
+#include "Components/PrimitiveComponent.h"
+#include "AIPatrolComponent.h"
+#include "AISensingComponent.h"
+#include "AIWeaponComponent.h"
+#include "AIInputComponent.h"
+#include "CoverComponent.h"
+#include "CoverManager.h"
 
 
 // Sets default values
@@ -51,12 +58,7 @@ AAICommander::AAICommander()
 	{
 		RedBallBlueprint = (UClass*)RedBallData.Object->GeneratedClass;
 	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
-	if (DT_SuppressionDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
+
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_CommanderDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Commander.DT_Commander'"));
 	if (DT_CommanderDataObject.Succeeded())
 	{
@@ -89,26 +91,19 @@ void AAICommander::BeginPlay()
 	Super::BeginPlay();
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEncounterSpace::StaticClass(), EncounterArray);
+	
+	CoverManager = Cast<ACoverManager>
+		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverManager::StaticClass()));
+
+	
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BB_AICommander, BlackboardComp);
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
-	SetDataTable("Rifle_E");
+
 	SetCommanderDataTable("Commander");
 }
 
-void AAICommander::SetDataTable(FName EnemyName)
-{
-	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
-	if (SuppressionData)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
-
-		sup_sharerange = SuppressionData->Sup_ShareRange;
-		sup_sharetime = SuppressionData->Sup_ShareTime;
-	}
-	
-}
 
 void AAICommander::SetCommanderDataTable(FName EnemyName)
 {
@@ -135,69 +130,80 @@ void AAICommander::Tick(float DeltaTime)
 
 void AAICommander::ListSet()
 {
-	for (auto& en : EncounterArray)
+	if (Now_en == nullptr)
 	{
-		if (Cast<AEncounterSpace>(en)->LevelActive)
+		return;
+	}
+	if (Now_suben == nullptr)
+	{
+		return;
+	}
+	Blackboard->SetValueAsObject("Cmd_Space", Now_en);
+	if (En_AIActive)
+	{
+		AIActive(Now_en);
+	}
+	if (!Now_suben->LevelActive)
+	{
+		ListReset(Now_suben);
+	}
+	if (m_suben != nullptr)
+	{
+		if (Now_suben != m_suben)
 		{
-			Blackboard->SetValueAsObject("Cmd_Space", en);
+			ListReset(Now_suben);
+			Now_suben = m_suben;
+		}
+	}
 
-			
-			
-			for (auto& sub : Cast<AEncounterSpace>(en)->LevelArray)
+	if (Now_suben->spawn)
+	{
+		Now_suben->spawn->check_Overlap = true;
+	}
+	if (!MapList_Start)
+	{
+		ListStartSet(Now_suben);
+	}
+	else
+	{
+		ListTickSet(Now_suben, Cast<AEncounterSpace>(Now_en));
+		TargetTickSet(Now_suben);
+		CoverPointEnemy();
+		if (List_Division.Num() <= 0)
+		{
+			ListReset(Now_suben);
+		}
+	}
+}
+void AAICommander::AIActive(AEncounterSpace* en)
+{
+	for (auto sub : en->LevelArray)
+	{
+		ASubEncounterSpace* suben = Cast<ASubEncounterSpace>(sub);
+
+		for (auto ai : suben->M_AIArray)
+		{
+			AAICharacter* subai = Cast<AAICharacter>(ai);
+			AIController = Cast<AAI_Controller>(subai->GetController());
+			if (AIController)
 			{
-				if (Cast<ASubEncounterSpace>(sub)->LevelActive)
+				if (AIController->GetBlackboardComponent())
 				{
-					m_suben = Cast<ASubEncounterSpace>(sub);
-					if (m_suben == nullptr)
-					{
-						continue;
-					}
-					if (!m_suben->LevelActive)
-					{
-						ListReset(m_suben);
-					}
-					if (m_suben->spawn)
-					{
-						m_suben->spawn->check_Overlap = true;
-					}
-					
-					if (!MapList_Start)
-					{
-						ListStartSet(m_suben);
-					}
-					else
-					{
-						ListTickSet(m_suben, Cast<AEncounterSpace>(en));
-						TargetTickSet(m_suben);
-						CoverPointSubEn(m_suben);
-						CoverPointEnemy();
-						if (List_Division.Num() <= 0)
-						{
-							ListReset(m_suben);
-						}
-					}
+					AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
 				}
+
+				subai->Init();
 			}
 		}
 	}
+	En_AIActive = false;
 }
 
 void AAICommander::ListReset(ASubEncounterSpace* sub)
 {
-	List_Division.Reset();
-	List_Combat.Reset();
-	List_Location.Reset();
-	List_Suppression.Reset();
-	List_CoverPoint.Reset();
-	Sup_Array.Reset();
-	sub->en->LevelArray.Remove(this);
-	if (sub->LevelActive)
+	for (auto ai : List_Division)
 	{
-		sub->LevelActive = false;
-	}
-	for (auto ai : sub->AIArray)
-	{
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
 		if (AIController == nullptr)
 		{
 			continue;
@@ -208,6 +214,18 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 		}
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
 	}
+	List_Division.Reset();
+	//List_Combat.Reset();
+	List_Location.Reset();
+	List_Suppression.Reset();
+	List_CoverPoint.Reset();
+	Sup_Array.Reset();
+	sub->en->LevelArray.Remove(this);
+	if (sub->LevelActive)
+	{
+		sub->LevelActive = false;
+	}
+
 	AddIndex = 0;
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
@@ -217,21 +235,31 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 void AAICommander::ListAdd(AActor* ac)
 {
 	List_Division.Add(ac, AddIndex);
-	List_Combat.Add(AddIndex, ECombat::Patrol);
+	//List_Combat.Add(AddIndex, ECombat::Patrol);
 	List_Location.Add(AddIndex, ac->GetActorLocation());
 	List_Suppression.Add(AddIndex, 0.0f);
 	List_CoverPoint.Add(AddIndex, FVector(0, 0, 0));
-
+	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ac)->GetController());
+	if (AIController)
+	{
+		if (AIController->GetBlackboardComponent())
+		{
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
+			AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
+			//AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
+		}
+	}
 	AddIndex++;
 }
+
 
 void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, sub->GetName());
-	for (auto& subAi : sub->AIArray)
+	for (auto& subAi : sub->M_AIArray)
 	{
 		List_Division.Add(subAi, AddIndex);
-		List_Combat.Add(AddIndex, ECombat::Patrol);
+		//List_Combat.Add(AddIndex, ECombat::Patrol);
 		List_Location.Add(AddIndex, subAi->GetActorLocation());
 		List_Suppression.Add(AddIndex, 0.0f);
 		List_CoverPoint.Add(AddIndex, FVector(0,0,0));
@@ -246,12 +274,20 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		{
 			continue;
 		}
-		AIController->RunBTT();
-		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
+		if (AIController->btree)
+		{
+			AIController->RunBTT();
+		}
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
-		AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
+		//AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", (uint8)*List_Combat.Find(AddIndex));
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::FromInt(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat")));
 		AddIndex++;
+	}
+	CoverPointSubEn(Now_suben);
+	if (CoverSubEnArray.IsEmpty())
+	{
+		MapList_Start = false;
+		return;
 	}
 	MapList_Start = true;
 }
@@ -259,15 +295,15 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 {
 	SightIn_CHK = false;
-	for (auto ai :sub->AIArray)
+	for (auto ai : List_Division)
 	{
-		auto FindActor = List_Division.Find(ai); 
+		auto FindActor = List_Division.Find(ai.Key); 
 		
 		if (FindActor)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("AICOMMENDER"));
-			List_Location.Add(*FindActor, ai->GetActorLocation());
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+			List_Location.Add(*FindActor, ai.Key->GetActorLocation());
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
 			if (AIController == nullptr)
 			{
 				continue;
@@ -281,7 +317,7 @@ void AAICommander::ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en)
 				AIController->commander = this;
 			}
 			List_Suppression.Add(*FindActor, AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint"));
-			if (s_time >= sup_sharetime)
+			if (s_time >= Cast<AAICharacter>(ai.Key)->sup_sharetime)
 			{
 				SuppressionShare(sub);
 
@@ -336,77 +372,33 @@ void AAICommander::TargetTickSet(ASubEncounterSpace* sub)
 		{
 			continue;
 		}
-		if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
+		if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
 		{
-			Blackboard->SetValueAsObject("Cmd_Target", AIController->GetBlackboardComponent()->GetValueAsObject("Target"));
-
-			for (auto& ai : sub->AIArray)
-			{
-				if (ai != subAi)
-				{
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-					if (AIController == nullptr)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent() == NULL)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
-					{
-						AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
-					}
-
-				}
-			}
-
-
+			continue;
 		}
-		else
+		Blackboard->SetValueAsObject("Cmd_Target", AIController->GetBlackboardComponent()->GetValueAsObject("Target"));
+
+		for (auto& ai : sub->AIArray)
 		{
-			sightin = false;
-
-			for (auto& aichk : sub->AIArray)
+			if (ai != subAi)
 			{
-				if (aichk != subAi)
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController == nullptr)
 				{
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(aichk)->GetController());
-					if (AIController == nullptr)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent() == NULL)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
-					{
-						sightin = true;
-					}
-
+					continue;
 				}
-			}
-			if (sightin == false)
-			{
-				for (auto& sightai : sub->AIArray)
+				if (AIController->GetBlackboardComponent() == NULL)
 				{
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(sightai)->GetController());
-					if (AIController == nullptr)
-					{
-						continue;
-					}
-					if (AIController->GetBlackboardComponent() == NULL)
-					{
-						continue;
-					}
-					AIController->GetBlackboardComponent()->SetValueAsBool("Sight_In", false);
+					continue;
 				}
-			}
+				if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+				}
 
+			}
 		}
 	}
-	
 }
 
 void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
@@ -436,14 +428,13 @@ void AAICommander::SuppressionShare(ASubEncounterSpace* sub)
 		if (*List_Location.Find(*FindAc) != MaxSupLoc)
 		{
 			sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
-			sup_value += (Sup_Array[0] / 5)
-				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / sup_sharerange));
+			sup_value += (Sup_Array[0] / 15)
+				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / Cast<AAICharacter>(ac)->sup_sharerange));
 			if (sup_value >= Sup_Array[0])
 			{
 				sup_value = Sup_Array[0];
 			}
-			AIController->GetBlackboardComponent()->SetValueAsFloat
-			("Sup_TotalPoint", sup_value);
+			AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_value);
 		}
 	}
 }
@@ -491,22 +482,19 @@ void AAICommander::CoverPointEnemy()
 		collisionParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(result, subencover, player->GetActorLocation(), ECC_Visibility, collisionParams))
 		{
-			enemycover = false;
+
 			if (result.GetActor()->ActorHasTag("Cover"))
 			{
-				if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
+				if (FVector::Distance(subencover, result.ImpactPoint) < 50.0f)
 				{
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
 					if (FVector::Distance(subencover, player->GetActorLocation()) >= 500.0f)
 					{
-						enemycover = true;
+
+						CoverEnemyArray.Add(subencover);
 					}
 				}
-			}
-			if (enemycover)
-			{
-				CoverEnemyArray.Add(subencover);
 			}
 		}
 	}
@@ -790,6 +778,11 @@ bool AAICommander::SameDetourPoint(FVector FinalLocation, FVector MiddleLocation
 		return true;
 	}
 	return false;
+}
+
+void AAICommander::ZeroListCoverPoint(AActor* AIActor)
+{
+	List_CoverPoint.Add(*List_Division.Find(AIActor), FVector::ZeroVector);
 }
 
 

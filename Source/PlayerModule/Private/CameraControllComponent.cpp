@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "WeaponComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "BaseCharacterMovementComponent.h"
 #include "BaseInputComponent.h"
 
 // Sets default values for this component's properties
@@ -42,7 +43,8 @@ void UCameraControllComponent::BeginPlay()
 	m_FollowCamera = owner->FindComponentByClass<UCameraComponent>();
 	m_FollowSpringArm = owner->FindComponentByClass<USpringArmComponent>();
 	m_FollowSpringArm->SocketOffset = m_Data->camerapos;
-	
+	m_FollowSpringArm->SetRelativeLocation(FVector(0.0, 0.0, owner->GetDefaultHalfHeight() * 1.5));
+	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 
 }
 
@@ -53,6 +55,11 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	FVector tempCamerapos = m_Data->camerapos;
+
+	if (m_Cover && m_Cover->IsCover()) {
+		tempCamerapos = m_Data->camerapos_Cover;
+	}
+
 	FRotator tempCameraRot = FRotator(0, 0, 0);
 	tempCamerapos.Z -= owner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 
@@ -64,29 +71,33 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	else {
 		m_Data->TargetArmLenght = m_Data->IdleArmLength;
 	}
+	if (m_Movement->isRuning()) {
+		tempCamerapos += m_Data->camerapos_Runing;
+	}
+
 	if (m_Cover && m_Cover->isPeeking()) {
 		EPeekingState peekstate = m_Cover->getPeekingState();
-		if (peekstate == EPeekingState::FrontRightStart) {
+		if (peekstate == EPeekingState::FrontRight) {
 			tempCamerapos += m_Data->camerapos_FrontRightPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
-		else if (peekstate == EPeekingState::FrontLeftStart) {
+		else if (peekstate == EPeekingState::FrontLeft) {
 			tempCamerapos += m_Data->camerapos_FrontLeftPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
-		else if (peekstate == EPeekingState::HighRightStart) {
+		else if (peekstate == EPeekingState::HighRight) {
 			tempCamerapos += m_Data->camerapos_HighRightPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
-		else if (peekstate == EPeekingState::HighLeftStart) {
+		else if (peekstate == EPeekingState::HighLeft) {
 			tempCamerapos += m_Data->camerapos_HighLeftPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
-		else if (peekstate == EPeekingState::LowRightStart) {
+		else if (peekstate == EPeekingState::LowRight) {
 			tempCamerapos += m_Data->camerapos_LowRightPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLRight;
 		}
-		else if (peekstate == EPeekingState::LowLeftStart) {
+		else if (peekstate == EPeekingState::LowLeft) {
 			tempCamerapos += m_Data->camerapos_LowLeftPeek;
 			tempCameraRot += m_Data->camerarot_PeekingLeft;
 		}
@@ -115,21 +126,9 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		}
 	}
 
-
-
-
-	for (auto& item : m_Data->camerplusvectors)
-	{
-		tempCamerapos += item.Value;
-	}
-
 	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(m_FollowSpringArm->SocketOffset, tempCamerapos, DeltaTime, m_Data->m_PosSpeed);
 	m_FollowCamera->SetRelativeRotation(FMath::RInterpTo(m_FollowCamera->GetRelativeRotation(), tempCameraRot, DeltaTime, m_Data->m_RotSpeed));
 	m_FollowSpringArm->TargetArmLength = FMath::FInterpTo(m_FollowSpringArm->TargetArmLength, m_Data->TargetArmLenght, DeltaTime, m_Data->m_LengthSpeed);
-	//m_FollowSpringArm->SocketOffset = tempCamerapos;
-	//m_FollowCamera->SetRelativeRotation(tempCameraRot);
-	//m_FollowSpringArm->TargetArmLength = TargetArmLenght;
-
 }
 
 

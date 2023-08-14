@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "StatComponent.h"
+#include "ST_Spawn.h"
 #include "AIStatComponent.generated.h"
 
 
@@ -73,6 +74,8 @@ public:
 		float sup_DelayTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_MaxPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		float sup_MinPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_middlePoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)

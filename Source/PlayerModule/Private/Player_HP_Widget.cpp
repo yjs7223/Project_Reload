@@ -62,8 +62,10 @@ void UPlayer_HP_Widget::NativeConstruct()
 		if (UPlayerStatComponent* MyStatComp = Cast<UPlayerStatComponent>(MyCharacter->stat))
 		{
 			stat = MyCharacter->stat;
-			MyStatComp->OnChangedHealthDelegate.BindUObject(this, &UPlayer_HP_Widget::SetPercent);
-			MyStatComp->OnVisibleHPUIDelegate.BindUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
+			//MyStatComp->OnChangedHealthDelegate.AddRaw
+			MyStatComp->OnChangedHealthDelegate.AddUObject(this, &UPlayer_HP_Widget::SetPercent);
+			MyStatComp->OnVisibleHPUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
+			MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
 		}
 	}
 }
@@ -99,6 +101,24 @@ void UPlayer_HP_Widget::MoveCircle(float deltatime)
 	t = FVector2D(68.0f + FMath::Sin(moveValue2) * 73.0f, 68.0f + FMath::Cos(moveValue2) * 73.0f);
 	MoveCircle2->SetRenderTranslation(t);
 
+}
+
+void UPlayer_HP_Widget::SetBackMat()
+{
+	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP_Back.M_RadialHP_Back'"));
+	if (mat)
+	{
+		HPmat = UMaterialInstanceDynamic::Create(mat, this);
+		if (HPmat)
+		{
+			//FSlateBrush imageBrush;
+			//imageBrush.ImageSize = FVector2D(30.0f, 30.0f);
+			HPmat->SetScalarParameterValue(FName(TEXT("Percent")), 1.0f);
+			//imageBrush.SetResourceObject(DynMaterial);
+			HP_image->SetBrushFromMaterial(HPmat);
+
+		}
+	}
 }
 
 void UPlayer_HP_Widget::SetWidgetVisible()

@@ -10,6 +10,8 @@
 #include "Pakurable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "BaseCharacterMovementComponent.h"
+
 
 // Sets default values for this component's properties
 UPlayerMoveComponent::UPlayerMoveComponent()
@@ -34,7 +36,7 @@ void UPlayerMoveComponent::BeginPlay()
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
-	m_Movement = owner->GetCharacterMovement();
+	m_Movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 
 	if (m_PathFollowingComp == nullptr) {
 		GetWorld()->GetTimerManager().SetTimerForNextTick([this]() {
@@ -48,6 +50,7 @@ void UPlayerMoveComponent::BeginPlay()
 	}
 
 	mCanMove = true;
+	//turningspped
 }
 
 
@@ -57,8 +60,9 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (!mCanMove) return;
 
-
-	if (m_PakurComp && IPakurable::Execute_IsRolling(m_PakurComp)) return;
+	if (m_PakurComp && 
+		m_PakurComp ->GetClass()->ImplementsInterface(UPakurable::StaticClass()) && 
+		IPakurable::Execute_IsRolling(m_PakurComp)) return;
 	Moving(DeltaTime);
 	Turning(DeltaTime);
 }
@@ -85,51 +89,65 @@ void UPlayerMoveComponent::Turn()
 void UPlayerMoveComponent::Moving(float DeltaTime)
 {
 	if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
-		mTargetRotate = owner->GetVelocity().Rotation();
-		return;
+		if (m_Inputdata->movevec == FVector::ZeroVector) {
+			mTargetRotate = owner->GetVelocity().Rotation();
+			return;
+		}
+		else {
+			m_CoverComp->StopCover();
+		}
 	}
+
 	if (m_Inputdata->movevec == FVector::ZeroVector) {
 		mMoveDirect = FVector::ZeroVector;
-		m_Inputdata->IsRuning = false;
+
+		if (m_Movement->isRuning()) {
+			m_Movement->SetMovementMode(MOVE_Walking);
+		}
+
 
 		return;
 	}
 
+
+	//if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
+	//	mTargetRotate = owner->GetVelocity().Rotation();
+	//	return;
+	//}
+
+	//if (m_Inputdata->movevec == FVector::ZeroVector) {
+	//	mMoveDirect = FVector::ZeroVector;
+
+	//	return;
+	//}
+	//else {
+	//	if (m_PathFollowingComp && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
+
+	//		m_CoverComp->StopCover();
+
+	//	}
+	//}
+
 	FVector MoveDirect;
-
-	MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
-
+		MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
 	if (m_CoverComp) {
 		m_CoverComp->SettingMoveVector(MoveDirect);
 	}
 
+
 	MoveDirect.Z = 0;
 	MoveDirect.Normalize();
+	MoveDirect *= m_Movement->GetMaxSpeed();
 	FRotator targetRotate = FRotator(0.0f, owner->Controller->GetControlRotation().Yaw, 0.0f);
 
-	if (m_Inputdata->IsRuning) {
-		MoveDirect *= m_Movement->GetMaxSpeed();
-		//MoveDirect *= 2.0f;
+	if (m_Movement->isRuning()) {
 		targetRotate = MoveDirect.Rotation();
-
 	}
+
 	
 	mTargetRotate = targetRotate;
-	
-	if (MoveDirect == FVector::ZeroVector) {
-		mMoveDirect = FVector::ZeroVector;
-		m_Movement->Velocity = FVector::ZeroVector;
-	}
-	else {
-		mMoveDirect = FMath::VInterpTo(mMoveDirect, MoveDirect, DeltaTime, 8.f);
-	}
 
-	owner->GetMovementComponent()->AddInputVector(mMoveDirect * movespeed);
-	//owner->AddMovementInput(mMoveDirect, 0.5f);
-	//owner->GetCharacterMovement()->Velocity = mMoveDirect;
-
-	
-
+	owner->AddMovementInput(MoveDirect);
 }
 
 void UPlayerMoveComponent::SetCanMove(bool canmove)

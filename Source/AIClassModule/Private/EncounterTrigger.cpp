@@ -7,6 +7,9 @@
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
 #include "Kismet/KismetStringLibrary.h"
+#include "AICommander.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
 AEncounterTrigger::AEncounterTrigger()
@@ -26,6 +29,7 @@ AEncounterTrigger::AEncounterTrigger()
 void AEncounterTrigger::BeginPlay()
 {
 	Super::BeginPlay();
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	
 }
 
@@ -40,8 +44,14 @@ void AEncounterTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 {
 	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
 	{
-		en->LevelActive = true;
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("encounter"));
+		if (commander != nullptr)
+		{
+			en->LevelActive = true;
+			commander->Now_en = en;
+			commander->En_AIActive = true;
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("encounter"));
+		}
+		
 		
 	}
 }
