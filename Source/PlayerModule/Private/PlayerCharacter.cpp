@@ -240,7 +240,7 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 	{
 		float yaw = GetControlRotation().Yaw;// * 0.3f;
 		FRotator widrot = HPWidgetComponent->GetRelativeRotation();
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
 		//widrot.Yaw *= 0.3f;
 		widrot.Yaw = (yaw + 180);// * 0.3f;//+60;
 		widrot.Yaw *= 0.3f;

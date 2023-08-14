@@ -31,6 +31,7 @@
 #include "CoverComponent.h"
 #include "CharacterSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "Bullet.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -135,10 +136,12 @@ void UPlayerWeaponComponent::InitData()
 		{
 		case EWeaponType::TE_Pistol:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Pistol"), FString(""));
+			maxAmmo = 10;
 			WeaponDataAsset = PistolDataAssets;
 			break;
 		case EWeaponType::TE_Rifle:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Rifle"), FString(""));
+			maxAmmo = 30;
 			WeaponDataAsset = RifleDataAssets;
 			break;
 		case EWeaponType::TE_Shotgun:
@@ -146,6 +149,7 @@ void UPlayerWeaponComponent::InitData()
 			break;
 		default:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+			maxAmmo = 30;
 			WeaponDataAsset = RifleDataAssets;
 			break;
 		}
@@ -230,7 +234,9 @@ void UPlayerWeaponComponent::Fire()
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
-
+	
+	FActorSpawnParameters spawnparam;
+	spawnparam.Owner = owner;
 	//CameraHit
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
@@ -241,7 +247,7 @@ void UPlayerWeaponComponent::Fire()
 		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		FVector dis = start - m_result.Location;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
 		end = m_rot.Vector() * 1000000.0f;
 
 		//WeaponHit
@@ -321,8 +327,6 @@ void UPlayerWeaponComponent::Fire()
 	}
 	else
 	{
-		FActorSpawnParameters spawnparam;
-		spawnparam.Owner = owner;
 		TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
 		GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);
 
@@ -332,9 +336,12 @@ void UPlayerWeaponComponent::Fire()
 
 	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	//UGameplayStatics::SpawnEmitterAtLocation()
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
-	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotFXNiagara, start);
-	//shotFXComponent->SetNiagaraVariableVec3("Beam_end", m_result.Location);
+
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), m_result.Location, m_rot, spawnparam);
+	bullet->SpawnBulletFx(shotFXNiagara, m_rot.Vector());
+	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
+	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotFXNiagara, start, m_rot, FVector(.3f, .3f, .3f));
+	//shotFXComposnent->SetNiagaraVariableVec3("Beam_end", m_result.Location);
 
 	SpawnImpactEffect(m_result);
 	PlayRandomShotSound();

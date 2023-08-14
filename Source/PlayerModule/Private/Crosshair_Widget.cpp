@@ -246,12 +246,18 @@ void UCrosshair_Widget::CheckDie()
 			StopAnimation(HitAnim);
 		}
 
-		GetWorld()->GetTimerManager().SetTimer(HitTimer,
-			FTimerDelegate::CreateLambda([&]()
-				{
-					PlayAnimationForward(HitAnim);
-				}
-		), .01f, false);
+		if (HitAnim)
+		{
+			GetWorld()->GetTimerManager().SetTimer(HitTimer,
+				FTimerDelegate::CreateLambda([&]()
+					{
+						if (HitAnim)
+						{
+							PlayAnimationForward(HitAnim);
+						}
+					}
+			), .01f, false);
+		}
 		
 	}
 

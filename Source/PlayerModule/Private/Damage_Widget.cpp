@@ -42,9 +42,11 @@ void UDamage_Widget::SetDamageText(float value, FHitResult result)
 	Damage_Overlay->SetRenderTranslation(damageLocation);
 
 	Damage_Text->SetText(FText::FromString(FString::FromInt(value)));
-
-	PlayAnimationForward(DamageAnim);
-
+	
+	if (DamageAnim)
+	{
+		PlayAnimationForward(DamageAnim);
+	}
 	GetWorld()->GetTimerManager().SetTimer(DamageTimer,
 			FTimerDelegate::CreateLambda([&]()
 				{
