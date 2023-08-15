@@ -120,31 +120,32 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 							
 						}
 					}
-				}
-				if (!Detourchange)
-				{
-					return EBTNodeResult::Succeeded;
-				}
-				if (select_ai)
-				{
-					
-					AIController = nullptr;
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(select_ai)->GetController());
-					if (AIController)
+					if (select_ai)
 					{
-						if (AIController->GetBlackboardComponent())
+
+						AIController = nullptr;
+						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(select_ai)->GetController());
+						if (AIController)
 						{
-							FActorSpawnParameters spawnParams;
-							FRotator rotator;
-							FVector RedballLoc = cover + FVector(0, 0, 100);
-							AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", cover);
-							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "cover.ToString()");
-							GetWorld()->SpawnActor<AActor>(commander->RedBallBlueprint, cover, rotator);
-							Cast<AAICharacter>(select_ai)->Detour = true;
-							commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
+							if (AIController->GetBlackboardComponent())
+							{
+								FActorSpawnParameters spawnParams;
+								FRotator rotator;
+								FVector RedballLoc = cover + FVector(0, 0, 100);
+								AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", cover);
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "cover.ToString()");
+								GetWorld()->SpawnActor<AActor>(commander->RedBallBlueprint, cover, rotator);
+								Cast<AAICharacter>(select_ai)->Detour = true;
+								commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
+							}
 						}
 					}
 				}
+				else
+				{
+					continue;
+				}
+				
 			}
 		}
 		

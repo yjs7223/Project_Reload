@@ -180,7 +180,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 				}
 			}
 		}
-		if (mindislocation == FVector::ZeroVector)
+		if (mindislocation == beforelocation)
 		{
 			blackbordComponent->SetValueAsBool("OrderWait", false);
 			return EBTNodeResult::Succeeded;
