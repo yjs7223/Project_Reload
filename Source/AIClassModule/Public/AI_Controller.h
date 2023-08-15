@@ -15,7 +15,7 @@ class AICLASSMODULE_API AAI_Controller : public AAIController
 {
 	GENERATED_BODY()
 public:
-	AAI_Controller();
+	AAI_Controller(const FObjectInitializer& ObjectInitializer);
 
 protected: 
 	virtual void BeginPlay() override;
@@ -55,7 +55,7 @@ public:
 
 	FTimerHandle timer;
 
-	//¾öÆó¿ÀºêÁ§Æ®Å¸ÀÔÃ¤³Î ÀÔ´Ï´Ù
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®Å¸ï¿½ï¿½Ã¤ï¿½ï¿½ ï¿½Ô´Ï´ï¿½
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 public:
 	//UFUNCTION()//BlueprintCallable

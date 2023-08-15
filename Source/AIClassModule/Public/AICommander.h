@@ -91,6 +91,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* m_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* m_en;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* Now_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* Now_en;
@@ -148,6 +150,8 @@ public:
 		void ListSet();
 	UFUNCTION()
 		void ListReset(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListVoidReset();
 	UFUNCTION()
 		void ListAdd(AActor* ac);
 	UFUNCTION()
