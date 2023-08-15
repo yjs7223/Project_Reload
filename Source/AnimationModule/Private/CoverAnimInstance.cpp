@@ -30,6 +30,41 @@ void UCoverAnimInstance::NativeBeginPlay()
 	if (mWeapon) {
 		mWeaponMesh = mWeapon->WeaponMesh;
 	}
+	AnimationSetting();
+
+	mCover->PlayMontageStartCover.AddLambda([this]() {
+		if (!m_CurrentAnimation.IsVaild()) return;
+		ACharacter* owner = Cast<ACharacter>(TryGetPawnOwner());
+		UAnimMontage* playMontage = nullptr;
+		if (!owner->bIsCrouched) {
+			if (mCover->isMustCrouch()) {
+				playMontage = mCover->IsFaceRight() ? m_CurrentAnimation.StartCover_HighToLow_Right : m_CurrentAnimation.StartCover_HighToLow_Left;
+			}
+			else {
+				playMontage = mCover->IsFaceRight() ? m_CurrentAnimation.StartCover_HighToHigh_Right : m_CurrentAnimation.StartCover_HighToHigh_Left;
+			}
+		}
+		else {
+			playMontage = mCover->IsFaceRight() ? m_CurrentAnimation.StartCover_LowToLow_Right : m_CurrentAnimation.StartCover_LowToLow_Left;
+		}
+		Montage_Play(playMontage);
+
+		});
+	mCover->PlayMontageEndCover.AddLambda([this]() {
+		if (!m_CurrentAnimation.IsVaild()) return;
+		ACharacter* owner = Cast<ACharacter>(TryGetPawnOwner());
+		UAnimMontage* playMontage = nullptr;
+		if (!owner->bIsCrouched) {
+			playMontage = mCover->IsFaceRight() ? m_CurrentAnimation.EndCover_HighToHigh_Right : m_CurrentAnimation.EndCover_HighToHigh_Left;
+		}
+		else {
+			playMontage = mCover->IsFaceRight() ? m_CurrentAnimation.EndCover_LowToLow_Right : m_CurrentAnimation.EndCover_LowToLow_Left;
+		}
+		if (playMontage) {
+			Montage_Play(playMontage);
+
+		}
+		});
 }
 
 void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -63,6 +98,20 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;
 		mIsMoving = charcter->GetVelocity().Length() > 0 || mIsCornering;
+	}
+}
+
+
+void UCoverAnimInstance::AnimationSetting()
+{
+	if (!m_AnimationTable) return;
+	if (!mWeapon) return;
+
+	static const UEnum* WeaponTypeEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
+
+	FCoverAnimationTable* findanimation = m_AnimationTable->FindRow<FCoverAnimationTable>(FName((WeaponTypeEnum->GetDisplayNameTextByValue((int)mWeapon->weapontype).ToString())), TEXT(""));
+	if (findanimation && findanimation->IsVaild()) {
+		m_CurrentAnimation = *findanimation;
 	}
 }
 

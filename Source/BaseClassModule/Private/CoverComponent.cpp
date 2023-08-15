@@ -14,10 +14,8 @@
 #include "WeaponComponent.h"
 #include "EPeekingState.h"
 #include "Camera/CameraComponent.h"
-#include "MathUtil.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Navigation/PathFollowingComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "BaseCharacterMovementComponent.h"
 
 
@@ -62,6 +60,8 @@ void UCoverComponent::BeginPlay()
 	}
 	m_PathFollowingComp->SetPreciseReachThreshold(0.2f, 0.2f);
 	m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
+
+	SetIsFaceRight(true);
 }
 
 
@@ -619,22 +619,24 @@ bool UCoverComponent::StartCover()
 	if (result.GetActor() == nullptr) return false;
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
 		m_CanCoverPointNormal = result.Normal;
-
 	}
 
-	PlayMontageStartCover.Broadcast();
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
-	SetIsFaceRight(true);
+	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
 
+	PlayMontageStartCover.Broadcast();
 	return true;
 }
 
 
 void UCoverComponent::StopCover()
 {
-	PlayMontageEndCover.Broadcast();
+	if (m_IsCover) {
+		PlayMontageEndCover.Broadcast();
+	}
+
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;
@@ -642,8 +644,10 @@ void UCoverComponent::StopCover()
 	mPeekingState = EPeekingState::None;
 	SetIsFaceRight(true);
 
+
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	m_Input->m_CanUnCrouch = true;
+
 }
 
 void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
@@ -708,34 +712,55 @@ void UCoverComponent::PlayingCornering(float DeltaTim)
 void UCoverComponent::BeCrouch(float deltaTime)
 {
 	if (mPeekingState != EPeekingState::None) return;
-	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 2.01f;
-	FVector upVector = owner->GetActorUpVector() * capsule->GetUnscaledCapsuleHalfHeight() * 1.01f;
-	owner->bIsCrouched ? upVector *= 2.0f : upVector;
-	FVector start;
-	FVector end;
-
-	start = owner->GetActorLocation() + upVector;
-	if (m_Turnlookpoint == FVector::ZeroVector) {
-		end = start + forwardVector;
-	}
-	else { 
-		end = m_Turnlookpoint;
-		end.Z = start.Z;
-	}
-	FHitResult result;
-	FCollisionQueryParams param(NAME_None, true, GetOwner());
-	GetWorld()->LineTraceSingleByChannel(
-		result, start, end, traceChanel, param);
-
-	if (result.bBlockingHit) {
-		m_Input->m_CanUnCrouch = true;
-	}
-	else {
+	
+	if (isMustCrouch()) {
 		m_Input->m_CanUnCrouch = false;
 		if (!owner->bIsCrouched) {
 			owner->Crouch();
 		}
 	}
+	else {
+		m_Input->m_CanUnCrouch = true;
+	}
+}
+
+bool UCoverComponent::isMustCrouch()
+{
+	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 3.01f;
+	FVector upVector = owner->GetActorUpVector() * capsule->GetUnscaledCapsuleHalfHeight();
+	upVector *= owner->bIsCrouched ? 2.0f : 0.5f;
+	FVector start = owner->GetActorLocation() + upVector;
+	FVector end;
+
+	if (m_Turnlookpoint == FVector::ZeroVector) {
+		end = start + forwardVector;
+	}
+	else {
+		end = m_Turnlookpoint;
+		end.Z = start.Z;
+	}
+
+	FHitResult result;
+	FCollisionQueryParams param(NAME_None, true, GetOwner());
+	TArray<AActor*> OutActors;
+
+	FHitResult tempResult;
+	return !UKismetSystemLibrary::BoxTraceSingle(GetWorld(),
+		owner->GetActorLocation() + upVector,
+		end,
+		{ capsule->GetScaledCapsuleRadius(), capsule->GetScaledCapsuleRadius(), 2.0 },
+		owner->GetActorRotation(),
+		UEngineTypes::ConvertToTraceType(traceChanel),
+		false,
+		{},
+		EDrawDebugTrace::ForDuration,
+		tempResult,
+		true);
+
+
+	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
+
+	return !result.bBlockingHit;
 }
 
 void UCoverComponent::StartPeeking()

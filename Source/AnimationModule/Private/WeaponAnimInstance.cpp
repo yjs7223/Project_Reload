@@ -64,13 +64,9 @@ void UWeaponAnimInstance::AnimationSetting()
 
 	static const UEnum* WeaponTypeEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
 
-	FWeaponAnimationTable* findanimation = m_AnimationTable->FindRow<FWeaponAnimationTable>(*WeaponTypeEnum->GetNameStringByValue((int)mWeapon->weapontype), TEXT(""));
-	
+	FWeaponAnimationTable* findanimation = m_AnimationTable->FindRow<FWeaponAnimationTable>(FName((WeaponTypeEnum->GetDisplayNameTextByValue((int)mWeapon->weapontype).ToString())), TEXT(""));
 	if (findanimation && findanimation->IsVaild()) {
 		m_CurrentAnimation = *findanimation;
-	}
-	else {
-
 	}
 }
 

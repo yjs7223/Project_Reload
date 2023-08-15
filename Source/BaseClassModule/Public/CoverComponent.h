@@ -10,6 +10,7 @@
 
 using namespace UP;
 
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BASECLASSMODULE_API UCoverComponent : public UActorComponent
 {
@@ -71,6 +72,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool StartAICover();
 
+		bool isMustCrouch();
 protected:
 	void TurnCheck(float DeltaTime);
 	bool StartCover();

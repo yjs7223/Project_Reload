@@ -184,7 +184,7 @@ void AAICharacter::UpdateWidget()
 		HPWidgetComponent->SetWorldRotation(FRotator(0, m_rot.Yaw, 0));
 	}
 	else
-	{
+	{	
 		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	}
 }
