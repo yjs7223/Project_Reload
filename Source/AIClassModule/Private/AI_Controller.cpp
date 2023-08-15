@@ -250,7 +250,10 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		{
 			if (em_normal == false)
 			{
-				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move != EMove::Hit)
+				{
+					GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				}
 				em_normal = true;
 			}
 			

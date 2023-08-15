@@ -108,7 +108,11 @@ void UPlayer_HP_Widget::SetBackMat()
 	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP_Back.M_RadialHP_Back'"));
 	if (mat)
 	{
-		HPmat = UMaterialInstanceDynamic::Create(mat, this);
+		if (!HPmat)
+		{
+			HPmat = UMaterialInstanceDynamic::Create(mat, this);
+		}
+		
 		if (HPmat)
 		{
 			//FSlateBrush imageBrush;
