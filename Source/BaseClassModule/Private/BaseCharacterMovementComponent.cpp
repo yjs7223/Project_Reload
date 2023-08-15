@@ -47,7 +47,7 @@ float UBaseCharacterMovementComponent::GetMaxSpeed() const
 void UBaseCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (!PawnOwner->FindComponentByClass<UCameraComponent>()) return;
+	if (PawnOwner && !PawnOwner->FindComponentByClass<UCameraComponent>()) return;
 	if (MovementMode != MOVE_Custom) {
 		UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("EMovementMode"), true)->GetNameStringByValue(MovementMode), true, true, FColor::Red, DeltaTime);
 	}
