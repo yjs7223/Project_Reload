@@ -366,13 +366,13 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	//박스 트레이스로 엄폐물을 체크 합니다
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,
-		ViewPoint + ViewVector * 1000,
+		ViewPoint + ViewVector * 2000,
 		{ 0, camera->OrthoWidth * 0.2f, camera->OrthoWidth },
 		cameraRotation,
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		true,
 		{ m_CoverWall },
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForOneFrame,
 		results,
 		true
 	)) {
@@ -380,7 +380,6 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 
 		return FVector::ZeroVector;
 	}
-
 	// 첫 요소를 가져어옵니다
 	// <멀티가 하나만 체크하기에 첫요소만 가져옵니다>
 	auto iter = results.CreateConstIterator();
@@ -396,6 +395,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector impactNormal;
 	FVector pointToLocation = item.Location - item.ImpactPoint;
 
+	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 4000000) return  FVector::ZeroVector;
 	//UKismetSystemLibrary::PrintString(GetWorld(), item.ImpactPoint.ToString(), true, false, FColor::Green, 2.0f, TEXT("asdsadsa"));
 	//{
 	//	FVector impactpoint2D = item.ImpactPoint;
