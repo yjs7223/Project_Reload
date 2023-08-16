@@ -20,6 +20,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class TSubclassOf<UAnimInstance> weaponAnim;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+			TMap<FName, UStaticMesh*> Attachments;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class USoundCue* ShotSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
