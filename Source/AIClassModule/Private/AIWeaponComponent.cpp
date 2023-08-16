@@ -294,6 +294,16 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 		//ShotSounds = AIWeaponDataAsset->ShotSounds;
 
 		Decal = AIWeaponDataAsset->Decals[0];
+		Attachments.Empty();
+		for (auto& item : AIWeaponDataAsset->Attachments)
+		{
+			UStaticMeshComponent* attachment = NewObject<UStaticMeshComponent>(owner);
+
+			attachment->SetStaticMesh(item.Value);
+			attachment->SetupAttachment(WeaponMesh, item.Key);
+
+			Attachments[item.Key] = attachment;
+		}
 	}
 }
 
