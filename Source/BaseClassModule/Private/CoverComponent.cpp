@@ -366,13 +366,13 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	//박스 트레이스로 엄폐물을 체크 합니다
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,
-		ViewPoint + ViewVector * 2000,
+		ViewPoint + ViewVector * 1500,
 		{ 0, camera->OrthoWidth * 0.2f, camera->OrthoWidth },
 		cameraRotation,
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		true,
 		{ m_CoverWall },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		results,
 		true
 	)) {
@@ -395,7 +395,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector impactNormal;
 	FVector pointToLocation = item.Location - item.ImpactPoint;
 
-	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 4000000) return  FVector::ZeroVector;
+	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 225000) return  FVector::ZeroVector;
 	//UKismetSystemLibrary::PrintString(GetWorld(), item.ImpactPoint.ToString(), true, false, FColor::Green, 2.0f, TEXT("asdsadsa"));
 	//{
 	//	FVector impactpoint2D = item.ImpactPoint;
@@ -413,7 +413,6 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 		end = item.ImpactPoint - item.ImpactNormal;
 		start.Z = end.Z;
 		GetWorld()->LineTraceSingleByChannel(result1, start, end, traceChanel, params);
-		DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, DeltaTime);
 		impactNormal = result1.Normal;
 	}
 	else {
@@ -443,7 +442,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	start = result2.Location + FVector::UpVector * halfHeight + impactRotatedVector * capsule->GetScaledCapsuleRadius() * 2.5f;
 	end = start - impactNormal * capsule->GetScaledCapsuleRadius();
 	GetWorld()->LineTraceSingleByChannel(result3, start, end, traceChanel, params);
-	DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, DeltaTime);
+
 	
 	if (result3.bBlockingHit) {
 		//맞았다면 <impactRotatedVector * capsule->GetScaledCapsuleRadius() * 2.0f>을 제외해서 다시 계산해서 result_Result에 넣어줍니다
