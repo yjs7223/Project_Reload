@@ -21,6 +21,8 @@
 #include "AIWeaponDataAsset.h"
 #include "Engine/EngineTypes.h"
 #include "Sound/SoundCue.h"
+#include "Bullet.h"
+
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -157,9 +159,15 @@ void UAIWeaponComponent::ShotAI()
 				temp->hitNormal = m_result.ImpactNormal;
 			}
 		}
-
 		AISpawnImpactEffect(m_result);
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+	}
+
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, rot);
+	if (bullet)
+	{
+		bullet->SpawnBulletFx(AIWeaponDataAsset->BulletTrailFXNiagara, rot.Vector(), owner);
+		bullet->OnBulletHitDelegate.AddUObject(this, &UAIWeaponComponent::AISpawnImpactEffect);
 	}
 
 	// 점점 반동이 줄어듦
@@ -183,7 +191,7 @@ void UAIWeaponComponent::ShotAI()
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	// 총알 생성
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, rot);
+	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, rot);
 
 	// 사운드 재생
 	PlayRandomShotSound();
@@ -390,7 +398,9 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 		USkeletalMeshComponent* mesh = p_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
 		if (mesh)
 		{
-			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, mesh->GetBoneLocation(p_result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+			UNiagaraComponent* hitcomp;
+			hitcomp = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, FVector::ZeroVector, m_rot, EAttachLocation::SnapToTargetIncludingScale, true);
+			
 		}
 	}
 	else
@@ -402,5 +412,5 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 void UAIWeaponComponent::PlayRandomShotSound()
 {
 	float pitch = FMath::RandRange(0.8f, 1.5f);
-	UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->ShotSounds, GetOwner()->GetActorLocation(), 1.0f, pitch);
+	UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->ShotSounds, GetOwner()->GetActorLocation(), 0.5f, pitch);
 }
