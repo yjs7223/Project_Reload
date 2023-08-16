@@ -77,6 +77,7 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	RotateSet(DeltaTime);
 	AimSetting(DeltaTime);
+
 	TurnCheck(DeltaTime);
 	BeCrouch(DeltaTime);
 	if (m_IsCornering) {
@@ -220,11 +221,11 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 	if (m_Inputdata->IsAiming) {
 		peekingCheck(aimOffset);
-		if (isPeeking() && !(!IsFaceRight() && m_Inputdata->IsFire)) {
+		if (isPeeking()/* && !(!IsFaceRight() && m_Inputdata->IsFire)*/) {
 
 			if (!IsFaceRight()) aimOffset.Yaw *= -1.0f;
+			return;
 		}
-		return;
 	}
 	else {
 		mPeekingState = EPeekingState::None;
@@ -526,7 +527,7 @@ void UCoverComponent::CalculateCoverShoot()
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
-	if (!m_Inputdata->IsFire || FMath::Abs(aimoffset.Yaw) < 45.0f) return;
+	if (!m_Inputdata->IsFire || FMath::Abs(aimoffset.Yaw) < 45.0f || m_Inputdata->IsAiming) return;
 	if (!IsFaceRight()) {
 		aimoffset.Yaw *= -1.0f;
 	}
@@ -753,7 +754,7 @@ bool UCoverComponent::isMustCrouch()
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		false,
 		{},
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		tempResult,
 		true);
 
