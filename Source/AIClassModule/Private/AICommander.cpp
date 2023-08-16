@@ -134,7 +134,6 @@ void AAICommander::ListSet()
 	{
 		if (Now_en != m_en)
 		{
-			ListVoidReset();
 			Now_en = m_en;
 			m_en = nullptr;
 		}
@@ -147,8 +146,9 @@ void AAICommander::ListSet()
 	{
 		if (Now_suben != m_suben)
 		{
-			ListReset(Now_suben);
+			ListVoidReset();
 			Now_suben = m_suben;
+			CoverManager->ChangeEncounter();
 			m_suben = nullptr;
 		}
 		else
@@ -172,7 +172,7 @@ void AAICommander::ListSet()
 	}
 	if (!Now_suben->LevelActive)
 	{
-		ListReset(Now_suben);
+		ListVoidReset();
 	}
 	
 	
@@ -192,7 +192,17 @@ void AAICommander::ListSet()
 		CoverPointEnemy();
 		if (List_Division.Num() <= 0)
 		{
-			ListReset(Now_suben);
+			if (Now_suben->spawn != nullptr)
+			{
+				if (Now_suben->spawn->waveEnd)
+				{
+					ListReset(Now_suben);
+				}
+			}
+			else
+			{
+				ListReset(Now_suben);
+			}
 		}
 	}
 }
@@ -241,12 +251,10 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	List_Suppression.Reset();
 	List_CoverPoint.Reset();
 	Sup_Array.Reset();
-	sub->en->LevelArray.Remove(this);
 	if (sub->LevelActive)
 	{
 		sub->LevelActive = false;
 	}
-
 	AddIndex = 0;
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
@@ -332,11 +340,11 @@ void AAICommander::ListStartSet(ASubEncounterSpace* sub)
 		AddIndex++;
 	}
 	CoverPointSubEn(Now_suben);
-	if (CoverSubEnArray.IsEmpty())
+	/*if (CoverSubEnArray.IsEmpty())
 	{
 		MapList_Start = false;
 		return;
-	}
+	}*/
 	MapList_Start = true;
 }
 

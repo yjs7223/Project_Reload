@@ -46,6 +46,7 @@ void AEncounterTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 		if (commander != nullptr)
 		{
 			en->LevelActive = true;
+			
 			for (auto encoun : commander->EncounterArray)
 			{
 				AEncounterSpace* encounter = Cast<AEncounterSpace>(encoun);
@@ -55,7 +56,7 @@ void AEncounterTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 					encounter->LevelEndActive();
 				}
 			}
-			commander->m_en = en;
+			commander->Now_en = en;
 			commander->En_AIActive = true;
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("encounter"));
 		}
