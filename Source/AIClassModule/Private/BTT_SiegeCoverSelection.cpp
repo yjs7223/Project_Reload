@@ -26,10 +26,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 	{
 		return EBTNodeResult::Succeeded;
 	}
-	if (Cast<AAICharacter>(OwnerComp.GetAIOwner())->type == Enemy_Name::SNIPER || Cast<AAICharacter>(OwnerComp.GetAIOwner())->type == Enemy_Name::HEAVY)
-	{
-		return EBTNodeResult::Succeeded;
-	}
+	
 	commander->SiegeCoverPoint();
 	maplistnum = commander->SiegeCoverArray.Num();
 	enemyActivenum = 0;
