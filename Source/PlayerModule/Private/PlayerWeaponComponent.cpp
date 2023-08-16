@@ -342,7 +342,7 @@ void UPlayerWeaponComponent::Fire()
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, m_rot, spawnparam);
 	if (bullet)
 	{
-		bullet->SpawnBulletFx(shotFXNiagara, m_rot.Vector());
+		bullet->SpawnBulletFx(shotFXNiagara, m_rot.Vector(), owner);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnImpactEffect);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnDecal);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnField);
@@ -873,7 +873,9 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 		USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
 		if (mesh)
 		{
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
 			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+			
 		}
 	}
 	else
