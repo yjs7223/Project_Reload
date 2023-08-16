@@ -40,5 +40,8 @@ public:
 	FOnVisibleAttackedUIDelegate OnVisibleAttackedUIDelegate;
 public:
 	ABaseCharacter* TargetEnemy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UMatineeCameraShake> AttackedCameraShake;
 	
 };

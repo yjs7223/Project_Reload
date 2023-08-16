@@ -20,6 +20,7 @@
 #include "AI_Controller.h"
 #include "AIWeaponDataAsset.h"
 #include "Engine/EngineTypes.h"
+#include "Sound/SoundCue.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -135,7 +136,7 @@ void UAIWeaponComponent::ShotAI()
 	}
 	
 	// 사격 방향 체크
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, traceParams))
 	{
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
@@ -280,7 +281,7 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 		BulletTracerParticle = AIWeaponDataAsset->BulletTracerParticle;
 		shotFXNiagara = AIWeaponDataAsset->BulletTrailFXNiagara;
 
-		ShotSounds = AIWeaponDataAsset->ShotSounds;
+		//ShotSounds = AIWeaponDataAsset->ShotSounds;
 
 		Decal = AIWeaponDataAsset->Decals[0];
 	}
@@ -384,12 +385,22 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 
 	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(p_result.Location, GetOwner()->GetActorLocation());
 	m_rot.Pitch -= 90.0f;
-
-	hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, hitFXNiagara, p_result.Location);
+	if (!p_result.BoneName.IsNone())
+	{
+		USkeletalMeshComponent* mesh = p_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+		if (mesh)
+		{
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, mesh->GetBoneLocation(p_result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+		}
+	}
+	else
+	{
+		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, p_result.Location, m_rot);
+	}
 }
 
 void UAIWeaponComponent::PlayRandomShotSound()
 {
-	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
+	float pitch = FMath::RandRange(0.8f, 1.5f);
+	UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->ShotSounds, GetOwner()->GetActorLocation(), 1.0f, pitch);
 }

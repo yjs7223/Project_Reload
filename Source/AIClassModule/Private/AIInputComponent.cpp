@@ -27,14 +27,24 @@ void UAIInputComponent::AIMoveRight(float Value)
 
 void UAIInputComponent::AIRuning()
 {
-	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
-	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
+	/*UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);*/
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	if (moveoncmp->e_move != EMove::Hit)
+	{
+		moveoncmp->e_move = EMove::Normal;
+	}
 }
 
 void UAIInputComponent::AIStopRuning()
 {
-	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
-	movement->SetMovementMode(MOVE_Walking);
+	/*UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Walking);*/
+	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	if (moveoncmp->e_move != EMove::Hit)
+	{
+		moveoncmp->e_move = EMove::Normal;
+	}
 }
 
 void UAIInputComponent::AICrouching()
@@ -61,7 +71,11 @@ void UAIInputComponent::AIStartFire()
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	weaponcmp->ShotAIStart();
 	weaponcmp->ShotAI();
-	moveoncmp->e_move = EMove::Attack;
+	if (moveoncmp->e_move != EMove::Hit)
+	{
+		moveoncmp->e_move = EMove::Attack;
+	}
+	
 	m_inputData.IsFire = true;
 }
 
@@ -70,7 +84,10 @@ void UAIInputComponent::AIStopFire()
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	weaponcmp->ShotAIStop();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	moveoncmp->e_move = EMove::Normal;
+	if (moveoncmp->e_move != EMove::Hit)
+	{
+		moveoncmp->e_move = EMove::Normal;
+	}
 	m_inputData.IsFire = false;
 
 }
@@ -80,7 +97,10 @@ void UAIInputComponent::AIStartAiming()
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
 	cover->StartPeeking();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	moveoncmp->e_move = EMove::Attack;
+	if (moveoncmp->e_move != EMove::Hit)
+	{
+		moveoncmp->e_move = EMove::Attack;
+	}
 	m_inputData.IsAiming = true;
 	
 }

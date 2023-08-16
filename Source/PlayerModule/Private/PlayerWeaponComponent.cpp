@@ -31,6 +31,7 @@
 #include "CoverComponent.h"
 #include "CharacterSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "Bullet.h"
 #include "EmptyShellSpawnable.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -136,10 +137,12 @@ void UPlayerWeaponComponent::InitData()
 		{
 		case EWeaponType::TE_Pistol:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Pistol"), FString(""));
+			maxAmmo = 10;
 			WeaponDataAsset = PistolDataAssets;
 			break;
 		case EWeaponType::TE_Rifle:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Rifle"), FString(""));
+			maxAmmo = 30;
 			WeaponDataAsset = RifleDataAssets;
 			break;
 		case EWeaponType::TE_Shotgun:
@@ -147,6 +150,7 @@ void UPlayerWeaponComponent::InitData()
 			break;
 		default:
 			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+			maxAmmo = 30;
 			WeaponDataAsset = RifleDataAssets;
 			break;
 		}
@@ -232,35 +236,38 @@ void UPlayerWeaponComponent::Fire()
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
 	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
-
+	
+	FActorSpawnParameters spawnparam;
+	spawnparam.Owner = owner;
 	//CameraHit
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
 		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		FVector dis = start - m_result.Location;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
 		end = m_rot.Vector() * 1000000.0f;
 
 		//WeaponHit
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
-		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
+		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			end = m_rot.Vector() * 99999;
-			SpawnDecal(m_result);
+			//SpawnDecal(m_result);
 		}
 		else
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
-			SpawnDecal(m_result);
+			//SpawnDecal(m_result);
 		}
 	}
 	else
@@ -292,7 +299,7 @@ void UPlayerWeaponComponent::Fire()
 	if (CheckActorTag(m_result.GetActor(), TEXT("Enemy")))
 	{
 		
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
 		{
@@ -300,6 +307,7 @@ void UPlayerWeaponComponent::Fire()
 			{
 				isHit = true;
 				float damageVlaue = 0;
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.BoneName.ToString());
 				if (m_result.BoneName == "head")
 				{
 					damageVlaue = CalcDamage(m_result, H_damage);
@@ -323,22 +331,23 @@ void UPlayerWeaponComponent::Fire()
 	}
 	else
 	{
-		FActorSpawnParameters spawnparam;
-		spawnparam.Owner = owner;
-		TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
-		GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);
+		/*TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
+		GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);*/
 
 	}
 		
 	OnChangedCrossHairHitDelegate.ExecuteIfBound();
 
 	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	//UGameplayStatics::SpawnEmitterAtLocation()
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
-	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotFXNiagara, start);
-	//shotFXComponent->SetNiagaraVariableVec3("Beam_end", m_result.Location);
-
-	SpawnImpactEffect(m_result);
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, m_rot, spawnparam);
+	if (bullet)
+	{
+		bullet->SpawnBulletFx(shotFXNiagara, m_rot.Vector());
+		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnImpactEffect);
+		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnDecal);
+		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnField);
+	}
+	//SpawnImpactEffect(m_result);
 	PlayRandomShotSound();
 
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel3, param))
@@ -798,7 +807,7 @@ void UPlayerWeaponComponent::PlayRandomShotSound()
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)
 {
-	if (fireShake != nullptr)
+	if (fireShake)
 	{
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(fireShake, scale);
 	}
@@ -856,7 +865,7 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 	}
 
 	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(result.Location, GetOwner()->GetActorLocation());
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.BoneName.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.BoneName.ToString());
 	m_rot.Pitch -= 90.0f;
 	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
 	if (!result.BoneName.IsNone())
@@ -872,6 +881,12 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
 	}
 	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location);//, m_rot);
+}
+
+void UPlayerWeaponComponent::SpawnField(FHitResult result)
+{
+	TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
+	GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator);
 }
 
 void UPlayerWeaponComponent::Threaten()
