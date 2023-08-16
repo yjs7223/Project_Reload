@@ -5,6 +5,7 @@
 #include "ST_Move.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BaseCharacterMovementComponent.h"
 #include "AICharacter.h"
 
 // Sets default values for this component's properties
@@ -45,13 +46,13 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Time += DeltaTime;
+	UBaseCharacterMovementComponent* movement = Cast< UBaseCharacterMovementComponent>(aicharacter->GetCharacterMovement());
 	switch (e_move)
 	{
 	case EMove::Patrol:
 		Move_Speed = m_SpdPatrol;
 		timeDeltaTime = 0;
 		lerpDeltaTime = 0;
-		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
 	case EMove::Normal:
 		timeDeltaTime += DeltaTime;
@@ -61,7 +62,6 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		}
 		lerpDeltaTime = timeDeltaTime * m_NormalMulti;
 		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdNormal, lerpDeltaTime);
-		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
 	case EMove::Attack:
 		timeDeltaTime += DeltaTime;
@@ -71,7 +71,6 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		}
 		lerpDeltaTime = timeDeltaTime * m_AttackMulti;
 		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdAttack, lerpDeltaTime);
-		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
 	case EMove::Hit:
 		timeDeltaTime += DeltaTime;
@@ -87,9 +86,10 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		}
 		lerpDeltaTime = timeDeltaTime * m_HitMulti;
 		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdHit, lerpDeltaTime);
-		aicharacter->GetCharacterMovement()->MaxWalkSpeed = Move_Speed;
 		break;
 	}
+	movement->MaxWalkSpeed = Move_Speed;
+	movement->MaxRuningSpeed = Move_Speed;
 	// ...
 }
 
