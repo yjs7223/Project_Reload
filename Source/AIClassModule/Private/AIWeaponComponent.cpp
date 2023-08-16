@@ -30,12 +30,12 @@ UAIWeaponComponent::UAIWeaponComponent()
 		AIShotData = DataTable.Object;
 	}
 
-	//// 총알 나이아가라 삽입
-	//static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ShotFXNiagara(TEXT("NiagaraSystem'/Game/SGJ/NS_BulletProjectile.NS_BulletProjectile'"));
-	//if (DataTable.Succeeded())
-	//{
-	//	shotFXNiagara = ShotFXNiagara.Object;
-	//}
+	// 총알 나이아가라 삽입
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> LaserFXNiagara(TEXT("NiagaraSystem'/Game/AI_Project/AI_Pakage/Niagara/LaserBeam.LaserBeam'"));
+	if (LaserFXNiagara.Succeeded())
+	{
+		laserFXNiagara = LaserFXNiagara.Object;
+	}
 
 	// 라이플
 	static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIRifle.DA_AIRifle'"));
@@ -77,6 +77,8 @@ void UAIWeaponComponent::BeginPlay()
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
 
+	laserFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
+
 	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
 	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
 }
@@ -98,7 +100,7 @@ void UAIWeaponComponent::ShotAI()
 {
 	//owner->bUseControllerRotationYaw = true;
 	Super::Fire();
-	
+
 	FVector loc;
 	FRotator rot;
 	owner->GetController()->GetPlayerViewPoint(loc, rot);
@@ -109,7 +111,7 @@ void UAIWeaponComponent::ShotAI()
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_04"));
+	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_05"));
 
 	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
 
@@ -187,12 +189,6 @@ void UAIWeaponComponent::ShotAI()
 	// 사운드 재생
 	PlayRandomShotSound();
 
-	// 총알 생성
-
-	/*shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, shotFXNiagara, start, rot + FRotator(x, y, 0));
-
-	shotFXComponent->SetNiagaraVariableVec3("BeamEnd", end2);*/
-
 	//DrawDebugLine(GetWorld(), start, end, FColor::Orange, false, 0.1f);
 	//name = "AttackLocation";
 }
@@ -226,6 +222,8 @@ void UAIWeaponComponent::ShotAIStop()
 	use_Shot_State = true;
 	cur_Shot_Count = shot_MaxCount;
 	recoil_Radius = recoilMax_Radius;
+
+	LaserOff();
 }
 
 void UAIWeaponComponent::ReloadAI()
@@ -278,7 +276,6 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 	{
 		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
 		BulletTracerParticle = AIWeaponDataAsset->BulletTracerParticle;
-		shotFXNiagara = AIWeaponDataAsset->BulletTrailFXNiagara;
 
 		ShotSounds = AIWeaponDataAsset->ShotSounds;
 
@@ -402,4 +399,33 @@ void UAIWeaponComponent::PlayRandomShotSound()
 {
 	int r = FMath::RandRange(0, 3);
 	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
+}
+
+void UAIWeaponComponent::LaserOn()
+{
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+		//FVector playerLocation = playerMesh->GetSocketLocation(TEXT("pelvis"));
+
+		FCollisionQueryParams traceParams;
+
+		laserFXComponent->SetVectorParameter(TEXT("Beam Start"), start);
+		if (GetWorld()->LineTraceSingleByChannel(m_result, start, player->GetActorLocation(), ECC_Visibility, traceParams))
+		{
+			FVector ttemp = owner->GetActorLocation() - m_result.Location;
+			laserFXComponent->SetNiagaraVariableVec3("Beam End", ttemp);
+		}
+	}
+}
+
+void UAIWeaponComponent::LaserOff()
+{
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		if (laserFXComponent)
+		{
+			laserFXComponent->SetNiagaraVariableVec3("Beam End", FVector(0, 0, 0));
+		}
+	}
 }
