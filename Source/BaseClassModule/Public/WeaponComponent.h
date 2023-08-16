@@ -13,6 +13,7 @@ enum class EWeaponType : uint8
 	TE_Pistol	UMETA(DisplayName = "Pistol"),
 	TE_Rifle	UMETA(DisplayName = "Rifle"),
 	TE_Shotgun	UMETA(DisplayName = "Shotgun"),
+	TE_Heavy	UMETA(DisplayName = "Heavy"),
 	MAX			UMETA(Hidden)
 };
 

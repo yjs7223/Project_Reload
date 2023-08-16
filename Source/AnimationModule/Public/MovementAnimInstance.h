@@ -4,7 +4,42 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Engine/DataTable.h"
 #include "MovementAnimInstance.generated.h"
+
+
+/**
+ *
+ */
+USTRUCT(Atomic, BlueprintType)
+struct FMovementAimationTable : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	bool IsVaild();
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimSequence* Idle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimSequence* Idle_Crouch;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UBlendSpace* JogStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimSequence* JogStop;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UBlendSpace* Move;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimSequence* Run;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimSequence* SprintStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UBlendSpace* Move_Crouch;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimSequence* Falling;
+
+};
 
 /**
  * 
@@ -20,6 +55,7 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	void AnimationSetting();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
@@ -39,5 +75,11 @@ protected:
 		bool mIsCrouching;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		bool mIsRuning;
-	
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UDataTable* m_AnimationTable;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		struct FMovementAimationTable m_CurrentAnimation;
+
 };

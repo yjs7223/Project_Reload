@@ -98,7 +98,6 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 void UAIWeaponComponent::ShotAI()
 {
 	//owner->bUseControllerRotationYaw = true;
-	Super::Fire();
 	
 	FVector loc;
 	FRotator rot;
@@ -161,6 +160,7 @@ void UAIWeaponComponent::ShotAI()
 		AISpawnImpactEffect(m_result);
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 	}
+	Super::Fire();
 
 	// 점점 반동이 줄어듦
 	if (recoil_Radius > recoilMin_Radius)
