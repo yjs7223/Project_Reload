@@ -297,12 +297,16 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 		Attachments.Empty();
 		for (auto& item : AIWeaponDataAsset->Attachments)
 		{
-			UStaticMeshComponent* attachment = NewObject<UStaticMeshComponent>(owner);
+			UStaticMeshComponent* attachment = NewObject<UStaticMeshComponent>(owner, UStaticMeshComponent::StaticClass(), item.Key);
+			//attachment->SetMobility(EComponentMobility::Static);
 
+			attachment->SetRelativeLocation({});
+			attachment->SetRelativeRotation(FRotator());
 			attachment->SetStaticMesh(item.Value);
-			attachment->SetupAttachment(WeaponMesh, item.Key);
-
-			Attachments[item.Key] = attachment;
+			attachment->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, item.Key);
+			attachment->RegisterComponentWithWorld(GetWorld());
+			//Attachments[item.Key] = attachment;
+			Attachments.Add(item.Key, attachment);
 		}
 	}
 }
