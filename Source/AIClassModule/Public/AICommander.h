@@ -91,6 +91,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* m_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* m_en;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* Now_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* Now_en;
@@ -149,6 +151,8 @@ public:
 	UFUNCTION()
 		void ListReset(ASubEncounterSpace* sub);
 	UFUNCTION()
+		void ListVoidReset();
+	UFUNCTION()
 		void ListAdd(AActor* ac);
 	UFUNCTION()
 		void AIActive(AEncounterSpace* en);
@@ -180,6 +184,10 @@ public:
 		FVector OptimumPoint(FVector FinalLocation, AActor* AIactor, FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
 		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
+	UFUNCTION(BlueprintCallable, Category = "AICommander")
+		void ZeroListCoverPoint(AActor* AIActor);
+	UFUNCTION(BlueprintImplementableEvent)
+		void RestoreArr();
 
 };
 

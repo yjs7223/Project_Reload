@@ -13,8 +13,8 @@ UCLASS()
 class BASECLASSMODULE_API UCharacterSoundDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-	
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = aiming)
 		class USoundCue* aiming_start_Cue;
 
@@ -25,10 +25,7 @@ public:
 		class USoundCue* reload_cliplocked_cue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = footstep)
-		class USoundCue* footstep_concrete_cue;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = footstep)
-		class USoundCue* footstep_water_cue;
+		TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*> Footstep_Sound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = cover)
 		class USoundCue* cover_moveC_cue;

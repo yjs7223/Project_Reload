@@ -130,6 +130,32 @@ void AAICommander::Tick(float DeltaTime)
 
 void AAICommander::ListSet()
 {
+	if (m_en != nullptr)
+	{
+		if (Now_en != m_en)
+		{
+			ListVoidReset();
+			Now_en = m_en;
+			m_en = nullptr;
+		}
+		else
+		{
+			m_en = nullptr;
+		}
+	}
+	if (m_suben != nullptr)
+	{
+		if (Now_suben != m_suben)
+		{
+			ListReset(Now_suben);
+			Now_suben = m_suben;
+			m_suben = nullptr;
+		}
+		else
+		{
+			m_suben = nullptr;
+		}
+	}
 	if (Now_en == nullptr)
 	{
 		return;
@@ -138,6 +164,7 @@ void AAICommander::ListSet()
 	{
 		return;
 	}
+	
 	Blackboard->SetValueAsObject("Cmd_Space", Now_en);
 	if (En_AIActive)
 	{
@@ -147,14 +174,8 @@ void AAICommander::ListSet()
 	{
 		ListReset(Now_suben);
 	}
-	if (m_suben != nullptr)
-	{
-		if (Now_suben != m_suben)
-		{
-			ListReset(Now_suben);
-			Now_suben = m_suben;
-		}
-	}
+	
+	
 
 	if (Now_suben->spawn)
 	{
@@ -226,6 +247,33 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 		sub->LevelActive = false;
 	}
 
+	AddIndex = 0;
+	MapList_Start = false;
+	Blackboard->SetValueAsBool("CmdAI_Active", false);
+	Blackboard->SetValueAsObject("Cmd_Target", NULL);
+}
+
+void AAICommander::ListVoidReset()
+{
+	for (auto ai : List_Division)
+	{
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
+		if (AIController == nullptr)
+		{
+			continue;
+		}
+		if (AIController->GetBlackboardComponent() == NULL)
+		{
+			continue;
+		}
+		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+	}
+	List_Division.Reset();
+	//List_Combat.Reset();
+	List_Location.Reset();
+	List_Suppression.Reset();
+	List_CoverPoint.Reset();
+	Sup_Array.Reset();
 	AddIndex = 0;
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
@@ -485,7 +533,7 @@ void AAICommander::CoverPointEnemy()
 
 			if (result.GetActor()->ActorHasTag("Cover"))
 			{
-				if (FVector::Distance(subencover, result.ImpactPoint) < 90.0f)
+				if (FVector::Distance(subencover, result.ImpactPoint) < 50.0f)
 				{
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
@@ -778,6 +826,11 @@ bool AAICommander::SameDetourPoint(FVector FinalLocation, FVector MiddleLocation
 		return true;
 	}
 	return false;
+}
+
+void AAICommander::ZeroListCoverPoint(AActor* AIActor)
+{
+	List_CoverPoint.Add(*List_Division.Find(AIActor), FVector::ZeroVector);
 }
 
 

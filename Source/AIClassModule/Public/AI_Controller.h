@@ -15,7 +15,7 @@ class AICLASSMODULE_API AAI_Controller : public AAIController
 {
 	GENERATED_BODY()
 public:
-	AAI_Controller();
+	AAI_Controller(const FObjectInitializer& ObjectInitializer);
 
 protected: 
 	virtual void BeginPlay() override;
@@ -54,6 +54,9 @@ public:
 	class USkeletalMeshComponent* playerMesh;
 
 	FTimerHandle timer;
+
+	//���������ƮŸ��ä�� �Դϴ�
+	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);

@@ -67,6 +67,10 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 					{
 						B_distance = true;
 					}
+					if (FVector::Distance(cover, subAi.Key->GetActorLocation()) < 200)
+					{
+						B_distance = true;
+					}
 				}
 				if (!B_distance)
 				{

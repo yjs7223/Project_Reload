@@ -46,6 +46,10 @@ void UAIStatComponent::BeginPlay()
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+	if (AIController->GetBlackboardComponent() != nullptr)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_MinPoint);
+	}
 	
 	//SetDataTable("Rifle_E");
 	
@@ -94,7 +98,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	moveoncmp->e_move = EMove::Hit;
 	moveoncmp->Time = 0;
-	
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
 	float total_dmg;
 	total_dmg = p_damage - (p_damage * 0.01f) * Def;
 	curHP -= total_dmg;
@@ -113,15 +117,19 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		{
 			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
 		}
-		if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+		if (AIController->commander != nullptr)
 		{
-			int aikey = *AIController->commander->List_Division.Find(GetOwner());
-			AIController->commander->List_Division.Remove(GetOwner());
-			//AIController->commander->List_Combat.Remove(aikey);
-			AIController->commander->List_CoverPoint.Remove(aikey);
-			AIController->commander->List_Location.Remove(aikey);
-			AIController->commander->List_Suppression.Remove(aikey);
+			if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+			{
+				int aikey = *AIController->commander->List_Division.Find(GetOwner());
+				AIController->commander->List_Division.Remove(GetOwner());
+				//AIController->commander->List_Combat.Remove(aikey);
+				AIController->commander->List_CoverPoint.Remove(aikey);
+				AIController->commander->List_Location.Remove(aikey);
+				AIController->commander->List_Suppression.Remove(aikey);
+			}
 		}
+		
 	}
 	if (Def < 0.0f)
 	{
@@ -177,7 +185,7 @@ void UAIStatComponent::SuppresionPoint()
 		{
 			PlayerAtt_ai = false;
 		}
-		sup_total += sup_Input * sup_middlePoint;
+		sup_total += (sup_Input*0.5f) * sup_middlePoint;
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(AI_PlayerDis));
 		if (sup_total >= sup_MaxPoint)
 		{

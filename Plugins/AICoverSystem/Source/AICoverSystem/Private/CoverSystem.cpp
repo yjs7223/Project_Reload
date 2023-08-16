@@ -17,6 +17,10 @@ namespace GCoverSystem
 	static TMap<UWorld*, TWeakObjectPtr<ACoverSystem>> GCoverSystems;
 }
 
+
+
+
+
 ACoverSystem::ACoverSystem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -145,6 +149,51 @@ ACoverSystem* ACoverSystem::GetCoverSystem(const UObject* WorldContext)
 	return nullptr;
 }
 
+
+
+
+void ACoverSystem::custom_GenerateCovers(bool bForceRegenerate, bool bAsync, bool bDeferGenerationIfBusy, float custom_OctreeExtent)
+{
+	if (!Proxy)
+	{
+		return;
+	}
+
+#if WITH_EDITOR
+	// Debug cleanup of preview
+	if (bFlushPreviewDebug)
+	{
+		FlushPersistentDebugLines(GetWorld());
+	}
+#endif
+
+	// Set trace channel
+	FCoverSolver::SetCoverTraceChannel(TraceChannel.GetValue());
+
+	FCoverSolver::SetCoverSolveParameters
+	(
+		BuildParams.AgentMaxWidth,
+		BuildParams.AgentMaxHeightStanding,
+		BuildParams.AgentMaxHeightCrouch
+	);
+
+	BuildParams.OctreeExtent = custom_OctreeExtent;
+
+	const bool bAsyncTask = bEnableAsyncMode ? bAsync : false;
+	if (Proxy->GenerateCovers(bAsyncTask, bForceRegenerate, GetWorld(), BuildParams, CalculateOctreeOrigin()))
+	{
+		bDirtyGeneration = false; // Build was started, so generation is no more dirty
+	}
+	else // Build was not started
+	{
+		// Defer generation on failed attempt and try again later
+		if (bDeferGenerationIfBusy)
+		{
+			bDirtyGeneration = true;
+		}
+	}
+}
+
 void ACoverSystem::GenerateCovers(bool bForceRegenerate, bool bAsync, bool bDeferGenerationIfBusy)
 {
 	if (!Proxy)
@@ -163,8 +212,14 @@ void ACoverSystem::GenerateCovers(bool bForceRegenerate, bool bAsync, bool bDefe
 	// Set trace channel
 	FCoverSolver::SetCoverTraceChannel(TraceChannel.GetValue());
 
-	// Set static sovler parameters
-	FCoverSolver::SetCoverSolveParameters(BuildParams.AgentMaxWidth, BuildParams.AgentMaxHeightStanding, BuildParams.AgentMaxHeightCrouch);
+	FCoverSolver::SetCoverSolveParameters
+	(
+		BuildParams.AgentMaxWidth,
+		BuildParams.AgentMaxHeightStanding,
+		BuildParams.AgentMaxHeightCrouch
+	);
+
+	//BuildParams.OctreeExtent = custom_OctreeExtent;
 
 	const bool bAsyncTask = bEnableAsyncMode ? bAsync : false;
 	if (Proxy->GenerateCovers(bAsyncTask, bForceRegenerate, GetWorld(), BuildParams, CalculateOctreeOrigin()))

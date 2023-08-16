@@ -10,18 +10,12 @@ UENUM(BlueprintType)
 enum class EPeekingState : uint8
 {
 	None = 0			UMETA(Hidden),
-	FrontRightStart		UMETA(DisplayName = "FrontRightStart"),
-	FrontRightEnd		UMETA(DisplayName = "FrontRightEnd"),
-	FrontLeftStart		UMETA(DisplayName = "FrontLeftStart"),
-	FrontLeftEnd		UMETA(DisplayName = "FrontLeftEnd"),
-	HighRightStart		UMETA(DisplayName = "HighRightStart"),
-	HighRightEnd		UMETA(DisplayName = "HighRightEnd"),
-	HighLeftStart		UMETA(DisplayName = "HighLeftStart"),
-	HighLeftEnd			UMETA(DisplayName = "HighLeftEnd"),
-	LowRightStart		UMETA(DisplayName = "LowRightStart"),
-	LowRightEnd			UMETA(DisplayName = "LowRightEnd"),
-	LowLeftStart		UMETA(DisplayName = "LowLeftStart"),
-	LowLeftEnd			UMETA(DisplayName = "LowLeftEnd"),
+	FrontRight			UMETA(DisplayName = "FrontRight"),
+	FrontLeft			UMETA(DisplayName = "FrontLeft"),
+	HighRight			UMETA(DisplayName = "HighRight"),
+	HighLeft			UMETA(DisplayName = "HighLeft"),
+	LowRight			UMETA(DisplayName = "LowRight"),
+	LowLeft				UMETA(DisplayName = "LowLeft"),
 	MAX					UMETA(Hidden)
 };
 
