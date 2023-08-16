@@ -91,6 +91,8 @@ public:
 
 	void SpawnImpactEffect(FHitResult result);
 
+	void SpawnField(FHitResult result);
+
 	void Threaten();
 
 	float CalcDamage(FHitResult result, FVector2D p_damage);

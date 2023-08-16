@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Bullet.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnBulletHitDelegate, FHitResult);
+
+
 UCLASS()
 class BASECLASSMODULE_API ABullet : public AActor
 {
@@ -15,6 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	ABullet();
 
+	FOnBulletHitDelegate OnBulletHitDelegate;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,6 +29,8 @@ public:
 
 	void SpawnBulletFx(class UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection);
 
+	void HitCheck();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class USphereComponent* CollisionComponent;
@@ -32,6 +38,9 @@ public:
 		class UProjectileMovementComponent* ProjectileMovementComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraComponent* BulletFXComponent;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	class UNiagaraSystem* BulletFXNiagara;
+
+	class ABaseCharacter* owner;
+
+public:
+	FVector prev_loc;
 };

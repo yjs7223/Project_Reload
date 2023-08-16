@@ -261,12 +261,12 @@ void UPlayerWeaponComponent::Fire()
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			end = m_rot.Vector() * 99999;
-			SpawnDecal(m_result);
+			//SpawnDecal(m_result);
 		}
 		else
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
-			SpawnDecal(m_result);
+			//SpawnDecal(m_result);
 		}
 	}
 	else
@@ -298,7 +298,7 @@ void UPlayerWeaponComponent::Fire()
 	if (CheckActorTag(m_result.GetActor(), TEXT("Enemy")))
 	{
 		
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
 		{
@@ -329,23 +329,23 @@ void UPlayerWeaponComponent::Fire()
 	}
 	else
 	{
-		TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
-		GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);
+		/*TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
+		GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);*/
 
 	}
 		
 	OnChangedCrossHairHitDelegate.ExecuteIfBound();
 
 	start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-	//UGameplayStatics::SpawnEmitterAtLocation()
-
-	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), m_result.Location, m_rot, spawnparam);
-	bullet->SpawnBulletFx(shotFXNiagara, m_rot.Vector());
-	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, m_rot);
-	//shotFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotFXNiagara, start, m_rot, FVector(.3f, .3f, .3f));
-	//shotFXComposnent->SetNiagaraVariableVec3("Beam_end", m_result.Location);
-
-	SpawnImpactEffect(m_result);
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, m_rot, spawnparam);
+	if (bullet)
+	{
+		bullet->SpawnBulletFx(shotFXNiagara, m_rot.Vector());
+		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnImpactEffect);
+		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnDecal);
+		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnField);
+	}
+	//SpawnImpactEffect(m_result);
 	PlayRandomShotSound();
 
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel3, param))
@@ -805,7 +805,7 @@ void UPlayerWeaponComponent::PlayRandomShotSound()
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)
 {
-	if (fireShake != nullptr)
+	if (fireShake)
 	{
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(fireShake, scale);
 	}
@@ -863,7 +863,7 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 	}
 
 	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(result.Location, GetOwner()->GetActorLocation());
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.BoneName.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.BoneName.ToString());
 	m_rot.Pitch -= 90.0f;
 	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
 	if (!result.BoneName.IsNone())
@@ -879,6 +879,12 @@ void UPlayerWeaponComponent::SpawnImpactEffect(FHitResult result)
 		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
 	}
 	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location);//, m_rot);
+}
+
+void UPlayerWeaponComponent::SpawnField(FHitResult result)
+{
+	TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
+	GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator);
 }
 
 void UPlayerWeaponComponent::Threaten()
