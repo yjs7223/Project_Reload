@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include "AICharacter.h"
+#include "AIInputComponent.h"
 
 // Sets default values for this component's properties
 UAICharacterMoveComponent::UAICharacterMoveComponent()
@@ -47,6 +48,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Time += DeltaTime;
 	UBaseCharacterMovementComponent* movement = Cast< UBaseCharacterMovementComponent>(aicharacter->GetCharacterMovement());
+	UAIInputComponent* input = GetOwner()->FindComponentByClass<UAIInputComponent>();
 	switch (e_move)
 	{
 	case EMove::Patrol:
@@ -73,9 +75,11 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdAttack, lerpDeltaTime);
 		break;
 	case EMove::Hit:
+		input->AIStopRuning();
 		timeDeltaTime += DeltaTime;
 		if (Time >= 0.5f)
 		{
+			input->AIRuning();
 			timeDeltaTime = 0;
 			e_move = EMove::Normal;
 			break;
