@@ -192,7 +192,17 @@ void AAICommander::ListSet()
 		CoverPointEnemy();
 		if (List_Division.Num() <= 0)
 		{
-			ListReset(Now_suben);
+			if (Now_suben->spawn != nullptr)
+			{
+				if (Now_suben->spawn->waveEnd)
+				{
+					ListReset(Now_suben);
+				}
+			}
+			else
+			{
+				ListReset(Now_suben);
+			}
 		}
 	}
 }
