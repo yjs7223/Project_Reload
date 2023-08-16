@@ -276,6 +276,16 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 	}
 	if (AIWeaponDataAsset != nullptr)
 	{
+		if (AIWeaponDataAsset->WeaponSkeletalMesh)
+		{
+			WeaponMesh->SetSkeletalMesh(AIWeaponDataAsset->WeaponSkeletalMesh);
+		}
+
+		if (AIWeaponDataAsset->weaponAnim)
+		{
+			WeaponMesh->SetAnimInstanceClass(AIWeaponDataAsset->weaponAnim);
+		}
+
 		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
 		BulletTracerParticle = AIWeaponDataAsset->BulletTracerParticle;
 		shotFXNiagara = AIWeaponDataAsset->BulletTrailFXNiagara;
