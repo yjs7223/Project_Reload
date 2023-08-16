@@ -20,6 +20,9 @@
 #include "AI_Controller.h"
 #include "AIWeaponDataAsset.h"
 #include "Engine/EngineTypes.h"
+#include "Sound/SoundCue.h"
+#include "Bullet.h"
+
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -102,8 +105,7 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 void UAIWeaponComponent::ShotAI()
 {
 	//owner->bUseControllerRotationYaw = true;
-	Super::Fire();
-
+  
 	FVector loc;
 	FRotator rot;
 	owner->GetController()->GetPlayerViewPoint(loc, rot);
@@ -161,9 +163,16 @@ void UAIWeaponComponent::ShotAI()
 				temp->hitNormal = m_result.ImpactNormal;
 			}
 		}
-
 		AISpawnImpactEffect(m_result);
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+	}
+	Super::Fire();
+
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, rot);
+	if (bullet)
+	{
+		bullet->SpawnBulletFx(AIWeaponDataAsset->BulletTrailFXNiagara, rot.Vector(), owner);
+		bullet->OnBulletHitDelegate.AddUObject(this, &UAIWeaponComponent::AISpawnImpactEffect);
 	}
 
 	// 점점 반동이 줄어듦
@@ -187,7 +196,7 @@ void UAIWeaponComponent::ShotAI()
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
 	// 총알 생성
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, rot);
+	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTracerParticle, start, rot);
 
 	// 사운드 재생
 	PlayRandomShotSound();
@@ -277,12 +286,36 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 	}
 	if (AIWeaponDataAsset != nullptr)
 	{
+		if (AIWeaponDataAsset->WeaponSkeletalMesh)
+		{
+			WeaponMesh->SetSkeletalMesh(AIWeaponDataAsset->WeaponSkeletalMesh);
+		}
+
+		if (AIWeaponDataAsset->weaponAnim)
+		{
+			WeaponMesh->SetAnimInstanceClass(AIWeaponDataAsset->weaponAnim);
+		}
+
 		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
 		BulletTracerParticle = AIWeaponDataAsset->BulletTracerParticle;
 
-		ShotSounds = AIWeaponDataAsset->ShotSounds;
+		//ShotSounds = AIWeaponDataAsset->ShotSounds;
 
 		Decal = AIWeaponDataAsset->Decals[0];
+		Attachments.Empty();
+		for (auto& item : AIWeaponDataAsset->Attachments)
+		{
+			UStaticMeshComponent* attachment = NewObject<UStaticMeshComponent>(owner, UStaticMeshComponent::StaticClass(), item.Key);
+			//attachment->SetMobility(EComponentMobility::Static);
+
+			attachment->SetRelativeLocation({});
+			attachment->SetRelativeRotation(FRotator());
+			attachment->SetStaticMesh(item.Value);
+			attachment->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, item.Key);
+			attachment->RegisterComponentWithWorld(GetWorld());
+			//Attachments[item.Key] = attachment;
+			Attachments.Add(item.Key, attachment);
+		}
 	}
 }
 
@@ -389,7 +422,9 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 		USkeletalMeshComponent* mesh = p_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
 		if (mesh)
 		{
-			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, mesh->GetBoneLocation(p_result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+			UNiagaraComponent* hitcomp;
+			hitcomp = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, FVector::ZeroVector, m_rot, EAttachLocation::SnapToTargetIncludingScale, true);
+			
 		}
 	}
 	else
@@ -400,8 +435,8 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 
 void UAIWeaponComponent::PlayRandomShotSound()
 {
-	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
+	float pitch = FMath::RandRange(0.8f, 1.5f);
+	UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->ShotSounds, GetOwner()->GetActorLocation(), 0.5f, pitch);
 }
 
 void UAIWeaponComponent::LaserOn()

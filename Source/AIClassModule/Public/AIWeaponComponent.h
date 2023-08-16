@@ -141,6 +141,10 @@ public :
 	AActor* blackboardTarget;
 
 	FTimerHandle timer;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, UStaticMeshComponent*> Attachments;
 protected:
 	virtual void BeginPlay() override;
 

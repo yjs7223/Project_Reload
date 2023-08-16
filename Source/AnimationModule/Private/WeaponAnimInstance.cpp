@@ -11,6 +11,12 @@
 #include "BaseInputComponent.h"
 
 
+bool FWeaponAnimationTable::IsVaild()
+{
+	static FWeaponAnimationTable emptyAnimation = FWeaponAnimationTable();
+	return 0 != memcmp(this, &emptyAnimation, sizeof(FWeaponAnimationTable));
+}
+
 UWeaponAnimInstance::UWeaponAnimInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/ATH/Animation/DT_WeaponAnimation.DT_WeaponAnimation'"));
@@ -58,13 +64,9 @@ void UWeaponAnimInstance::AnimationSetting()
 
 	static const UEnum* WeaponTypeEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
 
-	FWeaponAnimation* findanimation = m_AnimationTable->FindRow<FWeaponAnimation>(*WeaponTypeEnum->GetNameStringByValue((int)mWeapon->weapontype), TEXT(""));
-	
+	FWeaponAnimationTable* findanimation = m_AnimationTable->FindRow<FWeaponAnimationTable>(FName((WeaponTypeEnum->GetDisplayNameTextByValue((int)mWeapon->weapontype).ToString())), TEXT(""));
 	if (findanimation && findanimation->IsVaild()) {
 		m_CurrentAnimation = *findanimation;
-	}
-	else {
-
 	}
 }
 

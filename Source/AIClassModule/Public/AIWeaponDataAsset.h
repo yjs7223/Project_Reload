@@ -17,8 +17,15 @@ class AICLASSMODULE_API UAIWeaponDataAsset : public UPrimaryDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* WeaponSkeletalMesh;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> ShotSounds;
+		class TSubclassOf<UAnimInstance> weaponAnim;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+			TMap<FName, UStaticMesh*> Attachments;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundCue* ShotSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystem* MuzzleFireParticle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
