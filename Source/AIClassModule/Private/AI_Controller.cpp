@@ -26,7 +26,11 @@
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
 
-AAI_Controller::AAI_Controller()
+#include "Navigation/CrowdFollowingComponent.h"
+
+
+AAI_Controller::AAI_Controller(const FObjectInitializer& ObjectInitializer) 
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -60,7 +64,6 @@ AAI_Controller::AAI_Controller()
 	em_normal = false;
 	//SetEnemy("Rifle_E");
 }
-
 
 void AAI_Controller::BeginPlay()
 {
@@ -250,7 +253,10 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		{
 			if (em_normal == false)
 			{
-				GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move != EMove::Hit)
+				{
+					GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
+				}
 				em_normal = true;
 			}
 			

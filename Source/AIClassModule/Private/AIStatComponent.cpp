@@ -46,6 +46,10 @@ void UAIStatComponent::BeginPlay()
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+	if (AIController->GetBlackboardComponent() != nullptr)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_MinPoint);
+	}
 	
 	//SetDataTable("Rifle_E");
 	
@@ -113,15 +117,19 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		{
 			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
 		}
-		if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+		if (AIController->commander != nullptr)
 		{
-			int aikey = *AIController->commander->List_Division.Find(GetOwner());
-			AIController->commander->List_Division.Remove(GetOwner());
-			//AIController->commander->List_Combat.Remove(aikey);
-			AIController->commander->List_CoverPoint.Remove(aikey);
-			AIController->commander->List_Location.Remove(aikey);
-			AIController->commander->List_Suppression.Remove(aikey);
+			if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+			{
+				int aikey = *AIController->commander->List_Division.Find(GetOwner());
+				AIController->commander->List_Division.Remove(GetOwner());
+				//AIController->commander->List_Combat.Remove(aikey);
+				AIController->commander->List_CoverPoint.Remove(aikey);
+				AIController->commander->List_Location.Remove(aikey);
+				AIController->commander->List_Suppression.Remove(aikey);
+			}
 		}
+		
 	}
 	if (Def < 0.0f)
 	{

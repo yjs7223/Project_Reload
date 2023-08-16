@@ -57,16 +57,27 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 									}
 								}
 							}
-							for (auto subAi : commander->Now_suben->AIArray)
+							for (auto subAi : commander->List_Division)
 							{
-								if (subAi != ai.Key)
+								if (subAi.Key != ai.Key)
 								{
-									if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
+									if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi.Key)->GetController()))
 									{
 										continue;
 									}
-									AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
+									AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi.Key)->GetController());
 									if (FVector::Distance(commander->SiegeCoverArray[i], sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
+									{
+										arraysame = true;
+									}
+									if (FVector::Distance(commander->SiegeCoverArray[i], subAi.Key->GetActorLocation()) < 200)
+									{
+										arraysame = true;
+									}
+								}
+								else
+								{
+									if (FVector::Distance(commander->SiegeCoverArray[i], subAi.Key->GetActorLocation()) < 50)
 									{
 										arraysame = true;
 									}
