@@ -36,7 +36,7 @@ ABullet::ABullet()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	//owner = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ProjectileMovementComponent;
 	prev_loc = GetActorLocation();
 	ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
@@ -50,10 +50,11 @@ void ABullet::Tick(float DeltaTime)
 	HitCheck();
 }
 
-void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection)
+void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection, class ABaseCharacter* p_owner)
 {
 	if (BulletFXNiagara)
 	{
+		owner = p_owner;
 		BulletFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BulletFXNiagara, CollisionComponent, FName("none"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
 		
 		//TArray<FNiagaraVariable> vars;
