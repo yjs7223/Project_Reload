@@ -77,7 +77,10 @@ void UAIWeaponComponent::BeginPlay()
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
 
-	laserFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
+	if (owner->FindComponentByClass<UNiagaraComponent>())
+	{
+		laserFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
+	}
 
 	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
 	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
@@ -406,16 +409,15 @@ void UAIWeaponComponent::LaserOn()
 	if (owner->type == Enemy_Name::SNIPER)
 	{
 		FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-		//FVector playerLocation = playerMesh->GetSocketLocation(TEXT("pelvis"));
+		FVector end = playerMesh->GetSocketLocation(TEXT("spine_05"));
 
-		FCollisionQueryParams traceParams;
-
-		laserFXComponent->SetVectorParameter(TEXT("Beam Start"), start);
-		if (GetWorld()->LineTraceSingleByChannel(m_result, start, player->GetActorLocation(), ECC_Visibility, traceParams))
+		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, {}))
 		{
-			FVector ttemp = owner->GetActorLocation() - m_result.Location;
-			laserFXComponent->SetNiagaraVariableVec3("Beam End", ttemp);
+			end = m_result.Location;;
 		}
+
+		laserFXComponent->SetNiagaraVariableVec3(TEXT("Beam Start"), start);
+		laserFXComponent->SetNiagaraVariableVec3(TEXT("Beam End"), end);
 	}
 }
 
@@ -425,6 +427,7 @@ void UAIWeaponComponent::LaserOff()
 	{
 		if (laserFXComponent)
 		{
+			laserFXComponent->SetNiagaraVariableVec3("Beam Start", FVector(0, 0, 0));
 			laserFXComponent->SetNiagaraVariableVec3("Beam End", FVector(0, 0, 0));
 		}
 	}

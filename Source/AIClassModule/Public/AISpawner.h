@@ -98,6 +98,8 @@ public:
 	enum Spawn_Type spawn_Type;
 	TMap<Enemy_Name, int> spawn_Wave;
 
+	bool waveEnd;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
