@@ -10,6 +10,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/Engine.h"
 #include "AICommander.h"
+#include "CoverManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
@@ -65,6 +66,7 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 			{
 				LevelActive = true;
 				en->LevelActive = true;
+				
 				for (auto encoun : commander->EncounterArray)
 				{
 					AEncounterSpace* encounter = Cast<AEncounterSpace>(encoun);
@@ -75,8 +77,8 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 					}
 				}
 				commander->m_en = en;
-				commander->En_AIActive = true;
 				commander->m_suben = this;
+				commander->En_AIActive = true;
 			}
 		}
 	}
