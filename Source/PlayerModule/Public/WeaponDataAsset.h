@@ -22,7 +22,7 @@ public:
 		class TSubclassOf<UAnimInstance> weaponAnim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
-		class USoundWave* ShotSound;
+		class USoundCue* ShotSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadCliplockedSound;

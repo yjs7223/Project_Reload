@@ -307,6 +307,7 @@ void UPlayerWeaponComponent::Fire()
 			{
 				isHit = true;
 				float damageVlaue = 0;
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.BoneName.ToString());
 				if (m_result.BoneName == "head")
 				{
 					damageVlaue = CalcDamage(m_result, H_damage);

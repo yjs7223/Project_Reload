@@ -55,8 +55,11 @@ void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& Shoo
 	if (BulletFXNiagara)
 	{
 		BulletFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BulletFXNiagara, CollisionComponent, FName("none"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
-		//ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
-		//BulletFXComponent->sys
+		
+		//TArray<FNiagaraVariable> vars;
+		//BulletFXComponent->GetAsset()->GetExposedParameters().GetUserParameters(vars);
+		//FVector vec = vars[0].GetValue<FVector>();
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, vec.ToString());
 	}
 }
 
@@ -65,7 +68,7 @@ void ABullet::HitCheck()
 	FVector now_loc = GetActorLocation();
 	FHitResult result;
 	FCollisionQueryParams param(NAME_None, true, this);
-	if (GetWorld()->LineTraceSingleByChannel(result, prev_loc, now_loc, ECC_Visibility, param))
+	if (GetWorld()->LineTraceSingleByChannel(result, prev_loc, now_loc, ECC_GameTraceChannel6, param))
 	{
 		if (result.GetActor() != owner)
 		{

@@ -20,6 +20,7 @@
 #include "AI_Controller.h"
 #include "AIWeaponDataAsset.h"
 #include "Engine/EngineTypes.h"
+#include "Sound/SoundCue.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -280,7 +281,7 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 		BulletTracerParticle = AIWeaponDataAsset->BulletTracerParticle;
 		shotFXNiagara = AIWeaponDataAsset->BulletTrailFXNiagara;
 
-		ShotSounds = AIWeaponDataAsset->ShotSounds;
+		//ShotSounds = AIWeaponDataAsset->ShotSounds;
 
 		Decal = AIWeaponDataAsset->Decals[0];
 	}
@@ -400,6 +401,6 @@ void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
 
 void UAIWeaponComponent::PlayRandomShotSound()
 {
-	int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[r], GetOwner()->GetActorLocation());
+	float pitch = FMath::RandRange(0.8f, 1.5f);
+	UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->ShotSounds, GetOwner()->GetActorLocation(), 1.0f, pitch);
 }
