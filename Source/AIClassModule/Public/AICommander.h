@@ -75,8 +75,6 @@ public:
 
 	//Class
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UDataTable* DT_Suppression;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBehaviorTreeComponent* behavior_tree_component;
@@ -93,15 +91,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* m_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* m_en;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* Now_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* Now_en;
 
-	// DATA TABLE
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float sup_sharerange;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float sup_sharetime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float env_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -148,11 +143,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AActor* redball;
 
+	class ACoverManager* CoverManager;
+
 public:
 	UFUNCTION()
 		void ListSet();
 	UFUNCTION()
 		void ListReset(ASubEncounterSpace* sub);
+	UFUNCTION()
+		void ListVoidReset();
 	UFUNCTION()
 		void ListAdd(AActor* ac);
 	UFUNCTION()
@@ -163,8 +162,7 @@ public:
 		void ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en);
 	UFUNCTION()
 		void SuppressionShare(ASubEncounterSpace* sub);
-	UFUNCTION()
-		void SetDataTable(FName EnemyName);
+
 	UFUNCTION()
 		void SetCommanderDataTable(FName EnemyName);
 	UFUNCTION()
@@ -186,6 +184,10 @@ public:
 		FVector OptimumPoint(FVector FinalLocation, AActor* AIactor, FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
 		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
+	UFUNCTION(BlueprintCallable, Category = "AICommander")
+		void ZeroListCoverPoint(AActor* AIActor);
+	UFUNCTION(BlueprintImplementableEvent)
+		void RestoreArr();
 
 };
 

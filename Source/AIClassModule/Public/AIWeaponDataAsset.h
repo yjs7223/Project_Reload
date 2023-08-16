@@ -18,7 +18,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* WeaponSkeletalMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> ShotSounds;
+		class USoundCue* ShotSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystem* MuzzleFireParticle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

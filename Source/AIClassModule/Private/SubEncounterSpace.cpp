@@ -56,10 +56,29 @@ void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 	{
 		if (commander != nullptr)
 		{
-			LevelActive = true;
-			commander->m_suben = this;
+			if (commander->Now_en == en)
+			{
+				LevelActive = true;
+				commander->m_suben = this;
+			}
+			else
+			{
+				LevelActive = true;
+				en->LevelActive = true;
+				for (auto encoun : commander->EncounterArray)
+				{
+					AEncounterSpace* encounter = Cast<AEncounterSpace>(encoun);
+					if (encounter != en)
+					{
+						encounter->LevelActive = false;
+						encounter->LevelEndActive();
+					}
+				}
+				commander->m_en = en;
+				commander->En_AIActive = true;
+				commander->m_suben = this;
+			}
 		}
-
 	}
 }
 

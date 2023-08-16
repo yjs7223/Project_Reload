@@ -65,6 +65,7 @@ void UPlayer_HP_Widget::NativeConstruct()
 			//MyStatComp->OnChangedHealthDelegate.AddRaw
 			MyStatComp->OnChangedHealthDelegate.AddUObject(this, &UPlayer_HP_Widget::SetPercent);
 			MyStatComp->OnVisibleHPUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
+			MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
 		}
 	}
 }

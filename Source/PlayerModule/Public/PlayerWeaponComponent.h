@@ -91,6 +91,8 @@ public:
 
 	void SpawnImpactEffect(FHitResult result);
 
+	void SpawnField(FHitResult result);
+
 	void Threaten();
 
 	float CalcDamage(FHitResult result, FVector2D p_damage);
@@ -109,7 +111,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UWeaponDataAsset* PistolDataAssets;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* ShotgunDataAssets;
+		class UWeaponDataAsset* WeaponDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UHitImapactDataAsset* HitImpactDataAsset;

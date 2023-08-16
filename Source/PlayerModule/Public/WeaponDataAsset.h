@@ -21,13 +21,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class TSubclassOf<UAnimInstance> weaponAnim;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> ShotSounds;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* ShotSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* ReloadCliplockedSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* ReloadMagInSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* ReloadMagOutSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* EmptySound_Cue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UParticleSystem* MuzzleFireParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UParticleSystem* BulletTracerParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UNiagaraSystem* BulletTrailFXNiagara;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

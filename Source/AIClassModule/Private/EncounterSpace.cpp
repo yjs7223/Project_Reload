@@ -8,6 +8,8 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
+#include "CoverManager.h"
+
 // Sets default values
 AEncounterSpace::AEncounterSpace()
 {
@@ -17,6 +19,7 @@ AEncounterSpace::AEncounterSpace()
 	RootComponent = CollisionMesh;
 	LevelActive = false;
 	subencheck = false;
+	ActiveStart = false;
 	LevelActiveNum = 1;
 	
 }
@@ -26,6 +29,10 @@ void AEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+	LevelActive = false;
+	subencheck = false;
+	ActiveStart = false;
+	LevelActiveNum = 1;
 }
 
 // Called every frame
@@ -52,7 +59,10 @@ void AEncounterSpace::Tick(float DeltaTime)
 			LevelEndActive();
 		}
 	}
-
+	else
+	{
+		LevelActiveNum = 1;
+	}
 }
 
 
@@ -74,7 +84,13 @@ void AEncounterSpace::LevelArrayActive()
 				}
 				commander->Now_suben = suben;
 				ActiveStart = true;
+
 				//return Cast<ASubEncounterSpace>(sub);
+
+				//first encounter begin
+				commander->CoverManager->ChangeEncounter();
+
+
 			}
 		}
 		else {
@@ -92,6 +108,12 @@ void AEncounterSpace::LevelArrayActive()
 							suben2->LevelActive = true;
 							commander->Now_suben = suben2;
 							//return Cast<ASubEncounterSpace>(sub2);
+
+							
+							//next encounter begin
+							commander->CoverManager->ChangeEncounter();
+
+
 						}
 					}
 				}
