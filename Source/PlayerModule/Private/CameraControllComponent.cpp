@@ -10,7 +10,6 @@
 #include "Components/CapsuleComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include "BaseInputComponent.h"
-#include <Kismet/KismetSystemLibrary.h>
 
 // Sets default values for this component's properties
 UCameraControllComponent::UCameraControllComponent()
@@ -62,7 +61,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	}
 
 	FRotator tempCameraRot = FRotator(0, 0, 0);
-	tempCamerapos.Z -= owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	tempCamerapos.Z -= owner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 
 	if (m_Input && m_Input->getInput()->IsAiming) {
 		m_Data->TargetArmLenght = m_Data->AimingArmLength;
@@ -126,7 +125,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			tempCamerapos += tempvec;
 		}
 	}
-	UKismetSystemLibrary::PrintString(GetWorld(), tempCamerapos.ToString(), true, true, FColor::Red, DeltaTime);
+
 	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(m_FollowSpringArm->SocketOffset, tempCamerapos, DeltaTime, m_Data->m_PosSpeed);
 	m_FollowCamera->SetRelativeRotation(FMath::RInterpTo(m_FollowCamera->GetRelativeRotation(), tempCameraRot, DeltaTime, m_Data->m_RotSpeed));
 	m_FollowSpringArm->TargetArmLength = FMath::FInterpTo(m_FollowSpringArm->TargetArmLength, m_Data->TargetArmLenght, DeltaTime, m_Data->m_LengthSpeed);

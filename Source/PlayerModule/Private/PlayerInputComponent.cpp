@@ -69,10 +69,13 @@ void UPlayerInputComponent::Runing()
 	}
 	else {
 		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
-		m_inputData.IsAiming = false;
+
 	}
 
+	if (movement->isRuning()) {
 
+		m_inputData.IsAiming = false;
+	}
 }
 
 void UPlayerInputComponent::Crouching()

@@ -112,21 +112,20 @@ void UCoverComponent::PlayCover()
 		//////
 
 		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
-		m_Input->getInput()->IsAiming = false;
+
 		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
 		return;
 	}
 	else {
-		if (m_IsCover) {
-			StopCover();
-			return;
-		}
 		StartCover();
 	}
 
-
+	if (m_IsCover) {
+		StopCover();
+		return;
+	}
 
 }
 
@@ -194,13 +193,11 @@ bool UCoverComponent::StartAICover()
 
 	if (result.GetActor() == nullptr) return false;
 	 
-	PlayMontageStartCover.Broadcast();
+	RotateSet(0.0f);
+
 	owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
-
-	RotateSet(0.0f);
-	BeCrouch(0.0f);
 
 	return m_IsCover;
 }
@@ -405,7 +402,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector impactNormal;
 	FVector pointToLocation = item.Location - item.ImpactPoint;
 
-	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 225000) return  FVector::ZeroVector;
+	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 2250000) return  FVector::ZeroVector;
 	//UKismetSystemLibrary::PrintString(GetWorld(), item.ImpactPoint.ToString(), true, false, FColor::Green, 2.0f, TEXT("asdsadsa"));
 	//{
 	//	FVector impactpoint2D = item.ImpactPoint;
@@ -938,15 +935,14 @@ AActor* UCoverComponent::GetCoverWall()
 
 void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
+	if (IsCover()) return;
 	if (!Result.IsSuccess()) return;
 
 	if (!owner->ActorHasTag("Enemy"))
 	{
-		if (IsCover()) return;
 		if (!StartCover()) return;
 
 		owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
 		RotateSet(0.0f);
-		BeCrouch(0.0f);
 	}
 }
