@@ -935,6 +935,7 @@ AActor* UCoverComponent::GetCoverWall()
 
 void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
+	if (IsCover()) return;
 	if (!Result.IsSuccess()) return;
 
 	if (!owner->ActorHasTag("Enemy"))

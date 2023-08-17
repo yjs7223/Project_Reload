@@ -22,6 +22,7 @@
 #include "Engine/EngineTypes.h"
 #include "Sound/SoundCue.h"
 #include "Bullet.h"
+#include "EmptyShellSpawnable.h"
 
 
 UAIWeaponComponent::UAIWeaponComponent()
@@ -93,8 +94,14 @@ void UAIWeaponComponent::BeginPlay()
 // Called every frame
 void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_InCover")) {
+		owner->GetController()->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), playerMesh->GetOwner()->GetActorLocation()));
 
+	}
+
+	
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
 	/*if (shot_State)
 	{
 		ShotAITimer(DeltaTime);
@@ -133,7 +140,7 @@ void UAIWeaponComponent::ShotAI()
 
 	// 조준 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
-	{
+	{ 
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		// AI가 앞을 막고 있을 때 사격 불가능
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
@@ -167,6 +174,11 @@ void UAIWeaponComponent::ShotAI()
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 	}
 	Super::Fire();
+	UAnimInstance* animinstatce = WeaponMesh->GetAnimInstance();
+	if (animinstatce && animinstatce->GetClass()->ImplementsInterface(UEmptyShellSpawnable::StaticClass())) {
+		IEmptyShellSpawnable::Execute_EmptyShellSpawn((animinstatce));
+	}
+	//aimOffset = rot;
 
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, rot);
 	if (bullet)
