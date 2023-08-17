@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "SubEncounterSpace.h"
+#include "AIZombie.h"
 
 // Sets default values
 AAISpawner::AAISpawner()
@@ -105,6 +106,22 @@ void AAISpawner::SpawnWave()
 		commander->ListAdd(Cast<AActor>(temp));
 		heavyCount++;
 	}
+	else if (zombieCount < spawn_Wave[Enemy_Name::ZOMBIE])
+	{
+		// 스폰 위치 검사 후 변경
+		spawn_Spot = SetSpawnSpot(spawn_Spot);
+
+		// 생성
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
+		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Zombie, nullptr, GetActorLocation());
+		AAIZombie* zombie = Cast<AAIZombie>(temp);
+
+		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
+		zombie->mySpawner = this;
+		zombie->target = spawn_Spots[0];
+		//commander->ListAdd(Cast<AActor>(temp));
+		zombieCount++;
+	}
 	else
 	{
 		// 스폰 완료
@@ -112,10 +129,8 @@ void AAISpawner::SpawnWave()
 		rifleCount = 0;
 		sniperCount = 0;
 		heavyCount = 0;
+		zombieCount = 0;
 	}
-
-	spawn_Timer = 0;
-
 }
 
 void AAISpawner::WaveControl(float DeltaTime)
@@ -133,11 +148,11 @@ void AAISpawner::WaveControl(float DeltaTime)
 		case Spawn_Type::KILL:
 			if (count_Kill >= spawn_Condition)
 			{
-				spawn_Timer += DeltaTime;
-				if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+				spawn_Delay += DeltaTime;
+				if (spawn_Delay >= (*curSpawnData).spawn_Delay)
 				{
 					SpawnWave();
-					spawn_Timer = 0;
+					spawn_Delay = 0;
 				}
 			}
 			break;
@@ -145,18 +160,18 @@ void AAISpawner::WaveControl(float DeltaTime)
 			spawn_Timer += DeltaTime;
 			if (spawn_Timer >= spawn_Condition)
 			{
-				spawn_Timer += DeltaTime;
-				if (spawn_Timer >= (*curSpawnData).spawn_Delay)
+				spawn_Delay += DeltaTime;
+				if (spawn_Delay >= (*curSpawnData).spawn_Delay)
 				{
 					SpawnWave();
-					spawn_Timer = 0;
+					spawn_Delay = 0;
 				}
 			}
 			break;
 		}
 	}
 
-	if (last_Spawn)
+	if (last_Spawn && spawnCheck)
 	{
 		check_Overlap = false;
 		waveEnd = true;
@@ -202,8 +217,8 @@ int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 
 void AAISpawner::NextWave()
 {
-	// 한번에 다 잡힐걸 대비해서 스폰에 필요한만큼만 깎기 (근데 전체기 있나)
-	count_Kill -= spawn_Condition;
+	count_Kill = 0;
+	spawn_Timer = 0;
 	// 다음 웨이브로 넘기기
 	SetDataTable(++curWave);
 	spawnCheck = false;

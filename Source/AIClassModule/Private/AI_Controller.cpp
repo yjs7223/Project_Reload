@@ -25,7 +25,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
-
+#include "Sound/SoundCue.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
 
@@ -264,6 +264,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		
 	}
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
+}
+
+void AAI_Controller::PlayVoiceSound(Voice sound)
+{
+	float pitch = FMath::RandRange(0, 5);
+	if (pitch)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[(int)sound], GetOwner()->GetActorLocation(), 0.5f, pitch);
+	}
 }
 
 //FRotator AAI_Controller::GetControlRotation() const

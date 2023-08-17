@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AIZombie.h"
 
 UAIStatComponent::UAIStatComponent()
 {
@@ -45,10 +46,16 @@ void UAIStatComponent::BeginPlay()
 	owner = GetOwner<AAICharacter>();
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
-	if (AIController->GetBlackboardComponent() != nullptr)
+	if (!GetOwner()->ActorHasTag("Zombie"))
 	{
-		AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_MinPoint);
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+	}
+	if (AIController != nullptr)
+	{
+		if (AIController->GetBlackboardComponent() != nullptr)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_MinPoint);
+		}
 	}
 	
 	//SetDataTable("Rifle_E");
@@ -95,38 +102,52 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
 	DI_SupRange = 1 / sup_MaxRange;
-	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	moveoncmp->e_move = EMove::Hit;
-	moveoncmp->Time = 0;
+	if (!GetOwner()->ActorHasTag("Zombie"))
+	{
+		UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+		moveoncmp->e_move = EMove::Hit;
+		moveoncmp->Time = 0;
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
 	float total_dmg;
 	total_dmg = p_damage - (p_damage * 0.01f) * Def;
 	curHP -= total_dmg;
 	Def -= (total_dmg * 0.05f);
-	AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
+	if (AIController != nullptr)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
+	}
+
+	if (GetOwner()->ActorHasTag("Zombie"))
+	{
+		Cast<AAIZombie>(GetOwner())->BulletHit(result);
+	}
 	if (curHP <= 0.0f)
 	{
 		curHP = 0.0f;
 		isDie = true;
-		if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
+		if (!GetOwner()->ActorHasTag("Zombie"))
 		{
-			Cast<AAICharacter>(GetOwner())->Dead();
-			Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
-		}
-		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
-		{
-			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
-		}
-		if (AIController->commander != nullptr)
-		{
-			if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+			if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
 			{
-				int aikey = *AIController->commander->List_Division.Find(GetOwner());
-				AIController->commander->List_Division.Remove(GetOwner());
-				//AIController->commander->List_Combat.Remove(aikey);
-				AIController->commander->List_CoverPoint.Remove(aikey);
-				AIController->commander->List_Location.Remove(aikey);
-				AIController->commander->List_Suppression.Remove(aikey);
+				Cast<AAICharacter>(GetOwner())->Dead();
+				Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
+			}
+			if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
+			{
+				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+			}
+			if (AIController->commander != nullptr)
+			{
+				if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+				{
+					int aikey = *AIController->commander->List_Division.Find(GetOwner());
+					AIController->commander->List_Division.Remove(GetOwner());
+					//AIController->commander->List_Combat.Remove(aikey);
+					AIController->commander->List_CoverPoint.Remove(aikey);
+					AIController->commander->List_Location.Remove(aikey);
+					AIController->commander->List_Suppression.Remove(aikey);
+				}
 			}
 		}
 		

@@ -7,6 +7,12 @@
 //#include "Perception/AIPerceptionTypes.h"
 #include "AI_Controller.generated.h"
 
+UENUM(BlueprintType)
+enum class Voice : uint8
+{
+	Cover, Attack, Surpport, Contect
+};
+
 /**
  * 
  */
@@ -57,6 +63,8 @@ public:
 
 	//���������ƮŸ��ä�� �Դϴ�
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
+
+	TArray<USoundWave*> ShotSounds;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);
@@ -68,7 +76,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AI_Controller")
 		void RunBTT();
 
-
+	UFUNCTION(BlueprintCallable, Category = "AI_Controller")
+		void PlayVoiceSound(Voice sound);
 
 	
 };
