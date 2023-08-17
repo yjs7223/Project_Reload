@@ -64,7 +64,8 @@ public:
 	//���������ƮŸ��ä�� �Դϴ�
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 
-	TArray<USoundWave*> ShotSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		TArray<class USoundCue*> ShotSounds;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);
@@ -77,7 +78,7 @@ public:
 		void RunBTT();
 
 	UFUNCTION(BlueprintCallable, Category = "AI_Controller")
-		void PlayVoiceSound(Voice sound);
+		void PlayVoiceSound(Voice sound, int random);
 
 	
 };
