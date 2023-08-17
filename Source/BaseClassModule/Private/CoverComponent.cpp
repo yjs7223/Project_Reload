@@ -402,7 +402,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector impactNormal;
 	FVector pointToLocation = item.Location - item.ImpactPoint;
 
-	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 225000) return  FVector::ZeroVector;
+	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 2250000) return  FVector::ZeroVector;
 	//UKismetSystemLibrary::PrintString(GetWorld(), item.ImpactPoint.ToString(), true, false, FColor::Green, 2.0f, TEXT("asdsadsa"));
 	//{
 	//	FVector impactpoint2D = item.ImpactPoint;
