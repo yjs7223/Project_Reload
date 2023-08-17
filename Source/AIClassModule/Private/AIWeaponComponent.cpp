@@ -22,13 +22,9 @@
 #include "Engine/EngineTypes.h"
 #include "Sound/SoundCue.h"
 #include "Bullet.h"
-<<<<<<< Updated upstream
 #include "EmptyShellSpawnable.h"
-
-=======
 #include "Components/SpotLightComponent.h"
 #include "NiagaraComponent.h"
->>>>>>> Stashed changes
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
