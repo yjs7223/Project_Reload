@@ -34,6 +34,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Attacked(float p_damage, class ACharacter* character) override;
 
+	void RecoverHP(float p_HP) override;
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;

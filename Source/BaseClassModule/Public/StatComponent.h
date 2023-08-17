@@ -51,8 +51,7 @@ public:
 	virtual void SetHP(float p_HP);
 
 	//Recover currnetHP
-	UFUNCTION(BlueprintCallable)
-		void RecoverHP(float p_HP);
+	virtual void RecoverHP(float p_HP);
 
 	//Damage process
 	UFUNCTION(BlueprintCallable)
