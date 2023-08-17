@@ -22,6 +22,8 @@ public:
 		float AI_Speed_CrouchMove;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIBaseStatDataBase)
 		float AI_Def;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIBaseStatDataBase)
+		float AI_HitReactionScale;
 
 	
 };

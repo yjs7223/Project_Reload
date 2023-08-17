@@ -129,6 +129,8 @@ float UWeaponComponent::getAimPitch()
 
 void UWeaponComponent::AimSetting()
 {
+	//if(GetOwner()->Tags.Num() == 0 || !GetOwner()->ActorHasTag(TEXT("Player"))) return;
+	
 	FRotator temprot;
 	ACharacter* Owner = GetOwner<ACharacter>();
 	temprot = Owner->GetControlRotation() - Owner->GetActorRotation();
