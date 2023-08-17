@@ -23,7 +23,8 @@
 #include "Sound/SoundCue.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
-
+#include "Components/SpotLightComponent.h"
+#include "NiagaraComponent.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -39,6 +40,13 @@ UAIWeaponComponent::UAIWeaponComponent()
 	if (LaserFXNiagara.Succeeded())
 	{
 		laserFXNiagara = LaserFXNiagara.Object;
+	}
+
+	//aimflash 나이아가라
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> m_AimFlashFXNiagara(TEXT("NiagaraSystem'/Game/AI_Project/AI_Pakage/Niagara/AimFlash.AimFlash'"));
+	if (m_AimFlashFXNiagara.Succeeded())
+	{
+		AimFlashFXNiagara = m_AimFlashFXNiagara.Object;
 	}
 
 	// 라이플
@@ -66,6 +74,9 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		HitImpactDataAsset = Cast<UHitImapactDataAsset>(hitimpact.Object);
 	}
+
+	//라이트
+	//SpotLightCmp = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLightCmp"), false);
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -84,10 +95,17 @@ void UAIWeaponComponent::BeginPlay()
 	if (owner->FindComponentByClass<UNiagaraComponent>())
 	{
 		laserFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
+		//AimFlashFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
 	}
 
 	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
 	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
+
+	//라이트
+	//SpotLightCmp->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("LaserSightSocket"));
+
+
+
 }
 
 
@@ -477,5 +495,28 @@ void UAIWeaponComponent::LaserOff()
 			laserFXComponent->SetNiagaraVariableVec3("Beam Start", FVector(0, 0, 0));
 			laserFXComponent->SetNiagaraVariableVec3("Beam End", FVector(0, 0, 0));
 		}
+	}
+}
+
+void UAIWeaponComponent::AimFalshOn()
+{
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		//UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("AttachmentSocketScope"));
+
+		AimFlashFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AimFlashFXNiagara, WeaponMesh, TEXT("AttachmentSocketScope"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		if (AimFlashFXComponent)
+		AimFlashFXComponent->SetActive(true);
+	}
+
+}
+
+void UAIWeaponComponent::AimFalshOff()
+{
+
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		if(AimFlashFXComponent)
+			AimFlashFXComponent->SetActive(false);
 	}
 }
