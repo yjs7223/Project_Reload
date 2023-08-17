@@ -68,9 +68,10 @@ void AAISpawner::SpawnWave()
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
 
+		AAICharacter* ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
-		Cast<AAICharacter>(temp)->mySpawner = this;
-		Cast<AAICharacter>(temp)->Init();
+		ai->mySpawner = this;
+		ai->Init();
 
 		commander->ListAdd(Cast<AActor>(temp));
 		rifleCount++;
@@ -84,9 +85,10 @@ void AAISpawner::SpawnWave()
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Sniper, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
 
+		AAICharacter* ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
-		Cast<AAICharacter>(temp)->mySpawner = this;
-		Cast<AAICharacter>(temp)->Init();
+		ai->mySpawner = this;
+		ai->Init();
 
 		commander->ListAdd(Cast<AActor>(temp));
 		sniperCount++;
@@ -99,10 +101,10 @@ void AAISpawner::SpawnWave()
 		// 생성
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Heavy, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
-
+		AAICharacter* ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
-		Cast<AAICharacter>(temp)->mySpawner = this;
-		Cast<AAICharacter>(temp)->Init();
+		ai->mySpawner = this;
+		ai->Init();
 		commander->ListAdd(Cast<AActor>(temp));
 		heavyCount++;
 	}
