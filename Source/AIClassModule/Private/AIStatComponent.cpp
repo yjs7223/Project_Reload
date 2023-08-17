@@ -90,7 +90,7 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UAIStatComponent::Attacked(float p_damage)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
-	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
+	float dis = FVector::Distance(owner->GetActorLocation()	, player->GetActorLocation());
 	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
 	sup_Input = dmg * sup_DecInput;
 	Time = 0;
@@ -100,6 +100,7 @@ void UAIStatComponent::Attacked(float p_damage)
 
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
+	Super::Attacked(p_damage, result);
 	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
 	DI_SupRange = 1 / sup_MaxRange;
 	if (!GetOwner()->ActorHasTag("Zombie"))
@@ -252,5 +253,6 @@ void UAIStatComponent::SetDataTable(FName EnemyName)
 		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
 		
 		Def = AIBaseStatData->AI_Def;
+		HitReactionScale = AIBaseStatData->AI_HitReactionScale;
 	}
 }

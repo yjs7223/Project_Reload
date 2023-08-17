@@ -22,7 +22,9 @@
 #include "Engine/EngineTypes.h"
 #include "Sound/SoundCue.h"
 #include "Bullet.h"
-
+#include "EmptyShellSpawnable.h"
+#include "Components/SpotLightComponent.h"
+#include "NiagaraComponent.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -38,6 +40,13 @@ UAIWeaponComponent::UAIWeaponComponent()
 	if (LaserFXNiagara.Succeeded())
 	{
 		laserFXNiagara = LaserFXNiagara.Object;
+	}
+
+	//aimflash 나이아가라
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> m_AimFlashFXNiagara(TEXT("NiagaraSystem'/Game/AI_Project/AI_Pakage/Niagara/AimFlash.AimFlash'"));
+	if (m_AimFlashFXNiagara.Succeeded())
+	{
+		AimFlashFXNiagara = m_AimFlashFXNiagara.Object;
 	}
 
 	// 라이플
@@ -65,6 +74,9 @@ UAIWeaponComponent::UAIWeaponComponent()
 	{
 		HitImpactDataAsset = Cast<UHitImapactDataAsset>(hitimpact.Object);
 	}
+
+	//라이트
+	//SpotLightCmp = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLightCmp"), false);
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -83,18 +95,31 @@ void UAIWeaponComponent::BeginPlay()
 	if (owner->FindComponentByClass<UNiagaraComponent>())
 	{
 		laserFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
+		//AimFlashFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
 	}
 
 	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
 	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
+
+	//라이트
+	//SpotLightCmp->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("LaserSightSocket"));
+
+
+
 }
 
 
 // Called every frame
 void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_InCover")) {
+		owner->GetController()->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), playerMesh->GetOwner()->GetActorLocation()));
 
+	}
+
+	
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
 	/*if (shot_State)
 	{
 		ShotAITimer(DeltaTime);
@@ -133,7 +158,7 @@ void UAIWeaponComponent::ShotAI()
 
 	// 조준 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
-	{
+	{ 
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		// AI가 앞을 막고 있을 때 사격 불가능
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
@@ -167,6 +192,11 @@ void UAIWeaponComponent::ShotAI()
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 	}
 	Super::Fire();
+	UAnimInstance* animinstatce = WeaponMesh->GetAnimInstance();
+	if (animinstatce && animinstatce->GetClass()->ImplementsInterface(UEmptyShellSpawnable::StaticClass())) {
+		IEmptyShellSpawnable::Execute_EmptyShellSpawn((animinstatce));
+	}
+	//aimOffset = rot;
 
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, rot);
 	if (bullet)
@@ -465,5 +495,28 @@ void UAIWeaponComponent::LaserOff()
 			laserFXComponent->SetNiagaraVariableVec3("Beam Start", FVector(0, 0, 0));
 			laserFXComponent->SetNiagaraVariableVec3("Beam End", FVector(0, 0, 0));
 		}
+	}
+}
+
+void UAIWeaponComponent::AimFalshOn()
+{
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		//UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("AttachmentSocketScope"));
+
+		AimFlashFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AimFlashFXNiagara, WeaponMesh, TEXT("AttachmentSocketScope"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		if (AimFlashFXComponent)
+		AimFlashFXComponent->SetActive(true);
+	}
+
+}
+
+void UAIWeaponComponent::AimFalshOff()
+{
+
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		if(AimFlashFXComponent)
+			AimFlashFXComponent->SetActive(false);
 	}
 }

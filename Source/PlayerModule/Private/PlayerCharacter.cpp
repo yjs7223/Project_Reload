@@ -172,7 +172,7 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 	}
 
 
-	if (HPWidgetComponent)
+	/*if (HPWidgetComponent)
 	{
 		HPWidgetComponent->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
 		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
@@ -202,7 +202,8 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
 		}
-	}
+	}*/
+
 	if (AmmoWidgetComponent)
 	{
 		AmmoWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));

@@ -396,11 +396,13 @@ void UPlayerWeaponComponent::StartAiming()
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
 	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3, true, 0.0f);
-
+	//owner->HPWidgetComponent
 	UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
 	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
+
 }
 
 void UPlayerWeaponComponent::StopAiming()
@@ -477,7 +479,13 @@ void UPlayerWeaponComponent::StartReload()
 		curAmmo = 0;
 		break;
 	case EWeaponType::TE_Rifle:
-		if (holdAmmo <= 0)
+		if (holdAmmo < 0)
+		{
+			reloadvalue = 30;
+			curAmmo = 0;
+			break;
+		}
+		if (holdAmmo == 0)
 		{
 			isReload = false;
 			return;

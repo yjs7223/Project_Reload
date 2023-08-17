@@ -58,6 +58,7 @@ void ULineNaviWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("lnw"));
 
 	FVector2D loc;
+	FVector2D viewportsize = UWidgetLayoutLibrary::GetViewportSize(GetWorld());
 	UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), LinePoints[0]->GetActorLocation(), loc, true);
 	//UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), LinePoints[0]->GetActorLocation(), loc);
 	PointLocations[0] = loc;
@@ -68,9 +69,14 @@ void ULineNaviWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		{
 			if (PointLocations.IsValidIndex(i))
 			{
-				UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), LinePoints[i]->GetActorLocation(), loc, true);
-				//UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), point->GetActorLocation(), loc);
-				PointLocations[i] = loc;
+				UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), LinePoints[i]->GetActorLocation(), loc, false);
+				//UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), LinePoints[i]->GetActorLocation(), loc, true);
+				
+				if (loc.X != 0)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, loc.ToString());
+					PointLocations[i] = loc;
+				}
 			}
 		}
 		else
@@ -88,7 +94,7 @@ int32 ULineNaviWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allo
 	{
 		const FPaintGeometry PG = AllottedGeometry.ToPaintGeometry();
 		const int32 LayerIdNew = LayerId + 1;
-		FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, PointLocations, ESlateDrawEffect::None, FLinearColor::Yellow, true, 2.0f);
+		FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, PointLocations, ESlateDrawEffect::None, FLinearColor::Yellow, true, 1.0f);
 	}
 
 

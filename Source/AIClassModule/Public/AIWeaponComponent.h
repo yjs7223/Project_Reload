@@ -88,8 +88,14 @@ public :
 	// 총알 효과 나이아가라
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UNiagaraSystem* laserFXNiagara;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UNiagaraComponent* laserFXComponent;
+
+	// 에이밍 효과 나이아가라
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		UNiagaraSystem* AimFlashFXNiagara;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		UNiagaraComponent* AimFlashFXComponent;
 
 	// 데이터 테이블
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -145,6 +151,10 @@ public :
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, UStaticMeshComponent*> Attachments;
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USpotLightComponent* SpotLightCmp;*/
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -186,4 +196,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 		void LaserOff();
+
+	UFUNCTION(Category = "Debug", meta = (CallInEditor = "true"))
+	//UFUNCTION(BlueprintCallable, Category = "AimFlash")
+		void AimFalshOn();
+
+
+	UFUNCTION(Category = "Debug", meta = (CallInEditor = "true"))
+		//UFUNCTION(BlueprintCallable, Category = "AimFlash")
+		void AimFalshOff();
 };
