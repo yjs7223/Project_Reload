@@ -7,6 +7,15 @@
 #include "StatComponent.generated.h"
 
 
+UENUM(BlueprintType)
+enum class EHitType: uint8
+{
+	None = 0	UMETA(Hidden),
+	Normal		UMETA(DisplayName = "Normal"),
+	Knockback	UMETA(DisplayName = "Knockback"),
+	MAX			UMETA(Hidden)
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BASECLASSMODULE_API UStatComponent : public UActorComponent
 {
@@ -14,7 +23,9 @@ class BASECLASSMODULE_API UStatComponent : public UActorComponent
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDieDelegate);
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FKnockbackDelegate, FVector, bool);
 public:
+	FKnockbackDelegate Knockback;
 	UPROPERTY(BlueprintReadWrite)
 	FDieDelegate diePlay;
 public:	
@@ -44,6 +55,9 @@ public:
 		void RecoverHP(float p_HP);
 
 	//Damage process
+	UFUNCTION(BlueprintCallable)
+	void Attacked_BP(float p_damage, FVector attackPoint, EHitType hittype);
+
 	virtual void Attacked(float p_damage);
 	virtual void Attacked(float p_damage, FHitResult result);
 	virtual void Attacked(float p_damage, class ABaseCharacter* character);
