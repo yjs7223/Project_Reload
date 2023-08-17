@@ -152,7 +152,7 @@ void AAICommander::ListSet()
 			Now_suben = m_suben;
 			CoverManager->ChangeEncounter();
 			//UAudioComponent* ac = NewObject<UAudioComponent>();
-			
+			audiocomp->Stop();
 			USoundCue* background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/S_Fire_Support_LOOP_150bpm_Cue.S_Fire_Support_LOOP_150bpm_Cue'"));
 			audiocomp->SetSound(background);
 			audiocomp->Play();
@@ -268,6 +268,10 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
 	Blackboard->SetValueAsObject("Cmd_Target", NULL);
+
+
+	audiocomp->StopDelayed(2.0f);
+	audiocomp->FadeOut(2.0f, 1.0f);
 }
 
 void AAICommander::ListVoidReset()
