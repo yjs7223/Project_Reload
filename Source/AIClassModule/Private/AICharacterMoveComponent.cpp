@@ -79,7 +79,9 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		timeDeltaTime += DeltaTime;
 		if (Time >= 0.5f)
 		{
-			input->AIRuning();
+			if (aicharacter->type != Enemy_Name::HEAVY) {
+				input->AIRuning();
+			}
 			timeDeltaTime = 0;
 			e_move = EMove::Normal;
 			break;
