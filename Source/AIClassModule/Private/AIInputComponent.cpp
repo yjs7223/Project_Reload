@@ -27,8 +27,8 @@ void UAIInputComponent::AIMoveRight(float Value)
 
 void UAIInputComponent::AIRuning()
 {
-	/*UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
-	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);*/
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	if (moveoncmp->e_move != EMove::Hit)
 	{
@@ -38,8 +38,8 @@ void UAIInputComponent::AIRuning()
 
 void UAIInputComponent::AIStopRuning()
 {
-	/*UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
-	movement->SetMovementMode(MOVE_Walking);*/
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	movement->SetMovementMode(MOVE_Walking);
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	if (moveoncmp->e_move != EMove::Hit)
 	{

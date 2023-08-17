@@ -199,7 +199,7 @@ void UAIStatComponent::SuppresionPoint()
 
 void UAIStatComponent::SetDataTable(FName EnemyName)
 {
-	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
+ 	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
 	if (SuppressionData)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));

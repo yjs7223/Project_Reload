@@ -26,86 +26,96 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 	{
 		return EBTNodeResult::Succeeded;
 	}
+	
 	commander->SiegeCoverPoint();
 	maplistnum = commander->SiegeCoverArray.Num();
 	enemyActivenum = 0;
 	for (auto ai : commander->List_Division)
 	{
-		AIController = nullptr;
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
-		
-		if (AIController)
+		AAICharacter* AI = Cast<AAICharacter>(ai.Key);
+		if (AI->type == Enemy_Name::RIFLE)
 		{
-			if (AIController->GetBlackboardComponent())
+			AIController = nullptr;
+			AIController = Cast<AAI_Controller>(AI->GetController());
+
+			if (AIController)
 			{
-				if(AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == 4)
+				if (AIController->GetBlackboardComponent())
 				{
-					enemyActivenum++;
-					if (enemyActivenum <= maplistnum)
+					if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == 4)
 					{
-						arraysame = false;
-						int num = 1;
-						for (int i = 0; i < num; i++)
+						enemyActivenum++;
+						if (enemyActivenum <= maplistnum)
 						{
-							for (auto coverpoint : commander->List_CoverPoint)
+							arraysame = false;
+							int num = 1;
+							for (int i = 0; i < num; i++)
 							{
-								if (coverpoint.Key != ai.Value)
+								for (auto coverpoint : commander->List_CoverPoint)
 								{
-									if (FVector::Distance(commander->SiegeCoverArray[i], coverpoint.Value) < 200)
+									if (coverpoint.Key != ai.Value)
 									{
-										arraysame = true;
+										if (FVector::Distance(commander->SiegeCoverArray[i], coverpoint.Value) < 200)
+										{
+											arraysame = true;
+										}
 									}
 								}
-							}
-							for (auto subAi : commander->List_Division)
-							{
-								if (subAi.Key != ai.Key)
+								for (auto subAi : commander->List_Division)
 								{
-									if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi.Key)->GetController()))
+									AAICharacter* sub_AI = Cast<AAICharacter>(subAi.Key);
+									if (sub_AI->type == Enemy_Name::RIFLE)
 									{
-										continue;
-									}
-									AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi.Key)->GetController());
-									if (FVector::Distance(commander->SiegeCoverArray[i], sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
-									{
-										arraysame = true;
-									}
-									if (FVector::Distance(commander->SiegeCoverArray[i], subAi.Key->GetActorLocation()) < 200)
-									{
-										arraysame = true;
+										if (subAi.Key != ai.Key)
+										{
+											if (!Cast<AAI_Controller>(sub_AI->GetController()))
+											{
+												continue;
+											}
+											AAI_Controller* sub_aic = Cast<AAI_Controller>(sub_AI->GetController());
+											if (FVector::Distance(commander->SiegeCoverArray[i], sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
+											{
+												arraysame = true;
+											}
+											if (FVector::Distance(commander->SiegeCoverArray[i], subAi.Key->GetActorLocation()) < 200)
+											{
+												arraysame = true;
+											}
+										}
+										else
+										{
+											if (FVector::Distance(commander->SiegeCoverArray[i], subAi.Key->GetActorLocation()) < 50)
+											{
+												arraysame = true;
+											}
+										}
 									}
 								}
-								else
+								if (arraysame)
 								{
-									if (FVector::Distance(commander->SiegeCoverArray[i], subAi.Key->GetActorLocation()) < 50)
+									num++;
+									if (num >= commander->SiegeCoverArray.Num())
 									{
-										arraysame = true;
+										return EBTNodeResult::Succeeded;
 									}
 								}
-							}
-							if (arraysame)
-							{
-								num++;
-								if (num >= commander->SiegeCoverArray.Num())
+								else if (!arraysame)
 								{
-									return EBTNodeResult::Succeeded;
+									AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", commander->SiegeCoverArray[i]);
+									commander->List_CoverPoint.Add(ai.Value, commander->SiegeCoverArray[i]);
 								}
-							}
-							else if (!arraysame)
-							{
-								AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", commander->SiegeCoverArray[i]);
-								commander->List_CoverPoint.Add(ai.Value, commander->SiegeCoverArray[i]);
 							}
 						}
+						else
+						{
+							return EBTNodeResult::Succeeded;
+						}
 					}
-					else
-					{
-						return EBTNodeResult::Succeeded;
-					}
-				}
 
+				}
 			}
 		}
+		
 	}
 	return EBTNodeResult::Succeeded;
 }

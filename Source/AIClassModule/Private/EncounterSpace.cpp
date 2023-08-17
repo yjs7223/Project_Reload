@@ -82,13 +82,13 @@ void AEncounterSpace::LevelArrayActive()
 				{
 					continue;
 				}
-				commander->Now_suben = suben;
+				commander->m_suben = suben;
 				ActiveStart = true;
 
 				//return Cast<ASubEncounterSpace>(sub);
 
 				//first encounter begin
-				commander->CoverManager->ChangeEncounter();
+				
 
 
 			}
@@ -106,12 +106,11 @@ void AEncounterSpace::LevelArrayActive()
 						if (suben2->LevelNum == LevelActiveNum)
 						{
 							suben2->LevelActive = true;
-							commander->Now_suben = suben2;
+							commander->m_suben = suben2;
 							//return Cast<ASubEncounterSpace>(sub2);
 
 							
 							//next encounter begin
-							commander->CoverManager->ChangeEncounter();
 
 
 						}
@@ -132,6 +131,8 @@ void AEncounterSpace::LevelEndActive()
 		Cast<ASubEncounterSpace>(item)->LevelActive = false;
 	}
 	LevelActive = false;
+	ActiveStart = false;
+	subencheck = false;
 }
 
 void AEncounterSpace::SubEncounterCheck()

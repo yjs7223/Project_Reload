@@ -65,8 +65,8 @@ void UStatComponent::Attacked(float p_damage)
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
+		diePlay.Broadcast();
 	}
-
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(curHP));
 }
 
@@ -78,6 +78,7 @@ void UStatComponent::Attacked(float p_damage, FHitResult result)
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
+		diePlay.Broadcast();
 	}
 
 }
@@ -89,6 +90,7 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* character)
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
+		diePlay.Broadcast();
 	}
 }
 
