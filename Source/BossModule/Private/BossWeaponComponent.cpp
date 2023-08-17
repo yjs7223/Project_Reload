@@ -39,6 +39,7 @@ void UBossWeaponComponent::TakeDamage(AActor* p_TargetActor, float p_Damage)
 	if (target)
 	{
 		target->Attacked(p_Damage);
+		//target->Attacked(p_Damage);
 	}
 }
 
