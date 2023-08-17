@@ -208,7 +208,7 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 	{
 		AmmoWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
 		AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
-		AmmoWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+		//AmmoWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
 		AmmoWidgetComponent->SetDrawSize(FVector2D(130.0f, 50.0f));
 
 		if (Ammo_Widget)
