@@ -12,6 +12,11 @@ class BASECLASSMODULE_API UStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDieDelegate);
+public:
+	UPROPERTY(BlueprintReadWrite)
+	FDieDelegate diePlay;
 public:	
 	// Sets default values for this component's properties
 	UStatComponent();

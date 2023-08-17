@@ -87,9 +87,9 @@ public :
 
 	// 총알 효과 나이아가라
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		UNiagaraSystem* shotFXNiagara;
+		UNiagaraSystem* laserFXNiagara;
 	UPROPERTY()
-		UNiagaraComponent* shotFXComponent;
+		UNiagaraComponent* laserFXComponent;
 
 	// 데이터 테이블
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -180,4 +180,10 @@ public:
 	void AISpawnImpactEffect(FHitResult p_result);
 
 	void PlayRandomShotSound();
+
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+		void LaserOn();
+
+	UFUNCTION(BlueprintCallable, Category = "Laser")
+		void LaserOff();
 };

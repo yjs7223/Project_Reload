@@ -376,17 +376,20 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	//박스 트레이스로 엄폐물을 체크 합니다
 	if (!UKismetSystemLibrary::BoxTraceMulti(GetWorld(),
 		ViewPoint + ViewVector * 200,
-		ViewPoint + ViewVector * 1000,
+		ViewPoint + ViewVector * 1500,
 		{ 0, camera->OrthoWidth * 0.2f, camera->OrthoWidth },
 		cameraRotation,
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		true,
-		{m_CoverWall},
+		{ m_CoverWall },
 		EDrawDebugTrace::None,
 		results,
 		true
-	)) return FVector::ZeroVector;
+	)) {
 
+
+		return FVector::ZeroVector;
+	}
 	// 첫 요소를 가져어옵니다
 	// <멀티가 하나만 체크하기에 첫요소만 가져옵니다>
 	auto iter = results.CreateConstIterator();
@@ -402,6 +405,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	FVector impactNormal;
 	FVector pointToLocation = item.Location - item.ImpactPoint;
 
+	if ((owner->GetActorLocation() - item.ImpactPoint).SquaredLength() > 225000) return  FVector::ZeroVector;
 	//UKismetSystemLibrary::PrintString(GetWorld(), item.ImpactPoint.ToString(), true, false, FColor::Green, 2.0f, TEXT("asdsadsa"));
 	//{
 	//	FVector impactpoint2D = item.ImpactPoint;
@@ -416,7 +420,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	//impactNormal를 세팅해줍니다
 	if (item.Normal == item.ImpactNormal) {
 		start = item.Location;
-		end = item.ImpactPoint - item.ImpactNormal + FVector::DownVector;
+		end = item.ImpactPoint - item.ImpactNormal;
 		start.Z = end.Z;
 		GetWorld()->LineTraceSingleByChannel(result1, start, end, traceChanel, params);
 		impactNormal = result1.Normal;
@@ -436,8 +440,9 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 
 	//충돌지점으로부터 살짝 떨어진곳에서 상하 체크를 합니다
 	FVector targetVector = FMath::LinePlaneIntersection(ViewPoint, ViewPoint + ViewVector * 1000, item.ImpactPoint, impactNormal) + item.Normal;
+	targetVector.Z > item.ImpactPoint.Z ? targetVector.Z : targetVector.Z = item.ImpactPoint.Z;
 	FVector temptargetVector;
-	start = targetVector + FVector::UpVector * 500;
+	start = targetVector;
 	end = targetVector + FVector::DownVector * 1000;
 	GetWorld()->LineTraceSingleByChannel(result2, start, end, ECC_Visibility, params);
 
@@ -447,6 +452,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 	start = result2.Location + FVector::UpVector * halfHeight + impactRotatedVector * capsule->GetScaledCapsuleRadius() * 2.5f;
 	end = start - impactNormal * capsule->GetScaledCapsuleRadius();
 	GetWorld()->LineTraceSingleByChannel(result3, start, end, traceChanel, params);
+
 	
 	if (result3.bBlockingHit) {
 		//맞았다면 <impactRotatedVector * capsule->GetScaledCapsuleRadius() * 2.0f>을 제외해서 다시 계산해서 result_Result에 넣어줍니다

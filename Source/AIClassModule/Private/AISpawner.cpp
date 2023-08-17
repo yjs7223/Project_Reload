@@ -159,6 +159,7 @@ void AAISpawner::WaveControl(float DeltaTime)
 	if (last_Spawn)
 	{
 		check_Overlap = false;
+		waveEnd = true;
 	}
 	// 다음 웨이브
 	else if (spawnCheck)
