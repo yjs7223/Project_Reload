@@ -144,7 +144,7 @@ public:
 		class AActor* redball;
 
 	class ACoverManager* CoverManager;
-
+	class UAudioComponent* audiocomp;
 public:
 	UFUNCTION()
 		void ListSet();
