@@ -32,14 +32,14 @@ public:
 	void Attacked(float p_damage) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Attacked(float p_damage, class ABaseCharacter* character) override;
+	void Attacked(float p_damage, class ACharacter* character) override;
 
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;
 	FOnVisibleAttackedUIDelegate OnVisibleAttackedUIDelegate;
 public:
-	ABaseCharacter* TargetEnemy;
+	ACharacter* TargetEnemy;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UMatineeCameraShake> AttackedCameraShake;

@@ -112,7 +112,7 @@ void UStatComponent::Attacked(float p_damage, FHitResult result)
 
 }
 
-void UStatComponent::Attacked(float p_damage, ABaseCharacter* character)
+void UStatComponent::Attacked(float p_damage, ACharacter* character)
 {
 	curHP -= p_damage;
 	isAttacked = true;

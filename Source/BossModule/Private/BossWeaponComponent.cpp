@@ -3,6 +3,7 @@
 
 #include "BossWeaponComponent.h"
 #include "StatComponent.h"
+#include "BaseCharacter.h"
 
 // Sets default values for this component's properties
 UBossWeaponComponent::UBossWeaponComponent()
@@ -38,7 +39,8 @@ void UBossWeaponComponent::TakeDamage(AActor* p_TargetActor, float p_Damage)
 	auto target = p_TargetActor->FindComponentByClass<UStatComponent>();
 	if (target)
 	{
-		target->Attacked(p_Damage);
+		target->Attacked(p_Damage, GetOwner<ACharacter>());
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, GetOwner<ABaseCharacter>()->GetName());
 		//target->Attacked(p_Damage);
 	}
 }

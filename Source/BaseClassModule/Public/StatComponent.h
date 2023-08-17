@@ -60,7 +60,7 @@ public:
 
 	virtual void Attacked(float p_damage);
 	virtual void Attacked(float p_damage, FHitResult result);
-	virtual void Attacked(float p_damage, class ABaseCharacter* character);
+	virtual void Attacked(float p_damage, class ACharacter* character);
 	virtual void Attacked(FHitResult result);
 
 public:
