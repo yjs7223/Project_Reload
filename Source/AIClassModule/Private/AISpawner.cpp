@@ -20,7 +20,7 @@ AAISpawner::AAISpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -36,7 +36,6 @@ void AAISpawner::BeginPlay()
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	pointTime = 0;
 	pointSpawnCheck = false;
-
 	SetDataTable(curWave);
 }
 
@@ -70,11 +69,14 @@ void AAISpawner::SpawnWave()
 
 		AAICharacter* ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
-		ai->mySpawner = this;
-		ai->Init();
+		if (ai != nullptr)
+		{
+			ai->mySpawner = this;
+			ai->Init();
 
-		commander->ListAdd(Cast<AActor>(temp));
-		rifleCount++;
+			commander->ListAdd(Cast<AActor>(temp));
+			rifleCount++;
+		}
 	}
 	else if (sniperCount < spawn_Wave[Enemy_Name::SNIPER])
 	{
@@ -87,11 +89,14 @@ void AAISpawner::SpawnWave()
 
 		AAICharacter* ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
-		ai->mySpawner = this;
-		ai->Init();
+		if (ai != nullptr)
+		{
+			ai->mySpawner = this;
+			ai->Init();
 
-		commander->ListAdd(Cast<AActor>(temp));
-		sniperCount++;
+			commander->ListAdd(Cast<AActor>(temp));
+			sniperCount++;
+		}
 	}
 	else if (heavyCount < spawn_Wave[Enemy_Name::HEAVY])
 	{
@@ -103,10 +108,13 @@ void AAISpawner::SpawnWave()
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Heavy, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
 		AAICharacter* ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
-		ai->mySpawner = this;
-		ai->Init();
-		commander->ListAdd(Cast<AActor>(temp));
-		heavyCount++;
+		if (ai != nullptr)
+		{
+			ai->mySpawner = this;
+			ai->Init();
+			commander->ListAdd(Cast<AActor>(temp));
+			heavyCount++;
+		}
 	}
 	else if (zombieCount < spawn_Wave[Enemy_Name::ZOMBIE])
 	{
@@ -119,10 +127,13 @@ void AAISpawner::SpawnWave()
 		AAIZombie* zombie = Cast<AAIZombie>(temp);
 
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
-		zombie->mySpawner = this;
-		zombie->target = spawn_Spots[0];
-		//commander->ListAdd(Cast<AActor>(temp));
-		zombieCount++;
+		if (zombie != nullptr)
+		{
+			zombie->mySpawner = this;
+			zombie->target = spawn_Spots[0];
+			//commander->ListAdd(Cast<AActor>(temp));
+			zombieCount++;
+		}
 	}
 	else
 	{
@@ -290,12 +301,14 @@ void AAISpawner::SetDataTable(int p_curWave)
 	if (spawnData != nullptr)
 	{
 		curSpawnData = spawnData->FindRow<FST_Spawner>(*FString::FromInt(p_curWave), TEXT(""));
-
-		last_Spawn = curSpawnData->last_Spawn;
-		spawn_Condition = curSpawnData->spawn_Condition;
-		spawn_Delay = curSpawnData->spawn_Delay;
-		spawn_Spot = curSpawnData->spawn_Spot;
-		spawn_Type = curSpawnData->spawn_Type;
-		spawn_Wave = curSpawnData->spawn_Wave;
+		if (curSpawnData != nullptr)
+		{
+			last_Spawn = curSpawnData->last_Spawn;
+			spawn_Condition = curSpawnData->spawn_Condition;
+			spawn_Delay = curSpawnData->spawn_Delay;
+			spawn_Spot = curSpawnData->spawn_Spot;
+			spawn_Type = curSpawnData->spawn_Type;
+			spawn_Wave = curSpawnData->spawn_Wave;
+		}
 	}
 }

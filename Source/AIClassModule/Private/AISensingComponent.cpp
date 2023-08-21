@@ -100,7 +100,7 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 
 void UAISensingComponent::ShotSenseRange()
 {
-	DrawSense();
+	//DrawSense();
 
 	if (IsPlayerInsideFanArea(AimBwd_Radius, AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{

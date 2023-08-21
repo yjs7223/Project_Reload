@@ -379,7 +379,7 @@ void UAIWeaponComponent::CheckTrace()
 		}
 	}
 
-	DrawDebugLine(GetWorld(), start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
+	//DrawDebugLine(GetWorld(), start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
 }
 
 void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
