@@ -94,34 +94,6 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	}
 }
 
-void UWeaponComponent::ReloadAmmo()
-{
-	if (holdAmmo <= 0)
-	{
-		return;
-	}
-
-	if (curAmmo >= 30)
-	{
-		return;
-	}
-
-
-	int m_ammo = 0;
-	if (holdAmmo < 30)
-	{
-		m_ammo = holdAmmo;
-	}
-	else
-	{
-		m_ammo = 30;
-		holdAmmo -= m_ammo;
-	}
-
-	bReload = true;
-	curAmmo += m_ammo;
-}
-
 void UWeaponComponent::StartFire()
 {
 	bFire = true;
@@ -220,9 +192,10 @@ void UWeaponComponent::PlayRandomShotSound()
 
 void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 {
-	UNiagaraSystem* hitFXNiagara;
 	if (HitImpactDataAsset)
 	{
+		UNiagaraSystem* hitFXNiagara;
+
 		if (CheckActorTag(result.GetActor(), TEXT("Enemy")))
 		{
 			if (CheckActorTag(result.GetActor(), TEXT("Robot")))
@@ -267,26 +240,27 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
 			}
 		}
-	}
 
-	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(result.Location, GetOwner()->GetActorLocation());
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.BoneName.ToString());
-	m_rot.Pitch -= 90.0f;
-	//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
-	UNiagaraComponent* hitFXComponent;
-	if (!result.BoneName.IsNone())
-	{
-		USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
-		if (mesh)
+
+		FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(result.Location, GetOwner()->GetActorLocation());
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.BoneName.ToString());
+		m_rot.Pitch -= 90.0f;
+		//hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+		UNiagaraComponent* hitFXComponent;
+		if (!result.BoneName.IsNone())
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
-			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+			USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+			if (mesh)
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
+				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
 
+			}
 		}
-	}
-	else
-	{
-		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+		else
+		{
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+		}
 	}
 }
 
@@ -319,9 +293,3 @@ bool UWeaponComponent::CheckActorTag(AActor* actor, FName tag)
 
 	return false;
 }
-
-//void UWeaponComponent::WeaponMeshSetting(UWeaponDataAsset* WeapondataAsset)
-//{
-//
-//}
-

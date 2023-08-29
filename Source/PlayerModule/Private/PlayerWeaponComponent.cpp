@@ -33,6 +33,8 @@
 #include "Sound/SoundCue.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
+#include "BaseWeaponDataAsset.h"
+#include "CharacterSoundDataAsset.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -42,7 +44,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		PlayerWeaponData = DataTable.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Rifle.DA_Rifle'"));
+	/*static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Rifle.DA_Rifle'"));
 	if (rifle_da.Succeeded())
 	{
 
@@ -53,7 +55,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	if (pistol_da.Succeeded())
 	{
 		PistolDataAssets = Cast<UWeaponDataAsset>(pistol_da.Object);
-	}
+	}*/
 
 	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
 	if (hitimpact.Succeeded())
@@ -103,6 +105,7 @@ void UPlayerWeaponComponent::BeginDestroy()
 	OnVisibleAmmoUIDelegate.Unbind();
 	OnChangedAmmoUIDelegate.Unbind();
 	OnPlayReloadUIDelegate.Unbind();
+	OnSpawnDamageUIDelegate.Unbind();
 
 	Super::BeginDestroy();
 }
@@ -131,60 +134,59 @@ void UPlayerWeaponComponent::InitData()
 	owner = GetOwner<APlayerCharacter>();
 	if (PlayerWeaponData != nullptr)
 	{
-		FPlayerweaponStruct* dataTable;
-		//UWeaponDataAsset* WeapondataAsset = nullptr;
+		FPlayerWeaponStruct* dataTable;
 		switch (weapontype)
 		{
 		case EWeaponType::TE_Pistol:
-			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Pistol"), FString(""));
-			maxAmmo = 10;
-			WeaponDataAsset = PistolDataAssets;
+			dataTable = PlayerWeaponData->FindRow<FPlayerWeaponStruct>(FName("Pistol"), FString(""));
+			maxAmmo = dataTable->MaxAmmo_num;
+			//WeaponDataAsset = PistolDataAssets;
 			break;
 		case EWeaponType::TE_Rifle:
-			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Rifle"), FString(""));
+			dataTable = PlayerWeaponData->FindRow<FPlayerWeaponStruct>(FName("Rifle"), FString(""));
 			maxAmmo = 30;
-			WeaponDataAsset = RifleDataAssets;
+			//WeaponDataAsset = RifleDataAssets;
 			break;
 		case EWeaponType::TE_Shotgun:
-			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Shotgun"), FString(""));
+			dataTable = PlayerWeaponData->FindRow<FPlayerWeaponStruct>(FName("Shotgun"), FString(""));
 			break;
 		default:
-			dataTable = PlayerWeaponData->FindRow<FPlayerweaponStruct>(FName("Default"), FString(""));
+			dataTable = PlayerWeaponData->FindRow<FPlayerWeaponStruct>(FName("Default"), FString(""));
 			maxAmmo = 30;
-			WeaponDataAsset = RifleDataAssets;
+			//WeaponDataAsset = RifleDataAssets;
 			break;
 		}
 		if (WeaponDataAsset)
 		{
 			//WeaponMesh.set
-			WeaponMeshSetting(WeaponDataAsset);
-			MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
+			//WeaponMeshSetting(WeaponDataAsset);
+			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
 			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
-			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;
+			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
 
 			//ShotSounds = WeaponDataAsset->ShotSounds;
 
-			Decal = WeaponDataAsset->Decals[0];
+			//Decal = WeaponDataAsset->Decals[0];
 		}
 		
-		SetAmmo(dataTable->bullet_Num);
+		maxAmmo = dataTable->MaxAmmo_num;
+		curAmmo = maxAmmo;
+		holdAmmo = dataTable->HoldAmmo_num;
 
-		damage.X = dataTable->max_Damage;
-		damage.Y = dataTable->min_Damage;
+		damage.X = dataTable->Max_Damage;
+		damage.Y = dataTable->Min_Damage;
 
-		H_damage.X = dataTable->max_H_Damage;
-		H_damage.Y = dataTable->min_H_Damage;
+		head_mag = dataTable->Head_Magnification;
 
 		Deviation = dataTable->Deviation;
-		MaxRange = dataTable->MaxRange;
+		MaxRange = dataTable->Max_Range;
 
 		m_firecount = 0;
-		m_dValue = 0.f;
 		recoilTime = 0.0f;
 		m_spreadPower = dataTable->spread_Power;
 		yawRange = FVector2D(dataTable->min_Horizontal_Recoil, dataTable->max_Horizontal_Recoil);
 		pitchRange = FVector2D(dataTable->min_vertical_Recoil, dataTable->max_vertical_Recoil);
-		m_firerate = dataTable->fire_Rate;
+		m_firerate = dataTable->Fire_Rate;
 		TickCount = 1;
 		headhit = false;
 		reloadCount = 0;
@@ -235,7 +237,7 @@ void UPlayerWeaponComponent::Fire()
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
-	GameStatic->SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
+	UGameplayStatics::SpawnEmitterAttached(WeaponDataAsset->MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 	
 	FActorSpawnParameters spawnparam;
 	spawnparam.Owner = owner;
@@ -262,43 +264,17 @@ void UPlayerWeaponComponent::Fire()
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			end = m_rot.Vector() * 99999;
-			//SpawnDecal(m_result);
-		}
-		else
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
-			//SpawnDecal(m_result);
 		}
 	}
 	else
 	{
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("camera_nonhit"));
-
-		//WeaponHit
-		//start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-		//end = cameraRotation.Vector() * 999999.0f;
-		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f);
-		//if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, param))
-		//{
-		//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
-		//	//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
-
-		//	m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		//	SpawnDecal(m_result);
-		//}
-		//else
-		//{
-		//	//NonHit
-		//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("muzzle_nonhit"));
-		//	m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
-		//}
+		
 	}
 
 	
 	if (CheckActorTag(m_result.GetActor(), TEXT("Enemy")))
 	{
-		
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
@@ -310,7 +286,7 @@ void UPlayerWeaponComponent::Fire()
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.BoneName.ToString());
 				if (m_result.BoneName == "head")
 				{
-					damageVlaue = CalcDamage(m_result, H_damage);
+					damageVlaue = CalcDamage(m_result, damage) * head_mag;
 					MyStat->Attacked(damageVlaue, m_result);
 					headhit = true;
 				}
@@ -322,18 +298,12 @@ void UPlayerWeaponComponent::Fire()
 
 				if (bHit)
 				{
-					owner->CreateDamageWidget(damageVlaue, m_result);
+					OnSpawnDamageUIDelegate.ExecuteIfBound(damageVlaue, m_result);
 					MyStat->hitNormal = m_result.TraceEnd - m_result.TraceStart;
 					OnChangedCrossHairDieDelegate.ExecuteIfBound();
 				}
 			}
 		}
-	}
-	else
-	{
-		/*TSubclassOf<UObject> fieldbp = fieldActor->GeneratedClass;
-		GetWorld()->SpawnActor<AActor>(fieldbp, m_result.Location, FRotator::ZeroRotator, spawnparam);*/
-
 	}
 		
 	OnChangedCrossHairHitDelegate.ExecuteIfBound();
@@ -342,7 +312,7 @@ void UPlayerWeaponComponent::Fire()
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, m_rot, spawnparam);
 	if (bullet)
 	{
-		bullet->SpawnBulletFx(shotFXNiagara, m_rot.Vector(), owner);
+		bullet->SpawnBulletFx(WeaponDataAsset->BulletTrailFXNiagara, m_rot.Vector(), owner);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnImpactEffect);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnDecal);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnField);
@@ -358,7 +328,7 @@ void UPlayerWeaponComponent::Fire()
 
 			if (MyStat)
 			{
-				float damageVlaue = FMath::RandRange(H_damage.X, H_damage.Y);
+				float damageVlaue = FMath::RandRange(damage.X, damage.Y);
 				MyStat->Attacked(damageVlaue);
 			}
 
@@ -394,10 +364,10 @@ void UPlayerWeaponComponent::StartAiming()
 	FVector end;
 	bAiming = true;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
-	owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
+	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
 	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3, true, 0.0f);
 	//owner->HPWidgetComponent
-	UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
+	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
 	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
@@ -408,10 +378,10 @@ void UPlayerWeaponComponent::StartAiming()
 void UPlayerWeaponComponent::StopAiming()
 {
 	bAiming = false;
-	owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
+	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
 	owner->GetWorldTimerManager().ClearTimer(AimingTimer);
 
-	UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
+	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
 	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
@@ -566,7 +536,7 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UWeaponDataAsset* WeapondataAsset
 
 		if (WeapondataAsset->weaponAnim) 
 		{
-			WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
+			//WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
 		}
 
 		switch (weapontype)
@@ -808,7 +778,7 @@ void UPlayerWeaponComponent::PlayRandomShotSound()
 {
 	float pitch = FMath::RandRange(0.9f, 1.2f);
 	//int r = FMath::RandRange(0, 3);
-	UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->ShotSound, GetOwner()->GetActorLocation(), 1.0f, pitch);
+	UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->FireSound, GetOwner()->GetActorLocation(), 1.0f, pitch);
 
 	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetOwner()->GetActorLocation(), 1.0f, GetOwner(), 0.0f, FName(TEXT("Shooting")));
 }
