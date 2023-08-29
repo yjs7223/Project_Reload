@@ -10,7 +10,9 @@
 #include "NiagaraComponent.h"
 #include "HitImapactDataAsset.h"
 #include "BaseWeaponDataAsset.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Perception/AISense_Hearing.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -205,6 +207,15 @@ void UWeaponComponent::SetHandleing(bool isFaceRight, bool isCoverUse)
 	WeaponMesh->AttachToComponent(GetOwner<ACharacter>()->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, handSocketName);
 	WeaponMesh->SetRelativeRotation(meshRotate);
 	WeaponMesh->SetRelativeLocation(meshLocation);
+}
+
+void UWeaponComponent::PlayRandomShotSound()
+{
+	float pitch = FMath::RandRange(0.9f, 1.2f);
+
+	UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->FireSound, owner->GetActorLocation(), 1.0f, pitch);
+
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), owner->GetActorLocation(), 1.0f, owner, 0.0f, FName(TEXT("Shooting")));
 }
 
 void UWeaponComponent::SpawnImpactEffect(FHitResult result)

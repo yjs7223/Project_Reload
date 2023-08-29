@@ -60,6 +60,8 @@ public:
 
 		//virtual void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
 
+		void PlayRandomShotSound();
+
 		void SpawnImpactEffect(FHitResult result);
 
 		float CalcDamage(FHitResult result, FVector2D p_damage);
