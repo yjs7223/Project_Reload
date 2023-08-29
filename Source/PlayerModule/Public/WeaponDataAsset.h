@@ -38,8 +38,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UParticleSystem* MuzzleFireParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
-		class UParticleSystem* BulletTracerParticle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UNiagaraSystem* BulletTrailFXNiagara;
 

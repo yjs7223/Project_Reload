@@ -16,6 +16,8 @@ DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAmmoUIDelegate);
 
+DECLARE_DELEGATE_TwoParams(FOnSpawnDamageUIDelegate, float, FHitResult);
+
 /**
  * 
  */
@@ -31,7 +33,7 @@ public:
 	FOnChangedCrossHairHitDelegate OnChangedCrossHairHitDelegate;
 	FOnChangedCrossHairDieDelegate OnChangedCrossHairDieDelegate;
 	FOnVisibleCrossHairUIDelegate OnVisibleCrossHairUIDelegate;
-
+	FOnSpawnDamageUIDelegate OnSpawnDamageUIDelegate;
 
 	FOnVisibleAmmoUIDelegate OnVisibleAmmoUIDelegate;
 	FOnChangedAmmoUIDelegate OnChangedAmmoUIDelegate;
@@ -101,17 +103,14 @@ public:
 		class UDataTable* PlayerWeaponData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* RifleDataAssets;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* PistolDataAssets;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* WeaponDataAsset;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstance* Decal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FHitResult m_result;
+
+	//«ÏµÂº¶ πË¿≤
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float head_mag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool headhit;
@@ -119,10 +118,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool ammoinfinite;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_firerate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int m_firecount;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_spreadPower;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -176,7 +171,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
-
-	float MaxRange;
-	float Deviation;
 };

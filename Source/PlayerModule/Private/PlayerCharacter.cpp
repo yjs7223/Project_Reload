@@ -62,6 +62,10 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
+	if (weapon)
+	{
+		weapon->OnSpawnDamageUIDelegate.BindUObject(this, &APlayerCharacter::CreateDamageWidget);
+	}
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
@@ -263,10 +267,6 @@ void APlayerCharacter::CreateDamageWidget(float value, FHitResult result)
 {
 	if (Damage_WidgetClass)
 	{
-		/*UWidgetComponent* DWidgetComponent = NewObject<UWidgetComponent>(this);
-		DWidgetComponent->SetWidgetClass(Damage_Widget);
-		DWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		DWidgetComponent->SetWorldLocation(result.Location);*/
 		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_WidgetClass);
 		if (dwidget)
 		{

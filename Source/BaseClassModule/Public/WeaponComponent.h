@@ -55,10 +55,9 @@ public:
 		float getAimPitch();
 
 		void AimSetting();
+
 		UFUNCTION(BlueprintCallable)
 		void SetHandleing(bool isFaceRight, bool isCoverUse = false);
-
-		//virtual void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
 
 		void PlayRandomShotSound();
 

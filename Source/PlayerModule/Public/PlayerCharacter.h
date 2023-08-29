@@ -86,9 +86,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineNaviWidget* LineNavi_Widget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UCharacterSoundDataAsset* CharacterSound;
-
 	FTimerHandle DamageTimer;
     
 protected:
