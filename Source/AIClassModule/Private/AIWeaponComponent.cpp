@@ -35,48 +35,6 @@ UAIWeaponComponent::UAIWeaponComponent()
 		AIShotData = DataTable.Object;
 	}
 
-	// 총알 나이아가라 삽입
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> LaserFXNiagara(TEXT("NiagaraSystem'/Game/AI_Project/AI_Pakage/Niagara/LaserBeam.LaserBeam'"));
-	if (LaserFXNiagara.Succeeded())
-	{
-		laserFXNiagara = LaserFXNiagara.Object;
-	}
-
-	//aimflash 나이아가라
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> m_AimFlashFXNiagara(TEXT("NiagaraSystem'/Game/AI_Project/AI_Pakage/Niagara/AimFlash.AimFlash'"));
-	if (m_AimFlashFXNiagara.Succeeded())
-	{
-		AimFlashFXNiagara = m_AimFlashFXNiagara.Object;
-	}
-
-	// 라이플
-	static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIRifle.DA_AIRifle'"));
-	if (rifle_da.Succeeded())
-	{
-		RifleDataAsset = Cast<UAIWeaponDataAsset>(rifle_da.Object);
-	}
-	// 스나이퍼
-	static ConstructorHelpers::FObjectFinder<UDataAsset> sniper_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AISniper.DA_AISniper'"));
-	if (sniper_da.Succeeded())
-	{
-		SniperDataAsset = Cast<UAIWeaponDataAsset>(sniper_da.Object);
-	}
-	// 헤비
-	static ConstructorHelpers::FObjectFinder<UDataAsset> heavy_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIHeavy.DA_AIHeavy'"));
-	if (heavy_da.Succeeded())
-	{
-		HeavyDataAsset = Cast<UAIWeaponDataAsset>(heavy_da.Object);
-	}
-
-	// 총 피격 이펙트
-	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
-	if (hitimpact.Succeeded())
-	{
-		HitImpactDataAsset = Cast<UHitImapactDataAsset>(hitimpact.Object);
-	}
-
-	//라이트
-	//SpotLightCmp = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLightCmp"), false);
 }
 
 void UAIWeaponComponent::BeginPlay()

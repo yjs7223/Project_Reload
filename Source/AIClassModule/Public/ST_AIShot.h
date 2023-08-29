@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "WeaponData.h"
 #include "ST_AIShot.generated.h"
 
 
