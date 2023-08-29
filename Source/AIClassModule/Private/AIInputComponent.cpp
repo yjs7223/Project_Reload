@@ -71,7 +71,7 @@ void UAIInputComponent::AIStartFire()
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	weaponcmp->ShotAIStart();
-	weaponcmp->ShotAI();
+	weaponcmp->Fire();
 
 	if (moveoncmp->e_move != EMove::Hit)
 	{

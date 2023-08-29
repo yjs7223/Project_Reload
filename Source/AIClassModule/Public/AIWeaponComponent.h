@@ -7,7 +7,7 @@
 #include "WeaponComponent.h"
 #include "AICharacter.h"
 #include "NiagaraComponent.h"
-#include "ST_AIShot.h"
+#include "AIWeaponData.h"
 #include "AIWeaponComponent.generated.h"
 
 /**
@@ -33,8 +33,8 @@ public :
 		bool use_Shot_State;
 
 	// AI 캐릭터
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		AAICharacter* owner;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		AAICharacter* owner;*/
 
 	// 현재 사격 반동 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -43,9 +43,7 @@ public :
 	// 최대 사거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float shot_MaxRange;
-	// 최소 사거리
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shot_MinRange;
+
 
 	// AI의 최대 반동 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -99,9 +97,9 @@ public :
 
 	// 데이터 테이블
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UDataTable* AIShotData;
+		class UDataTable* DT_AIWeaponData;
 	// 현재 데이터 테이블
-	struct FST_AIShot* curAIShotData;
+	struct FAIWeaponStruct* curAIWeaponData;
 
 	class AAICommander* commander;
 	FHitResult result;
@@ -112,8 +110,6 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraSystem* hitFXNiagara;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UHitImapactDataAsset* HitImpactDataAsset;
 
 	// DA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -163,7 +159,7 @@ public:
 
 	// AI Shot
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAI();
+		void Fire() override;
 	// AI Shot Timer
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ShotAITimer(float t);

@@ -14,7 +14,6 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DataTable.h"
 #include "StatComponent.h"
-#include "ST_AIShot.h"
 #include <Kismet/GameplayStatics.h>
 #include "ST_Spawn.h"
 #include "Kismet/KismetMathLibrary.h"
