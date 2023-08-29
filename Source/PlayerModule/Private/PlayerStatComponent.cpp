@@ -49,7 +49,7 @@ void UPlayerStatComponent::Attacked(float p_damage)
 	
 }
 
-void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* character)
+void UPlayerStatComponent::Attacked(float p_damage, ACharacter* character)
 {
 	Super::Attacked(p_damage, character);
 

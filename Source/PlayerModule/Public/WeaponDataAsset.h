@@ -24,17 +24,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ShotSound;
 
+	//ÀçÀåÀü ³ë¸®¼è ¼Ò¸®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadCliplockedSound;
 
+	//ÀçÀåÀü ÅºÃ¢ »ðÀÔ¼Ò¸®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadMagInSound;
 
+	//ÀçÀåÀü ÅºÃ¢ ÇØÃ¼¼Ò¸®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadMagOutSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
-		class USoundCue* EmptySound_Cue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UParticleSystem* MuzzleFireParticle;

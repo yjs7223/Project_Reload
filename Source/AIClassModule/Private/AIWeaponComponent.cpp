@@ -23,7 +23,8 @@
 #include "Sound/SoundCue.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
-
+#include "Components/SpotLightComponent.h"
+#include "NiagaraComponent.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -34,38 +35,6 @@ UAIWeaponComponent::UAIWeaponComponent()
 		AIShotData = DataTable.Object;
 	}
 
-	// 총알 나이아가라 삽입
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> LaserFXNiagara(TEXT("NiagaraSystem'/Game/AI_Project/AI_Pakage/Niagara/LaserBeam.LaserBeam'"));
-	if (LaserFXNiagara.Succeeded())
-	{
-		laserFXNiagara = LaserFXNiagara.Object;
-	}
-
-	// 라이플
-	static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIRifle.DA_AIRifle'"));
-	if (rifle_da.Succeeded())
-	{
-		RifleDataAsset = Cast<UAIWeaponDataAsset>(rifle_da.Object);
-	}
-	// 스나이퍼
-	static ConstructorHelpers::FObjectFinder<UDataAsset> sniper_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AISniper.DA_AISniper'"));
-	if (sniper_da.Succeeded())
-	{
-		SniperDataAsset = Cast<UAIWeaponDataAsset>(sniper_da.Object);
-	}
-	// 헤비
-	static ConstructorHelpers::FObjectFinder<UDataAsset> heavy_da(TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIHeavy.DA_AIHeavy'"));
-	if (heavy_da.Succeeded())
-	{
-		HeavyDataAsset = Cast<UAIWeaponDataAsset>(heavy_da.Object);
-	}
-
-	// 총 피격 이펙트
-	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
-	if (hitimpact.Succeeded())
-	{
-		HitImpactDataAsset = Cast<UHitImapactDataAsset>(hitimpact.Object);
-	}
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -84,10 +53,17 @@ void UAIWeaponComponent::BeginPlay()
 	if (owner->FindComponentByClass<UNiagaraComponent>())
 	{
 		laserFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
+		//AimFlashFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
 	}
 
 	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
 	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
+
+	//라이트
+	//SpotLightCmp->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("LaserSightSocket"));
+
+
+
 }
 
 
@@ -477,5 +453,28 @@ void UAIWeaponComponent::LaserOff()
 			laserFXComponent->SetNiagaraVariableVec3("Beam Start", FVector(0, 0, 0));
 			laserFXComponent->SetNiagaraVariableVec3("Beam End", FVector(0, 0, 0));
 		}
+	}
+}
+
+void UAIWeaponComponent::AimFalshOn()
+{
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		//UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("AttachmentSocketScope"));
+
+		AimFlashFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AimFlashFXNiagara, WeaponMesh, TEXT("AttachmentSocketScope"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		if (AimFlashFXComponent)
+		AimFlashFXComponent->SetActive(true);
+	}
+
+}
+
+void UAIWeaponComponent::AimFalshOff()
+{
+
+	if (owner->type == Enemy_Name::SNIPER)
+	{
+		if(AimFlashFXComponent)
+			AimFlashFXComponent->SetActive(false);
 	}
 }
