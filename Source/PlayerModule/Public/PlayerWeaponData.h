@@ -33,6 +33,10 @@ struct FPlayerWeaponStruct : public FWeaponRowStruct
 	GENERATED_USTRUCT_BODY()
 public:
 
+	//최대 장탄수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 MaxAmmo_num;
+
 	//헤드샷 데미지 배율
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Head_Magnification;
