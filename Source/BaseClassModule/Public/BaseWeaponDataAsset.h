@@ -4,25 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "WeaponDataAsset.generated.h"
+#include "BaseWeaponDataAsset.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PLAYERMODULE_API UWeaponDataAsset : public UPrimaryDataAsset
+class BASECLASSMODULE_API UBaseWeaponDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 	
 public:
+
+	//ÃÑ±â ½ºÄÌ·¹Å»¸Þ½Ã
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* WeaponSkeletalMesh;
 
+	//¿þÆù ¾Ö´Ï¸ÅÀÌ¼Ç
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class TSubclassOf<UAnimInstance> weaponAnim;
+		class TSubclassOf<UAnimInstance> WeaponAnim;
 
+	//ÃÑ±â ¹ß»ç »ç¿îµå
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
-		class USoundCue* ShotSound;
+		class USoundCue* FireSound;
 
 	//ÀçÀåÀü ³ë¸®¼è ¼Ò¸®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
@@ -36,13 +40,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadMagOutSound;
 
+	//ÃÑ±¸ È­¿° ÆÄÆ¼Å¬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UParticleSystem* MuzzleFireParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
-		class UParticleSystem* BulletTracerParticle;
+
+	//ÃÑ¾Ë ³ªÀÌ¾Æ°¡¶óÀÌÆåÆ®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UNiagaraSystem* BulletTrailFXNiagara;
 
+	//ÅºÈç µ¥Ä®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<UMaterialInstance*> Decals;
+		TArray<UMaterialInstance*> BulletHole_Decals;
 };

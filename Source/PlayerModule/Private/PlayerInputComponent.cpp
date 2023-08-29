@@ -94,7 +94,7 @@ void UPlayerInputComponent::StartFire()
 	if (!m_inputData.IsReload)
 	{
 		owner->FindComponentByClass<UPlayerWeaponComponent>()->StartFire();
-		if (owner->FindComponentByClass<UPlayerWeaponComponent>()->isFire)
+		if (owner->FindComponentByClass<UPlayerWeaponComponent>()->bFire)
 		{
 			m_inputData.IsFire = true;
 		}
@@ -126,7 +126,7 @@ void UPlayerInputComponent::StopAiming()
 void UPlayerInputComponent::StartReload()
 {
 	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartReload();
-	if (owner->FindComponentByClass<UPlayerWeaponComponent>()->isReload)
+	if (owner->FindComponentByClass<UPlayerWeaponComponent>()->bReload)
 	{
 		m_inputData.IsReload = true;
 	}
