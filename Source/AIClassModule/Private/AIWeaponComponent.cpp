@@ -41,7 +41,7 @@ UAIWeaponComponent::UAIWeaponComponent()
 void UAIWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	owner = Cast<AAICharacter>(GetOwner());
+	owner = GetOwner<AAICharacter>();
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
 	use_Shot_State = true;
@@ -57,8 +57,8 @@ void UAIWeaponComponent::BeginPlay()
 		//AimFlashFXComponent = owner->FindComponentByClass<UNiagaraComponent>();
 	}
 
-	GetOwner()->GetWorldTimerManager().ClearTimer(timer);
-	GetOwner()->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
+	owner->GetWorldTimerManager().ClearTimer(timer);
+	owner->GetWorldTimerManager().SetTimer(timer, this, &UAIWeaponComponent::CheckTrace, 1, true, 0.0f);
 
 	//라이트
 	//SpotLightCmp->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("LaserSightSocket"));
@@ -138,7 +138,7 @@ void UAIWeaponComponent::Fire()
 				temp->hitNormal = m_result.ImpactNormal;
 			}
 		}
-		AISpawnImpactEffect(m_result);
+		SpawnImpactEffect(m_result);
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 	}
 	Super::Fire();
@@ -151,7 +151,7 @@ void UAIWeaponComponent::Fire()
 	if (bullet)
 	{
 		bullet->SpawnBulletFx(AIWeaponDataAsset->BulletTrailFXNiagara, rot.Vector(), owner);
-		bullet->OnBulletHitDelegate.AddUObject(this, &UAIWeaponComponent::AISpawnImpactEffect);
+		bullet->OnBulletHitDelegate.AddUObject(this, &UAIWeaponComponent::SpawnImpactEffect);
 	}
 
 	// 점점 반동이 줄어듦
@@ -187,9 +187,11 @@ void UAIWeaponComponent::ShotAITimer(float t)
 	}
 }
 
-void UAIWeaponComponent::ShotAIStart()
+
+
+void UAIWeaponComponent::StartFire()
 {
-	shot_State = true;
+	bFire = true;
 
 	// 총 공격수만큼 사격했다면 사격 상태 해제
 	if (cur_Shot_Count <= 0)
@@ -200,9 +202,10 @@ void UAIWeaponComponent::ShotAIStart()
 	}
 }
 
-void UAIWeaponComponent::ShotAIStop()
+void UAIWeaponComponent::StopFire()
 {
-	shot_State = false;
+	bFire = false;
+
 	use_Shot_State = true;
 	cur_Shot_Count = shot_MaxCount;
 	recoil_Radius = recoilMax_Radius;
@@ -319,96 +322,8 @@ void UAIWeaponComponent::CheckTrace()
 			GetWorld()->DestroyActor(result.GetActor());
 		}
 	}
-
-	//DrawDebugLine(GetWorld(), start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), FColor::Red, false, 0.1f);
 }
 
-void UAIWeaponComponent::AISpawnImpactEffect(FHitResult p_result)
-{
-	if (HitImpactDataAsset)
-	{
-		if (p_result.GetActor())
-		{
-			if (p_result.GetActor()->Tags.Num() > 0)
-			{
-				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("SpawnImpact"));
-				if (p_result.GetActor()->ActorHasTag("Player"))
-				{
-					if (p_result.GetActor()->ActorHasTag("Robot"))
-					{
-						hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Human"))
-					{
-						hitFXNiagara = HitImpactDataAsset->HumanHitFXNiagara;
-					}
-					else
-					{
-						hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
-					}
-				}
-				else
-				{
-					if (p_result.GetActor()->ActorHasTag("Metal"))
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Metal"));
-						hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Rock"))
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Rock"));
-						hitFXNiagara = HitImpactDataAsset->RockHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Mud"))
-					{
-						hitFXNiagara = HitImpactDataAsset->MudHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Glass"))
-					{
-						hitFXNiagara = HitImpactDataAsset->GlassHitFXNiagara;
-					}
-					else if (p_result.GetActor()->ActorHasTag("Water"))
-					{
-						hitFXNiagara = HitImpactDataAsset->WaterHitFXNiagara;
-					}
-					else
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("default"));
-						hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
-					}
-
-				}
-			}
-			else
-			{
-				hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
-			}
-		}
-	}
-
-	FRotator m_rot = UKismetMathLibrary::FindLookAtRotation(p_result.Location, GetOwner()->GetActorLocation());
-	m_rot.Pitch -= 90.0f;
-	if (!p_result.BoneName.IsNone())
-	{
-		USkeletalMeshComponent* mesh = p_result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
-		if (mesh)
-		{
-			UNiagaraComponent* hitcomp;
-			hitcomp = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, p_result.BoneName, FVector::ZeroVector, m_rot, EAttachLocation::SnapToTargetIncludingScale, true);
-			
-		}
-	}
-	else
-	{
-		hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, p_result.Location, m_rot);
-	}
-}
-
-void UAIWeaponComponent::PlayRandomShotSound()
-{
-	float pitch = FMath::RandRange(0.8f, 1.5f);
-	UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->ShotSounds, GetOwner()->GetActorLocation(), 0.5f, pitch);
-}
 
 void UAIWeaponComponent::LaserOn()
 {

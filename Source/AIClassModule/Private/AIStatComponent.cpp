@@ -26,12 +26,6 @@ UAIStatComponent::UAIStatComponent()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ShotDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
-	if (DT_ShotDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_AIWeaponData = DT_ShotDataObject.Object;
-	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
 	if (DT_AIBaseStatDataObject.Succeeded())
 	{

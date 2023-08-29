@@ -165,11 +165,10 @@ public:
 		void ShotAITimer(float t);
 	// AI Shot Start
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAIStart();
+		void StartFire() override;
 	// AI Shot Stop
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAIStop();
-
+		void StopFire() override;
 	// AI Reload
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ReloadAI();
@@ -183,9 +182,6 @@ public:
 		bool AITypeSniperCheck();
 
 	void CheckTrace();
-	void AISpawnImpactEffect(FHitResult p_result);
-
-	void PlayRandomShotSound();
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 		void LaserOn();
