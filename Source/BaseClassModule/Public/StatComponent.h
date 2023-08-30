@@ -54,15 +54,22 @@ public:
 	virtual void RecoverHP(float p_HP);
 
 	//Damage process
-	UFUNCTION(BlueprintCallable)
+	/*UFUNCTION(BlueprintCallable)
 	void Attacked_BP(float p_damage, FVector attackPoint, EHitType hittype);
 
 	virtual void Attacked(float p_damage);
 	virtual void Attacked(float p_damage, FHitResult result);
 	virtual void Attacked(float p_damage, class ACharacter* character);
-	virtual void Attacked(FHitResult result);
+	virtual void Attacked(FHitResult result);*/
+
+
+	virtual void Attacked(class ABaseCharacter* attacker, float p_damage = 0, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
+	virtual void IndirectAttacked(float p_Value);
+
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+		class ABaseCharacter* TargetEnemy;
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		float maxHP;
@@ -73,11 +80,11 @@ public:
 
 	//When Character is attacked   isAttacked = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool isAttacked;
+		bool bAttacked;
 
 	//When Character's currentHP <= 0  isDie = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool isDie;
+		bool bDie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isThreat;

@@ -28,11 +28,17 @@ protected:
 	virtual void BeginDestroy() override;
 	
 public:
+	UFUNCTION(BlueprintCallable)
 	void SetHP(float p_HP) override;
-	void Attacked(float p_damage) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Attacked(float p_damage, class ACharacter* character) override;
+	void RecoverHP(float p_HP);
+
+	UFUNCTION(BlueprintCallable)
+	void Attacked(class ABaseCharacter* attacker, float p_damage = 0, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector) override;
+
+	/*UFUNCTION(BlueprintCallable)
+	void Attacked(float p_damage, class ACharacter* character) override*/;
 
 	void RecoverHP(float p_HP) override;
 public:
@@ -40,8 +46,6 @@ public:
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;
 	FOnVisibleAttackedUIDelegate OnVisibleAttackedUIDelegate;
 public:
-	ACharacter* TargetEnemy;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UMatineeCameraShake> AttackedCameraShake;
 	

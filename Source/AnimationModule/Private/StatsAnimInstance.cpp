@@ -20,23 +20,23 @@ void UStatsAnimInstance::NativeBeginPlay()
 	owner = Cast<ACharacter>(TryGetPawnOwner());
 	mStats = owner->FindComponentByClass<UStatComponent>();
 	UWeaponAnimInstance();
-	mStats->Knockback.AddLambda([this](FVector directinal, bool isDie) {
+	mStats->Knockback.AddLambda([this](FVector directinal, bool bDie) {
 		FVector vector = owner->GetActorLocation() - directinal;
 		float dotvlaue = vector.Dot(owner->GetActorForwardVector());
 		UAnimMontage* currmontage;
 		if (dotvlaue > 0.5f) {
-			currmontage = isDie ? m_CurrentAnimation.KnockBack_Front_Die : m_CurrentAnimation.KnockBack_Front;
+			currmontage = bDie ? m_CurrentAnimation.KnockBack_Front_Die : m_CurrentAnimation.KnockBack_Front;
 		}
 		else if (dotvlaue > -0.5f) {
 			if (vector.Dot(owner->GetActorRightVector())) {
-				currmontage = isDie ? m_CurrentAnimation.KnockBack_Left_Die : m_CurrentAnimation.KnockBack_Left;
+				currmontage = bDie ? m_CurrentAnimation.KnockBack_Left_Die : m_CurrentAnimation.KnockBack_Left;
 			}
 			else {
-				currmontage = isDie ? m_CurrentAnimation.KnockBack_Right_Die : m_CurrentAnimation.KnockBack_Right;
+				currmontage = bDie ? m_CurrentAnimation.KnockBack_Right_Die : m_CurrentAnimation.KnockBack_Right;
 			}
 		}
 		else {
-			currmontage = isDie ? m_CurrentAnimation.KnockBack_Back_Die : m_CurrentAnimation.KnockBack_Back;
+			currmontage = bDie ? m_CurrentAnimation.KnockBack_Back_Die : m_CurrentAnimation.KnockBack_Back;
 		}
 		owner->GetMesh()->GetAnimInstance()->Montage_Play(currmontage);
 		});
@@ -45,7 +45,7 @@ void UStatsAnimInstance::NativeBeginPlay()
 void UStatsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	if (mStats) {
-		mIsDie = mStats->isDie;
+		mIsDie = mStats->bDie;
 		//mIsHit = mStats->isHit;
 	}
 }
