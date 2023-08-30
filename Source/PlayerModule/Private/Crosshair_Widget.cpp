@@ -264,7 +264,7 @@ void UCrosshair_Widget::CheckDie()
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{
-		if (stat->isDie)
+		if (stat->bDie)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
 			//stat->isDie = false;

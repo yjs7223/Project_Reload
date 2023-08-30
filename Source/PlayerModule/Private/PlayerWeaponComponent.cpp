@@ -11,7 +11,6 @@
 #include "BaseInputComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
@@ -23,10 +22,8 @@
 #include "MatineeCameraShake.h"
 #include "PlayerInputComponent.h"
 #include "Field/FieldSystemActor.h"
-#include "WeaponDataAsset.h"
 #include "HitImapactDataAsset.h"
 #include "Perception/AISense_Hearing.h"
-#include "Components/WidgetComponent.h"
 #include "PlayerMoveComponent.h"
 #include "CoverComponent.h"
 #include "CharacterSoundDataAsset.h"
@@ -279,7 +276,7 @@ void UPlayerWeaponComponent::Fire()
 		UStatComponent* MyStat = m_result.GetActor()->FindComponentByClass<UStatComponent>();
 		if (MyStat)
 		{
-			if (!MyStat->isDie)
+			if (!MyStat->bDie)
 			{
 				bHit = true;
 				float damageVlaue = 0;
@@ -525,34 +522,34 @@ void UPlayerWeaponComponent::StopReload()
 
 void UPlayerWeaponComponent::WeaponMeshSetting(UWeaponDataAsset* WeapondataAsset)
 {
-	if (WeapondataAsset)
-	{
-		FVector location = FVector::ZeroVector;
+	//if (WeapondataAsset)
+	//{
+	//	FVector location = FVector::ZeroVector;
 
-		if (WeapondataAsset->WeaponSkeletalMesh)
-		{
-			WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
-		}
+	//	if (WeapondataAsset->WeaponSkeletalMesh)
+	//	{
+	//		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
+	//	}
 
-		if (WeapondataAsset->weaponAnim) 
-		{
-			//WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
-		}
+	//	if (WeapondataAsset->weaponAnim) 
+	//	{
+	//		//WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
+	//	}
 
-		switch (weapontype)
-		{
-		case EWeaponType::TE_Pistol:
-			break;
-		case EWeaponType::TE_Rifle:
-			location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
-			break;
-		case EWeaponType::TE_Shotgun:
-			break;
-		default:
-			break;
-		}
-		WeaponMesh->SetRelativeLocation(location);
-	}
+	//	switch (weapontype)
+	//	{
+	//	case EWeaponType::TE_Pistol:
+	//		break;
+	//	case EWeaponType::TE_Rifle:
+	//		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
+	//		break;
+	//	case EWeaponType::TE_Shotgun:
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	WeaponMesh->SetRelativeLocation(location);
+	//}
 }
 
 void UPlayerWeaponComponent::ReloadTick(float Deltatime)
