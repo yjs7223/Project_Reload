@@ -32,15 +32,13 @@ public:
 	void SetHP(float p_HP) override;
 
 	UFUNCTION(BlueprintCallable)
-	void RecoverHP(float p_HP);
+	void RecoverHP(float p_HP) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Attacked(class ABaseCharacter* attacker, float p_damage = 0, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector) override;
+		void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector) override;
 
 	/*UFUNCTION(BlueprintCallable)
-	void Attacked(float p_damage, class ACharacter* character) override*/;
-
-	void RecoverHP(float p_HP) override;
+	void Attacked(float p_damage, class ACharacter* character) override;*/
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;

@@ -63,7 +63,7 @@ public:
 	virtual void Attacked(FHitResult result);*/
 
 
-	virtual void Attacked(class ABaseCharacter* attacker, float p_damage = 0, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
+	virtual void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
 	virtual void IndirectAttacked(float p_Value);
 
 
