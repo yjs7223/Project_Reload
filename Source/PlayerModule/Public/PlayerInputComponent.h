@@ -30,5 +30,6 @@ private:
 	void StopAiming();
 
 	void TestHud();
+	void HPregen();
 
 };

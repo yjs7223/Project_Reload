@@ -49,9 +49,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		class UDataTable* DT_Shot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class UDataTable* DT_AIBaseStat;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		CombatState combat;
+	// 자신의 병과
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		Enemy_Name type;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float sup_total;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
@@ -90,8 +93,6 @@ public:
 		float shot_MaxDmg;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float shot_MinDmg;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
-		float DI_ShotRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		float DI_SupRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)

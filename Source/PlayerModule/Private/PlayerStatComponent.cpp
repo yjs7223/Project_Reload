@@ -64,3 +64,10 @@ void UPlayerStatComponent::Attacked(float p_damage, ACharacter* character)
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 }
+
+void UPlayerStatComponent::RecoverHP(float p_HP)
+{
+	Super::RecoverHP(p_HP);
+
+	OnVisibleAttackedUIDelegate.ExecuteIfBound();
+}

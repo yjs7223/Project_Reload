@@ -70,8 +70,8 @@ void UAIInputComponent::AIStartFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	weaponcmp->ShotAIStart();
-	weaponcmp->ShotAI();
+	weaponcmp->StartFire();
+	weaponcmp->Fire();
 
 	if (moveoncmp->e_move != EMove::Hit)
 	{
@@ -84,7 +84,7 @@ void UAIInputComponent::AIStartFire()
 void UAIInputComponent::AIStopFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
-	weaponcmp->ShotAIStop();
+	weaponcmp->StopFire();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	if (moveoncmp->e_move != EMove::Hit)
 	{
