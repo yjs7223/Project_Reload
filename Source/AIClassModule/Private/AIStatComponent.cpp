@@ -108,7 +108,7 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	if (curHP <= 0.0f)
 	{
 		curHP = 0.0f;
-		isDie = true;
+		bDie = true;
 		if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
 		{
 			Cast<AAICharacter>(GetOwner())->Dead();

@@ -19,22 +19,22 @@ void UBossStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 void UBossStatComponent::Attacked(float p_damage)
 {
 	curHP -= p_damage;
-	isAttacked = true;
+	bAttacked = true;
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
-		isDie = true;
+		bDie = true;
 	}
 }
 
 void UBossStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	curHP -= p_damage;
-	isAttacked = true;
+	bAttacked = true;
 	if (curHP < 0.0f)
 	{
 		curHP = 0.0f;
-		isDie = true;
+		bDie = true;
 	}
 }
 
