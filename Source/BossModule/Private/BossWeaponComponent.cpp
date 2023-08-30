@@ -39,7 +39,7 @@ void UBossWeaponComponent::TakeDamage(AActor* p_TargetActor, float p_Damage)
 	auto target = p_TargetActor->FindComponentByClass<UStatComponent>();
 	if (target)
 	{
-		target->Attacked(p_Damage, GetOwner<ACharacter>());
+		target->Attacked(p_Damage);
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, GetOwner<ABaseCharacter>()->GetName());
 		//target->Attacked(p_Damage);
 	}

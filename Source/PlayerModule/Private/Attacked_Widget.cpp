@@ -123,7 +123,7 @@ void UAttacked_Widget::Init()
 void UAttacked_Widget::LowHp_Warning()
 {
 	//Play_Attacked_Anim();
-	if (stat->isAttacked)
+	if (stat->bAttacked)
 	{
 		StartAttacked();
 	}
