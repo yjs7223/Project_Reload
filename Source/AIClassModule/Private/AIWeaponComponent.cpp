@@ -179,11 +179,11 @@ void UAIWeaponComponent::Fire()
 
 void UAIWeaponComponent::ShotAITimer(float t)
 {
-	cur_Shot_Delay += t;
-	if (cur_Shot_Delay >= shot_Delay)
+	cur_fire_Rate += t;
+	if (cur_fire_Rate >= fire_Rate)
 	{
 		Fire();
-		cur_Shot_Delay = 0;
+		cur_fire_Rate = 0;
 	}
 }
 
@@ -196,7 +196,7 @@ void UAIWeaponComponent::StartFire()
 	// 총 공격수만큼 사격했다면 사격 상태 해제
 	if (cur_Shot_Count <= 0)
 	{
-		shot_State = false;
+		bFire = false;
 		use_Shot_State = false;
 		recoil_Radius = recoilMax_Radius;
 	}
@@ -237,26 +237,28 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 			AIWeaponDataAsset = HeavyDataAsset;
 			break;
 		}
+		if (curAIWeaponData)
+		{
+			// 가져온 데이터 삽입
+			recoil_Range = curAIWeaponData->Recoil_Range;
+			recoilMax_Radius = curAIWeaponData->RecoilMax_Radius;
+			recoilMin_Radius = curAIWeaponData->RecoilMin_Radius;
 
-		// 가져온 데이터 삽입
-		recoil_Range = curAIWeaponData->Recoil_Range;
-		recoilMax_Radius = curAIWeaponData->RecoilMax_Radius;
-		recoilMin_Radius = curAIWeaponData->RecoilMin_Radius;
+			shot_MaxRange = curAIWeaponData->Max_Range;
 
-		shot_MaxRange = curAIWeaponData->Max_Range;
+			damage.X = curAIWeaponData->Max_Damage;
+			damage.Y = curAIWeaponData->Min_Damage;
 
-		damage.X = curAIWeaponData->Max_Damage;
-		damage.Y = curAIWeaponData->Min_Damage;
+			shot_MaxCount = curAIWeaponData->Max_FireCount;
 
-		shot_MaxCount = curAIWeaponData->Max_FireCount;
+			fire_Rate = curAIWeaponData->Fire_Rate;
 
-		shot_Delay = curAIWeaponData->Fire_Rate;
+			// 현재 반동은 최대로 시작
+			recoil_Radius = recoilMax_Radius;
 
-		// 현재 반동은 최대로 시작
-		recoil_Radius = recoilMax_Radius;
-
-		// 첫 총알은 최대로
-		cur_Shot_Count = shot_MaxCount;
+			// 첫 총알은 최대로
+			cur_Shot_Count = shot_MaxCount;
+		}
 	}
 	if (AIWeaponDataAsset != nullptr)
 	{
@@ -265,17 +267,16 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 			WeaponMesh->SetSkeletalMesh(AIWeaponDataAsset->WeaponSkeletalMesh);
 		}
 
-		if (AIWeaponDataAsset->weaponAnim)
+		if (AIWeaponDataAsset->WeaponAnim)
 		{
-			WeaponMesh->SetAnimInstanceClass(AIWeaponDataAsset->weaponAnim);
+			WeaponMesh->SetAnimInstanceClass(AIWeaponDataAsset->WeaponAnim);
 		}
 
 		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
-		BulletTracerParticle = AIWeaponDataAsset->BulletTracerParticle;
 
-		//ShotSounds = AIWeaponDataAsset->ShotSounds;
+		//FireSound = AIWeaponDataAsset->FireSound;
 
-		Decal = AIWeaponDataAsset->Decals[0];
+		Decal = AIWeaponDataAsset->BulletHole_Decals[0];
 		Attachments.Empty();
 		for (auto& item : AIWeaponDataAsset->Attachments)
 		{

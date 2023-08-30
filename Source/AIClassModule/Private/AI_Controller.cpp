@@ -271,7 +271,7 @@ void AAI_Controller::PlayVoiceSound(Voice sound, int random)
 	float pitch = FMath::RandRange(0, random);
 	if (pitch == 0)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ShotSounds[(int)sound], GetPawn()->GetActorLocation(), 0.5f, pitch);
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound[(int)sound], GetPawn()->GetActorLocation(), 0.5f, pitch);
 	}
 }
 

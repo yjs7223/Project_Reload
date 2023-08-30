@@ -24,9 +24,6 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* target;
 
-	// AI 사격 상태
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		bool shot_State;
 
 	// AI 사격 가능 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -73,11 +70,11 @@ public :
 
 	// 사격 딜레이
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shot_Delay;
+		float fire_Rate;
 
 	// 현재 딜레이 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float cur_Shot_Delay;
+		float cur_fire_Rate;
 
 	// Hit Result
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -129,7 +126,7 @@ public :
 		class UParticleSystem* BulletTracerParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> ShotSounds;
+		TArray<USoundWave*> FireSound;
 
 	// Main DA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

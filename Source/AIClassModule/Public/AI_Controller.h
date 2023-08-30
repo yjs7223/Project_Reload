@@ -65,7 +65,7 @@ public:
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
-		TArray<class USoundCue*> ShotSounds;
+		TArray<class USoundCue*> FireSound;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);
