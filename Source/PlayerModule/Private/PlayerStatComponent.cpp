@@ -40,9 +40,9 @@ void UPlayerStatComponent::RecoverHP(float p_HP)
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 }
 
-void UPlayerStatComponent::Attacked(ABaseCharacter* attacker, float p_damage, EHitType hittype, FVector attackPoint)
+void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
-	Super::Attacked(attacker, p_damage, hittype, attackPoint);
+	Super::Attacked(p_damage, attacker, hittype, attackPoint);
 
 	TargetEnemy = attacker;
 

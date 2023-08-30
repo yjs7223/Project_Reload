@@ -16,7 +16,7 @@ void UBossStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 }
 
-void UBossStatComponent::Attacked(float p_damage)
+/*void UBossStatComponent::Attacked(float p_damage)
 {
 	curHP -= p_damage;
 	bAttacked = true;
@@ -41,4 +41,4 @@ void UBossStatComponent::Attacked(float p_damage, FHitResult result)
 void UBossStatComponent::Attacked(FHitResult result)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("indirection hit"));
-}
+}*/

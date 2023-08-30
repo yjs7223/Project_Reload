@@ -284,13 +284,13 @@ void UPlayerWeaponComponent::Fire()
 				if (m_result.BoneName == "head")
 				{
 					damageVlaue = CalcDamage(m_result, damage) * head_mag;
-					MyStat->Attacked(damageVlaue, m_result);
+					MyStat->Attacked(damageVlaue, owner);
 					headhit = true;
 				}
 				else
 				{
 					damageVlaue = CalcDamage(m_result, damage);
-					MyStat->Attacked(damageVlaue, m_result);
+					MyStat->Attacked(damageVlaue, owner);
 				}
 
 				if (bHit)
@@ -326,7 +326,7 @@ void UPlayerWeaponComponent::Fire()
 			if (MyStat)
 			{
 				float damageVlaue = FMath::RandRange(damage.X, damage.Y);
-				MyStat->Attacked(damageVlaue);
+				MyStat->IndirectAttacked(damageVlaue);
 			}
 
 		}
