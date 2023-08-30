@@ -16,7 +16,6 @@ class AICLASSMODULE_API UAIWeaponDataAsset : public UBaseWeaponDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<FName, UStaticMesh*> Attachments;
+
 
 };
