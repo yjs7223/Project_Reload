@@ -5,7 +5,8 @@
 #include "AICommander.h"
 #include "Components/CapsuleComponent.h"
 #include "ST_Suppression.h"
-#include "ST_AIShot.h"
+#include "AIWeaponData.h"
+#include "AIWeaponComponent.h"
 #include "ST_AIBaseStat.h"
 #include "AICharacter.h"
 #include "AIController.h"
@@ -15,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AIZombie.h"
 
 UAIStatComponent::UAIStatComponent()
 {
@@ -23,12 +25,6 @@ UAIStatComponent::UAIStatComponent()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ShotDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
-	if (DT_ShotDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Shot = DT_ShotDataObject.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
 	if (DT_AIBaseStatDataObject.Succeeded())
@@ -45,10 +41,16 @@ void UAIStatComponent::BeginPlay()
 	owner = GetOwner<AAICharacter>();
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
-	if (AIController->GetBlackboardComponent() != nullptr)
+	if (!GetOwner()->ActorHasTag("Zombie"))
 	{
-		AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_MinPoint);
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+	}
+	if (AIController != nullptr)
+	{
+		if (AIController->GetBlackboardComponent() != nullptr)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsFloat("Sup_TotalPoint", sup_MinPoint);
+		}
 	}
 	
 	//SetDataTable("Rifle_E");
@@ -84,7 +86,7 @@ void UAIStatComponent::Attacked(float p_damage)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
 	float dis = FVector::Distance(owner->GetActorLocation()	, player->GetActorLocation());
-	float dmg = (shot_MaxDmg - shot_MinDmg) * (1 - (dis - shot_MinRange) * DI_ShotRange) + shot_MinDmg;
+	float dmg = p_damage;
 	sup_Input = dmg * sup_DecInput;
 	Time = 0;
 	PlayerAtt_ai = true;
@@ -94,17 +96,27 @@ void UAIStatComponent::Attacked(float p_damage)
 void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 {
 	Super::Attacked(p_damage, result);
-	DI_ShotRange = 1 / (shot_MaxRange - shot_MinRange);
 	DI_SupRange = 1 / sup_MaxRange;
-	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	moveoncmp->e_move = EMove::Hit;
-	moveoncmp->Time = 0;
+	if (!GetOwner()->ActorHasTag("Zombie"))
+	{
+		UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+		moveoncmp->e_move = EMove::Hit;
+		moveoncmp->Time = 0;
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
 	float total_dmg;
 	total_dmg = p_damage - (p_damage * 0.01f) * Def;
 	curHP -= total_dmg;
 	Def -= (total_dmg * 0.05f);
-	AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
+	if (AIController != nullptr)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
+	}
+
+	if (GetOwner()->ActorHasTag("Zombie"))
+	{
+		Cast<AAIZombie>(GetOwner())->BulletHit(result);
+	}
 	if (curHP <= 0.0f)
 	{
 		curHP = 0.0f;
@@ -115,19 +127,28 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 			Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
 		}
 		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
+
 		{
-			AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
-		}
-		if (AIController->commander != nullptr)
-		{
-			if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+			if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
 			{
-				int aikey = *AIController->commander->List_Division.Find(GetOwner());
-				AIController->commander->List_Division.Remove(GetOwner());
-				//AIController->commander->List_Combat.Remove(aikey);
-				AIController->commander->List_CoverPoint.Remove(aikey);
-				AIController->commander->List_Location.Remove(aikey);
-				AIController->commander->List_Suppression.Remove(aikey);
+				Cast<AAICharacter>(GetOwner())->Dead();
+				Cast<AAICharacter>(GetOwner())->GetRootComponent()->DestroyComponent();
+			}
+			if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
+			{
+				AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
+			}
+			if (AIController->commander != nullptr)
+			{
+				if (AIController->commander->List_Division.Find(GetOwner()) != nullptr)
+				{
+					int aikey = *AIController->commander->List_Division.Find(GetOwner());
+					AIController->commander->List_Division.Remove(GetOwner());
+					//AIController->commander->List_Combat.Remove(aikey);
+					AIController->commander->List_CoverPoint.Remove(aikey);
+					AIController->commander->List_Location.Remove(aikey);
+					AIController->commander->List_Suppression.Remove(aikey);
+				}
 			}
 		}
 		
@@ -215,16 +236,6 @@ void UAIStatComponent::SetDataTable(FName EnemyName)
 		sup_MinPoint = SuppressionData->Sup_MinPoint;
 		sup_DecPoint = SuppressionData->Sup_DecPoint;
 		sup_DecTime = SuppressionData->Sup_DecTime;
-	}
-	FST_AIShot* ShotData = DT_Shot->FindRow<FST_AIShot>(EnemyName, FString(""));
-	if (ShotData)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyData Succeed!"));
-
-		shot_MaxRange = ShotData->Shot_MaxRange;
-		shot_MinRange = ShotData->Shot_MinRange;
-		shot_MaxDmg = ShotData->Shot_MaxDmg;
-		shot_MinDmg = ShotData->Shot_MinDmg;
 	}
 	FST_AIBaseStat* AIBaseStatData = DT_AIBaseStat->FindRow<FST_AIBaseStat>(EnemyName, FString(""));
 	if (AIBaseStatData)

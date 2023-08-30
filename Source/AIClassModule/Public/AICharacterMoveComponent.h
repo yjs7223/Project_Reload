@@ -37,8 +37,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AIMoveComponent")
 		void MoveTimeReset();
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		class AAICharacter* aicharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class ABaseCharacter* owner;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Move_Speed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
@@ -73,4 +73,8 @@ public:
 		float Time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		EMove e_move;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		class UBaseCharacterMovementComponent* movement;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		class UAIInputComponent* input;
 };

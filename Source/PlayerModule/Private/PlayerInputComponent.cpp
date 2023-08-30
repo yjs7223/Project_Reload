@@ -42,10 +42,10 @@ void UPlayerInputComponent::BeginPlay()
 	InputComponent->BindAction("Aim", IE_Released, covercomp, &UCoverComponent::StopPeeking);
 
 	InputComponent->BindAction("TestInput", IE_Pressed, this, &UPlayerInputComponent::TestHud);
+	InputComponent->BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
 
 	APlayerCharacter* pc = Cast<APlayerCharacter>(owner);
 	InputComponent->BindAction("UI_Visible", IE_Pressed, pc, &APlayerCharacter::WidgetShow);
-
 }
 
 void UPlayerInputComponent::MoveForward(float Value)
@@ -135,4 +135,9 @@ void UPlayerInputComponent::StartReload()
 void UPlayerInputComponent::TestHud()
 {
 	owner->FindComponentByClass<UStatComponent>()->Attacked(20.0f);
+}
+
+void UPlayerInputComponent::HPregen()
+{
+	owner->FindComponentByClass<UStatComponent>()->RecoverHP(100000.0f);
 }

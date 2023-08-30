@@ -792,19 +792,19 @@ void UCoverComponent::StartPeeking()
 		start = temppos;
 		end = start + RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
 		if (result.GetActor()) return;
 
 		start = end;
 		end = start + -upVector * 1.05f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start;
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 
 		if (!result.GetActor()) {
 			if (owner->bIsCrouched) {
@@ -819,7 +819,7 @@ void UCoverComponent::StartPeeking()
 			start = temppos + upVector;
 			end = start + forwardVector * 1.5f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
-			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
+			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
 				mPeekingState = EPeekingState::FrontRight;
 				return;
@@ -830,19 +830,19 @@ void UCoverComponent::StartPeeking()
 		start = temppos;
 		end = start + -RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
 		if (result.GetActor()) return;
 
 		start = end;
 		end = start + -upVector * 1.05f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start;
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 		if (!result.GetActor()) {
 			if (owner->bIsCrouched) {
 				mPeekingState = EPeekingState::LowLeft;
@@ -856,7 +856,7 @@ void UCoverComponent::StartPeeking()
 			start = temppos + upVector;
 			end = start + forwardVector * 1.5f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-			DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
+			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
 				mPeekingState = EPeekingState::FrontLeft;
 				return;

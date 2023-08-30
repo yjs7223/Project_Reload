@@ -4,6 +4,7 @@
 #include "BTT_SiegeCoverSelection.h"
 #include "AI_Controller.h"
 #include "AICommander.h"
+#include "AIStatComponent.h"
 #include "AICharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -33,7 +34,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 	for (auto ai : commander->List_Division)
 	{
 		AAICharacter* AI = Cast<AAICharacter>(ai.Key);
-		if (AI->type == Enemy_Name::RIFLE)
+		if (AI->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 		{
 			AIController = nullptr;
 			AIController = Cast<AAI_Controller>(AI->GetController());
@@ -64,7 +65,7 @@ EBTNodeResult::Type UBTT_SiegeCoverSelection::ExecuteTask(UBehaviorTreeComponent
 								for (auto subAi : commander->List_Division)
 								{
 									AAICharacter* sub_AI = Cast<AAICharacter>(subAi.Key);
-									if (sub_AI->type == Enemy_Name::RIFLE)
+									if (sub_AI->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 									{
 										if (subAi.Key != ai.Key)
 										{

@@ -12,7 +12,7 @@ UBTT_StopShotAI::UBTT_StopShotAI()
 EBTNodeResult::Type UBTT_StopShotAI::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	UAIWeaponComponent* AIWeapon = OwnerComp.GetOwner()->FindComponentByClass<UAIWeaponComponent>();
-	AIWeapon->ShotAIStop();
+	AIWeapon->StopFire();
 
 	return EBTNodeResult::Succeeded;
 }

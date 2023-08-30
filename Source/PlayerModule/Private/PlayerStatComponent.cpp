@@ -88,3 +88,4 @@ void UPlayerStatComponent::Attacked(ABaseCharacter* attacker, float p_damage, EH
 //	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 //	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 //}
+
