@@ -37,6 +37,8 @@
 #include "AIInputComponent.h"
 #include "CoverComponent.h"
 #include "CoverManager.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 
 // Sets default values
@@ -81,7 +83,7 @@ AAICommander::AAICommander()
 		BB_AICommander = BB_AICommanderObject.Object;
 	}
 	
-	
+	audiocomp = CreateDefaultSubobject<UAudioComponent>(TEXT("audiocomp"));
 	
 }
 
@@ -149,6 +151,13 @@ void AAICommander::ListSet()
 			ListVoidReset();
 			Now_suben = m_suben;
 			CoverManager->ChangeEncounter();
+			//UAudioComponent* ac = NewObject<UAudioComponent>();
+			audiocomp->Stop();
+			USoundCue* background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/S_Fire_Support_LOOP_150bpm_Cue.S_Fire_Support_LOOP_150bpm_Cue'"));
+			audiocomp->SetSound(background);
+			audiocomp->Play();
+			audiocomp->FadeIn(2.0f);
+
 			m_suben = nullptr;
 		}
 		else
@@ -259,6 +268,10 @@ void AAICommander::ListReset(ASubEncounterSpace* sub)
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
 	Blackboard->SetValueAsObject("Cmd_Target", NULL);
+
+
+	audiocomp->StopDelayed(2.0f);
+	audiocomp->FadeOut(2.0f, 1.0f);
 }
 
 void AAICommander::ListVoidReset()

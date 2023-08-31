@@ -15,7 +15,7 @@ enum class Spawn_Type : uint8
 UENUM(BlueprintType)
 enum class Enemy_Name : uint8
 {
-	RIFLE, HEAVY, SNIPER , DOG
+	RIFLE, HEAVY, SNIPER , ZOMBIE
 };
 
 UCLASS()
@@ -42,7 +42,8 @@ public:
 		TMap<Enemy_Name, int> spawn_Wave = 
 		{ {Enemy_Name::RIFLE, 0}
 		, {Enemy_Name::SNIPER, 0}
-		, {Enemy_Name::HEAVY, 0} };
+		, {Enemy_Name::HEAVY, 0}
+		,{Enemy_Name::ZOMBIE, 0} };
 
 	// 스폰 조건
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

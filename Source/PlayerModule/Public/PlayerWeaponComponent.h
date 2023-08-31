@@ -16,6 +16,8 @@ DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAmmoUIDelegate);
 
+DECLARE_DELEGATE_TwoParams(FOnSpawnDamageUIDelegate, float, FHitResult);
+
 /**
  * 
  */
@@ -31,7 +33,7 @@ public:
 	FOnChangedCrossHairHitDelegate OnChangedCrossHairHitDelegate;
 	FOnChangedCrossHairDieDelegate OnChangedCrossHairDieDelegate;
 	FOnVisibleCrossHairUIDelegate OnVisibleCrossHairUIDelegate;
-
+	FOnSpawnDamageUIDelegate OnSpawnDamageUIDelegate;
 
 	FOnVisibleAmmoUIDelegate OnVisibleAmmoUIDelegate;
 	FOnChangedAmmoUIDelegate OnChangedAmmoUIDelegate;
@@ -47,23 +49,25 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void InitData();
+	UFUNCTION(BlueprintCallable)
+	void InitData() override;
 
 	UFUNCTION(BlueprintCallable)
-		void Fire() override;
+	void Fire() override;
 	UFUNCTION(BlueprintCallable)
 	void StartAiming();
 	UFUNCTION(BlueprintCallable)
 	void StopAiming();
 	UFUNCTION(BlueprintCallable)
-	void StartFire();
+	void StartFire() override;
 	UFUNCTION(BlueprintCallable)
-	void StopFire();
+	void StopFire() override;
 
 
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
+
 	void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
 
 
@@ -89,32 +93,14 @@ public:
 
 	void PlayCameraShake(float scale);
 
-	void SpawnImpactEffect(FHitResult result);
-
 	void SpawnField(FHitResult result);
 
 	void Threaten();
 
-	float CalcDamage(FHitResult result, FVector2D p_damage);
-
-	static bool CheckActorTag(AActor* actor, FName tag);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class APlayerCharacter* owner;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* PlayerWeaponData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* RifleDataAssets;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* PistolDataAssets;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWeaponDataAsset* WeaponDataAsset;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UHitImapactDataAsset* HitImpactDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstance* Decal;
@@ -122,16 +108,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FHitResult m_result;
 
+	//«ÏµÂº¶ πË¿≤
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float head_mag;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool headhit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool ammoinfinite;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_firerate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int m_firecount;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_spreadPower;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -142,8 +128,7 @@ public:
 		float m_IturnValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float m_IlookupValue;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_dValue;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FTimerHandle fHandle;
 
@@ -181,33 +166,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FRotator recoveryRot;
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UGameplayStatics* GameStatic;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UParticleSystem* MuzzleFireParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UParticleSystem* BulletTracerParticle;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UNiagaraComponent* shotFXComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UNiagaraSystem* shotFXNiagara;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UNiagaraComponent* hitFXComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UNiagaraSystem* hitFXNiagara;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> ShotSounds;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UMatineeCameraShake> fireShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
-
-	float MaxRange;
-	float Deviation;
 };

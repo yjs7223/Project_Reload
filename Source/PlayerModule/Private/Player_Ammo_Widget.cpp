@@ -82,7 +82,7 @@ void UPlayer_Ammo_Widget::SetWidgetVisible()
 {
 	if (weapon)
 	{
-		if (weapon->isAiming || weapon->isFire)
+		if (weapon->bAiming || weapon->bFire)
 		{
 			bWidgetVisible = true;
 			Ammo_Overlay->SetRenderOpacity(1.0f);

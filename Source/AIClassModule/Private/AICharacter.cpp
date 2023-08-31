@@ -107,7 +107,7 @@ void AAICharacter::BeginPlay()
 
 	mesh = FindComponentByClass<USkeletalMeshComponent>();
 
-	switch (type)
+	switch (FindComponentByClass<UAIStatComponent>()->type)
 	{
 	case Enemy_Name::RIFLE:
 		SetDataTable("Rifle_E");
