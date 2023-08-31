@@ -13,5 +13,22 @@ UCLASS()
 class DRONEMODULE_API ADroneAIController : public AAIController
 {
 	GENERATED_BODY()
-	
+public:
+	ADroneAIController();
+
+protected:
+
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
+
+
+public:
+		class UBehaviorTree* btree;
+
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "DroneAI_Controller")
+		void RunBTT();
 };
