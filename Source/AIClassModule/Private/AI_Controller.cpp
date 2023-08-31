@@ -266,14 +266,14 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
-void AAI_Controller::PlayVoiceSound(Voice sound, int random)
-{
-	float pitch = FMath::RandRange(0, random);
-	if (pitch == 0)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound[(int)sound], GetPawn()->GetActorLocation(), 0.5f, pitch);
-	}
-}
+//void AAI_Controller::PlayVoiceSound(Voice sound, int random)
+//{
+//	float pitch = FMath::RandRange(0, random);
+//	if (pitch == 0)
+//	{
+//		UGameplayStatics::PlaySoundAtLocation(this, FireSound[(int)sound], GetPawn()->GetActorLocation(), 0.5f, pitch);
+//	}
+//}
 
 //FRotator AAI_Controller::GetControlRotation() const
 //{

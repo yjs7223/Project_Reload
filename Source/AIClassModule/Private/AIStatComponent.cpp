@@ -82,27 +82,21 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 }
 
-void UAIStatComponent::Attacked(float p_damage)
+
+void UAIStatComponent::IndirectAttacked(float p_Value)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("itkikik"));
-	float dis = FVector::Distance(owner->GetActorLocation()	, player->GetActorLocation());
-	float dmg = p_damage;
+	float dis = FVector::Distance(owner->GetActorLocation(), player->GetActorLocation());
+	float dmg = p_Value;
 	sup_Input = dmg * sup_DecInput;
 	Time = 0;
 	PlayerAtt_ai = true;
 	SuppresionPoint();
 }
 
-void UAIStatComponent::Attacked(float p_damage, FHitResult result)
+void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
-	Super::Attacked(p_damage, result);
 	DI_SupRange = 1 / sup_MaxRange;
-	if (!GetOwner()->ActorHasTag("Zombie"))
-	{
-		UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-		moveoncmp->e_move = EMove::Hit;
-		moveoncmp->Time = 0;
-	}
+
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
 	float total_dmg;
 	total_dmg = p_damage - (p_damage * 0.01f) * Def;
@@ -113,14 +107,11 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 		AIController->GetBlackboardComponent()->SetValueAsFloat("AI_HP", curHP);
 	}
 
-	if (GetOwner()->ActorHasTag("Zombie"))
-	{
-		Cast<AAIZombie>(GetOwner())->BulletHit(result);
-	}
 	if (curHP <= 0.0f)
 	{
 		curHP = 0.0f;
 		bDie = true;
+		diePlay.Broadcast();
 		if (Cast<AAICharacter>(GetOwner())->GetRootComponent())
 		{
 			Cast<AAICharacter>(GetOwner())->Dead();
@@ -144,14 +135,27 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 				{
 					int aikey = *AIController->commander->List_Division.Find(GetOwner());
 					AIController->commander->List_Division.Remove(GetOwner());
-					//AIController->commander->List_Combat.Remove(aikey);
 					AIController->commander->List_CoverPoint.Remove(aikey);
 					AIController->commander->List_Location.Remove(aikey);
 					AIController->commander->List_Suppression.Remove(aikey);
 				}
 			}
 		}
-		
+
+	}
+	switch (hittype)
+	{
+	case EHitType::None:
+		break;
+	case EHitType::Normal:
+		break;
+	case EHitType::Knockback:
+		Knockback.Broadcast(attackPoint, bDie);
+		break;
+	case EHitType::MAX:
+		break;
+	default:
+		break;
 	}
 	if (Def < 0.0f)
 	{
@@ -165,14 +169,6 @@ void UAIStatComponent::Attacked(float p_damage, FHitResult result)
 	OnVisibleEnemyHPUIDelegate.ExecuteIfBound();
 	OnChangeEnemyHPUIDelegate.ExecuteIfBound();
 }
-
-
-//void UAIStatComponent::Attacked(FHitResult result)
-//{
-//	
-//		
-//
-//}
 
 void UAIStatComponent::SuppresionPoint()
 {

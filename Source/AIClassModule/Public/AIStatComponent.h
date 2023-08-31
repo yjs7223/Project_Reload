@@ -32,9 +32,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(BlueprintCallable)
-		void Attacked(float p_damage) override;
-		void Attacked(float p_damage, FHitResult result) override;
-		//void Attacked(FHitResult result) override;
+		void IndirectAttacked(float p_Value) override;
+	UFUNCTION(BlueprintCallable)
+		void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector) override;
 	UFUNCTION(BlueprintCallable)
 		void SuppresionPoint();
 	UFUNCTION()
