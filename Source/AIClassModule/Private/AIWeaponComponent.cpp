@@ -277,20 +277,20 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 		//FireSound = AIWeaponDataAsset->FireSound;
 
 		Decal = AIWeaponDataAsset->BulletHole_Decals[0];
-		Attachments.Empty();
-		for (auto& item : AIWeaponDataAsset->Attachments)
-		{
-			UStaticMeshComponent* attachment = NewObject<UStaticMeshComponent>(owner, UStaticMeshComponent::StaticClass(), item.Key);
-			//attachment->SetMobility(EComponentMobility::Static);
+		//Attachments.Empty();
+		//for (auto& item : AIWeaponDataAsset->Attachments)
+		//{
+		//	UStaticMeshComponent* attachment = NewObject<UStaticMeshComponent>(owner, UStaticMeshComponent::StaticClass(), item.Key);
+		//	//attachment->SetMobility(EComponentMobility::Static);
 
-			attachment->SetRelativeLocation({});
-			attachment->SetRelativeRotation(FRotator());
-			attachment->SetStaticMesh(item.Value);
-			attachment->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, item.Key);
-			attachment->RegisterComponentWithWorld(GetWorld());
-			//Attachments[item.Key] = attachment;
-			Attachments.Add(item.Key, attachment);
-		}
+		//	attachment->SetRelativeLocation({});
+		//	attachment->SetRelativeRotation(FRotator());
+		//	attachment->SetStaticMesh(item.Value);
+		//	attachment->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, item.Key);
+		//	attachment->RegisterComponentWithWorld(GetWorld());
+		//	//Attachments[item.Key] = attachment;
+		//	Attachments.Add(item.Key, attachment);
+		//}
 	}
 }
 

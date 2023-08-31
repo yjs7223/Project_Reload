@@ -38,7 +38,7 @@ void AAIZombie::Tick(float DeltaTime)
             UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), GetActorLocation());
         }
     }
-    else if (!FindComponentByClass<UAIStatComponent>()->isDie)
+    else if (!FindComponentByClass<UAIStatComponent>()->bDie)
     {
         if (target != nullptr)
         {
@@ -82,18 +82,18 @@ void AAIZombie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AAIZombie::BulletHit(FHitResult result)
 {
-    // ºí·çÇÁ¸°Æ® Å¬·¡½ºÀÇ °æ·Î ¹× ÀÌ¸§
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì¸ï¿½
     FString BlueprintPath = TEXT("Blueprint'/Game/AI_Project/AI_Pakage/BaseAI/BP/BP_AIZombie.BP_AIZombie'");
 
-    // ºí·çÇÁ¸°Æ® Å¬·¡½º ·Îµù
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
     UBlueprint* BlueprintAsset = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), NULL, *BlueprintPath));
 
     if (BlueprintAsset)
     {
-        // ºí·çÇÁ¸°Æ® Å¬·¡½ºÀÇ CDO(Å¬·¡½º µðÆúÆ® ¿ÀºêÁ§Æ®) »ý¼º
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ CDO(Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®) ï¿½ï¿½ï¿½ï¿½
         UObject* BlueprintObj = BlueprintAsset->GeneratedClass->GetDefaultObject();
 
-        // Ä¿½ºÅÒ ÀÌº¥Æ® È£Ãâ
+        // Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® È£ï¿½ï¿½
         if (BlueprintObj)
         {
             FVector impulse = (player->GetActorLocation() - GetActorLocation()) * 500.0f;
