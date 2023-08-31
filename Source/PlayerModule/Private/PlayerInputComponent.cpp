@@ -12,6 +12,7 @@
 #include "PlayerHUDWidget.h"
 #include "Player_HP_Widget.h"
 #include "BaseCharacterMovementComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -20,6 +21,7 @@ void UPlayerInputComponent::BeginPlay()
 
 	InputComponent->BindAxis("Move Forward / Backward", this, &UPlayerInputComponent::MoveForward);
 	InputComponent->BindAxis("Move Right / Left", this, &UPlayerInputComponent::MoveRight);
+	InputComponent->BindAction("Move", IE_Pressed, this, &UPlayerInputComponent::InputMove);
 
 	InputComponent->BindAxis("Turn Right / Left Mouse", owner, &ACharacter::AddControllerYawInput);
 	InputComponent->BindAxis("Look Up / Down Mouse", owner, &ACharacter::AddControllerPitchInput);
@@ -58,22 +60,28 @@ void UPlayerInputComponent::MoveRight(float Value)
 	m_inputData.movevec.Y = Value;
 }
 
+void UPlayerInputComponent::InputMove()
+{
+	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
+	if (!covercomp->IsCover()) {
+		covercomp->StopCover();
+	}
+}
+
 void UPlayerInputComponent::Runing()
 {
 	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
-
-
+	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
+	if (covercomp->IsCover()) return;
 
 	if (movement->isRuning()) {
 		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Walking);
 	}
 	else {
 		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
-
 	}
 
 	if (movement->isRuning()) {
-
 		m_inputData.IsAiming = false;
 	}
 }

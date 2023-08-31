@@ -22,6 +22,7 @@ public:
 private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void InputMove();
 	void Crouching();
 	void Runing();
 	void StartFire();
