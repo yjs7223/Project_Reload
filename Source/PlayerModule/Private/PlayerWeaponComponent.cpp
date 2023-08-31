@@ -30,7 +30,7 @@
 #include "Sound/SoundCue.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
-#include "BaseWeaponDataAsset.h"
+#include "PlayerWeaponDataAsset.h"
 #include "CharacterSoundDataAsset.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -137,7 +137,7 @@ void UPlayerWeaponComponent::InitData()
 		case EWeaponType::TE_Pistol:
 			dataTable = PlayerWeaponData->FindRow<FPlayerWeaponStruct>(FName("Pistol"), FString(""));
 			maxAmmo = dataTable->MaxAmmo_num;
-			//WeaponDataAsset = PistolDataAssets;
+			//WeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT(""))
 			break;
 		case EWeaponType::TE_Rifle:
 			dataTable = PlayerWeaponData->FindRow<FPlayerWeaponStruct>(FName("Rifle"), FString(""));
