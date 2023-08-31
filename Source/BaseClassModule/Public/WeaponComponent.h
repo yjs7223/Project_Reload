@@ -38,10 +38,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	//µ¥ÀÌÅÍ ÃÊ±âÈ­
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 	virtual void InitData();
 
-	//Åº¾à ÃÊ±â¼³Á¤
+	//Åºï¿½ï¿½ ï¿½Ê±â¼³ï¿½ï¿½
 	UFUNCTION(BlueprintCallable)
 		void SetAmmo(int p_ammo);
 
@@ -68,19 +68,19 @@ public:
 		static bool CheckActorTag(AActor* actor, FName tag);
 
 public:
-	//¿À³ÊÄ³¸¯ÅÍ
+	//ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		class ABaseCharacter* owner;
 
-	//ÀÜ¿©Åº¾à
+	//ï¿½Ü¿ï¿½Åºï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int holdAmmo;
 
-	//ÇöÀçÅº¾à
+	//ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int curAmmo;
 
-	//ÃÖ´ë ÀåÅº¼ö
+	//ï¿½Ö´ï¿½ ï¿½ï¿½Åºï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		int maxAmmo;
 	
@@ -128,12 +128,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 		EWeaponType weapontype;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UBaseWeaponDataAsset* WeaponDataAsset;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UDataTable* WeaponDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UHitImapactDataAsset* HitImpactDataAsset;

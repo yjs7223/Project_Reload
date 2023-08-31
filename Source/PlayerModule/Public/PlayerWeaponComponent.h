@@ -68,7 +68,7 @@ public:
 	void StartReload();
 	void StopReload();
 
-	void WeaponMeshSetting(class UWeaponDataAsset* WeapondataAsset);
+	void WeaponMeshSetting(class UPlayerWeaponDataAsset* WeapondataAsset);
 
 
 	void ReloadTick(float Deltatime);
@@ -100,7 +100,10 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UDataTable* PlayerWeaponData;
+		class UDataTable* PlayerWeaponDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPlayerWeaponDataAsset* PlayerWeaponDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstance* Decal;
@@ -108,7 +111,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FHitResult m_result;
 
-	//Çìµå¼¦ ¹èÀ²
+	//ï¿½ï¿½å¼¦ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float head_mag;
 
