@@ -22,6 +22,16 @@
 			]
 		},
 		{
+			"Name": "DroneModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject",
+				"AIModule"
+			]
+		},
+		{
 			"Name": "PlayerModule",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
