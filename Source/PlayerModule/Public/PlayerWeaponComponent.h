@@ -89,7 +89,7 @@ public:
 
 	void SpawnDecal(FHitResult result);
 
-	void PlayRandomShotSound();
+	void PlayRandomShotSound() override;
 
 	void PlayCameraShake(float scale);
 
