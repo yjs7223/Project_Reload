@@ -51,6 +51,7 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	owner = GetOwner<ABaseCharacter>();
 	// ...
 	
 }
