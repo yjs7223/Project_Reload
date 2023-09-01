@@ -8,6 +8,7 @@
 #include "Engine/DataTable.h"
 #include "StatComponent.h"
 #include "AIWeaponData.h"
+#include "AIWeaponDataAsset.h"
 #include "AIStatComponent.h"
 #include <Kismet/GameplayStatics.h>
 #include "ST_Spawn.h"
@@ -277,6 +278,7 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 		//FireSound = AIWeaponDataAsset->FireSound;
 
 		Decal = AIWeaponDataAsset->BulletHole_Decals[0];
+
 		//Attachments.Empty();
 		//for (auto& item : AIWeaponDataAsset->Attachments)
 		//{
@@ -291,6 +293,69 @@ void UAIWeaponComponent::SetDataTable(FName EnemyName)
 		//	//Attachments[item.Key] = attachment;
 		//	Attachments.Add(item.Key, attachment);
 		//}
+	}
+}
+
+void UAIWeaponComponent::InitData()
+{
+	if (DT_AIWeaponData)
+	{
+		// 데이터 가져오기
+		switch (owner->FindComponentByClass<UAIStatComponent>()->type)
+		{
+		case Enemy_Name::RIFLE:
+			curAIWeaponData = DT_AIWeaponData->FindRow<FAIWeaponStruct>("Rifle_E", TEXT(""));
+			AIWeaponDataAsset = LoadObject<UAIWeaponDataAsset>(NULL, TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIRifle.DA_AIRifle'"));
+			break;
+		case Enemy_Name::SNIPER:
+			curAIWeaponData = DT_AIWeaponData->FindRow<FAIWeaponStruct>("Sniper_E", TEXT(""));
+			AIWeaponDataAsset = LoadObject<UAIWeaponDataAsset>(NULL, TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AISniper.DA_AISniper'"));
+			break;
+		case Enemy_Name::HEAVY:
+			curAIWeaponData = DT_AIWeaponData->FindRow<FAIWeaponStruct>("Heavy_E", TEXT(""));
+			AIWeaponDataAsset = LoadObject<UAIWeaponDataAsset>(NULL, TEXT("AIWeaponDataAsset'/Game/AI_Project/AI_Pakage/BaseAI/DA/DA_AIHeavy.DA_AIHeavy'"));
+			break;
+		}
+		if (curAIWeaponData)
+		{
+			// 가져온 데이터 삽입
+			recoil_Range = curAIWeaponData->Recoil_Range;
+			recoilMax_Radius = curAIWeaponData->RecoilMax_Radius;
+			recoilMin_Radius = curAIWeaponData->RecoilMin_Radius;
+
+			shot_MaxRange = curAIWeaponData->Max_Range;
+
+			damage.X = curAIWeaponData->Max_Damage;
+			damage.Y = curAIWeaponData->Min_Damage;
+
+			shot_MaxCount = curAIWeaponData->Max_FireCount;
+
+			fire_Rate = curAIWeaponData->Fire_Rate;
+
+			// 현재 반동은 최대로 시작
+			recoil_Radius = recoilMax_Radius;
+
+			// 첫 총알은 최대로
+			cur_Shot_Count = shot_MaxCount;
+		}
+	}
+	if (AIWeaponDataAsset != nullptr)
+	{
+		if (AIWeaponDataAsset->WeaponSkeletalMesh)
+		{
+			WeaponMesh->SetSkeletalMesh(AIWeaponDataAsset->WeaponSkeletalMesh);
+		}
+
+		if (AIWeaponDataAsset->WeaponAnim)
+		{
+			WeaponMesh->SetAnimInstanceClass(AIWeaponDataAsset->WeaponAnim);
+		}
+
+		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
+
+		FireSound = AIWeaponDataAsset->FireSound;
+
+		Decal = AIWeaponDataAsset->BulletHole_Decals[0];
 	}
 }
 
