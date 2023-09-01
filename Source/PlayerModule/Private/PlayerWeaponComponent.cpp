@@ -773,11 +773,9 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 
 void UPlayerWeaponComponent::PlayRandomShotSound()
 {
+	Super::PlayRandomShotSound();
 	float pitch = FMath::RandRange(0.9f, 1.2f);
-	//int r = FMath::RandRange(0, 3);
 	UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->FireSound, GetOwner()->GetActorLocation(), 1.0f, pitch);
-
-	UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetOwner()->GetActorLocation(), 1.0f, GetOwner(), 0.0f, FName(TEXT("Shooting")));
 }
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)

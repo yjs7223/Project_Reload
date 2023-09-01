@@ -59,7 +59,7 @@ public:
 		UFUNCTION(BlueprintCallable)
 		void SetHandleing(bool isFaceRight, bool isCoverUse = false);
 
-		void PlayRandomShotSound();
+		virtual void PlayRandomShotSound();
 
 		void SpawnImpactEffect(FHitResult result);
 
