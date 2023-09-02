@@ -28,7 +28,7 @@ public:
 
 	//Commander
 	class AAICommander* commander;
-	class ASubEncounterSpace* NowSub;
+	class AEncounterSpace* NowEn;
 
 
 protected:

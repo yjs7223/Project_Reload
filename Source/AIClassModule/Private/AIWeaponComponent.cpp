@@ -14,7 +14,7 @@
 #include "ST_Spawn.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AICommander.h"
-#include "SubEncounterSpace.h"
+#include "EncounterSpace.h"
 #include "AISpawner.h"
 #include "HitImapactDataAsset.h"
 #include "BehaviorTree/BlackboardData.h"
@@ -296,16 +296,16 @@ bool UAIWeaponComponent::AITypeSniperCheck()
 void UAIWeaponComponent::CheckTrace()
 {
 	if (commander == nullptr) return;
-	if (commander->Now_suben == nullptr) return;
-	if (commander->Now_suben->spawn == nullptr) return;
-	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
+	if (commander->Now_en == nullptr) return;
+	if (commander->Now_en->spawn == nullptr) return;
+	if (commander->Now_en->spawn->cpyLastPoint == nullptr) return;
 	if (owner->FindComponentByClass<UAIStatComponent>()->combat == CombatState::PATROL) return;
 	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	FCollisionQueryParams collisionParams;
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 
-	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_en->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{

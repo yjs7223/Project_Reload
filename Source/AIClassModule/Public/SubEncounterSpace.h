@@ -29,19 +29,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		int LevelNum;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool En_Check;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool ArrayActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool LevelActive;
+		bool EncounterAIActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<AActor*> AIArray;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<AActor*> M_AIArray;
+		TArray<AActor*> EncounterArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AEncounterSpace* en;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAISpawner* spawn;
+	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAICommander* commander;
 
@@ -49,6 +47,6 @@ public:
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
-		void EnemyAICheck();
+		void EncounterCheck();
 
 };
