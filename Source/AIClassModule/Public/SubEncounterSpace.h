@@ -36,16 +36,12 @@ public:
 		bool EncounterAIActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> EncounterArray;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAI_Controller* AIController;
-	
+
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAICommander* commander;
 
 public:
-	UFUNCTION()
-		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		void EncounterCheck();
 

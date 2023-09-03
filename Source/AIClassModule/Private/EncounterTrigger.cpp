@@ -48,7 +48,7 @@ void AEncounterTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 			if (commander->Now_suben != suben)
 			{
 				commander->m_suben = suben;
-				suben->EncounterAIActive = true;
+				
 			}
 			if (commander->Now_en != en)
 			{

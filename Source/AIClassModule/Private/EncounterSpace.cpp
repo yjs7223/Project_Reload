@@ -20,8 +20,10 @@ AEncounterSpace::AEncounterSpace()
 	PrimaryActorTick.bCanEverTick = true;
 	CollisionMesh = CreateDefaultSubobject<UBoxComponent>(FName("C Mesh"));
 	RootComponent = CollisionMesh;
+	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AEncounterSpace::OnOverlapBegin);
 	AI_Check = false;
 	AI_ActiveFalse = false;
+
 	
 }
 
@@ -57,11 +59,6 @@ void AEncounterSpace::Tick(float DeltaTime)
 	}
 }
 
-
-
-
-
-
 void AEncounterSpace::AICheck()
 {
 	this->GetOverlappingActors(AIArray, AAICharacter::StaticClass());
@@ -82,6 +79,7 @@ void AEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 			{
 				commander->m_suben = suben;
 			}
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("encounter"));
 		}
 	}
 }

@@ -23,8 +23,6 @@ ASubEncounterSpace::ASubEncounterSpace()
 	CollisionMesh = CreateDefaultSubobject<UBoxComponent>(FName("C Mesh"));
 	RootComponent = CollisionMesh;
 
-	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapBegin);
-	
 	EncounterAIActive = false;
 }
 
@@ -56,19 +54,7 @@ void ASubEncounterSpace::Tick(float DeltaTime)
 
 }
 
-void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
-	{
-		if (commander != nullptr)
-		{
-			if (commander->Now_suben != this)
-			{
-				commander->m_suben = this;
-			}
-		}
-	}
-}
+
 
 
 void ASubEncounterSpace::EncounterCheck()
