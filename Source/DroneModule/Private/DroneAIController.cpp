@@ -9,14 +9,14 @@
 ADroneAIController::ADroneAIController()
 {
 	//bt Setting
-	/*static ConstructorHelpers::FObjectFinder<UBehaviorTree>
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>
 		BTObject(TEXT("BehaviorTree'/Game/_sjs/Drone/BT_DroneAI.BT_DroneAI'"));
 
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
 		UE_LOG(LogTemp, Warning, TEXT("BehaviorTree Succeed!"));
-	}*/
+	}
 
 
 
