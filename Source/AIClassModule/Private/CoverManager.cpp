@@ -36,8 +36,8 @@ bool ACoverManager::ChangeEncounter()
 
 	NowEn = commander->Now_en;
 
-	this->SetActorLocation(NowEn->GetActorLocation());
-	CoverSystem->SetActorLocation(NowEn->GetActorLocation());
+	//this->SetActorLocation(NowEn->GetActorLocation());
+	//CoverSystem->SetActorLocation(NowEn->GetActorLocation());
 
 	ChangeCoverSystem();
 	commander->CoverPointEn(NowEn);
@@ -50,9 +50,9 @@ void ACoverManager::ChangeCoverSystem()
 {
 
 	//CoverSystem->GenerateCovers(true, false);
-	CoverSystem->custom_GenerateCovers(true, false, true,2500);
+	//CoverSystem->custom_GenerateCovers(true, false, true,2500);
 	TArray<FCoverHandle> testarray;
-	CoverSystem->GetCoversWithinBounds(FBoxSphereBounds(FVector3d(CoverSystem->GetActorLocation()), FVector3d(10000.0f, 10000.0f, 10000.0f), 10000.0f), testarray);
+	CoverSystem->GetCoversWithinBounds(FBoxSphereBounds(FVector3d(CoverSystem->GetActorLocation()), FVector3d(20000.0f, 20000.0f, 20000.0f), 20000.0f), testarray);
 	if (!testarray.IsEmpty())
 	{
 		commander->CoverArray.Reset();
