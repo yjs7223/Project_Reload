@@ -13,6 +13,13 @@ UCLASS()
 class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 {
 	GENERATED_BODY()
+
+public:
+	DECLARE_DELEGATE(FChangedWeapon);
+
+public:
+	FChangedWeapon OnChangedWeapon;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -29,8 +36,12 @@ private:
 	void StopFire();
 	void StartAiming();
 	void StopAiming();
+	void ChangeMainWeapon();
+	void ChangeSubWeapon();
 
 	void TestHud();
 	void HPregen();
 
+private:
+	class UPlayerWeaponComponent* m_PlayerWeapon;
 };

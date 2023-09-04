@@ -17,6 +17,7 @@
 void UPlayerInputComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	m_PlayerWeapon = owner->FindComponentByClass<UPlayerWeaponComponent>();
 	TObjectPtr<class UInputComponent> InputComponent = owner->InputComponent;
 
 	InputComponent->BindAxis("Move Forward / Backward", this, &UPlayerInputComponent::MoveForward);
@@ -37,7 +38,10 @@ void UPlayerInputComponent::BeginPlay()
 
 	InputComponent->BindAction("Reload", IE_Pressed, this, &UPlayerInputComponent::StartReload);
 
+	InputComponent->BindAction("ChangeMainWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeMainWeapon);
+	InputComponent->BindAction("ChangeSubWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeSubWeapon);
 
+	
 	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
 	InputComponent->BindAction("Cover", IE_Pressed, covercomp, &UCoverComponent::PlayCover);
 	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StartPeeking);
@@ -101,8 +105,8 @@ void UPlayerInputComponent::StartFire()
 {
 	if (!m_inputData.IsReload)
 	{
-		owner->FindComponentByClass<UPlayerWeaponComponent>()->StartFire();
-		if (owner->FindComponentByClass<UPlayerWeaponComponent>()->bFire)
+		m_PlayerWeapon->StartFire();
+		if (m_PlayerWeapon->bFire)
 		{
 			m_inputData.IsFire = true;
 		}
@@ -112,7 +116,7 @@ void UPlayerInputComponent::StartFire()
 void UPlayerInputComponent::StopFire()
 {
 	m_inputData.IsFire = false;
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StopFire();
+	m_PlayerWeapon->StopFire();
 }
 
 void UPlayerInputComponent::StartAiming()
@@ -122,19 +126,33 @@ void UPlayerInputComponent::StartAiming()
 	if (movement->isRuning()) {
 		movement->SetMovementMode(MOVE_Walking);
 	}
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartAiming();
+	m_PlayerWeapon->StartAiming();
 }
 
 void UPlayerInputComponent::StopAiming()
 {
 	m_inputData.IsAiming = false;
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StopAiming();
+	m_PlayerWeapon->StopAiming();
+}
+
+void UPlayerInputComponent::ChangeMainWeapon()
+{
+	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Rifle) return;
+	m_PlayerWeapon->weapontype = EWeaponType::TE_Rifle;
+	OnChangedWeapon.ExecuteIfBound();
+}
+	
+void UPlayerInputComponent::ChangeSubWeapon()
+{
+	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Pistol) return;
+	m_PlayerWeapon->weapontype = EWeaponType::TE_Pistol;
+	OnChangedWeapon.ExecuteIfBound();
 }
 
 void UPlayerInputComponent::StartReload()
 {
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartReload();
-	if (owner->FindComponentByClass<UPlayerWeaponComponent>()->bReload)
+	m_PlayerWeapon->StartReload();
+	if (m_PlayerWeapon->bReload)
 	{
 		m_inputData.IsReload = true;
 	}

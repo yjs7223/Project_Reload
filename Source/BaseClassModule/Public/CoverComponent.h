@@ -79,6 +79,9 @@ public:
 	FVector getCanCoverPoint();
 	/** 엄폐가능 위치에서 노말값을 반환합니다 */
 	FVector GetPointNormal();
+
+	TArray<FNavPathPoint>& getCoverPath();
+
 	/** 피킹을 시작합니다 */
 	void StartPeeking();
 	/** 피킹상태를 계산합니다 */
@@ -154,4 +157,5 @@ private:
 	class ACharacter* owner;
 
 	bool m_IsWillPosSetting;
+	TArray<FNavPathPoint> m_CoverPath;
 };
