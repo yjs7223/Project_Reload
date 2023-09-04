@@ -11,7 +11,7 @@
 
 ACoverManager::ACoverManager()
 {
-
+	ArrayActive = false;
 }
 
 void ACoverManager::BeginPlay()
@@ -20,8 +20,8 @@ void ACoverManager::BeginPlay()
 		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverSystem::StaticClass()));
 	commander = Cast<AAICommander>
 		(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-
-
+	
+	
 
 
 
@@ -38,15 +38,19 @@ bool ACoverManager::ChangeEncounter()
 
 	//this->SetActorLocation(NowEn->GetActorLocation());
 	//CoverSystem->SetActorLocation(NowEn->GetActorLocation());
-
-	ChangeCoverSystem();
+	if (!ArrayActive)
+	{
+		CoverPointArray();
+	}
+	
 	commander->CoverPointEn(NowEn);
+
 	//commander->RestoreArr();
 	
 	return true;
 }
 
-void ACoverManager::ChangeCoverSystem()
+void ACoverManager::CoverPointArray()
 {
 
 	//CoverSystem->GenerateCovers(true, false);
@@ -62,5 +66,6 @@ void ACoverManager::ChangeCoverSystem()
 			CoverSystem->GetCoverData(item, coverdata);
 			commander->CoverArray.Add(coverdata.Location);
 		}
+		ArrayActive = true;
 	}
 }
