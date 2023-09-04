@@ -51,6 +51,7 @@ UWeaponComponent::UWeaponComponent()
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	owner = GetOwner<ABaseCharacter>();
 	// ...
 	
 }
@@ -183,9 +184,9 @@ void UWeaponComponent::SetHandleing(bool isFaceRight, bool isCoverUse)
 
 void UWeaponComponent::PlayRandomShotSound()
 {
-	float pitch = FMath::RandRange(0.9f, 1.2f);
+	//float pitch = FMath::RandRange(0.9f, 1.2f);
 
-	UGameplayStatics::PlaySoundAtLocation(this, WeaponDataAsset->FireSound, owner->GetActorLocation(), 1.0f, pitch);
+	//UGameplayStatics::PlaySoundAtLocation(this, playerweapondata->FireSound, owner->GetActorLocation(), 1.0f, pitch);
 
 	UAISense_Hearing::ReportNoiseEvent(GetWorld(), owner->GetActorLocation(), 1.0f, owner, 0.0f, FName(TEXT("Shooting")));
 }

@@ -20,7 +20,7 @@ public:
 
 	bool ChangeEncounter();
 
-	void ChangeCoverSystem();
+	void CoverPointArray();
 
 public:
 
@@ -28,7 +28,8 @@ public:
 
 	//Commander
 	class AAICommander* commander;
-	class ASubEncounterSpace* NowSub;
+	class AEncounterSpace* NowEn;
+	bool ArrayActive;
 
 
 protected:

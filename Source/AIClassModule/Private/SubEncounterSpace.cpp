@@ -23,9 +23,7 @@ ASubEncounterSpace::ASubEncounterSpace()
 	CollisionMesh = CreateDefaultSubobject<UBoxComponent>(FName("C Mesh"));
 	RootComponent = CollisionMesh;
 
-	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &ASubEncounterSpace::OnOverlapBegin);
-	
-	LevelActive = false;
+	EncounterAIActive = false;
 }
 
 // Called when the game starts or when spawned
@@ -33,81 +31,36 @@ void ASubEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-	// add
-	if (spawn != nullptr)
-	{
-		spawn->suben = this;
-	}
+	En_Check = false;
+	
 }
 
 // Called every frame
 void ASubEncounterSpace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	EnemyAICheck();
-
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CollisionMesh->GetScaledBoxExtent().ToString());
+	if (!En_Check)
+	{
+		EncounterCheck();
+	}
+	if (EncounterAIActive)
+	{
+		for (auto m_en : EncounterArray)
+		{
+			Cast<AEncounterSpace>(m_en)->AI_ActiveTrue = true;
+		}
+		EncounterAIActive = false;
+	}
 
 }
 
-void ASubEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+
+
+
+void ASubEncounterSpace::EncounterCheck()
 {
-	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
-	{
-		if (commander != nullptr)
-		{
-			if (commander->Now_en == en)
-			{
-				LevelActive = true;
-				commander->m_suben = this;
-			}
-			else
-			{
-				LevelActive = true;
-				en->LevelActive = true;
-				
-				for (auto encoun : commander->EncounterArray)
-				{
-					AEncounterSpace* encounter = Cast<AEncounterSpace>(encoun);
-					if (encounter != en)
-					{
-						encounter->LevelActive = false;
-						encounter->LevelEndActive();
-					}
-				}
-				commander->m_en = en;
-				commander->m_suben = this;
-				commander->En_AIActive = true;
-			}
-		}
-	}
-}
-
-
-void ASubEncounterSpace::EnemyAICheck()
-{
-	this->GetOverlappingActors(M_AIArray,AAICharacter::StaticClass());
-	for (auto AI : M_AIArray)
-	{
-		//INDEX_NONE
-		if(AIArray.Find(AI) == INDEX_NONE)
-		{
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(AI)->GetController());
-			if (AIController)
-			{
-				if (AIController->GetBlackboardComponent())
-				{
-					if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active"))
-					{
-						AIArray.Add(AI);
-					}
-
-				}
-			}
-		}
-		
-	}
+	this->GetOverlappingActors(EncounterArray,AEncounterSpace::StaticClass());
+	En_Check = true;
 }
 
 
