@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h"
 #include "DroneAICharacter.generated.h"
 
 UCLASS()
@@ -35,4 +36,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 	class UStaticMeshComponent* m_mesh;
 
+
+	//MoveTimeLine
+	class FOnTimelineFloat LerpDroneMoveToFunction; // (1)
+	class FOnTimelineEvent LerpDroneMoveTimelineFinish; // (2)
+	UFUNCTION()
+	void LerpDroneMoveTo(float Value); // (3)
+	UFUNCTION()
+	void LerpDroneMoveFinish(); // (4)
+
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	class UTimelineComponent* LerpDroneMoveToTimeline; // (5)
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	class UCurveFloat* LerpDroneMoveToFloat; // (6)
+
+
+	void MoveToTimelineSetting();
+
+	UFUNCTION(BlueprintCallable, Category = "DroneMoveTo")
+	void StartMoveTo();
+
+	class AActor* m_player;
+
+	class ADroneAIController* CTR;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
+	bool IsMoving = false;
 };

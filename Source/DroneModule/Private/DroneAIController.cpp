@@ -26,6 +26,8 @@ ADroneAIController::ADroneAIController()
 void ADroneAIController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	RunBTT();
 }
 
 void ADroneAIController::Tick(float DeltaSeconds)
