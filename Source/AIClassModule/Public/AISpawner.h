@@ -95,7 +95,7 @@ public:
 		AActor* cpyLastPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
-		class ASubEncounterSpace* suben;
+		class AEncounterSpace* en;
 
 	// 데이터 테이블 정보
 	bool last_Spawn;

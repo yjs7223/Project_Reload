@@ -12,7 +12,7 @@
 #include "EngineGlobals.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "SubEncounterSpace.h"
+#include "EncounterSpace.h"
 #include "AIZombie.h"
 
 // Sets default values
@@ -265,7 +265,7 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 					pointSpawnCheck = true;
 					pointTime = 0;
 
-					for (auto& ai : suben->AIArray)
+					for (auto& ai : en->AIArray)
 					{
 						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
 						if (AIController != nullptr)

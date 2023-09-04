@@ -183,8 +183,6 @@ public:
 	
 	// AI Type Setting
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void SetDataTable(FName EnemyName);
-	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void InitData() override;
 
 	// AI Sniper Check

@@ -25,28 +25,27 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UBoxComponent* CollisionMesh;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool LevelActive;
+		bool AI_Check;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool ActiveStart; //subencounter start on
+		bool AI_ActiveTrue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<AActor*> LevelArray;
+		bool AI_ActiveFalse;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		int LevelActiveNum;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool subencheck;
+		TArray<AActor*> AIArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class ASubEncounterSpace* suben2;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAICommander* commander;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAISpawner* spawn;
 
 public:
+
+
 	UFUNCTION()
-		void LevelArrayActive();
+		void AICheck();
 	UFUNCTION()
-		void LevelEndActive();
-	UFUNCTION()
-		void SubEncounterCheck();
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
