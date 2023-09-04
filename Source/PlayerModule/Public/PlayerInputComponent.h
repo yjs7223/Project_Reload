@@ -15,7 +15,7 @@ class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 	GENERATED_BODY()
 
 public:
-	DECLARE_DELEGATE(FChangedWeapon);
+	DECLARE_MULTICAST_DELEGATE(FChangedWeapon);
 
 public:
 	FChangedWeapon OnChangedWeapon;

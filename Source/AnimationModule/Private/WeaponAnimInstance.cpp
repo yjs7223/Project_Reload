@@ -36,12 +36,10 @@ void UWeaponAnimInstance::NativeBeginPlay()
 		}
 	);
 	UPlayerInputComponent* m_PlayerInput = Cast<UPlayerInputComponent>(m_Input);
-	m_PlayerInput->OnChangedWeapon.BindLambda([this]() {
-			Montage_Play(m_CurrentAnimation.WeaponChange);
+	m_PlayerInput->OnChangedWeapon.AddLambda([this]() {
+			Montage_Play(m_CurrentAnimation.UnEquipWeapon);
 		});
-	m_PlayerInput->OnChangedWeapon.BindLambda([this]() {
-			Montage_Play(m_CurrentAnimation.WeaponChange);
-		});
+
 
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	AnimationSetting();
@@ -74,4 +72,9 @@ void UWeaponAnimInstance::AnimationSetting()
 	if (findanimation && findanimation->IsVaild()) {
 		m_CurrentAnimation = *findanimation;
 	}
+}
+
+void UWeaponAnimInstance::PlayEquipMontage()
+{
+	Montage_Play(m_CurrentAnimation.EquipWeapon);
 }

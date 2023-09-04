@@ -32,7 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimSequence* Reload;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* WeaponChange;
+	UAnimMontage* EquipWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* UnEquipWeapon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	class UAimOffsetBlendSpace* AimOffset;
 };
@@ -51,6 +53,9 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void AnimationSetting();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayEquipMontage();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UBaseInputComponent* m_Input;

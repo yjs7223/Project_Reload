@@ -536,7 +536,7 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* Weapondat
 
 		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
 		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);
-
+		//Cast<>(WeapondataAsset->WeaponAnim)->AnimationSetting();
 		//switch (weapontype)
 		//{
 		//case EWeaponType::TE_Pistol:
@@ -549,7 +549,7 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* Weapondat
 		//default:
 		//	break;
 		//}
-		//WeaponMesh->SetRelativeLocation(location);
+		WeaponMesh->SetRelativeLocation(location);
 	}
 }
 

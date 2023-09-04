@@ -139,14 +139,14 @@ void UPlayerInputComponent::ChangeMainWeapon()
 {
 	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Rifle) return;
 	m_PlayerWeapon->weapontype = EWeaponType::TE_Rifle;
-	OnChangedWeapon.ExecuteIfBound();
+	OnChangedWeapon.Broadcast();
 }
 	
 void UPlayerInputComponent::ChangeSubWeapon()
 {
 	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Pistol) return;
 	m_PlayerWeapon->weapontype = EWeaponType::TE_Pistol;
-	OnChangedWeapon.ExecuteIfBound();
+	OnChangedWeapon.Broadcast();
 }
 
 void UPlayerInputComponent::StartReload()
