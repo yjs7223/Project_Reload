@@ -11,6 +11,7 @@
 
 ACoverManager::ACoverManager()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	ArrayActive = false;
 }
 
@@ -29,6 +30,14 @@ void ACoverManager::BeginPlay()
 
 }
 
+void ACoverManager::Tick(float DeltaTime)
+{
+	if (!ArrayActive)
+	{
+		CoverPointArray();
+	}
+}
+
 bool ACoverManager::ChangeEncounter()
 {
 	if (!commander->Now_en)
@@ -38,10 +47,7 @@ bool ACoverManager::ChangeEncounter()
 
 	//this->SetActorLocation(NowEn->GetActorLocation());
 	//CoverSystem->SetActorLocation(NowEn->GetActorLocation());
-	if (!ArrayActive)
-	{
-		CoverPointArray();
-	}
+	
 	
 	commander->CoverPointEn(NowEn);
 
