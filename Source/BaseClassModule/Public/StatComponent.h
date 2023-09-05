@@ -13,6 +13,7 @@ enum class EHitType: uint8
 	None = 0	UMETA(Hidden),
 	Normal		UMETA(DisplayName = "Normal"),
 	Knockback	UMETA(DisplayName = "Knockback"),
+	Stun		UMETA(DisplayName = "Stun"),
 	MAX			UMETA(Hidden)
 };
 

@@ -101,6 +101,8 @@ public:
 		float Def;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class AAI_Controller* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class UAICharacterMoveComponent* moveoncmp;
 
 
 };

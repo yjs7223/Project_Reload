@@ -39,6 +39,7 @@ void UAIStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<AAICharacter>();
+	moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (!GetOwner()->ActorHasTag("Zombie"))
@@ -96,7 +97,7 @@ void UAIStatComponent::IndirectAttacked(float p_Value)
 void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
 	DI_SupRange = 1 / sup_MaxRange;
-
+	
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
 	float total_dmg;
 	total_dmg = p_damage - (p_damage * 0.01f) * Def;
@@ -148,9 +149,15 @@ void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitTy
 	case EHitType::None:
 		break;
 	case EHitType::Normal:
+		moveoncmp->Time = 0;
+		moveoncmp->e_move = EMove::Hit;
 		break;
 	case EHitType::Knockback:
 		Knockback.Broadcast(attackPoint, bDie);
+		break;
+	case EHitType::Stun:
+		moveoncmp->Time = 0;
+		moveoncmp->e_move = EMove::Stun;
 		break;
 	case EHitType::MAX:
 		break;

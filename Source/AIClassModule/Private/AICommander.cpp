@@ -287,36 +287,33 @@ void AAICommander::ListTickSet()
 	SightIn_CHK = false;
 	for (auto ai : List_Division)
 	{
-		auto FindActor = List_Division.Find(ai.Key); 
 		
-		if (FindActor)
+		List_Location.Add(ai.Value, ai.Key->GetActorLocation());
+		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
+		if (AIController == nullptr)
 		{
-			List_Location.Add(*FindActor, ai.Key->GetActorLocation());
-			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
-			if (AIController == nullptr)
-			{
-				continue;
-			}
-			if (AIController->GetBlackboardComponent() == NULL)
-			{
-				continue;
-			}
-			if (AIController->commander != this)
-			{
-				AIController->commander = this;
-			}
-			List_Suppression.Add(*FindActor, AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint"));
-			if (s_time >= Cast<AAICharacter>(ai.Key)->sup_sharetime)
-			{
-				SuppressionShare();
-
-				s_time = 0;
-			}
-			if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
-			{
-				SightIn_CHK = true;
-			}
+			continue;
 		}
+		if (AIController->GetBlackboardComponent() == NULL)
+		{
+			continue;
+		}
+		if (AIController->commander != this)
+		{
+			AIController->commander = this;
+		}
+		List_Suppression.Add(ai.Value, AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint"));
+		if (s_time >= Cast<AAICharacter>(ai.Key)->sup_sharetime)
+		{
+			SuppressionShare();
+
+			s_time = 0;
+		}
+		if (AIController->GetBlackboardComponent()->GetValueAsBool("Sight_In"))
+		{
+			SightIn_CHK = true;
+		}
+		
 	}
 	if (SightIn_CHK == false)
 	{
@@ -353,23 +350,24 @@ void AAICommander::TargetTickSet()
 
 		for (auto& ai : List_Division)
 		{
-			if (ai != en_Ai)
+			if (ai == en_Ai)
 			{
-				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
-				if (AIController == nullptr)
-				{
-					continue;
-				}
-				if (AIController->GetBlackboardComponent() == NULL)
-				{
-					continue;
-				}
-				if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
-				{
-					AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
-				}
-
+				continue;
 			}
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
+			if (AIController == nullptr)
+			{
+				continue;
+			}
+			if (AIController->GetBlackboardComponent() == NULL)
+			{
+				continue;
+			}
+			if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+			{
+				AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+			}
+
 		}
 	}
 }
@@ -384,11 +382,6 @@ void AAICommander::SuppressionShare()
 	MaxSupLoc = *List_Location.Find(*List_Suppression.FindKey(Sup_Array[0]));
 	for (auto ac : List_Division)
 	{
-		auto FindAc = List_Division.Find(ac.Key);
-		if (!FindAc)
-		{
-			continue;
-		}
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ac.Key)->GetController());
 		if (AIController == nullptr)
 		{
@@ -398,11 +391,11 @@ void AAICommander::SuppressionShare()
 		{
 			continue;
 		}
-		if (*List_Location.Find(*FindAc) != MaxSupLoc)
+		if (*List_Location.Find(ac.Value) != MaxSupLoc)
 		{
 			sup_value = AIController->GetBlackboardComponent()->GetValueAsFloat("Sup_TotalPoint");
 			sup_value += (Sup_Array[0] / 15)
-				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(*FindAc))) / Cast<AAICharacter>(ac.Key)->sup_sharerange));
+				* (1 - ((FVector::Distance(MaxSupLoc, *List_Location.Find(ac.Value))) / Cast<AAICharacter>(ac.Key)->sup_sharerange));
 			if (sup_value >= Sup_Array[0])
 			{
 				sup_value = Sup_Array[0];
@@ -454,7 +447,6 @@ void AAICommander::CoverPointEnemy()
 		collisionParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(result, subencover, player->GetActorLocation(), ECC_Visibility, collisionParams))
 		{
-
 			if (result.GetActor()->ActorHasTag("Cover"))
 			{
 				if (FVector::Distance(subencover, result.ImpactPoint) < 50.0f)
@@ -463,7 +455,6 @@ void AAICommander::CoverPointEnemy()
 					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
 					if (FVector::Distance(subencover, player->GetActorLocation()) >= 500.0f)
 					{
-
 						CoverEnemyArray.Add(subencover);
 					}
 				}
@@ -500,8 +491,6 @@ void AAICommander::SiegeCoverPoint()
 
 void AAICommander::DetourCoverPoint()
 {
-	
-	//FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), player->FindComponentByClass<UCoverComponent>()->GetCoverWall()->GetActorLocation()).Vector();
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
 	DetourCoverArray.Reset();
 	if (CoverArray.IsEmpty())
@@ -529,11 +518,7 @@ void AAICommander::DetourCoverPoint()
 				DetourCoverArray.Add(enemy_cover);
 			}
 		}
-	}
-			
-		
-	
-	
+	}	
 }
 
 
@@ -586,17 +571,17 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 			}
 			for (auto C_Point : CoverEnemyArray)
 			{
+				FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
+				cover_rot.Normalize();
+				float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
+				float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+				float AngPoint = 100 - (100 * (angle * DI_Ang));
 				if (cross_Final.Z > 0) // Right
 				{
 					if (FVector::CrossProduct(player_rot, C_Point).Z > 0)
 					{
 						if (MiddleLocation != C_Point)
 						{
-							FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
-							cover_rot.Normalize();
-							float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
-							float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
-							float AngPoint = 100 - (100 * (angle * DI_Ang));
 							if (AngPoint < 0)
 							{
 								AngPoint = 0;
@@ -629,11 +614,6 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 					{
 						if (MiddleLocation != C_Point)
 						{
-							FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
-							cover_rot.Normalize();
-							float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
-							float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
-							float AngPoint = 100 - (100 * (angle * DI_Ang));
 							if (AngPoint < 0)
 							{
 								AngPoint = 0;
@@ -667,15 +647,15 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 		{
 			for (auto C_Point : CoverEnemyArray)
 			{
+				FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
+				cover_rot.Normalize();
+				float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
+				float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+				float AngPoint = 100 - (100 * (angle * DI_Ang));
 				if (cross_Final.Z > 0) // Right
 				{
 					if (FVector::CrossProduct(player_rot, C_Point).Z > 0)
 					{
-						FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
-						cover_rot.Normalize();
-						float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
-						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
-						float AngPoint = 100 - (100 * (angle * DI_Ang));
 						if (AngPoint < 0)
 						{
 							AngPoint = 0;
@@ -705,11 +685,6 @@ FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVec
 				{
 					if (FVector::CrossProduct(player_rot, C_Point).Z <= 0)
 					{
-						FVector cover_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), C_Point).Vector();
-						cover_rot.Normalize();
-						float Dot_Cover = FVector::DotProduct(Find_rot, cover_rot);
-						float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
-						float AngPoint = 100 - (100 * (angle * DI_Ang));
 						if (AngPoint < 0)
 						{
 							AngPoint = 0;

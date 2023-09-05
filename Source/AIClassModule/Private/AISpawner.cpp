@@ -224,7 +224,6 @@ int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 			}
 		}
 	}
-
 	return p_Spawn_Pos;
 }
 
@@ -289,9 +288,7 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 				GetWorld()->DestroyActor(cpyLastPoint);
 				commander->GetBlackboardComponent()->SetValueAsObject("Cmd_Target", player);
 			}
-
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
-
 		}
 	}
 }
