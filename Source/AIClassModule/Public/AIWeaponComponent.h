@@ -7,7 +7,7 @@
 #include "WeaponComponent.h"
 #include "AICharacter.h"
 #include "NiagaraComponent.h"
-#include "ST_AIShot.h"
+#include "AIWeaponData.h"
 #include "AIWeaponComponent.generated.h"
 
 /**
@@ -24,17 +24,14 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* target;
 
-	// AI 사격 상태
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		bool shot_State;
 
 	// AI 사격 가능 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		bool use_Shot_State;
 
 	// AI 캐릭터
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		AAICharacter* owner;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		AAICharacter* owner;*/
 
 	// 현재 사격 반동 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -43,9 +40,7 @@ public :
 	// 최대 사거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		float shot_MaxRange;
-	// 최소 사거리
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shot_MinRange;
+
 
 	// AI의 최대 반동 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
@@ -75,11 +70,11 @@ public :
 
 	// 사격 딜레이
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float shot_Delay;
+		float fire_Rate;
 
 	// 현재 딜레이 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
-		float cur_Shot_Delay;
+		float cur_fire_Rate;
 
 	// Hit Result
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -88,14 +83,20 @@ public :
 	// 총알 효과 나이아가라
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UNiagaraSystem* laserFXNiagara;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
 		UNiagaraComponent* laserFXComponent;
+
+	// 에이밍 효과 나이아가라
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		UNiagaraSystem* AimFlashFXNiagara;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotSetting")
+		UNiagaraComponent* AimFlashFXComponent;
 
 	// 데이터 테이블
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UDataTable* AIShotData;
+		class UDataTable* DT_AIWeaponData;
 	// 현재 데이터 테이블
-	struct FST_AIShot* curAIShotData;
+	struct FAIWeaponStruct* curAIWeaponData;
 
 	class AAICommander* commander;
 	FHitResult result;
@@ -106,8 +107,6 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraSystem* hitFXNiagara;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UHitImapactDataAsset* HitImpactDataAsset;
 
 	// DA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -127,7 +126,18 @@ public :
 		class UParticleSystem* BulletTracerParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> ShotSounds;
+		class USoundCue* FireSound;
+	//������ �븮�� �Ҹ�
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* ReloadCliplockedSound;
+
+	//������ źâ ���ԼҸ�
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* ReloadMagInSound;
+
+	//������ źâ ��ü�Ҹ�
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* ReloadMagOutSound;
 
 	// Main DA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -145,6 +155,10 @@ public :
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, UStaticMeshComponent*> Attachments;
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USpotLightComponent* SpotLightCmp;*/
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -153,37 +167,42 @@ public:
 
 	// AI Shot
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAI();
+		void Fire() override;
 	// AI Shot Timer
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ShotAITimer(float t);
 	// AI Shot Start
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAIStart();
+		void StartFire() override;
 	// AI Shot Stop
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAIStop();
-
+		void StopFire() override;
 	// AI Reload
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void ReloadAI();
 	
 	// AI Type Setting
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void SetDataTable(FName EnemyName);
+		void InitData() override;
 
 	// AI Sniper Check
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		bool AITypeSniperCheck();
 
 	void CheckTrace();
-	void AISpawnImpactEffect(FHitResult p_result);
-
-	void PlayRandomShotSound();
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 		void LaserOn();
 
 	UFUNCTION(BlueprintCallable, Category = "Laser")
 		void LaserOff();
+
+	UFUNCTION(Category = "Debug", meta = (CallInEditor = "true"))
+	//UFUNCTION(BlueprintCallable, Category = "AimFlash")
+		void AimFalshOn();
+
+
+	UFUNCTION(Category = "Debug", meta = (CallInEditor = "true"))
+		//UFUNCTION(BlueprintCallable, Category = "AimFlash")
+		void AimFalshOff();
 };

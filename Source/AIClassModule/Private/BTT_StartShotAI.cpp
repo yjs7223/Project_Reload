@@ -12,7 +12,7 @@ UBTT_StartShotAI::UBTT_StartShotAI()
 EBTNodeResult::Type UBTT_StartShotAI::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	UAIWeaponComponent* AIWeapon = OwnerComp.GetOwner()->FindComponentByClass<UAIWeaponComponent>();
-	AIWeapon->ShotAIStart();
+	AIWeapon->StartFire();
 
 	return EBTNodeResult::Succeeded;
 }

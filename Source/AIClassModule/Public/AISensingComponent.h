@@ -40,8 +40,8 @@ public:
 		struct FST_Range* curAIRangeData;
 
 	// ���� ��ä�� ����� �׸���
-	UFUNCTION(BlueprintCallable, Category = "Sense")
-		void DrawCircleSector(float Radius, float Angle, int32 NumSegments);
+	/*UFUNCTION(BlueprintCallable, Category = "Sense")
+		void DrawCircleSector(float Radius, float Angle, int32 NumSegments);*/
 
 	bool IsPlayerInsideFanArea(float LocationRadius, float FanAngle, FVector FanDirection);
 
@@ -53,7 +53,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Range")
 		bool MinRangeCheck();
 
-	void DrawSense();
+	//void DrawSense();
 
 	void SetDataTable(FName EnemyName);
 };

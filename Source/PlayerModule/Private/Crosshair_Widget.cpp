@@ -217,11 +217,11 @@ void UCrosshair_Widget::CheckDie()
 
 	APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn());
 
-	if (weapon->isHit)
+	if (weapon->bHit)
 	{
 		if (weapon->headhit)
 		{
-			weapon->isHit = false;
+			weapon->bHit = false;
 			weapon->headhit = false;
 			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
 			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
@@ -231,7 +231,7 @@ void UCrosshair_Widget::CheckDie()
 		}
 		else
 		{
-			weapon->isHit = false;
+			weapon->bHit = false;
 			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
 			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
 			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
@@ -264,7 +264,7 @@ void UCrosshair_Widget::CheckDie()
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{
-		if (stat->isDie)
+		if (stat->bDie)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
 			//stat->isDie = false;
@@ -342,13 +342,13 @@ void UCrosshair_Widget::SetWidgetVisible()
 	Reload_Overlay->SetRenderOpacity(1.0f);
 	if (weapon)
 	{
-		if (weapon->isAiming || weapon->isFire)
+		if (weapon->bAiming || weapon->bFire)
 		{
 			bWidgetVisible = true;
 			GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
 			Crosshair_Overlay->SetRenderOpacity(1.0f);
 		}
-		else if(!weapon->isAiming && !weapon->isFire)
+		else if(!weapon->bAiming && !weapon->bFire)
 		{
 			if (FadeOutAnim)
 			{

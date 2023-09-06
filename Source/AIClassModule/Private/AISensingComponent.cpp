@@ -14,7 +14,6 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DataTable.h"
 #include "StatComponent.h"
-#include "ST_AIShot.h"
 #include <Kismet/GameplayStatics.h>
 #include "ST_Spawn.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -59,27 +58,27 @@ void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 }
 
 
-void UAISensingComponent::DrawCircleSector(float Radius, float Angle, int32 NumSegments)
-{
-	const FVector CharacterLocation = GetOwner()->GetActorLocation();
-	const FVector CharacterForward = GetOwner()->GetActorForwardVector();
-	const FRotator CharacterRotation = CharacterForward.Rotation();
-
-	const float TwoPi = 2 * PI;
-	const float AngleIncrement = -Angle / NumSegments;
-	const float SegmentLength = TwoPi * Radius * (AngleIncrement / 360.0f);
-
-	const FVector StartOffset = FVector(Radius, 0.0f, 0.0f);
-
-	for (int32 i = 0; i < NumSegments; ++i)
-	{
-		const float tempAngle = (Angle * 0.5) + (i * AngleIncrement);
-		const FVector Start = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(tempAngle, FVector::UpVector));
-		const FVector End = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(tempAngle + AngleIncrement, FVector::UpVector));
-
-		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, -1.0f, 0, 1.0f);
-	}
-}
+//void UAISensingComponent::DrawCircleSector(float Radius, float Angle, int32 NumSegments)
+//{
+//	const FVector CharacterLocation = GetOwner()->GetActorLocation();
+//	const FVector CharacterForward = GetOwner()->GetActorForwardVector();
+//	const FRotator CharacterRotation = CharacterForward.Rotation();
+//
+//	const float TwoPi = 2 * PI;
+//	const float AngleIncrement = -Angle / NumSegments;
+//	const float SegmentLength = TwoPi * Radius * (AngleIncrement / 360.0f);
+//
+//	const FVector StartOffset = FVector(Radius, 0.0f, 0.0f);
+//
+//	for (int32 i = 0; i < NumSegments; ++i)
+//	{
+//		const float tempAngle = (Angle * 0.5) + (i * AngleIncrement);
+//		const FVector Start = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(tempAngle, FVector::UpVector));
+//		const FVector End = CharacterLocation + CharacterRotation.RotateVector(StartOffset.RotateAngleAxis(tempAngle + AngleIncrement, FVector::UpVector));
+//
+//		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, -1.0f, 0, 1.0f);
+//	}
+//}
 
 
 bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanAngle, FVector FanDirection)
@@ -100,7 +99,7 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 
 void UAISensingComponent::ShotSenseRange()
 {
-	DrawSense();
+	//DrawSense();
 
 	if (IsPlayerInsideFanArea(AimBwd_Radius, AimBwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
@@ -135,12 +134,12 @@ bool UAISensingComponent::MinRangeCheck()
 	return false;
 }
 
-void UAISensingComponent::DrawSense()
-{
-	DrawCircleSector(AimBwd_Radius, AimBwd_Angle, 50);
-	DrawCircleSector(AimFwd_Radius, AimFwd_Angle, 50);
-	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
-}
+//void UAISensingComponent::DrawSense()
+//{
+//	DrawCircleSector(AimBwd_Radius, AimBwd_Angle, 50);
+//	DrawCircleSector(AimFwd_Radius, AimFwd_Angle, 50);
+//	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
+//}
 
 void UAISensingComponent::SetDataTable(FName EnemyName)
 {

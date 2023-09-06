@@ -13,6 +13,13 @@ UCLASS()
 class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 {
 	GENERATED_BODY()
+
+public:
+	DECLARE_MULTICAST_DELEGATE(FChangedWeapon);
+
+public:
+	FChangedWeapon OnChangedWeapon;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -22,13 +29,19 @@ public:
 private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void InputMove();
 	void Crouching();
 	void Runing();
 	void StartFire();
 	void StopFire();
 	void StartAiming();
 	void StopAiming();
+	void ChangeMainWeapon();
+	void ChangeSubWeapon();
 
 	void TestHud();
+	void HPregen();
 
+private:
+	class UPlayerWeaponComponent* m_PlayerWeapon;
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WeaponData.h"
 #include "Engine/DataTable.h"
 #include "PlayerWeaponData.generated.h"
 
@@ -27,37 +28,32 @@ public:
 };  
 
 USTRUCT(Atomic, BlueprintType)
-struct FPlayerweaponStruct : public FTableRowBase
+struct FPlayerWeaponStruct : public FWeaponRowStruct
 {
 	GENERATED_USTRUCT_BODY()
 public:
+
+	//최대 장탄수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 bullet_Num;
+		int32 MaxAmmo_num;
+
+	//헤드샷 데미지 배율
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float max_Damage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float min_Damage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float max_H_Damage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float min_H_Damage;
+		float Head_Magnification;
+
+	//가로반동
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float max_Horizontal_Recoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float min_Horizontal_Recoil;
+
+	//세로반동
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float max_vertical_Recoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float min_vertical_Recoil;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float fire_Rate;
 
+	//탄퍼짐 강도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float spread_Power;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxRange;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Deviation;
 };

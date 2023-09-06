@@ -4,7 +4,37 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Engine/DataTable.h"
 #include "StatsAnimInstance.generated.h"
+/**
+ *
+ */
+USTRUCT(Atomic, BlueprintType)
+struct FStatAnimationTable : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	bool IsVaild();
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Back;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Front;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Left;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Right;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Back_Die;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Front_Die;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Left_Die;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* KnockBack_Right_Die;
+};
 
 /**
  * 
@@ -19,7 +49,10 @@ public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	void UWeaponAnimInstance();
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
+	ACharacter* owner;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	class UStatComponent* mStats;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
@@ -27,4 +60,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	bool mIsHit;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UDataTable* m_AnimationTable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	struct FStatAnimationTable m_CurrentAnimation;
 };

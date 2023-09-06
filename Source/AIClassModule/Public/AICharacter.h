@@ -33,9 +33,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AAISpawner* mySpawner;
 
-	// 자신의 병과
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		Enemy_Name type;
+	
 
 	//간접 공격 감지 캡슐 매쉬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -64,9 +62,7 @@ public:
 		float ai_HP;
 
 
-	// Combat State
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatState")
-		CombatState combat;
+	
 
 	class USkeletalMeshComponent* mesh;
 

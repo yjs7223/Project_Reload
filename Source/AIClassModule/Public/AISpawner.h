@@ -29,6 +29,10 @@ public:
 	// 현재 데이터 테이블
 	struct FST_Spawner* curSpawnData;
 
+	// 물량 스포너 확인
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool many_Spawn;
+
 	// 스포너 활성화 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		bool check_Overlap;
@@ -52,6 +56,8 @@ public:
 		TSubclassOf<APawn> enemy_Sniper;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		TSubclassOf<APawn> enemy_Heavy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		TSubclassOf<APawn> enemy_Zombie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		class UBehaviorTree* BT_Enemy;
@@ -67,6 +73,7 @@ public:
 	int rifleCount;
 	int sniperCount;
 	int heavyCount;
+	int zombieCount;
 
 	// 스포너 스폰 지점들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -88,7 +95,7 @@ public:
 		AActor* cpyLastPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
-		class ASubEncounterSpace* suben;
+		class AEncounterSpace* en;
 
 	// 데이터 테이블 정보
 	bool last_Spawn;
