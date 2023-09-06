@@ -41,18 +41,6 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		PlayerWeaponDataTable = DataTable.Object;
 	}
 
-	/*static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Rifle.DA_Rifle'"));
-	if (rifle_da.Succeeded())
-	{
-
-		RifleDataAssets = Cast<UWeaponDataAsset>(rifle_da.Object);
-	}
-
-	static ConstructorHelpers::FObjectFinder<UDataAsset> pistol_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Pistol.DA_Pistol'"));
-	if (pistol_da.Succeeded())
-	{
-		PistolDataAssets = Cast<UWeaponDataAsset>(pistol_da.Object);
-	}*/
 
 	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
 	if (hitimpact.Succeeded())
@@ -65,23 +53,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		fieldActor = fActor.Object;
 	}
-	/*weapontype = EWeaponType::TE_Rifle;
-	if (RifleDataAssets)
-	{
-		if (RifleDataAssets->WeaponSkeletalMesh)
-		{
-			WeaponMesh->SetSkeletalMesh(RifleDataAssets->WeaponSkeletalMesh);
-		}
-
-		if (RifleDataAssets->weaponAnim)
-		{
-			WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
-		}
-
-		FVector location = FVector::ZeroVector;
-		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
-		WeaponMesh->SetRelativeLocation(location);
-	}*/
+	
 }
 
 void UPlayerWeaponComponent::BeginPlay()
@@ -239,7 +211,7 @@ void UPlayerWeaponComponent::Fire()
 	FActorSpawnParameters spawnparam;
 	spawnparam.Owner = owner;
 	//CameraHit
-	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
+	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
@@ -520,36 +492,37 @@ void UPlayerWeaponComponent::StopReload()
 	bReload = false;
 }
 
+void UPlayerWeaponComponent::WeaponChange()
+{
+	InitData();
+}
+
 void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* WeapondataAsset)
 {
-	//if (WeapondataAsset)
-	//{
-	//	FVector location = FVector::ZeroVector;
+	if (WeapondataAsset)
+	{
+		FVector location = FVector::ZeroVector;
+		if (!WeapondataAsset->WeaponSkeletalMesh || !WeapondataAsset->WeaponAnim) {
+			ensure(0);
+		}
 
-	//	if (WeapondataAsset->WeaponSkeletalMesh)
-	//	{
-	//		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
-	//	}
-
-	//	if (WeapondataAsset->weaponAnim) 
-	//	{
-	//		//WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
-	//	}
-
-	//	switch (weapontype)
-	//	{
-	//	case EWeaponType::TE_Pistol:
-	//		break;
-	//	case EWeaponType::TE_Rifle:
-	//		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
-	//		break;
-	//	case EWeaponType::TE_Shotgun:
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	WeaponMesh->SetRelativeLocation(location);
-	//}
+		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
+		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);
+		//Cast<>(WeapondataAsset->WeaponAnim)->AnimationSetting();
+		//switch (weapontype)
+		//{
+		//case EWeaponType::TE_Pistol:
+		//	break;
+		//case EWeaponType::TE_Rifle:
+		//	location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
+		//	break;
+		//case EWeaponType::TE_Shotgun:
+		//	break;
+		//default:
+		//	break;
+		//}
+		WeaponMesh->SetRelativeLocation(location);
+	}
 }
 
 void UPlayerWeaponComponent::ReloadTick(float Deltatime)
@@ -762,7 +735,7 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 	FVector DecalLocation = result.Location;
 	
 
-	UDecalComponent* decal = UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
+	UDecalComponent* decal = UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), PlayerWeaponDataAsset->BulletHole_Decals[0], DecalSize, DecalLocation, DecalRotation, 10.0f);
 	if (decal)
 	{
 		decal->SetFadeScreenSize(0.0f);
@@ -815,7 +788,7 @@ void UPlayerWeaponComponent::Threaten()
 					UStatComponent* stat = result.GetActor()->FindComponentByClass<UStatComponent>();
 					if (stat)
 					{
-						stat->isThreat = true;
+						stat->bThreat = true;
 					}
 				}
 			}

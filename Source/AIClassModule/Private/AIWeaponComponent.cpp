@@ -14,7 +14,7 @@
 #include "ST_Spawn.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AICommander.h"
-#include "SubEncounterSpace.h"
+#include "EncounterSpace.h"
 #include "AISpawner.h"
 #include "HitImapactDataAsset.h"
 #include "BehaviorTree/BlackboardData.h"
@@ -220,81 +220,6 @@ void UAIWeaponComponent::ReloadAI()
 	use_Shot_State = true;
 }
 
-void UAIWeaponComponent::SetDataTable(FName EnemyName)
-{
-	if (DT_AIWeaponData)
-	{
-		// 데이터 가져오기
-		curAIWeaponData = DT_AIWeaponData->FindRow<FAIWeaponStruct>(EnemyName, TEXT(""));
-		switch (owner->FindComponentByClass<UAIStatComponent>()->type)
-		{
-		case Enemy_Name::RIFLE:
-			AIWeaponDataAsset = RifleDataAsset;
-			break;
-		case Enemy_Name::SNIPER:
-			AIWeaponDataAsset = SniperDataAsset;
-			break;
-		case Enemy_Name::HEAVY:
-			AIWeaponDataAsset = HeavyDataAsset;
-			break;
-		}
-		if (curAIWeaponData)
-		{
-			// 가져온 데이터 삽입
-			recoil_Range = curAIWeaponData->Recoil_Range;
-			recoilMax_Radius = curAIWeaponData->RecoilMax_Radius;
-			recoilMin_Radius = curAIWeaponData->RecoilMin_Radius;
-
-			shot_MaxRange = curAIWeaponData->Max_Range;
-
-			damage.X = curAIWeaponData->Max_Damage;
-			damage.Y = curAIWeaponData->Min_Damage;
-
-			shot_MaxCount = curAIWeaponData->Max_FireCount;
-
-			fire_Rate = curAIWeaponData->Fire_Rate;
-
-			// 현재 반동은 최대로 시작
-			recoil_Radius = recoilMax_Radius;
-
-			// 첫 총알은 최대로
-			cur_Shot_Count = shot_MaxCount;
-		}
-	}
-	if (AIWeaponDataAsset != nullptr)
-	{
-		if (AIWeaponDataAsset->WeaponSkeletalMesh)
-		{
-			WeaponMesh->SetSkeletalMesh(AIWeaponDataAsset->WeaponSkeletalMesh);
-		}
-
-		if (AIWeaponDataAsset->WeaponAnim)
-		{
-			WeaponMesh->SetAnimInstanceClass(AIWeaponDataAsset->WeaponAnim);
-		}
-
-		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
-
-		//FireSound = AIWeaponDataAsset->FireSound;
-
-		Decal = AIWeaponDataAsset->BulletHole_Decals[0];
-
-		//Attachments.Empty();
-		//for (auto& item : AIWeaponDataAsset->Attachments)
-		//{
-		//	UStaticMeshComponent* attachment = NewObject<UStaticMeshComponent>(owner, UStaticMeshComponent::StaticClass(), item.Key);
-		//	//attachment->SetMobility(EComponentMobility::Static);
-
-		//	attachment->SetRelativeLocation({});
-		//	attachment->SetRelativeRotation(FRotator());
-		//	attachment->SetStaticMesh(item.Value);
-		//	attachment->AttachToComponent(WeaponMesh, FAttachmentTransformRules::KeepRelativeTransform, item.Key);
-		//	attachment->RegisterComponentWithWorld(GetWorld());
-		//	//Attachments[item.Key] = attachment;
-		//	Attachments.Add(item.Key, attachment);
-		//}
-	}
-}
 
 void UAIWeaponComponent::InitData()
 {
@@ -371,16 +296,16 @@ bool UAIWeaponComponent::AITypeSniperCheck()
 void UAIWeaponComponent::CheckTrace()
 {
 	if (commander == nullptr) return;
-	if (commander->Now_suben == nullptr) return;
-	if (commander->Now_suben->spawn == nullptr) return;
-	if (commander->Now_suben->spawn->cpyLastPoint == nullptr) return;
+	if (commander->Now_en == nullptr) return;
+	if (commander->Now_en->spawn == nullptr) return;
+	if (commander->Now_en->spawn->cpyLastPoint == nullptr) return;
 	if (owner->FindComponentByClass<UAIStatComponent>()->combat == CombatState::PATROL) return;
 	if (!Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_Active")) return;
 
 	FCollisionQueryParams collisionParams;
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 
-	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_suben->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(result, start, commander->Now_en->spawn->cpyLastPoint->GetActorLocation(), ECC_Visibility, collisionParams))
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{

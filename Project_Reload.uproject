@@ -23,6 +23,16 @@
 			]
 		},
 		{
+			"Name": "DroneModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject",
+				"AIModule"
+			]
+		},
+		{
 			"Name": "PlayerModule",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
@@ -124,6 +134,10 @@
 		},
 		{
 			"Name": "ChaosVehiclesPlugin",
+      "Enabled": true
+    },
+    {
+			"Name": "MultiUserClient",
 			"Enabled": true
 		}
 	]

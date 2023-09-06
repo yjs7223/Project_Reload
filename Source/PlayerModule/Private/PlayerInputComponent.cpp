@@ -12,14 +12,17 @@
 #include "PlayerHUDWidget.h"
 #include "Player_HP_Widget.h"
 #include "BaseCharacterMovementComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 
 void UPlayerInputComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	m_PlayerWeapon = owner->FindComponentByClass<UPlayerWeaponComponent>();
 	TObjectPtr<class UInputComponent> InputComponent = owner->InputComponent;
 
 	InputComponent->BindAxis("Move Forward / Backward", this, &UPlayerInputComponent::MoveForward);
 	InputComponent->BindAxis("Move Right / Left", this, &UPlayerInputComponent::MoveRight);
+	InputComponent->BindAction("Move", IE_Pressed, this, &UPlayerInputComponent::InputMove);
 
 	InputComponent->BindAxis("Turn Right / Left Mouse", owner, &ACharacter::AddControllerYawInput);
 	InputComponent->BindAxis("Look Up / Down Mouse", owner, &ACharacter::AddControllerPitchInput);
@@ -35,7 +38,10 @@ void UPlayerInputComponent::BeginPlay()
 
 	InputComponent->BindAction("Reload", IE_Pressed, this, &UPlayerInputComponent::StartReload);
 
+	InputComponent->BindAction("ChangeMainWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeMainWeapon);
+	InputComponent->BindAction("ChangeSubWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeSubWeapon);
 
+	
 	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
 	InputComponent->BindAction("Cover", IE_Pressed, covercomp, &UCoverComponent::PlayCover);
 	InputComponent->BindAction("Aim", IE_Pressed, covercomp, &UCoverComponent::StartPeeking);
@@ -44,8 +50,13 @@ void UPlayerInputComponent::BeginPlay()
 	InputComponent->BindAction("TestInput", IE_Pressed, this, &UPlayerInputComponent::TestHud);
 	InputComponent->BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
 
+	InputComponent->BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
+
 	APlayerCharacter* pc = Cast<APlayerCharacter>(owner);
 	InputComponent->BindAction("UI_Visible", IE_Pressed, pc, &APlayerCharacter::WidgetShow);
+	
+	UPlayerStatComponent* statcomp = owner->FindComponentByClass<UPlayerStatComponent>();
+	InputComponent->BindAction("Interactive", IE_Pressed, statcomp, &UPlayerStatComponent::Interacting);
 }
 
 void UPlayerInputComponent::MoveForward(float Value)
@@ -58,22 +69,28 @@ void UPlayerInputComponent::MoveRight(float Value)
 	m_inputData.movevec.Y = Value;
 }
 
+void UPlayerInputComponent::InputMove()
+{
+	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
+	if (!covercomp->IsCover()) {
+		covercomp->StopCover();
+	}
+}
+
 void UPlayerInputComponent::Runing()
 {
 	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
-
-
+	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
+	if (covercomp->IsCover()) return;
 
 	if (movement->isRuning()) {
 		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Walking);
 	}
 	else {
 		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
-
 	}
 
 	if (movement->isRuning()) {
-
 		m_inputData.IsAiming = false;
 	}
 }
@@ -93,8 +110,8 @@ void UPlayerInputComponent::StartFire()
 {
 	if (!m_inputData.IsReload)
 	{
-		owner->FindComponentByClass<UPlayerWeaponComponent>()->StartFire();
-		if (owner->FindComponentByClass<UPlayerWeaponComponent>()->bFire)
+		m_PlayerWeapon->StartFire();
+		if (m_PlayerWeapon->bFire)
 		{
 			m_inputData.IsFire = true;
 		}
@@ -104,7 +121,7 @@ void UPlayerInputComponent::StartFire()
 void UPlayerInputComponent::StopFire()
 {
 	m_inputData.IsFire = false;
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StopFire();
+	m_PlayerWeapon->StopFire();
 }
 
 void UPlayerInputComponent::StartAiming()
@@ -114,19 +131,33 @@ void UPlayerInputComponent::StartAiming()
 	if (movement->isRuning()) {
 		movement->SetMovementMode(MOVE_Walking);
 	}
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartAiming();
+	m_PlayerWeapon->StartAiming();
 }
 
 void UPlayerInputComponent::StopAiming()
 {
 	m_inputData.IsAiming = false;
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StopAiming();
+	m_PlayerWeapon->StopAiming();
+}
+
+void UPlayerInputComponent::ChangeMainWeapon()
+{
+	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Rifle) return;
+	m_PlayerWeapon->weapontype = EWeaponType::TE_Rifle;
+	OnChangedWeapon.Broadcast();
+}
+	
+void UPlayerInputComponent::ChangeSubWeapon()
+{
+	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Pistol) return;
+	m_PlayerWeapon->weapontype = EWeaponType::TE_Pistol;
+	OnChangedWeapon.Broadcast();
 }
 
 void UPlayerInputComponent::StartReload()
 {
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->StartReload();
-	if (owner->FindComponentByClass<UPlayerWeaponComponent>()->bReload)
+	m_PlayerWeapon->StartReload();
+	if (m_PlayerWeapon->bReload)
 	{
 		m_inputData.IsReload = true;
 	}
@@ -134,7 +165,7 @@ void UPlayerInputComponent::StartReload()
 
 void UPlayerInputComponent::TestHud()
 {
-	owner->FindComponentByClass<UStatComponent>()->Attacked(20.0f);
+	owner->FindComponentByClass<UPlayerStatComponent>()->Attacked(100.0f);
 }
 
 void UPlayerInputComponent::HPregen()

@@ -67,7 +67,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
-
+	UFUNCTION(BlueprintCallable)
+	void WeaponChange();
 	void WeaponMeshSetting(class UPlayerWeaponDataAsset* WeapondataAsset);
 
 
@@ -106,12 +107,8 @@ public:
 		class UPlayerWeaponDataAsset* PlayerWeaponDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UMaterialInstance* Decal;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FHitResult m_result;
 
-	//��弦 ����
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float head_mag;
 

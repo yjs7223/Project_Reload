@@ -65,7 +65,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<FVector> CoverArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> CoverSubEnArray;
+		TArray<FVector> CoverEnArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<FVector> CoverEnemyArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -91,9 +91,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* m_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AEncounterSpace* m_en;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* Now_suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* m_en;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* Now_en;
 
@@ -130,12 +130,8 @@ public:
 		bool enemycover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool Cmd_SightOut;
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool Patrol_CHK;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool En_AIActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -149,26 +145,22 @@ public:
 	UFUNCTION()
 		void ListSet();
 	UFUNCTION()
-		void ListReset(ASubEncounterSpace* sub);
-	UFUNCTION()
 		void ListVoidReset();
 	UFUNCTION()
 		void ListAdd(AActor* ac);
 	UFUNCTION()
-		void AIActive(AEncounterSpace* en);
+		void ListStartSet(AEncounterSpace* en);
 	UFUNCTION()
-		void ListStartSet(ASubEncounterSpace* sub);
+		void ListTickSet();
 	UFUNCTION()
-		void ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en);
-	UFUNCTION()
-		void SuppressionShare(ASubEncounterSpace* sub);
+		void SuppressionShare();
 
 	UFUNCTION()
 		void SetCommanderDataTable(FName EnemyName);
 	UFUNCTION()
-		void TargetTickSet(ASubEncounterSpace* sub);
+		void TargetTickSet();
 	UFUNCTION()
-		void CoverPointSubEn(ASubEncounterSpace* sub);
+		void CoverPointEn(AEncounterSpace* en);
 	UFUNCTION()
 		void CoverPointEnemy();
 	UFUNCTION()

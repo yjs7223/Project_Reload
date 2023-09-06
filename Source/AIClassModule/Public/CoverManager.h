@@ -17,10 +17,11 @@ class AICLASSMODULE_API ACoverManager : public AInfo
 public:
 	ACoverManager();
 	virtual void BeginPlay() override;
-
+	virtual void
+		Tick(float DeltaTime) override;
 	bool ChangeEncounter();
 
-	void ChangeCoverSystem();
+	void CoverPointArray();
 
 public:
 
@@ -28,7 +29,8 @@ public:
 
 	//Commander
 	class AAICommander* commander;
-	class ASubEncounterSpace* NowSub;
+	class AEncounterSpace* NowEn;
+	bool ArrayActive;
 
 
 protected:

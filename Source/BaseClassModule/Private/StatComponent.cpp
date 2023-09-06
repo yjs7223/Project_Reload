@@ -130,6 +130,11 @@ void UStatComponent::RecoverHP(float p_HP)
 //	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("indirection hit"));
 //}
 
+void UStatComponent::Attacked_BP(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
+{
+	Attacked(p_damage, attacker, hittype, attackPoint);
+}
+
 void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
 	curHP -= p_damage;
