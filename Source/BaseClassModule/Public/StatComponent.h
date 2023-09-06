@@ -86,7 +86,8 @@ public:
 		bool bDie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool isThreat;
+		bool bThreat;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		float HitReactionScale;
 

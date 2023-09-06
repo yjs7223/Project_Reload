@@ -38,7 +38,6 @@ public:
 	void InitWidget(FViewport* viewport, uint32 value);
 	void UpdateWidget(float deltatime);
 	void WidgetShow();
-	void CreateDamageWidget(float value, FHitResult result);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -48,43 +47,10 @@ public:
 		class UPlayerStatComponent* stat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWidgetComponent* HPWidgetComponent;
+		TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWidgetComponent* HPWidgetComponent_back;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWidgetComponent* AmmoWidgetComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> HP_Widget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Ammo_Widget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Crosshair_WidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UCrosshair_Widget* Crosshair_Widget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Attacked_WidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UAttacked_Widget* Attacked_Widget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UWidgetComponent* CoverWidgetComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Cover_WidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> Damage_WidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class ULineNaviWidget* LineNavi_Widget;
+		class UPlayerHUDWidget* PlayerHUDWidget;
 
 	FTimerHandle DamageTimer;
     
