@@ -32,6 +32,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimSequence* Reload;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EquipWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* UnEquipWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	class UAimOffsetBlendSpace* AimOffset;
 };
 
@@ -42,8 +46,6 @@ UCLASS(ClassGroup = (Custom))
 class ANIMATIONMODULE_API UWeaponAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-
-
 public:
 	UWeaponAnimInstance();
 
@@ -51,8 +53,9 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void AnimationSetting();
-	void PlayShootingAnimation();
 
+	UFUNCTION(BlueprintCallable)
+	void PlayEquipMontage();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		class UBaseInputComponent* m_Input;
