@@ -219,18 +219,20 @@ void UCoverComponent::CalculCoverPath(float DeltaTime)
 	}
 	const FVector AgentNavLocation = Controller->GetNavAgentLocation();
 	const ANavigationData* NavData = NavSys->GetNavDataForProps(Controller->GetNavAgentPropertiesRef(), AgentNavLocation);
+	if (NavData) {
+		FPathFindingQuery Query(Controller, *NavData, AgentNavLocation, GoalLocation);
+		FPathFindingResult Result = NavSys->FindPathSync(Query);
+		FVector beforepoint = AgentNavLocation;
+		m_CoverPath = Result.Path->GetPathPoints();
 
-	FPathFindingQuery Query(Controller, *NavData, AgentNavLocation, GoalLocation);
-	FPathFindingResult Result = NavSys->FindPathSync(Query);
-	FVector beforepoint = AgentNavLocation;
-	m_CoverPath = Result.Path->GetPathPoints();
 
-
-	for (auto& item : m_CoverPath)
-	{
-		DrawDebugLine(GetWorld(), beforepoint, item.Location, FColor::Red, false, DeltaTime, 0, 5.0f);
-		beforepoint = item.Location;
+		for (auto& item : m_CoverPath)
+		{
+			DrawDebugLine(GetWorld(), beforepoint, item.Location, FColor::Red, false, DeltaTime, 0, 5.0f);
+			beforepoint = item.Location;
+		}
 	}
+
 
 }
 
