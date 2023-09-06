@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "DroneAICharacter.h"
 #include "AsyncNode.generated.h"
 
 /**
@@ -27,7 +26,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FResponsDeleget OnFail;
 
-	ADroneAICharacter* m_dron;
 
 	UPROPERTY()
 		int temp = 0;
@@ -35,7 +33,7 @@ public:
 	void isEqual();
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
-		static UAsyncNode* AsyncFerox(const int ID, ADroneAICharacter* p_dron);
+		static UAsyncNode* AsyncFerox(const int ID);
 
 	virtual void Activate() override;
 

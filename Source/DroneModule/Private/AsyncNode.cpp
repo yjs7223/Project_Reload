@@ -3,11 +3,10 @@
 
 #include "AsyncNode.h"
 
-UAsyncNode* UAsyncNode::AsyncFerox(const int ID, ADroneAICharacter* p_dron)
+UAsyncNode* UAsyncNode::AsyncFerox(const int ID)
 {
 	UAsyncNode* NewFeroxNod = NewObject<UAsyncNode>();
 	NewFeroxNod->temp = ID;
-	NewFeroxNod->m_dron = p_dron;
 	return NewFeroxNod;
 }
 
@@ -18,9 +17,8 @@ void UAsyncNode::Activate()
 
 void UAsyncNode::isEqual()
 {
-	m_dron->StartMoveTo();
 	
-	if (m_dron->IsFinish)
+	if (temp<1)
 	{
 		OnSuccess.Broadcast(temp, "Success! from c++");
 	}
