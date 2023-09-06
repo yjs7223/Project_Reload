@@ -8,7 +8,7 @@
 #include "DroneAICharacter.generated.h"
 
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponsDeleget, int32, ID,FString, Data);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponsDeleget, int32, ID,FString, Data);
 
 UCLASS()
 class DRONEMODULE_API ADroneAICharacter : public ACharacter
@@ -60,23 +60,21 @@ public:
 	void MoveToTimelineSetting();
 
 
-	/*UPROPERTY(BlueprintAssignable)
-		FResponsDeleget OnSuccess;*/
+	UPROPERTY(BlueprintAssignable)
+		FResponsDeleget OnSuccess;
 
 	UFUNCTION(BlueprintCallable, Category = "DroneMoveTo")
-		ADroneAICharacter* StartMoveTo();
+		void StartMoveTo();
 
 
+	
 
-	UFUNCTION(BlueprintCallable, Category = "DroneMoveTo")
-		void StartMovetest();
 
-	int m_Speed = 1;
 
 	class AActor* m_player;
 
 	class ADroneAIController* CTR;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
-	bool IsFinish = false;
+	bool IsMoving = false;
 };

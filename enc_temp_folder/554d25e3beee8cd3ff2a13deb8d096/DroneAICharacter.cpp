@@ -79,7 +79,7 @@ void ADroneAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void ADroneAICharacter::LerpDroneMoveTo(float Value)
 {
-	IsFinish = false;
+
 	FVector a = m_player->GetActorLocation()
 		, b = Owner->GetActorLocation();
 
@@ -111,14 +111,13 @@ void ADroneAICharacter::LerpDroneMoveTo(float Value)
 	//디버그
 	DrawDebugBox(GetWorld(), c, FVector(30, 30, 30), rr.Quaternion(), FColor::Red);
 	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, FString::SanitizeFloat(Value));
+	IsMoving = true;
 }
 
 void ADroneAICharacter::LerpDroneMoveFinish()
 {
 	//종료될때 호출 함수
-	IsFinish = true;
-	
-	LerpDroneMoveToTimeline->Stop();
+	IsMoving = false;
 }
 
 void ADroneAICharacter::MoveToTimelineSetting()
@@ -134,57 +133,13 @@ void ADroneAICharacter::MoveToTimelineSetting()
 
 
 
-ADroneAICharacter* ADroneAICharacter::StartMoveTo()
+void ADroneAICharacter::StartMoveTo()
 {
-	ADroneAICharacter* NewFeroxNod = NewObject<ADroneAICharacter>();
-
-	if (!IsFinish)
-	{
-
-		IsFinish = false;
+	if(!IsMoving)
 		LerpDroneMoveToTimeline->Play();
-		//LerpDroneMoveToTimeline->AddEvent(3, LerpDroneMoveTimelineFinish);
-	}
 
 	//OnSuceess.Broadcast(-228,"tset");
 
 	RemoveFromRoot();
 	//return IsMoving;
-	return NewFeroxNod;
-}
-
-void ADroneAICharacter::StartMovetest(float time)
-{
-	//IsFinish = false;
-	//FVector a = m_player->GetActorLocation()
-	//	, b = Owner->GetActorLocation();
-
-	//DrawDebugLine(GetWorld(), a, b, FColor::Green);
-	//a.Z = 0;
-	//b.Z = 0;
-
-	////로케이션 보간
-	//FVector c = FMath::Lerp(b, a, 1.0f);
-
-	//c.Z = Owner->GetActorLocation().Z;
-
-	//SetActorLocation(c);
-
-	////로테이터 보간
-	//FRotator moveRot = FMath::Lerp
-	//(
-	//	this->GetActorRotation(),
-	//	UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), m_player->GetActorLocation())
-	//	, Value / 3
-	//);
-	//FRotator rr = FRotator(0, moveRot.Yaw, 0);
-
-
-	////마지막 축틀리는거 방지
-	//if (Value < 2.999f)
-	//	SetActorRotation(rr);
-
-	////디버그
-	//DrawDebugBox(GetWorld(), c, FVector(30, 30, 30), rr.Quaternion(), FColor::Red);
-	////GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, FString::SanitizeFloat(Value));
 }
