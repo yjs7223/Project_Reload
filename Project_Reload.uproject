@@ -79,6 +79,19 @@
 				"AICoverSystem",
 				"UMG"
 			]
+		},
+		{
+			"Name": "VehicleModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"BaseClassModule",
+				"AIModule",
+				"CoreUObject",
+				"AICoverSystem",
+				"UMG"
+			]
 		}
 	],
 	"Plugins": [
@@ -120,6 +133,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "ChaosVehiclesPlugin",
+      "Enabled": true
+    },
+    {
 			"Name": "MultiUserClient",
 			"Enabled": true
 		}
