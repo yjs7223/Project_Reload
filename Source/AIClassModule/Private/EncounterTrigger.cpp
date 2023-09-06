@@ -30,7 +30,6 @@ void AEncounterTrigger::BeginPlay()
 {
 	Super::BeginPlay();
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-	
 }
 
 // Called every frame
@@ -46,9 +45,16 @@ void AEncounterTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 	{
 		if (commander != nullptr)
 		{
-			en->LevelActive = true;
-			commander->Now_en = en;
-			commander->En_AIActive = true;
+			if (commander->Now_suben != suben)
+			{
+				commander->m_suben = suben;
+				
+			}
+			if (commander->Now_en != en)
+			{
+				commander->m_en = en;
+			}
+			
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("encounter"));
 		}
 		

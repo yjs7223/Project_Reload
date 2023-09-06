@@ -3,6 +3,8 @@
 
 #include "BaseCharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Camera/CameraComponent.h"
+
 
 bool UBaseCharacterMovementComponent::isRuning() const
 {
@@ -31,7 +33,6 @@ float UBaseCharacterMovementComponent::GetMaxSpeed() const
 	default:
 		break;
 	}
-
 	switch (CustomMovementMode)
 	{
 	case CMOVE_Runing:
@@ -46,11 +47,23 @@ float UBaseCharacterMovementComponent::GetMaxSpeed() const
 void UBaseCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (PawnOwner && !PawnOwner->FindComponentByClass<UCameraComponent>()) return;
 	if (MovementMode != MOVE_Custom) {
 		UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("EMovementMode"), true)->GetNameStringByValue(MovementMode), true, true, FColor::Red, DeltaTime);
 	}
 	else{
 		UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("ECustomMovementMode"), true)->GetNameStringByValue(CustomMovementMode), true, true, FColor::Red, DeltaTime);
+	}
+
+
+}
+
+void UBaseCharacterMovementComponent::SetMovementMode(EMovementMode NewMovementMode, uint8 NewCustomMode)
+{
+	Super::SetMovementMode(NewMovementMode, NewCustomMode);
+	if (NewMovementMode == MOVE_Custom && NewCustomMode == CMOVE_Runing) {
+		UnCrouch();
+		bWantsToCrouch = false;
 	}
 }
 

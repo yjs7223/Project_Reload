@@ -18,7 +18,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"CoreUObject"
 			]
 		},
 		{
@@ -106,6 +107,10 @@
 		},
 		{
 			"Name": "GameplayInsights",
+			"Enabled": true
+		},
+		{
+			"Name": "MultiUserClient",
 			"Enabled": true
 		}
 	]

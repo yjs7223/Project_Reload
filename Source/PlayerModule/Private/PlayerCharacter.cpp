@@ -18,8 +18,11 @@
 #include "Player_Cover_Widget.h"
 #include "Attacked_Widget.h"
 #include "Damage_Widget.h"
+#include "LineNaviWidget.h"
 #include "CameraControllComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CharacterSoundDataAsset.h"
+
 //#include "Kismet/GameplayStatics.h"
 //#include "Engine.h"
 //#include "EngineMinimal.h"
@@ -36,6 +39,12 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
+	static ConstructorHelpers::FObjectFinder<UCharacterSoundDataAsset> CharSound(TEXT("CharacterSoundDataAsset'/Game/yjs/DA_CharacterSound.DA_CharacterSound'"));
+	if (CharSound.Succeeded())
+	{
+		CharacterSound = CharSound.Object;
+	}
+	
 	//const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimObj(TEXT("AnimBlueprint'/Game/NewAnim/ABP_Charactor.ABP_Charactor'"));
 	//GetMesh()->SetAnimInstanceClass(AnimObj.Object->GetAnimBlueprintGeneratedClass());
 	//AnimObj.Object.anim
@@ -53,6 +62,10 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
+	if (weapon)
+	{
+		weapon->OnSpawnDamageUIDelegate.BindUObject(this, &APlayerCharacter::CreateDamageWidget);
+	}
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
@@ -144,7 +157,9 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			Crosshair_Widget->RemoveFromViewport();
 		}
 		Crosshair_Widget = CreateWidget<UCrosshair_Widget>(Cast<APlayerController>(GetController()), Crosshair_WidgetClass);
-		Crosshair_Widget->AddToViewport();
+		if (Crosshair_Widget) {
+			Crosshair_Widget->AddToViewport();
+		}
 		//Crosshair_Widget->weapon = weapon;
 	}
 	if (Attacked_WidgetClass)
@@ -154,12 +169,14 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			Attacked_Widget->RemoveFromViewport();
 		}
 		Attacked_Widget = CreateWidget<UAttacked_Widget>(Cast<APlayerController>(GetController()), Attacked_WidgetClass);
-		Attacked_Widget->AddToViewport();
+		if (Attacked_Widget) {
+			Attacked_Widget->AddToViewport();
+		}
 		//Crosshair_Widget->weapon = weapon;
 	}
 
 
-	if (HPWidgetComponent)
+	/*if (HPWidgetComponent)
 	{
 		HPWidgetComponent->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
 		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
@@ -180,6 +197,7 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
 		HPWidgetComponent_back->SetWidgetSpace(EWidgetSpace::World);
 		HPWidgetComponent_back->SetDrawSize(FVector2D(160.0f, 160.0f));
+		HPWidgetComponent_back->SetRelativeRotation(FRotator(0, 180, 0));
 
 		if (HP_Widget)
 		{
@@ -188,7 +206,8 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
 			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
 		}
-	}
+	}*/
+
 	if (AmmoWidgetComponent)
 	{
 		AmmoWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
@@ -210,10 +229,16 @@ void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 		CoverWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
 		CoverWidgetComponent->SetDrawSize(FVector2D(64.0f, 64.0f));
 
-		if (Cover_Widget)
+		if (Cover_WidgetClass)
 		{
-			CoverWidgetComponent->SetWidgetClass(Cover_Widget);
+			CoverWidgetComponent->SetWidgetClass(Cover_WidgetClass);
 		}
+	}
+
+	if (!LineNavi_Widget)
+	{
+		LineNavi_Widget = CreateWidget<ULineNaviWidget>(Cast<APlayerController>(GetController()), ULineNaviWidget::StaticClass());
+		LineNavi_Widget->AddToViewport();
 	}
 
 }
@@ -224,7 +249,7 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 	{
 		float yaw = GetControlRotation().Yaw;// * 0.3f;
 		FRotator widrot = HPWidgetComponent->GetRelativeRotation();
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
 		//widrot.Yaw *= 0.3f;
 		widrot.Yaw = (yaw + 180);// * 0.3f;//+60;
 		widrot.Yaw *= 0.3f;
@@ -235,27 +260,14 @@ void APlayerCharacter::UpdateWidget(float deltatime)
 
 void APlayerCharacter::WidgetShow()
 {
-  if (HPWidgetComponent) {
-		UPlayer_HP_Widget* hpWidget = Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget());
-		if (hpWidget) {
-			hpWidget->SetWidgetVisible();
-		}
-	}
-	if (Crosshair_Widget)
-	{
-		Crosshair_Widget->SetWidgetVisible();
-	}
+	OnVisibleAllUIDelegate.Broadcast();
 }
 
 void APlayerCharacter::CreateDamageWidget(float value, FHitResult result)
 {
-	if (Damage_Widget)
+	if (Damage_WidgetClass)
 	{
-		/*UWidgetComponent* DWidgetComponent = NewObject<UWidgetComponent>(this);
-		DWidgetComponent->SetWidgetClass(Damage_Widget);
-		DWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		DWidgetComponent->SetWorldLocation(result.Location);*/
-		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_Widget);
+		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_WidgetClass);
 		if (dwidget)
 		{
 			dwidget->SetDamageText(value, result);

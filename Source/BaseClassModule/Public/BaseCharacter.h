@@ -34,6 +34,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UCoverComponent* m_CoverComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UCharacterSoundDataAsset* CharacterSound;
+
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UStatComponent* Stat;
 

@@ -3,13 +3,17 @@
 
 #include "WeaponAnimInstance.h"
 #include "WeaponComponent.h"
+#include "PlayerInputComponent.h"
 #include "BaseCharacterMovementComponent.h"
-
 #include "GameFramework/Character.h"
-#include "GameFramework/Pawn.h"
-#include "PlayerMoveComponent.h"
 #include "BaseInputComponent.h"
 
+
+bool FWeaponAnimationTable::IsVaild()
+{
+	static FWeaponAnimationTable emptyAnimation = FWeaponAnimationTable();
+	return 0 != memcmp(this, &emptyAnimation, sizeof(FWeaponAnimationTable));
+}
 
 UWeaponAnimInstance::UWeaponAnimInstance()
 {
@@ -25,7 +29,17 @@ void UWeaponAnimInstance::NativeBeginPlay()
 	ACharacter* owner = Cast<ACharacter>(TryGetPawnOwner());
 	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 
-	mWeapon = owner->FindComponentByClass<UWeaponComponent>();
+	mWeapon = owner->FindComponentByClass<UWeaponComponent>(); 
+	mWeapon->shootingAnimation.AddLambda(
+		[this]() {
+			Montage_Play(m_CurrentAnimation.Shooting);
+		}
+	);
+	UPlayerInputComponent* m_PlayerInput = Cast<UPlayerInputComponent>(m_Input);
+	m_PlayerInput->OnChangedWeapon.AddLambda([this]() {
+			Montage_Play(m_CurrentAnimation.UnEquipWeapon);
+		});
+
 
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	AnimationSetting();
@@ -46,7 +60,7 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		mIsRuning = m_Movement->isRuning();
 	}
 }
-
+	
 void UWeaponAnimInstance::AnimationSetting()
 {
 	if (!m_AnimationTable) return;
@@ -54,12 +68,13 @@ void UWeaponAnimInstance::AnimationSetting()
 
 	static const UEnum* WeaponTypeEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
 
-	FWeaponAnimation* findanimation = m_AnimationTable->FindRow<FWeaponAnimation>(*WeaponTypeEnum->GetNameStringByValue((int)mWeapon->weapontype), TEXT(""));
-	
+	FWeaponAnimationTable* findanimation = m_AnimationTable->FindRow<FWeaponAnimationTable>(FName((WeaponTypeEnum->GetDisplayNameTextByValue((int)mWeapon->weapontype).ToString())), TEXT(""));
 	if (findanimation && findanimation->IsVaild()) {
 		m_CurrentAnimation = *findanimation;
 	}
-	else {
+}
 
-	}
+void UWeaponAnimInstance::PlayEquipMontage()
+{
+	Montage_Play(m_CurrentAnimation.EquipWeapon);
 }

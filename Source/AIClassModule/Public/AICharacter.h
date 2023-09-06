@@ -33,9 +33,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AAISpawner* mySpawner;
 
-	// 자신의 병과
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		Enemy_Name type;
+	
 
 	//간접 공격 감지 캡슐 매쉬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -54,10 +52,17 @@ public:
 		class UDataTable* DT_Range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Suppression;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class UDataTable* DT_AIBaseStat;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_sharerange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float sup_sharetime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		float ai_HP;
 
-	// Combat State
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatState")
-		CombatState combat;
+
+	
 
 	class USkeletalMeshComponent* mesh;
 
@@ -117,4 +122,7 @@ public:
 		void IdleAnim();
 	UFUNCTION(BlueprintCallable, Category = "Grenade")
 		void FireInTheHole(AActor* myai, float Velocity);
+
+	void Init();
+	void Dead();
 };

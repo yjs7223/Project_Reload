@@ -6,8 +6,46 @@
 #include "Animation/AnimInstance.h"
 #include "EPeekingState.h"
 #include "ECoverShootingState.h"
+#include "Engine/DataTable.h"
 #include "CoverAnimInstance.generated.h"
+/**
+ *
+ */
+USTRUCT(Atomic, BlueprintType)
+struct FCoverAnimationTable : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	bool IsVaild();
 
+public:
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_LowToLow_Right;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_HighToHigh_Right;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_HighToLow_Right;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_LowToLow_Left;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_HighToHigh_Left;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* StartCover_HighToLow_Left;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EndCover_LowToLow_Right;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EndCover_LowToLow_Left;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EndCover_HighToHigh_Right;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EndCover_HighToHigh_Left;
+
+
+
+};
 /**
  * 
  */
@@ -22,6 +60,7 @@ public:
 	virtual void NativeBeginPlay() override;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	void AnimationSetting();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
@@ -74,5 +113,10 @@ protected:
 		FRotator mSpinRotater;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 		FVector mBeforPos;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UDataTable* m_AnimationTable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	struct FCoverAnimationTable m_CurrentAnimation;
 };

@@ -37,8 +37,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AIMoveComponent")
 		void MoveTimeReset();
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		class AAICharacter* aicharacter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		class ABaseCharacter* owner;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Move_Speed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
@@ -54,13 +54,27 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_ParallelTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
-		float m_SpdNomal;
+		float m_HitTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_SpdNormal;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_SpdAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float m_SpdHit;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_SpdPatrol;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_NormalMulti;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_AttackMulti;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		float m_HitMulti;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		float Time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
 		EMove e_move;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		class UBaseCharacterMovementComponent* movement;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIMove)
+		class UAIInputComponent* input;
 };

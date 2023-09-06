@@ -123,7 +123,10 @@ void UAttacked_Widget::Init()
 void UAttacked_Widget::LowHp_Warning()
 {
 	//Play_Attacked_Anim();
-	StartAttacked();
+	if (stat->bAttacked)
+	{
+		StartAttacked();
+	}
 	float value = stat->curHP / stat->maxHP;
 	if (value < 0.3)
 	{
@@ -137,8 +140,8 @@ void UAttacked_Widget::LowHp_Warning()
 	}
 	else
 	{
-		LowHP_Image->SetRenderOpacity(0.0f);
 		StopAnimation(LowHP_Anim);
+		LowHP_Image->SetRenderOpacity(0.0f);
 	}
 }
 

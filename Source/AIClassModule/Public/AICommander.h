@@ -65,7 +65,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<FVector> CoverArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		TArray<FVector> CoverSubEnArray;
+		TArray<FVector> CoverEnArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<FVector> CoverEnemyArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -74,8 +74,6 @@ public:
 		TArray<FVector> DetourCoverArray; //우회
 
 	//Class
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class UDataTable* DT_Suppression;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class UDataTable* DT_Commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -95,13 +93,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* Now_suben;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AEncounterSpace* m_en;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AEncounterSpace* Now_en;
 
-	// DATA TABLE
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float sup_sharerange;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		float sup_sharetime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float env_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -135,12 +130,8 @@ public:
 		bool enemycover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool Cmd_SightOut;
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool Patrol_CHK;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		bool En_AIActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
@@ -148,29 +139,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AActor* redball;
 
+	class ACoverManager* CoverManager;
+	class UAudioComponent* audiocomp;
 public:
 	UFUNCTION()
 		void ListSet();
 	UFUNCTION()
-		void ListReset(ASubEncounterSpace* sub);
+		void ListVoidReset();
 	UFUNCTION()
 		void ListAdd(AActor* ac);
 	UFUNCTION()
-		void AIActive(AEncounterSpace* en);
+		void ListStartSet(AEncounterSpace* en);
 	UFUNCTION()
-		void ListStartSet(ASubEncounterSpace* sub);
+		void ListTickSet();
 	UFUNCTION()
-		void ListTickSet(ASubEncounterSpace* sub, AEncounterSpace* en);
-	UFUNCTION()
-		void SuppressionShare(ASubEncounterSpace* sub);
-	UFUNCTION()
-		void SetDataTable(FName EnemyName);
+		void SuppressionShare();
+
 	UFUNCTION()
 		void SetCommanderDataTable(FName EnemyName);
 	UFUNCTION()
-		void TargetTickSet(ASubEncounterSpace* sub);
+		void TargetTickSet();
 	UFUNCTION()
-		void CoverPointSubEn(ASubEncounterSpace* sub);
+		void CoverPointEn(AEncounterSpace* en);
 	UFUNCTION()
 		void CoverPointEnemy();
 	UFUNCTION()
@@ -186,6 +176,10 @@ public:
 		FVector OptimumPoint(FVector FinalLocation, AActor* AIactor, FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
 		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
+	UFUNCTION(BlueprintCallable, Category = "AICommander")
+		void ZeroListCoverPoint(AActor* AIActor);
+	UFUNCTION(BlueprintImplementableEvent)
+		void RestoreArr();
 
 };
 

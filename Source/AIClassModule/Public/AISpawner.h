@@ -17,8 +17,8 @@ public:
 	AAISpawner();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class UBlackboardComponent* BlackboardComponent;
+	class UBlackboardComponent* BlackboardComponent;
+
 	// 현재 웨이브
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int curWave;
@@ -27,7 +27,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* spawnData;
 	// 현재 데이터 테이블
-	FST_Spawner* curSpawnData;
+	struct FST_Spawner* curSpawnData;
+
+	// 물량 스포너 확인
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool many_Spawn;
 
 	// 스포너 활성화 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
@@ -41,53 +45,68 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		float count_Seconds;
 
+	// 딜레이용
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		float spawn_Timer;
+
 	// 스폰할 적
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		TSubclassOf<APawn> enemy_Rifle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class UBehaviorTree* BT_Rifle;
+		TSubclassOf<APawn> enemy_Sniper;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		TSubclassOf<APawn> enemy_Heavy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+		TSubclassOf<APawn> enemy_Zombie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		TSubclassOf<APawn> enemy_Dog;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class UBehaviorTree* BT_Dog;
-	
-	// 딜레이용
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		float spawn_Timer;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAI_Controller* AIController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		class AAICommander* commander;
+		class UBehaviorTree* BT_Enemy;
+
+	class AAI_Controller* AIController;
+
+	class AAICommander* commander;
 
 	// 이번 웨이브 소환 여부
 	bool spawnCheck;
 
 	// 이번 웨이브에 소환 한 수
 	int rifleCount;
-	int dogCount;
+	int sniperCount;
+	int heavyCount;
+	int zombieCount;
 
 	// 스포너 스폰 지점들
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<AActor*> spawn_Spots;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
 		TSubclassOf<AActor> lastPoint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
 		float pointTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
 		bool pointSpawnCheck;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
 		ACharacter* player;
 
 	// LastPoint
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
 		AActor* cpyLastPoint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
-		class ASubEncounterSpace* suben;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
+		class AEncounterSpace* en;
+
+	// 데이터 테이블 정보
+	bool last_Spawn;
+	float spawn_Condition;
+	float spawn_Delay;
+	int spawn_Spot;
+	enum Spawn_Type spawn_Type;
+	TMap<Enemy_Name, int> spawn_Wave;
+
+	bool waveEnd;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -114,5 +133,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 		void SpawnLastPoint(float DeltaTime);
 
-	void SetDataTable();
+	void SetDataTable(int p_curWave);
 };

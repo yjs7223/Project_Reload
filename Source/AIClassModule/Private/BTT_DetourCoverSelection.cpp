@@ -5,6 +5,7 @@
 #include "AI_Controller.h"
 #include "AICommander.h"
 #include "AICharacter.h"
+#include "AIStatComponent.h"
 #include "CoverComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CapsuleComponent.h"
@@ -20,6 +21,7 @@ UBTT_DetourCoverSelection::UBTT_DetourCoverSelection()
 	Detourchange = false;
 	B_distance = false;
 	select_ai = nullptr;
+	Dis_Loc = 0.0f;
 }
 
 EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -45,6 +47,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 			for (auto cover : commander->DetourCoverArray)
 			{
 				select_ai = nullptr;
+				Dis_Loc = 0.0f;
 				Detourchange = false;
 				B_distance = false;
 				for (auto coverlist : commander->List_CoverPoint)
@@ -54,91 +57,105 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 						B_distance = true;
 					}
 				}
-				for (auto subAi : commander->Now_suben->AIArray)
+				for (auto subAi : commander->List_Division)
 				{
-					if (!Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController()))
+					AAICharacter* sub_AI = Cast<AAICharacter>(subAi.Key);
+					if (sub_AI->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 					{
-						continue;
+						if (!Cast<AAI_Controller>(sub_AI->GetController()))
+						{
+							continue;
+						}
+						AAI_Controller* sub_aic = Cast<AAI_Controller>(sub_AI->GetController());
+						if (FVector::Distance(cover, sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
+						{
+							B_distance = true;
+						}
+						if (FVector::Distance(cover, subAi.Key->GetActorLocation()) < 200)
+						{
+							B_distance = true;
+						}
 					}
-					AAI_Controller* sub_aic = Cast<AAI_Controller>(Cast<AAICharacter>(subAi)->GetController());
-					if (FVector::Distance(cover, sub_aic->GetBlackboardComponent()->GetValueAsVector("AI_MoveLocation")) < 200)
-					{
-						B_distance = true;
-					}
+					
 				}
 				if (!B_distance)
 				{
 					for (auto ai : commander->List_Division)
 					{
-						if (!Cast<AAICharacter>(ai.Key)->Detour)
+						AAICharacter* sub_AI = Cast<AAICharacter>(ai.Key);
+						if (sub_AI->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 						{
-							Detourchange = true;
-							FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), cover).Vector();
-							Find_rot.Normalize();
-							float Dot_Cover = FVector::DotProduct(player->GetCapsuleComponent()->GetForwardVector(), Find_rot);
-							float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
-							if (angle < commander->detour_angle && angle > commander->ndetour_angle)
+							if (!sub_AI->Detour)
 							{
-								if (*commander->List_Suppression.Find(ai.Value) < 30.0f)
+								Detourchange = true;
+								FVector Find_rot = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(), cover).Vector();
+								Find_rot.Normalize();
+								float Dot_Cover = FVector::DotProduct(player->GetCapsuleComponent()->GetForwardVector(), Find_rot);
+								float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
+								if (angle < commander->detour_angle && angle > commander->ndetour_angle)
 								{
-									AIController = nullptr;
-									AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai.Key)->GetController());
-									if (AIController)
+									if (*commander->List_Suppression.Find(ai.Value) < 30.0f)
 									{
-										if (AIController->GetBlackboardComponent())
+										AIController = nullptr;
+										AIController = Cast<AAI_Controller>(sub_AI->GetController());
+										if (AIController)
 										{
-											
-											if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::InCover)
+											if (AIController->GetBlackboardComponent())
 											{
-												
-												if (select_ai == nullptr)
+
+												if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::InCover)
 												{
-													Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
-													select_ai = ai.Key;
-												}
-												else
-												{
-													if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
+
+													if (select_ai == nullptr)
 													{
 														Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
 														select_ai = ai.Key;
 													}
+													else
+													{
+														if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
+														{
+															Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
+															select_ai = ai.Key;
+														}
+													}
 												}
+
 											}
-												
+
 										}
-										
 									}
 								}
+
 							}
-							
 						}
 					}
-				}
-				if (!Detourchange)
-				{
-					return EBTNodeResult::Succeeded;
-				}
-				if (select_ai)
-				{
-					
-					AIController = nullptr;
-					AIController = Cast<AAI_Controller>(Cast<AAICharacter>(select_ai)->GetController());
-					if (AIController)
+					if (select_ai)
 					{
-						if (AIController->GetBlackboardComponent())
+
+						AIController = nullptr;
+						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(select_ai)->GetController());
+						if (AIController)
 						{
-							FActorSpawnParameters spawnParams;
-							FRotator rotator;
-							FVector RedballLoc = cover + FVector(0, 0, 100);
-							AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", cover);
-							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "cover.ToString()");
-							GetWorld()->SpawnActor<AActor>(commander->RedBallBlueprint, cover, rotator);
-							Cast<AAICharacter>(select_ai)->Detour = true;
-							commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
+							if (AIController->GetBlackboardComponent())
+							{
+								FActorSpawnParameters spawnParams;
+								FRotator rotator;
+								FVector RedballLoc = cover + FVector(0, 0, 100);
+								AIController->GetBlackboardComponent()->SetValueAsVector("AI_CoverLocation", cover);
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "cover.ToString()");
+								GetWorld()->SpawnActor<AActor>(commander->RedBallBlueprint, cover, rotator);
+								Cast<AAICharacter>(select_ai)->Detour = true;
+								commander->List_CoverPoint.Add(*commander->List_Division.Find(select_ai), cover);
+							}
 						}
 					}
 				}
+				else
+				{
+					continue;
+				}
+				
 			}
 		}
 		

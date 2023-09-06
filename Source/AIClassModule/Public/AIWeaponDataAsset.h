@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseWeaponDataAsset.h"
 #include "Engine/DataAsset.h"
 #include "AIWeaponDataAsset.generated.h"
 
@@ -10,22 +11,11 @@
  * 
  */
 UCLASS()
-class AICLASSMODULE_API UAIWeaponDataAsset : public UPrimaryDataAsset
+class AICLASSMODULE_API UAIWeaponDataAsset : public UBaseWeaponDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMesh* WeaponSkeletalMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundWave*> ShotSounds;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UParticleSystem* MuzzleFireParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UParticleSystem* BulletTracerParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UNiagaraSystem* BulletTrailFXNiagara;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<UMaterialInstance*> Decals;
+
 };

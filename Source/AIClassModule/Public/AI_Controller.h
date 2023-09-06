@@ -7,6 +7,12 @@
 //#include "Perception/AIPerceptionTypes.h"
 #include "AI_Controller.generated.h"
 
+UENUM(BlueprintType)
+enum class Voice : uint8
+{
+	Cover, Attack, Surpport, Contect
+};
+
 /**
  * 
  */
@@ -15,13 +21,13 @@ class AICLASSMODULE_API AAI_Controller : public AAIController
 {
 	GENERATED_BODY()
 public:
-	AAI_Controller();
+	AAI_Controller(const FObjectInitializer& ObjectInitializer);
 
 protected: 
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
-	virtual FRotator GetControlRotation()const override;
+	/*virtual FRotator GetControlRotation()const override;*/
 
 public:
 
@@ -55,7 +61,11 @@ public:
 
 	FTimerHandle timer;
 
-	class UAICharacterMoveComponent* movementComponent;
+	//���������ƮŸ��ä�� �Դϴ�
+	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	//	TArray<class USoundCue*> FireSound;
 public:
 	//UFUNCTION()//BlueprintCallable
 	//	void SetEnemy(FName EnemyName);
@@ -67,7 +77,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AI_Controller")
 		void RunBTT();
 
-
+	//UFUNCTION(BlueprintCallable, Category = "AI_Controller")
+	//	void PlayVoiceSound(Voice sound, int random);
 
 	
 };
