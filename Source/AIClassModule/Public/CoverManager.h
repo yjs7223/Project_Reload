@@ -17,7 +17,8 @@ class AICLASSMODULE_API ACoverManager : public AInfo
 public:
 	ACoverManager();
 	virtual void BeginPlay() override;
-
+	virtual void
+		Tick(float DeltaTime) override;
 	bool ChangeEncounter();
 
 	void CoverPointArray();

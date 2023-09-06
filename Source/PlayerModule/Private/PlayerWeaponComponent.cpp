@@ -492,36 +492,37 @@ void UPlayerWeaponComponent::StopReload()
 	bReload = false;
 }
 
+void UPlayerWeaponComponent::WeaponChange()
+{
+	InitData();
+}
+
 void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* WeapondataAsset)
 {
-	//if (WeapondataAsset)
-	//{
-	//	FVector location = FVector::ZeroVector;
+	if (WeapondataAsset)
+	{
+		FVector location = FVector::ZeroVector;
+		if (!WeapondataAsset->WeaponSkeletalMesh || !WeapondataAsset->WeaponAnim) {
+			ensure(0);
+		}
 
-	//	if (WeapondataAsset->WeaponSkeletalMesh)
-	//	{
-	//		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
-	//	}
-
-	//	if (WeapondataAsset->weaponAnim) 
-	//	{
-	//		//WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
-	//	}
-
-	//	switch (weapontype)
-	//	{
-	//	case EWeaponType::TE_Pistol:
-	//		break;
-	//	case EWeaponType::TE_Rifle:
-	//		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
-	//		break;
-	//	case EWeaponType::TE_Shotgun:
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	WeaponMesh->SetRelativeLocation(location);
-	//}
+		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
+		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);
+		//Cast<>(WeapondataAsset->WeaponAnim)->AnimationSetting();
+		//switch (weapontype)
+		//{
+		//case EWeaponType::TE_Pistol:
+		//	break;
+		//case EWeaponType::TE_Rifle:
+		//	location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
+		//	break;
+		//case EWeaponType::TE_Shotgun:
+		//	break;
+		//default:
+		//	break;
+		//}
+		WeaponMesh->SetRelativeLocation(location);
+	}
 }
 
 void UPlayerWeaponComponent::ReloadTick(float Deltatime)
