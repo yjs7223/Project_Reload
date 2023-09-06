@@ -59,27 +59,17 @@ AAICommander::AAICommander()
 		RedBallBlueprint = (UClass*)RedBallData.Object->GeneratedClass;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_CommanderDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Commander.DT_Commander'"));
-	if (DT_CommanderDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Commander = DT_CommanderDataObject.Object;
-	}
+
+	DT_Commander = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Commander.DT_Commander'"));
 	//BT
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTObject(TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/Commander/BT/BT_AICommander.BT_AICommander'"));
-	if (BTObject.Succeeded())
-	{
-		btree = BTObject.Object;
-		UE_LOG(LogTemp, Warning, TEXT("BehaviorTree Succeed!"));
-	}
-	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
+
+	btree = LoadObject<UBehaviorTree>(NULL, TEXT("BehaviorTree'/Game/AI_Project/AI_Pakage/Commander/BT/BT_AICommander.BT_AICommander'"));
 	
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_AICommanderObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/Commander/BB/BB_Commander.BB_Commander'"));
-	if (BB_AICommanderObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AICommander Blackboard Succeed!"));
-		BB_AICommander = BB_AICommanderObject.Object;
-	}
+	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
+
+	BB_AICommander = LoadObject<UBlackboardData>(NULL, TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/Commander/BB/BB_Commander.BB_Commander'"));
+	
 	
 	audiocomp = CreateDefaultSubobject<UAudioComponent>(TEXT("audiocomp"));
 	

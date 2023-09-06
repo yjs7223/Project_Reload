@@ -20,19 +20,8 @@
 
 UAIStatComponent::UAIStatComponent()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
-	if (DT_SuppressionDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
-	if (DT_AIBaseStatDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
-	}
-	
+	DT_Suppression = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
+	DT_AIBaseStat = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
 }
 
 void UAIStatComponent::BeginPlay()

@@ -30,13 +30,7 @@
 UAISensingComponent::UAISensingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ������ ���̺� ����
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
-	if (DataTable.Succeeded())
-	{
-		AIRangeData = DataTable.Object;
-	}
+	AIRangeData = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
 }
 
 

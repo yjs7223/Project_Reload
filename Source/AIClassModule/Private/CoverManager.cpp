@@ -21,13 +21,6 @@ void ACoverManager::BeginPlay()
 		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverSystem::StaticClass()));
 	commander = Cast<AAICommander>
 		(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-	
-	
-
-
-
-
-
 }
 
 void ACoverManager::Tick(float DeltaTime)

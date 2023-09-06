@@ -31,12 +31,7 @@
 UAIWeaponComponent::UAIWeaponComponent()
 {
 	// 데이터 테이블 삽입
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
-	if (DataTable.Succeeded())
-	{
-		DT_AIWeaponData = DataTable.Object;
-	}
-
+	DT_AIWeaponData = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
 }
 
 void UAIWeaponComponent::BeginPlay()

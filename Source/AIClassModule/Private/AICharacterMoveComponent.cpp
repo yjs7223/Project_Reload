@@ -20,12 +20,7 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 	timeDeltaTime = 0.0;
 	lerpDeltaTime = 0.0;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MoveDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Move.DT_Move'"));
-	if (DT_MoveDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Move = DT_MoveDataObject.Object;
-	}
+	DT_Move = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Move.DT_Move'"));
 }
 
 

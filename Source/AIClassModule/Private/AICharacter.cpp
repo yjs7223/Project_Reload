@@ -57,25 +57,11 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	AIWeapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
-	if (DT_RangeDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Range = DT_RangeDataObject.Object;
-	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
-	if (DT_SuppressionDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
-	if (DT_AIBaseStatDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
-	}
+	DT_Range = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
+	DT_Suppression = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
+	DT_AIBaseStat = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
+	
 
 	ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_GrenadeDummy.BP_GrenadeDummy'"));
 	if (GrenadeData.Succeeded())
