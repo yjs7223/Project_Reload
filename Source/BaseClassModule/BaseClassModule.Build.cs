@@ -6,6 +6,6 @@ public class BaseClassModule : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "AIModule", "Niagara", "PhysicsCore" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "AIModule", "Niagara", "PhysicsCore", "NavigationSystem" });
     }
 }
