@@ -15,5 +15,6 @@ public class Project_ReloadTarget : TargetRules
         ExtraModuleNames.Add("AnimationModule");
         ExtraModuleNames.Add("AIClassModule");
         ExtraModuleNames.Add("BossModule");
+        ExtraModuleNames.Add("DroneModule");
     }
 }
