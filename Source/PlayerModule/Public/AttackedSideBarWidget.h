@@ -4,48 +4,41 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "PlayerHUDWidget.generated.h"
+#include "AttackedSideBarWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PLAYERMODULE_API UPlayerHUDWidget : public UUserWidget
+class PLAYERMODULE_API UAttackedSideBarWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 public:
-	virtual void NativePreConstruct() override;
-
 	virtual void NativeConstruct() override;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void InitWidgets();
+	void SetAttackedAngle();
 
-	void CreateDamageWidget(float value, FHitResult result);
+	void StartAttacked(class ABaseCharacter* Target);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UPlayer_HP_Widget* Player_HP_Widget;
+	class UOverlay* Attacked_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UPlayer_Ammo_Widget* Player_Ammo_Widget;
+	class USizeBox* Attacked_SizeBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UCrosshair_Widget* Crosshair_Widget;
+	class UImage* Attacked_Center_Image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UAttacked_Widget* Attacked_Widget;
+	class UProgressBar* Attacked_Side_Bar;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UInteractiveWidget* InteractiveWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+	class UWidgetAnimation* AttackedSideBar_Anim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class ULineNaviWidget* LineNaviWidget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UDamage_Widget> Damage_WidgetClass;
-	
-
+	class ABaseCharacter* TargetEnemy;
 };
