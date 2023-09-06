@@ -4,6 +4,9 @@
 #include "EncounterSpace.h"
 #include "SubEncounterSpace.h"
 #include "AICommander.h"
+#include "AICharacter.h"
+#include "AI_Controller.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
@@ -17,10 +20,10 @@ AEncounterSpace::AEncounterSpace()
 	PrimaryActorTick.bCanEverTick = true;
 	CollisionMesh = CreateDefaultSubobject<UBoxComponent>(FName("C Mesh"));
 	RootComponent = CollisionMesh;
-	LevelActive = false;
-	subencheck = false;
-	ActiveStart = false;
-	LevelActiveNum = 1;
+	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AEncounterSpace::OnOverlapBegin);
+	AI_Check = false;
+	AI_ActiveFalse = false;
+
 	
 }
 
@@ -29,115 +32,55 @@ void AEncounterSpace::BeginPlay()
 {
 	Super::BeginPlay();
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-	LevelActive = false;
-	subencheck = false;
-	ActiveStart = false;
-	LevelActiveNum = 1;
+	AI_Check = false;
+	AI_ActiveFalse = false;
+	// add
+	if (spawn != nullptr)
+	{
+		spawn->en = this;
+	}
 }
 
 // Called every frame
 void AEncounterSpace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (LevelActive)
+	if (!AI_Check)
 	{
-		if (!subencheck)
-		{
-			SubEncounterCheck();
-		}
-		if (!LevelArray.IsEmpty())
-		{
-			for (auto sub : LevelArray)
-			{
-				Cast<ASubEncounterSpace>(sub)->en = this;
-			}
-		}
-		
-		LevelArrayActive();
-		if (LevelArray.Num() <= 0)
-		{
-			LevelEndActive();
-		}
+		AICheck();
 	}
-	else
+	if (AI_ActiveTrue)
 	{
-		LevelActiveNum = 1;
+		for (auto m_ai : AIArray)
+		{
+			Cast<AAICharacter>(m_ai)->Init();
+		}
+		AI_ActiveTrue = false;
 	}
 }
 
-
-void AEncounterSpace::LevelArrayActive()
+void AEncounterSpace::AICheck()
 {
-	for (auto& sub : LevelArray)
+	this->GetOverlappingActors(AIArray, AAICharacter::StaticClass());
+	AI_Check = true;
+}
+
+void AEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr && OtherActor->ActorHasTag("Player"))
 	{
-		suben = nullptr;
-		suben = Cast<ASubEncounterSpace>(sub);
-		if (!ActiveStart)
+		if (commander != nullptr)
 		{
-			LevelActiveNum = 1;
-			if (suben->LevelNum == LevelActiveNum)
+			if (commander->Now_en != this)
 			{
-				suben->LevelActive = true;
-				if (commander == nullptr)
-				{
-					continue;
-				}
+				commander->m_en = this;
+			}
+			if (commander->Now_suben != suben)
+			{
 				commander->m_suben = suben;
-				ActiveStart = true;
-
-				//return Cast<ASubEncounterSpace>(sub);
-
-				//first encounter begin
-				
-
-
 			}
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("encounter"));
 		}
-		else {
-			if (suben->LevelNum == LevelActiveNum)
-			{
-				if (suben->LevelActive == false)
-				{
-					LevelActiveNum++;
-					
-					for (auto& sub2 : LevelArray)
-					{
-						suben2 = Cast<ASubEncounterSpace>(sub2);
-						if (suben2->LevelNum == LevelActiveNum)
-						{
-							suben2->LevelActive = true;
-							commander->m_suben = suben2;
-							//return Cast<ASubEncounterSpace>(sub2);
-
-							
-							//next encounter begin
-
-
-						}
-					}
-				}
-				//else return Cast<ASubEncounterSpace>(sub);
-			}
-		}
-		
 	}
-	//return nullptr;
-}
-
-void AEncounterSpace::LevelEndActive()
-{
-	for (auto& item : LevelArray)
-	{
-		Cast<ASubEncounterSpace>(item)->LevelActive = false;
-	}
-	LevelActive = false;
-	ActiveStart = false;
-	subencheck = false;
-}
-
-void AEncounterSpace::SubEncounterCheck()
-{
-	this->GetOverlappingActors(LevelArray, ASubEncounterSpace::StaticClass());
-	subencheck = true;
 }
 

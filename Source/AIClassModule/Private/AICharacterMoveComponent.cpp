@@ -3,6 +3,7 @@
 
 #include "AICharacterMoveComponent.h"
 #include "ST_Move.h"
+#include "AIStatComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BaseCharacterMovementComponent.h"
@@ -25,7 +26,6 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
 		DT_Move = DT_MoveDataObject.Object;
 	}
-	// ...
 }
 
 
@@ -33,12 +33,10 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 void UAICharacterMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	aicharacter = GetOwner<AAICharacter>();
-	//SetEnemy("Rifle_E");
-
+	owner = GetOwner<AAICharacter>();
+	movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
+	input = owner->FindComponentByClass<UAIInputComponent>();
 	e_move = EMove::Patrol;
-	// ...
-	
 }
 
 
@@ -47,8 +45,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Time += DeltaTime;
-	UBaseCharacterMovementComponent* movement = Cast< UBaseCharacterMovementComponent>(aicharacter->GetCharacterMovement());
-	UAIInputComponent* input = GetOwner()->FindComponentByClass<UAIInputComponent>();
+	
 	switch (e_move)
 	{
 	case EMove::Patrol:
@@ -79,7 +76,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		timeDeltaTime += DeltaTime;
 		if (Time >= 0.5f)
 		{
-			if (aicharacter->type != Enemy_Name::HEAVY) {
+			if (owner->FindComponentByClass<UAIStatComponent>()->type != Enemy_Name::HEAVY) {
 				input->AIRuning();
 			}
 			timeDeltaTime = 0;

@@ -5,6 +5,7 @@
 #include "AI_Controller.h"
 #include "AICommander.h"
 #include "AICharacter.h"
+#include "AIStatComponent.h"
 #include "CoverComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CapsuleComponent.h"
@@ -59,7 +60,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 				for (auto subAi : commander->List_Division)
 				{
 					AAICharacter* sub_AI = Cast<AAICharacter>(subAi.Key);
-					if (sub_AI->type == Enemy_Name::RIFLE)
+					if (sub_AI->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 					{
 						if (!Cast<AAI_Controller>(sub_AI->GetController()))
 						{
@@ -82,7 +83,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 					for (auto ai : commander->List_Division)
 					{
 						AAICharacter* sub_AI = Cast<AAICharacter>(ai.Key);
-						if (sub_AI->type == Enemy_Name::RIFLE)
+						if (sub_AI->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 						{
 							if (!sub_AI->Detour)
 							{

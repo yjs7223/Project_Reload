@@ -25,7 +25,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
-
+#include "Sound/SoundCue.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
 
@@ -192,8 +192,8 @@ void AAI_Controller::SetUseCover()
 		if (GetPawn()->GetDistanceTo(player) <= 500)
 		{
 			GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-			DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-				, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
+			/*DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+				, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);*/
 		}
 		else if (GetWorld()->SweepSingleByChannel(result, start, playerLocation, GetPawn()->GetActorRotation().Quaternion(), ECC_Visibility,
 			FCollisionShape::MakeSphere(size), collisionParams))
@@ -204,8 +204,8 @@ void AAI_Controller::SetUseCover()
 
 				GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
 
-				DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-					, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
+				/*DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+					, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);*/
 			}
 			else
 			{
@@ -214,8 +214,8 @@ void AAI_Controller::SetUseCover()
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
 
-					DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-						, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Cyan, false, 0.6f);
+					/*DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+						, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Cyan, false, 0.6f);*/
 				}
 				else
 				{
@@ -223,8 +223,8 @@ void AAI_Controller::SetUseCover()
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 
-					DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
-						, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);
+					/*DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
+						, size, FRotationMatrix::MakeFromZ(GetPawn()->GetActorLocation() - playerLocation).ToQuat(), FColor::Red, false, 0.6f);*/
 				}
 			}
 		}
@@ -265,6 +265,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	}
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
+
+//void AAI_Controller::PlayVoiceSound(Voice sound, int random)
+//{
+//	float pitch = FMath::RandRange(0, random);
+//	if (pitch == 0)
+//	{
+//		UGameplayStatics::PlaySoundAtLocation(this, FireSound[(int)sound], GetPawn()->GetActorLocation(), 0.5f, pitch);
+//	}
+//}
 
 //FRotator AAI_Controller::GetControlRotation() const
 //{

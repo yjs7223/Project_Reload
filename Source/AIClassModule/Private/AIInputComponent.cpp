@@ -7,6 +7,7 @@
 #include "AIWeaponComponent.h"
 #include "AICharacterMoveComponent.h"
 #include "BaseCharacterMovementComponent.h"
+#include "AIWeaponComponent.h"
 
 void UAIInputComponent::BeginPlay()
 {
@@ -69,8 +70,8 @@ void UAIInputComponent::AIStartFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	weaponcmp->ShotAIStart();
-	weaponcmp->ShotAI();
+	weaponcmp->StartFire();
+	weaponcmp->Fire();
 
 	if (moveoncmp->e_move != EMove::Hit)
 	{
@@ -83,7 +84,7 @@ void UAIInputComponent::AIStartFire()
 void UAIInputComponent::AIStopFire()
 {
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
-	weaponcmp->ShotAIStop();
+	weaponcmp->StopFire();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	if (moveoncmp->e_move != EMove::Hit)
 	{
@@ -96,22 +97,30 @@ void UAIInputComponent::AIStopFire()
 void UAIInputComponent::AIStartAiming()
 {
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+	UAIWeaponComponent* weapon = owner->FindComponentByClass<UAIWeaponComponent>();
+
+
 	cover->StartPeeking();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	if (moveoncmp->e_move != EMove::Hit)
 	{
 		moveoncmp->e_move = EMove::Attack;
 	}
+
 	m_inputData.IsAiming = true;
+	weapon->AimFalshOn();
 	
 }
 
 void UAIInputComponent::AIStopAiming()
 {
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
+	UAIWeaponComponent* weapon = owner->FindComponentByClass<UAIWeaponComponent>();
+
 	m_inputData.IsAiming = false;
 	
 	cover->StopPeeking();
+	weapon->AimFalshOff();
 }
 
 void UAIInputComponent::AIStartReload()

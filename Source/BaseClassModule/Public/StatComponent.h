@@ -7,6 +7,15 @@
 #include "StatComponent.generated.h"
 
 
+UENUM(BlueprintType)
+enum class EHitType: uint8
+{
+	None = 0	UMETA(Hidden),
+	Normal		UMETA(DisplayName = "Normal"),
+	Knockback	UMETA(DisplayName = "Knockback"),
+	MAX			UMETA(Hidden)
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BASECLASSMODULE_API UStatComponent : public UActorComponent
 {
@@ -14,7 +23,9 @@ class BASECLASSMODULE_API UStatComponent : public UActorComponent
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDieDelegate);
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FKnockbackDelegate, FVector, bool);
 public:
+	FKnockbackDelegate Knockback;
 	UPROPERTY(BlueprintReadWrite)
 	FDieDelegate diePlay;
 public:	
@@ -40,16 +51,24 @@ public:
 	virtual void SetHP(float p_HP);
 
 	//Recover currnetHP
-	UFUNCTION(BlueprintCallable)
-		void RecoverHP(float p_HP);
+	virtual void RecoverHP(float p_HP);
 
 	//Damage process
+	/*
 	virtual void Attacked(float p_damage);
 	virtual void Attacked(float p_damage, FHitResult result);
-	virtual void Attacked(float p_damage, class ABaseCharacter* character);
-	virtual void Attacked(FHitResult result);
+	virtual void Attacked(float p_damage, class ACharacter* character);
+	virtual void Attacked(FHitResult result);*/
+
+	UFUNCTION(BlueprintCallable)
+	void Attacked_BP(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
+	virtual void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
+	virtual void IndirectAttacked(float p_Value);
+
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+		class ABaseCharacter* TargetEnemy;
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		float maxHP;
@@ -60,11 +79,11 @@ public:
 
 	//When Character is attacked   isAttacked = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool isAttacked;
+		bool bAttacked;
 
 	//When Character's currentHP <= 0  isDie = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool isDie;
+		bool bDie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		bool isThreat;

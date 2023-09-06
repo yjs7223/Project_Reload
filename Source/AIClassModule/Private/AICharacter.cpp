@@ -107,7 +107,7 @@ void AAICharacter::BeginPlay()
 
 	mesh = FindComponentByClass<USkeletalMeshComponent>();
 
-	switch (type)
+	switch (FindComponentByClass<UAIStatComponent>()->type)
 	{
 	case Enemy_Name::RIFLE:
 		SetDataTable("Rifle_E");
@@ -192,7 +192,7 @@ void AAICharacter::UpdateWidget()
 void AAICharacter::SetDataTable(FName EnemyName)
 {
 	AIMovement->SetEnemy(EnemyName);
-	AIWeapon->SetDataTable(EnemyName);
+	AIWeapon->InitData();
 	AIStat->SetDataTable(EnemyName);
 	AISensing->SetDataTable(EnemyName);
 	FST_Range* RangeData = DT_Range->FindRow<FST_Range>(EnemyName, FString(""));
