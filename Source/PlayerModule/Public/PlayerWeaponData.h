@@ -33,27 +33,27 @@ struct FPlayerWeaponStruct : public FWeaponRowStruct
 	GENERATED_USTRUCT_BODY()
 public:
 
-	//ÃÖ´ë ÀåÅº¼ö
+	//ï¿½Ö´ï¿½ ï¿½ï¿½Åºï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 MaxAmmo_num;
 
-	//Çìµå¼¦ µ¥¹ÌÁö ¹èÀ²
+	//ï¿½ï¿½å¼¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Head_Magnification;
 
-	//°¡·Î¹Ýµ¿
+	//ï¿½ï¿½ï¿½Î¹Ýµï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float max_Horizontal_Recoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float min_Horizontal_Recoil;
 
-	//¼¼·Î¹Ýµ¿
+	//ï¿½ï¿½ï¿½Î¹Ýµï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float max_vertical_Recoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float min_vertical_Recoil;
 
-	//ÅºÆÛÁü °­µµ
+	//Åºï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float spread_Power;
 };

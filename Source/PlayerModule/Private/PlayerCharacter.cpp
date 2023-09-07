@@ -14,13 +14,12 @@
 #include "Player_HP_Widget.h"
 #include "Player_Ammo_Widget.h"
 #include "CoverComponent.h"
-#include "Crosshair_Widget.h"
-#include "Player_Cover_Widget.h"
-#include "Attacked_Widget.h"
+
 #include "Damage_Widget.h"
-#include "LineNaviWidget.h"
+#include "PlayerHUDWidget.h"
 #include "CameraControllComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "CharacterSoundDataAsset.h"
 
 //#include "Kismet/GameplayStatics.h"
@@ -62,10 +61,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
-	if (weapon)
-	{
-		weapon->OnSpawnDamageUIDelegate.BindUObject(this, &APlayerCharacter::CreateDamageWidget);
-	}
+	
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
@@ -74,7 +70,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	m_CameraControll = CreateDefaultSubobject<UCameraControllComponent>(TEXT("CameraControll"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 
-	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
+	/*HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
 
 	HPWidgetComponent_back = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget_back"));
@@ -83,7 +79,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	AmmoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerAmmo_Widget"));
 	AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
 
-	CoverWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerCover_Widget"));
+	CoverWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerCover_Widget"));*/
 }
 
 void APlayerCharacter::BeginPlay()
@@ -101,31 +97,7 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector coverpoint = m_CoverComponent->getCanCoverPoint();
-	FVector coverNormal = m_CoverComponent->GetPointNormal();
-	UCapsuleComponent* capsule = GetCapsuleComponent();
 
-	UPlayer_Cover_Widget* coverwidget = Cast<UPlayer_Cover_Widget>(CoverWidgetComponent->GetWidget());
-	if (coverpoint != FVector::ZeroVector)
-	{
-		coverpoint -= coverNormal * capsule->GetScaledCapsuleRadius() * 0.5f;
-		//coverpoint.Y -= 30.0f;
-		CoverWidgetComponent->SetWorldLocation(coverpoint);
-		FRotator rot = coverNormal.Rotation();
-		CoverWidgetComponent->SetWorldRotation(rot);
-		if (coverwidget) {
-			coverwidget->SetOpacity(1.0f);
-		}
-		
-	}
-	else
-	{
-		if (coverwidget) {
-			coverwidget->SetOpacity(0.0f);
-		}
-
-	}
-	//UpdateWidget(DeltaTime);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
@@ -150,130 +122,37 @@ bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& O
 
 void APlayerCharacter::InitWidget(FViewport* viewport, uint32 value)
 {
-	if (Crosshair_WidgetClass)
+	if (PlayerHUDWidgetClass)
 	{
-		if (Crosshair_Widget)
+		if (PlayerHUDWidget)
 		{
-			Crosshair_Widget->RemoveFromViewport();
+			PlayerHUDWidget->RemoveFromViewport();
 		}
-		Crosshair_Widget = CreateWidget<UCrosshair_Widget>(Cast<APlayerController>(GetController()), Crosshair_WidgetClass);
-		if (Crosshair_Widget) {
-			Crosshair_Widget->AddToViewport();
-		}
-		//Crosshair_Widget->weapon = weapon;
-	}
-	if (Attacked_WidgetClass)
-	{
-		if (Attacked_Widget)
-		{
-			Attacked_Widget->RemoveFromViewport();
-		}
-		Attacked_Widget = CreateWidget<UAttacked_Widget>(Cast<APlayerController>(GetController()), Attacked_WidgetClass);
-		if (Attacked_Widget) {
-			Attacked_Widget->AddToViewport();
-		}
-		//Crosshair_Widget->weapon = weapon;
-	}
-
-
-	/*if (HPWidgetComponent)
-	{
-		HPWidgetComponent->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
-		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
-		HPWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		HPWidgetComponent->SetDrawSize(FVector2D(160.0f, 160.0f));
-		
-		if (HP_Widget)
-		{
-			HPWidgetComponent->SetWidgetClass(HP_Widget);
-			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
-			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
+		PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(Cast<APlayerController>(GetController()), PlayerHUDWidgetClass);
+		if (PlayerHUDWidget) {
+			PlayerHUDWidget->AddToViewport();
 		}
 	}
-
-	if (HPWidgetComponent_back)
-	{
-		HPWidgetComponent_back->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
-		//HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
-		HPWidgetComponent_back->SetWidgetSpace(EWidgetSpace::World);
-		HPWidgetComponent_back->SetDrawSize(FVector2D(160.0f, 160.0f));
-		HPWidgetComponent_back->SetRelativeRotation(FRotator(0, 180, 0));
-
-		if (HP_Widget)
-		{
-			HPWidgetComponent_back->SetWidgetClass(HP_Widget);
-			Cast<UPlayer_HP_Widget>(HPWidgetComponent_back->GetWidget())->SetBackMat();
-			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->SetWidgetVisible();
-			//Cast<UPlayer_HP_Widget>(HPWidgetComponent->GetWidget())->stat = stat;
-		}
-	}*/
-
-	if (AmmoWidgetComponent)
-	{
-		AmmoWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
-		//AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
-		AmmoWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		AmmoWidgetComponent->SetDrawSize(FVector2D(130.0f, 50.0f));
-
-		if (Ammo_Widget)
-		{
-			AmmoWidgetComponent->SetWidgetClass(Ammo_Widget);
-			//Cast<UPlayer_Ammo_Widget>(AmmoWidgetComponent->GetWidget())->weapon = weapon;
-		}
-	}
-
-	if (CoverWidgetComponent)
-	{
-		//CoverWidgetComponent->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
-		//AmmoWidgetComponent->SetupAttachment(weapon->WeaponMesh, TEXT("AmmoWidgetSocket"));
-		CoverWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		CoverWidgetComponent->SetDrawSize(FVector2D(64.0f, 64.0f));
-
-		if (Cover_WidgetClass)
-		{
-			CoverWidgetComponent->SetWidgetClass(Cover_WidgetClass);
-		}
-	}
-
-	if (!LineNavi_Widget)
-	{
-		LineNavi_Widget = CreateWidget<ULineNaviWidget>(Cast<APlayerController>(GetController()), ULineNaviWidget::StaticClass());
-		LineNavi_Widget->AddToViewport();
-	}
-
 }
 
 void APlayerCharacter::UpdateWidget(float deltatime)
 {
-	if (HPWidgetComponent)
-	{
-		float yaw = GetControlRotation().Yaw;// * 0.3f;
-		FRotator widrot = HPWidgetComponent->GetRelativeRotation();
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
-		//widrot.Yaw *= 0.3f;
-		widrot.Yaw = (yaw + 180);// * 0.3f;//+60;
-		widrot.Yaw *= 0.3f;
-		//widrot.Yaw -= 120;
-		HPWidgetComponent->SetRelativeRotation(widrot);
-	}
+	//if (HPWidgetComponent)
+	//{
+	//	float yaw = GetControlRotation().Yaw;// * 0.3f;
+	//	FRotator widrot = HPWidgetComponent->GetRelativeRotation();
+	//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(yaw));
+	//	//widrot.Yaw *= 0.3f;
+	//	widrot.Yaw = (yaw + 180);// * 0.3f;//+60;
+	//	widrot.Yaw *= 0.3f;
+	//	//widrot.Yaw -= 120;
+	//	HPWidgetComponent->SetRelativeRotation(widrot);
+	//}
 }
 
 void APlayerCharacter::WidgetShow()
 {
 	OnVisibleAllUIDelegate.Broadcast();
-}
-
-void APlayerCharacter::CreateDamageWidget(float value, FHitResult result)
-{
-	if (Damage_WidgetClass)
-	{
-		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_WidgetClass);
-		if (dwidget)
-		{
-			dwidget->SetDamageText(value, result);
-			dwidget->AddToViewport();
-		}
-	}
 }
 
 

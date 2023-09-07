@@ -56,7 +56,6 @@ void UPlayer_HP_Widget::NativeConstruct()
 	widgetVisibleTime = 0;
 	bWidgetVisible = true;
 
-
 	if(APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
 	{
 		if (UPlayerStatComponent* MyStatComp = Cast<UPlayerStatComponent>(MyCharacter->stat))
@@ -68,6 +67,8 @@ void UPlayer_HP_Widget::NativeConstruct()
 			MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
 		}
 	}
+
+	SetWidgetVisible();
 }
 
 void UPlayer_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -123,10 +124,17 @@ void UPlayer_HP_Widget::SetBackMat()
 
 void UPlayer_HP_Widget::SetWidgetVisible()
 {
-	StopAllAnimations();
-	HP_Overlay->SetRenderOpacity(1.f);
-	if (FadeOutAnimation)
+	GetWorld()->GetTimerManager().ClearTimer(WTimer);
+
+	if (this)
 	{
+		if (IsAnimationPlaying(FadeOutAnimation))
+		{
+			StopAnimation(FadeOutAnimation);
+			HP_Overlay->SetRenderOpacity(1.f);
+		}
+		bWidgetVisible = false;
+
 		GetWorld()->GetTimerManager().SetTimer(WTimer, FTimerDelegate::CreateLambda([&]()
 			{
 				if (FadeOutAnimation)

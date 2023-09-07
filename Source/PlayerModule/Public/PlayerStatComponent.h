@@ -10,6 +10,8 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
 //DECLARE_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
 DECLARE_MULTICAST_DELEGATE(FOnVisibleHPUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAttackedUIDelegate);
+DECLARE_DELEGATE_OneParam(FOnCreateAttackedUIDelegate, class ABaseCharacter*);
+DECLARE_DELEGATE_TwoParams(FOnVisibleInteractiveUIDelegate, bool, AActor*);
 
 /**
  * 
@@ -28,6 +30,8 @@ protected:
 	virtual void BeginDestroy() override;
 	
 public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	UFUNCTION(BlueprintCallable)
 	void SetHP(float p_HP) override;
 
@@ -37,14 +41,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector) override;
 
-	/*UFUNCTION(BlueprintCallable)
-	void Attacked(float p_damage, class ACharacter* character) override;*/
+	UFUNCTION(BlueprintCallable)
+		void CheckInteractiveObj();
+	
+	UFUNCTION(BlueprintCallable)
+		void Interacting();
+
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;
 	FOnVisibleAttackedUIDelegate OnVisibleAttackedUIDelegate;
+	FOnCreateAttackedUIDelegate OnCreateAttackedUIDelegate;
+	FOnVisibleInteractiveUIDelegate OnVisibleInteractiveUIDelegate;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UMatineeCameraShake> AttackedCameraShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AActor* InteractActor;
 	
 };
