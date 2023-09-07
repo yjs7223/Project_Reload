@@ -20,12 +20,22 @@ class DRONEMODULE_API UAsyncNode : public UBlueprintAsyncActionBase
 	GENERATED_BODY()
 	
 public:
+
+
 	UPROPERTY(BlueprintAssignable)
 		FResponsDeleget OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 		FResponsDeleget OnFail;
 
+	UPROPERTY()
+	float m_AcceptanceRadius;
+
+	UPROPERTY()
+	AAIController* m_ctr;
+
+	UPROPERTY()
+		FVector m_MoveLoc;
 
 	UPROPERTY()
 		int temp = 0;
@@ -33,8 +43,12 @@ public:
 	void isEqual();
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
-		static UAsyncNode* AsyncFerox(const int ID);
+		static UAsyncNode* DroneMoveTo(const int ID, AAIController* ctr, FVector loc,float p_AccRadius);
 
 	virtual void Activate() override;
+
+	UFUNCTION()
+		void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);
+
 
 };
