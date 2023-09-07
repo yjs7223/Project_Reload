@@ -15,11 +15,11 @@ public:
 	// Sets default values for this pawn's properties
 	ABossPawn();
 
-	UFUNCTION(BlueprintCallable, Category = "Boss")
+	/*UFUNCTION(BlueprintCallable, Category = "Boss")
 	float GetActorDegree(FVector p_PlayerLocation, FVector p_SelfLocation);
 
 	UFUNCTION(BlueprintCallable, Category = "Boss")
-	void MoveInCircle(FVector p_Center, float p_Radius, float p_Speed, float Angle);
+	void MoveInCircle(FVector p_Center, float p_Radius, float p_Speed, float Angle);*/
 
 protected:
 	// Called when the game starts or when spawned
