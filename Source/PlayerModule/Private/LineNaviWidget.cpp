@@ -69,12 +69,12 @@ void ULineNaviWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		{
 			if (PointLocations.IsValidIndex(i))
 			{
-				UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), LinePoints[i]->GetActorLocation(), loc, false);
+				//UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), LinePoints[i]->GetActorLocation(), loc, false);
 				//UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), LinePoints[i]->GetActorLocation(), loc, true);
 				
-				if (loc.X != 0)
+				if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), LinePoints[i]->GetActorLocation(), loc, false))
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, loc.ToString());
+					//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, loc.ToString());
 					PointLocations[i] = loc;
 				}
 			}
