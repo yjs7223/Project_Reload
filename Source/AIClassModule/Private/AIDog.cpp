@@ -16,7 +16,7 @@ AAIDog::AAIDog()
 	explosionFX = LoadObject<UParticleSystem>(NULL, TEXT("ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_B.P_Explosion_Big_B'"));
 	explosionSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Dog_Cue.Explosion_Dog_Cue'"));
 	flashSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Timer_Cue.Explosion_Timer_Cue'"));
-
+	MoveStart = false;
 }
 
 void AAIDog::StartExplosion()
@@ -80,6 +80,7 @@ void AAIDog::LightFlash(float t)
 void AAIDog::AIMove(const FVector Destination)
 {
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), Destination);
+	MoveStart = true;
 }
 
 // Called when the game starts or when spawned

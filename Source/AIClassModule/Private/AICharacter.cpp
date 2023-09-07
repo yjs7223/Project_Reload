@@ -175,7 +175,7 @@ void AAICharacter::UpdateWidget()
 	}
 }
 
-void AAICharacter::SetDataTable(FName EnemyName)
+void AAICharacter::SetDataTable(const FName EnemyName)
 {
 	AIMovement->SetEnemy(EnemyName);
 	AIWeapon->InitData();
@@ -221,7 +221,7 @@ void AAICharacter::IdleAnim()
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
 
-void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
+void AAICharacter::FireInTheHole(const AActor* myai,const float Velocity)
 {
 	float Gravity = 980.0f;
 	float Length_PlayerAI_XY = FVector2D((player->GetActorLocation().X - myai->GetActorLocation().X), (player->GetActorLocation().Y - myai->GetActorLocation().Y)).Length();

@@ -38,7 +38,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SuppresionPoint();
 	UFUNCTION()
-		void SetDataTable(FName EnemyName);
+		void SetDataTable(const FName EnemyName);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		AActor* IndirectCollision;

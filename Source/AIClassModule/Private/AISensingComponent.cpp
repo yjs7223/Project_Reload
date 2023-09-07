@@ -135,7 +135,7 @@ bool UAISensingComponent::MinRangeCheck()
 //	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
 //}
 
-void UAISensingComponent::SetDataTable(FName EnemyName)
+void UAISensingComponent::SetDataTable(const FName EnemyName)
 {
 	curAIRangeData = AIRangeData->FindRow<FST_Range>(EnemyName, TEXT(""));
 

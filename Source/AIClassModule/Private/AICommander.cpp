@@ -95,7 +95,7 @@ void AAICommander::BeginPlay()
 }
 
 
-void AAICommander::SetCommanderDataTable(FName EnemyName)
+void AAICommander::SetCommanderDataTable(const FName EnemyName)
 {
 	FST_Commander* CommanderData = DT_Commander->FindRow<FST_Commander>(EnemyName, FString(""));
 	if (CommanderData)
@@ -240,7 +240,7 @@ void AAICommander::ListAdd(AActor* ac)
 }
 
 
-void AAICommander::ListStartSet(AEncounterSpace* en)
+void AAICommander::ListStartSet(const AEncounterSpace* en)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, sub->GetName());
 	for (auto& subAi : en->AIArray)
@@ -395,7 +395,7 @@ void AAICommander::SuppressionShare()
 	}
 }
 
-void AAICommander::CoverPointEn(AEncounterSpace* en)
+void AAICommander::CoverPointEn(const AEncounterSpace* en)
 {
 	CoverEnArray.Reset();
 	if (CoverArray.IsEmpty())
@@ -540,7 +540,7 @@ bool AAICommander::IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVec
 	return false;
 }
 
-FVector AAICommander::OptimumPoint(FVector FinalLocation, AActor* AI_Actor, FVector MiddleLocation)
+FVector AAICommander::OptimumPoint(const FVector FinalLocation, const AActor* AI_Actor, const FVector MiddleLocation)
 {
 	FVector move_Loc;
 	FVector player_rot = UKismetMathLibrary::FindLookAtRotation(AI_Actor->GetActorLocation(), player->GetActorLocation()).Vector();
@@ -717,7 +717,7 @@ bool AAICommander::SameDetourPoint(FVector FinalLocation, FVector MiddleLocation
 	return false;
 }
 
-void AAICommander::ZeroListCoverPoint(AActor* AIActor)
+void AAICommander::ZeroListCoverPoint(const AActor* AIActor)
 {
 	List_CoverPoint.Add(*List_Division.Find(AIActor), FVector::ZeroVector);
 }

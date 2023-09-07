@@ -173,7 +173,7 @@ void UAIWeaponComponent::Fire()
 
 }
 
-void UAIWeaponComponent::ShotAITimer(float t)
+void UAIWeaponComponent::ShotAITimer(const float t)
 {
 	cur_fire_Rate += t;
 	if (cur_fire_Rate >= fire_Rate)

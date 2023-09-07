@@ -211,7 +211,7 @@ void UAIStatComponent::SuppresionPoint()
 	}
 }
 
-void UAIStatComponent::SetDataTable(FName EnemyName)
+void UAIStatComponent::SetDataTable(const FName EnemyName)
 {
  	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
 	if (SuppressionData)

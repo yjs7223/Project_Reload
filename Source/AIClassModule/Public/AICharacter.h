@@ -113,7 +113,7 @@ public:
 
 
 	UFUNCTION()
-		void SetDataTable(FName EnemyName);
+		void SetDataTable(const FName EnemyName);
 	/*UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);*/
 
@@ -121,7 +121,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Anim")
 		void IdleAnim();
 	UFUNCTION(BlueprintCallable, Category = "Grenade")
-		void FireInTheHole(AActor* myai, float Velocity);
+		void FireInTheHole(const AActor* myai, const float Velocity);
 
 	void Init();
 	void Dead();

@@ -14,13 +14,14 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "EncounterSpace.h"
 #include "AIZombie.h"
+#include "WeaponComponent.h"
 
 // Sets default values
 AAISpawner::AAISpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+	TriggerOn = false;
 }
 
 // Called when the game starts or when spawned
@@ -37,6 +38,23 @@ void AAISpawner::BeginPlay()
 	pointTime = 0;
 	pointSpawnCheck = false;
 	SetDataTable(curWave);
+
+	TArray<AActor*> basechars;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCharacter::StaticClass(), basechars);
+	for (auto var : basechars)
+	{
+		if (UWeaponComponent::CheckActorTag(var, TEXT("Boss"))) {
+			UWeaponComponent* weaponComp = var->FindComponentByClass<UWeaponComponent>();
+			weaponComp->Dele_SpawnTrigger.BindUObject(this, &AAISpawner::TriggerOnTrue);
+		}
+	}
+	/*for each (AActor * var in basechars)
+	{
+		if (UWeaponComponent::CheckActorTag(var, TEXT("Boss"))) {
+			UWeaponComponent* weaponComp = var->FindComponentByClass<UWeaponComponent>();
+			weaponComp->Dele_SpawnTrigger.BindUObject(this, &AAISpawner::TriggerOnTrue);
+		}
+	}*/
 }
 
 // Called every frame
@@ -146,7 +164,7 @@ void AAISpawner::SpawnWave()
 	}
 }
 
-void AAISpawner::WaveControl(float DeltaTime)
+void AAISpawner::WaveControl(const float DeltaTime)
 {
 	if (curSpawnData == nullptr || spawn_Spots.Num() <= 0)
 	{
@@ -181,6 +199,17 @@ void AAISpawner::WaveControl(float DeltaTime)
 				}
 			}
 			break;
+		case Spawn_Type::Trigger:
+			if (TriggerOn)
+			{
+				spawn_Delay += DeltaTime;
+				if (spawn_Delay >= (*curSpawnData).spawn_Delay)
+				{
+					SpawnWave();
+					spawn_Delay = 0;
+					TriggerOn = false;
+				}
+			}
 		}
 	}
 
@@ -241,7 +270,7 @@ void AAISpawner::SpawnEnable(bool p_flag)
 	check_Overlap = p_flag;
 }
 
-void AAISpawner::SpawnLastPoint(float DeltaTime)
+void AAISpawner::SpawnLastPoint(const float DeltaTime)
 {
 	if (commander->GetBlackboardComponent())
 	{
@@ -291,6 +320,11 @@ void AAISpawner::SpawnLastPoint(float DeltaTime)
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("NoPoint!"));
 		}
 	}
+}
+
+void AAISpawner::TriggerOnTrue()
+{
+	TriggerOn = true;
 }
 
 void AAISpawner::SetDataTable(int p_curWave)
