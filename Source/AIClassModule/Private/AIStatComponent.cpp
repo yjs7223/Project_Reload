@@ -20,25 +20,15 @@
 
 UAIStatComponent::UAIStatComponent()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
-	if (DT_SuppressionDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
-	if (DT_AIBaseStatDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
-	}
-	
+	DT_Suppression = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
+	DT_AIBaseStat = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
 }
 
 void UAIStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<AAICharacter>();
+	moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	PlayerAtt_ai = false;
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (!GetOwner()->ActorHasTag("Zombie"))
@@ -96,7 +86,7 @@ void UAIStatComponent::IndirectAttacked(float p_Value)
 void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
 	DI_SupRange = 1 / sup_MaxRange;
-
+	
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
 	float total_dmg;
 	total_dmg = p_damage - (p_damage * 0.01f) * Def;
@@ -148,9 +138,15 @@ void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitTy
 	case EHitType::None:
 		break;
 	case EHitType::Normal:
+		moveoncmp->Time = 0;
+		moveoncmp->e_move = EMove::Hit;
 		break;
 	case EHitType::Knockback:
 		Knockback.Broadcast(attackPoint, bDie);
+		break;
+	case EHitType::Stun:
+		moveoncmp->Time = 0;
+		moveoncmp->e_move = EMove::Stun;
 		break;
 	case EHitType::MAX:
 		break;
@@ -215,7 +211,7 @@ void UAIStatComponent::SuppresionPoint()
 	}
 }
 
-void UAIStatComponent::SetDataTable(FName EnemyName)
+void UAIStatComponent::SetDataTable(const FName EnemyName)
 {
  	FST_Suppression* SuppressionData = DT_Suppression->FindRow<FST_Suppression>(EnemyName, FString(""));
 	if (SuppressionData)

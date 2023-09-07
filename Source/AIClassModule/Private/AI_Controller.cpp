@@ -54,11 +54,8 @@ AAI_Controller::AAI_Controller(const FObjectInitializer& ObjectInitializer)
 	}
 	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	*/
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/BaseAI/BB/BB_BaseAI.BB_BaseAI'"));
-	if (BB_BaseAIObject.Succeeded())
-	{
-		BBAsset = BB_BaseAIObject.Object;
-	}
+	BBAsset = LoadObject<UBlackboardData>(NULL, TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/BaseAI/BB/BB_BaseAI.BB_BaseAI'"));
+	
 
 	commander = nullptr;
 	em_normal = false;

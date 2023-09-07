@@ -766,6 +766,7 @@ void UCoverComponent::BeCrouch(float deltaTime)
 		m_Input->m_CanUnCrouch = false;
 		if (!owner->bIsCrouched) {
 			owner->Crouch();
+			//if (owner->GetCharacterMovement()->bWantsToCrouch);
 		}
 	}
 	else {
@@ -802,7 +803,7 @@ bool UCoverComponent::isMustCrouch()
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		false,
 		{},
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForOneFrame,
 		tempResult,
 		true);
 
