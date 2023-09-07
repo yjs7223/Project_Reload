@@ -24,7 +24,7 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 	Ammo_Infinite_image->SetBrush(brush);
 	Ammo_Infinite_image->SetRenderOpacity(0.0f);
 
-	//ÆùÆ®Àû¿ë½ÃÅ°±â
+	//ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½
 	FSlateFontInfo fontinfo;
 	UFont* font = LoadObject<UFont>(NULL, TEXT("Font'/Game/yjs/UI/Fonts/Pretendard-Medium_Font.Pretendard-Medium_Font'"));
 	fontinfo.FontObject = font;

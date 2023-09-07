@@ -23,6 +23,16 @@
 			]
 		},
 		{
+			"Name": "DroneModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject",
+				"AIModule"
+			]
+		},
+		{
 			"Name": "PlayerModule",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
@@ -59,6 +69,19 @@
 		},
 		{
 			"Name": "AIClassModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"BaseClassModule",
+				"AIModule",
+				"CoreUObject",
+				"AICoverSystem",
+				"UMG"
+			]
+		},
+		{
+			"Name": "VehicleModule",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
@@ -107,6 +130,14 @@
 		},
 		{
 			"Name": "GameplayInsights",
+			"Enabled": true
+		},
+		{
+			"Name": "ChaosVehiclesPlugin",
+      "Enabled": true
+    },
+    {
+			"Name": "MultiUserClient",
 			"Enabled": true
 		}
 	]

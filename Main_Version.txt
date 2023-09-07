@@ -1,4 +1,4 @@
-Main_Version : v1.1
+Main_Version : v1.2
 Branch_Number
   -Player   : 1
   -AI       : 2

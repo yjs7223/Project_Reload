@@ -17,11 +17,11 @@ bool FWeaponAnimationTable::IsVaild()
 
 UWeaponAnimInstance::UWeaponAnimInstance()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/ATH/Animation/DT_WeaponAnimation.DT_WeaponAnimation'"));
+	/*static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/ATH/Animation/DT_WeaponAnimation.DT_WeaponAnimation'"));
 	if (DataTable.Succeeded())
 	{
 		m_AnimationTable = DataTable.Object;
-	}
+	}*/
 }
 
 void UWeaponAnimInstance::NativeBeginPlay()
@@ -35,13 +35,13 @@ void UWeaponAnimInstance::NativeBeginPlay()
 			Montage_Play(m_CurrentAnimation.Shooting);
 		}
 	);
+
 	UPlayerInputComponent* m_PlayerInput = Cast<UPlayerInputComponent>(m_Input);
 	if (m_PlayerInput) {
 		m_PlayerInput->OnChangedWeapon.AddLambda([this]() {
 			Montage_Play(m_CurrentAnimation.UnEquipWeapon);
 			});
 	}
-
 
 
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
