@@ -18,11 +18,18 @@ class BASECLASSMODULE_API UCoverComponent : public UActorComponent
 public:
 	DECLARE_MULTICAST_DELEGATE(FStartCoverEventDelegate);
 	DECLARE_MULTICAST_DELEGATE(FEndCoverEventDelegate);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerCharacterTickDelegate, float /*DeltaTime*/);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverCharacterTickDelegate, float /*DeltaTime*/);
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
 	FStartCoverEventDelegate PlayMontageStartCover;
 	/** 엄폐해제 몽타주재생 델리게이트입니다 */
 	FEndCoverEventDelegate PlayMontageEndCover;
+
+	/** 플레이어캐릭터의 엄폐 틱델리게이트 입니다 */
+	FPlayerCharacterTickDelegate PlayerCharacterTick;
+	/** 엄폐캐릭터의 엄폐 틱델리게이트 입니다 */
+	FCoverCharacterTickDelegate CoverCharacterTick;
 public:
 	UCoverComponent();
 
@@ -47,6 +54,7 @@ public:
 	* 엄폐 가능한 점을 구합니다
 	* @return 커버가능한점을 반환합니다 FVector::ZeroVector면 실패입니다
 	*/
+	void SettingCoverPoint(float DeltaTime);
 	FVector CalculateCoverPoint(float DeltaTime);
 	/**
 	* 엄폐 가능한 점을 세팅합니다
