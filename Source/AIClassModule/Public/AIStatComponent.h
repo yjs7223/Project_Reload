@@ -38,7 +38,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SuppresionPoint();
 	UFUNCTION()
-		void SetDataTable(FName EnemyName);
+		void SetDataTable(const FName EnemyName);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		AActor* IndirectCollision;
@@ -101,6 +101,8 @@ public:
 		float Def;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
 		class AAI_Controller* AIController;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIStat)
+		class UAICharacterMoveComponent* moveoncmp;
 
 
 };

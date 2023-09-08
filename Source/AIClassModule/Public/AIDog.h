@@ -34,6 +34,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		bool explosionEnabled;			// 폭발 활성화
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
+		bool MoveStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float explosionStartDistance;	// 폭발 시작 거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float explosionDamage;			// 폭발 데미지

@@ -55,5 +55,5 @@ public:
 
 	//void DrawSense();
 
-	void SetDataTable(FName EnemyName);
+	void SetDataTable(const FName EnemyName);
 };
