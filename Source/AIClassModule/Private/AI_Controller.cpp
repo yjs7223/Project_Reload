@@ -217,7 +217,7 @@ void AAI_Controller::SetUseCover()
 				else
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
+					//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 
 					/*DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)

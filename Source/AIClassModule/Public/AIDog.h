@@ -28,6 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float impactRadius;				// 폭발 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
+		float Time;			
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float explosionTime;			// 폭발 타이머 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float curExplosionTime;			// 현재 폭발 시간
