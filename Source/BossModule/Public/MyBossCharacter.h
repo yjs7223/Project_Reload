@@ -20,5 +20,5 @@ public:
 	float GetActorDegree(FVector p_PlayerLocation, FVector p_SelfLocation);
 
 	UFUNCTION(BlueprintCallable, Category = "Boss")
-	FVector MoveInCircle(FVector p_Center, float p_Radius, float p_Speed, float Angle);
+	FVector MoveInCircle(FVector p_Center, float p_Radius, float Angle);
 };

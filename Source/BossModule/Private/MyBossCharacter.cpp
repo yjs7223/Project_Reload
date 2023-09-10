@@ -13,11 +13,13 @@ float AMyBossCharacter::GetActorDegree(FVector p_PlayerLocation, FVector p_SelfL
     return angleInDegrees;
 }
 
-FVector AMyBossCharacter::MoveInCircle(FVector p_Center, float p_Radius, float p_Speed, float Angle)
+FVector AMyBossCharacter::MoveInCircle(FVector p_Center, float p_Radius, float Angle)
 {
     FVector newLocation;
-    newLocation.X = p_Center.X + p_Radius * FMath::Cos(Angle);
-    newLocation.Y = p_Center.Y + p_Radius * FMath::Sin(Angle);
+    float AngleInRadians = FMath::DegreesToRadians(Angle);
+
+    newLocation.X = p_Center.X + p_Radius * FMath::Cos(AngleInRadians);
+    newLocation.Y = p_Center.Y + p_Radius * FMath::Sin(AngleInRadians);
     newLocation.Z = p_Center.Z;
     
     return newLocation;
