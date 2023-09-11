@@ -35,10 +35,13 @@ void UWeaponAnimInstance::NativeBeginPlay()
 			Montage_Play(m_CurrentAnimation.Shooting);
 		}
 	);
+
 	UPlayerInputComponent* m_PlayerInput = Cast<UPlayerInputComponent>(m_Input);
-	m_PlayerInput->OnChangedWeapon.AddLambda([this]() {
+	if (m_PlayerInput) {
+		m_PlayerInput->OnChangedWeapon.AddLambda([this]() {
 			Montage_Play(m_CurrentAnimation.UnEquipWeapon);
-		});
+			});
+	}
 
 
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();

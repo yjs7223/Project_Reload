@@ -30,13 +30,7 @@
 UAISensingComponent::UAISensingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ������ ���̺� ����
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
-	if (DataTable.Succeeded())
-	{
-		AIRangeData = DataTable.Object;
-	}
+	AIRangeData = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
 }
 
 
@@ -141,7 +135,7 @@ bool UAISensingComponent::MinRangeCheck()
 //	DrawCircleSector(AimSide_Radius, AimSide_Angle, 50);
 //}
 
-void UAISensingComponent::SetDataTable(FName EnemyName)
+void UAISensingComponent::SetDataTable(const FName EnemyName)
 {
 	curAIRangeData = AIRangeData->FindRow<FST_Range>(EnemyName, TEXT(""));
 

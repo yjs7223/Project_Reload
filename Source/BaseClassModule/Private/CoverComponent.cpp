@@ -18,7 +18,7 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include "NavigationSystem.h"
-
+#include "AIController.h"
 #define LOCTEXT_NAMESPACE "CoverComponent"
 
 // Sets default values for this component's properties
@@ -57,6 +57,15 @@ void UCoverComponent::BeginPlay()
 	m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 
 	SetIsFaceRight(true);
+
+	if (!Cast<AAIController>(owner->Controller)) {
+		PlayerCharacterTick.AddLambda([this](float DeltaTime) {SettingCoverPoint(DeltaTime); });
+		PlayerCharacterTick.AddLambda([this](float DeltaTime) {CalculCoverPath(DeltaTime); });
+	}
+	CoverCharacterTick.AddLambda([this](float DeltaTime) {RotateSet(DeltaTime); });
+	CoverCharacterTick.AddLambda([this](float DeltaTime) {AimSetting(DeltaTime); });
+	CoverCharacterTick.AddLambda([this](float DeltaTime) {CornenringCheck(DeltaTime); });
+	CoverCharacterTick.AddLambda([this](float DeltaTime) {BeCrouch(DeltaTime); });
 }
 
 
@@ -65,16 +74,16 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
-	CalculCoverPath(DeltaTime);
-	
+	//SettingCoverPoint(DeltaTime);
+	//CalculCoverPath(DeltaTime);
+	PlayerCharacterTick.Broadcast(DeltaTime);
 	if (!m_IsCover) return;
-
-	RotateSet(DeltaTime);
-	AimSetting(DeltaTime);
-	CornenringCheck(DeltaTime);
-	BeCrouch(DeltaTime);
-	CalculateCoverShoot(DeltaTime);
+	CoverCharacterTick.Broadcast(DeltaTime);
+	//RotateSet(DeltaTime);
+	//AimSetting(DeltaTime);
+	//CornenringCheck(DeltaTime);
+	//BeCrouch(DeltaTime);
+	//CalculateCoverShoot(DeltaTime);
 }
 
 void UCoverComponent::PlayCover()
@@ -219,18 +228,20 @@ void UCoverComponent::CalculCoverPath(float DeltaTime)
 	}
 	const FVector AgentNavLocation = Controller->GetNavAgentLocation();
 	const ANavigationData* NavData = NavSys->GetNavDataForProps(Controller->GetNavAgentPropertiesRef(), AgentNavLocation);
+	if (NavData) {
+		FPathFindingQuery Query(Controller, *NavData, AgentNavLocation, GoalLocation);
+		FPathFindingResult Result = NavSys->FindPathSync(Query);
+		FVector beforepoint = AgentNavLocation;
+		m_CoverPath = Result.Path->GetPathPoints();
 
-	FPathFindingQuery Query(Controller, *NavData, AgentNavLocation, GoalLocation);
-	FPathFindingResult Result = NavSys->FindPathSync(Query);
-	FVector beforepoint = AgentNavLocation;
-	m_CoverPath = Result.Path->GetPathPoints();
 
-
-	for (auto& item : m_CoverPath)
-	{
-		DrawDebugLine(GetWorld(), beforepoint, item.Location, FColor::Red, false, DeltaTime, 0, 5.0f);
-		beforepoint = item.Location;
+		for (auto& item : m_CoverPath)
+		{
+			DrawDebugLine(GetWorld(), beforepoint, item.Location, FColor::Red, false, DeltaTime, 0, 5.0f);
+			beforepoint = item.Location;
+		}
 	}
+
 
 }
 
@@ -371,6 +382,11 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	}
 
 	return;
+}
+
+void UCoverComponent::SettingCoverPoint(float DeltaTime)
+{
+	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 }
 
 FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
@@ -750,6 +766,7 @@ void UCoverComponent::BeCrouch(float deltaTime)
 		m_Input->m_CanUnCrouch = false;
 		if (!owner->bIsCrouched) {
 			owner->Crouch();
+			//if (owner->GetCharacterMovement()->bWantsToCrouch);
 		}
 	}
 	else {
@@ -786,7 +803,7 @@ bool UCoverComponent::isMustCrouch()
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		false,
 		{},
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForOneFrame,
 		tempResult,
 		true);
 

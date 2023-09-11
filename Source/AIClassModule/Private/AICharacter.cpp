@@ -57,25 +57,11 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	AIWeapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_RangeDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
-	if (DT_RangeDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Range = DT_RangeDataObject.Object;
-	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SuppressionDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
-	if (DT_SuppressionDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Suppression = DT_SuppressionDataObject.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AIBaseStatDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
-	if (DT_AIBaseStatDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_AIBaseStat = DT_AIBaseStatDataObject.Object;
-	}
+	DT_Range = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Range.DT_Range'"));
+	DT_Suppression = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Suppression.DT_Suppression'"));
+	DT_AIBaseStat = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
+	
 
 	ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_GrenadeDummy.BP_GrenadeDummy'"));
 	if (GrenadeData.Succeeded())
@@ -91,7 +77,7 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	CollisionMesh->SetCapsuleHalfHeight(sup_HitHeight);
 	//CollisionMesh->SetRelativeLocation(FVector(0, 0, 0));
 	
-	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAICharacter::OnOverlapBegin);
+	//CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAICharacter::OnOverlapBegin);
 
 
 	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
@@ -189,7 +175,7 @@ void AAICharacter::UpdateWidget()
 	}
 }
 
-void AAICharacter::SetDataTable(FName EnemyName)
+void AAICharacter::SetDataTable(const FName EnemyName)
 {
 	AIMovement->SetEnemy(EnemyName);
 	AIWeapon->InitData();
@@ -224,10 +210,10 @@ void AAICharacter::SetDataTable(FName EnemyName)
 	
 }
 
-void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-
-}
+//void AAICharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//
+//}
 
 void AAICharacter::IdleAnim()
 {
@@ -235,7 +221,7 @@ void AAICharacter::IdleAnim()
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
 
-void AAICharacter::FireInTheHole(AActor* myai,float Velocity)
+void AAICharacter::FireInTheHole(const AActor* myai,const float Velocity)
 {
 	float Gravity = 980.0f;
 	float Length_PlayerAI_XY = FVector2D((player->GetActorLocation().X - myai->GetActorLocation().X), (player->GetActorLocation().Y - myai->GetActorLocation().Y)).Length();
