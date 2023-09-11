@@ -139,7 +139,10 @@ void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitTy
 		break;
 	case EHitType::Normal:
 		moveoncmp->Time = 0;
-		moveoncmp->e_move = EMove::Hit;
+		if (moveoncmp->e_move != EMove::Stun)
+		{
+			moveoncmp->e_move = EMove::Hit;
+		}
 		break;
 	case EHitType::Knockback:
 		Knockback.Broadcast(attackPoint, bDie);
