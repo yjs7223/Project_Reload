@@ -217,7 +217,7 @@ void AAI_Controller::SetUseCover()
 				else
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
+					//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 
 					/*DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
@@ -237,7 +237,7 @@ void AAI_Controller::RunBTT()
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, GetControlRotation().Vector().ToString());
 	/*if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);

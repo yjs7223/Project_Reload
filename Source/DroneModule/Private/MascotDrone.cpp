@@ -19,9 +19,7 @@ AMascotDrone::AMascotDrone()
 	m_FloatingCmp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingCmp"));
 	m_StaticMeshCmp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshCmp"));
 
-	//sphere Collision
-	CollisionMesh = CreateDefaultSubobject<USphereComponent>(FName("Sphere"));
-	CollisionMesh->InitSphereRadius(100.0f);
+	
 
 
 
@@ -32,6 +30,14 @@ AMascotDrone::AMascotDrone()
 		MeshAsset(TEXT("StaticMesh'/Game/_sjs/Drone/Drone_05/Mesh/SM_Drone_05.SM_Drone_05'"));
 	m_StaticMeshCmp->SetStaticMesh(MeshAsset.Object);
 
+
+	//sphere Collision
+	CollisionMesh = CreateDefaultSubobject<USphereComponent>(FName("Sphere"));
+	CollisionMesh->InitSphereRadius(100.0f);
+
+	CollisionMesh->AttachToComponent(m_StaticMeshCmp,FAttachmentTransformRules::KeepRelativeTransform);
+
+
 }
 
 // Called when the game starts or when spawned
@@ -41,7 +47,7 @@ void AMascotDrone::BeginPlay()
 
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AMascotDrone::OverlapBegin);
-	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &AMascotDrone::OverlapEnd);
+		CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &AMascotDrone::OverlapEnd);
 	
 }
 
@@ -65,8 +71,8 @@ void AMascotDrone::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	if (UWeaponComponent::CheckActorTag(OtherActor, TEXT("Enemy")))
 	{
-	
-		m_NearAI.Add(OtherActor);
+		if (!UWeaponComponent::CheckActorTag(OtherActor, TEXT("Barrel")))
+			m_NearAI.Add(OtherActor);
 	}
 }
 
@@ -74,6 +80,13 @@ void AMascotDrone::OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* 
 {
 	if (UWeaponComponent::CheckActorTag(OtherActor, TEXT("Enemy")))
 	{
-		m_NearAI.Remove(OtherActor);
+		if (!UWeaponComponent::CheckActorTag(OtherActor, TEXT("Barrel")))
+			if(m_NearAI.Find(OtherActor))
+				m_NearAI.Remove(OtherActor);
 	}
+}
+
+TArray<AActor*> AMascotDrone::EMP()
+{
+	return m_NearAI;
 }
