@@ -34,7 +34,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UStaticMeshComponent* m_StaticMeshCmp;
 
-	UPROPERTY(EditAnywhere, Category = "Mesh")
-	UStaticMesh* m_Mesh;
 
+
+public:
+	//SphereCollisionTrigger
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+		class USphereComponent* CollisionMesh;
+
+	UFUNCTION()
+		void OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "variable")
+	TArray<AActor*> m_NearAI;
+
+public:
+	//Skill
+	UFUNCTION(BlueprintCallable, Category = "MascotDrone")
+		TArray<AActor*> EMP();
 };
