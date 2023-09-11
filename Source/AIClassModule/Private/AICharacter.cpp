@@ -142,6 +142,8 @@ void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateWidget();
+
+	;
 }
 
 

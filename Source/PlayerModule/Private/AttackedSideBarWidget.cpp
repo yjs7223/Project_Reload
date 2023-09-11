@@ -44,10 +44,13 @@ void UAttackedSideBarWidget::SetAttackedAngle()
 
 			}
 
-			if (TargetEnemy->FindComponentByClass<UPlayerStatComponent>()->bDie)
+			if (UStatComponent* Estat = TargetEnemy->FindComponentByClass<UStatComponent>())
 			{
-				TargetEnemy = nullptr;
-				Attacked_Overlay->SetRenderOpacity(0.0f);
+				if (Estat->bDie)
+				{
+					TargetEnemy = nullptr;
+					Attacked_Overlay->SetRenderOpacity(0.0f);
+				}
 			}
 		}
 	}

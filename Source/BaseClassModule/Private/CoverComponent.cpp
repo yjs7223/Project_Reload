@@ -175,15 +175,19 @@ bool UCoverComponent::StartAICover()
 		}
 
 	}
-
 	if (result.GetActor() == nullptr) return false;
-	 
-	RotateSet(0.0f);
+	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
+		m_CanCoverPointNormal = result.Normal;
+	}
 
-	owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
+	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
+	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
 
+	PlayMontageStartCover.Broadcast();
+	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
+	RotateSet(0.0f);
 	return m_IsCover;
 }
 
