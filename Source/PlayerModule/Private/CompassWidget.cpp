@@ -30,7 +30,6 @@ FVector2D UCompassWidget::CalcPointsPos()
 	FVector2D pos;
 	pos.Y = 0;
 	pos.X = (GetOwningPlayer()->GetControlRotation().Yaw - 180) * -1.f * 10.f;
-	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::SanitizeFloat(pos.X));
 	return pos;
 }
 
@@ -50,6 +49,7 @@ FVector2D UCompassWidget::CalcGoalPos()
 		float fdot = FVector2D::DotProduct(FVector2D(GetOwningPlayerPawn()->GetActorForwardVector()), normal);
 		float rdot = FVector2D::DotProduct(FVector2D(GetOwningPlayerPawn()->GetActorRightVector()), normal);
 		float val = (rdot / fdot) * 700.f;
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::SanitizeFloat(val));
 		pos.Y = 0;
 		pos.X = val;
 		return pos;
