@@ -21,4 +21,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Boss")
 	FVector MoveInCircle(FVector p_Center, float p_Radius, float Angle);
+
 };
