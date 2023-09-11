@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UInteractiveWidget* InteractiveWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCompassWidget* CompassWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineNaviWidget* LineNaviWidget;
 
