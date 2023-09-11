@@ -9,7 +9,7 @@
 UENUM(BlueprintType)
 enum class Spawn_Type : uint8
 {
-	KILL, SECONDS
+	KILL, SECONDS, Trigger
 };
 
 UENUM(BlueprintType)

@@ -31,7 +31,7 @@ void UAIInputComponent::AIRuning()
 	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	if (moveoncmp->e_move != EMove::Hit)
+	if (moveoncmp->e_move != EMove::Hit || moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Normal;
 	}
@@ -42,7 +42,7 @@ void UAIInputComponent::AIStopRuning()
 	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	movement->SetMovementMode(MOVE_Walking);
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	if (moveoncmp->e_move != EMove::Hit)
+	if (moveoncmp->e_move != EMove::Hit || moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Normal;
 	}

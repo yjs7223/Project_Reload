@@ -52,8 +52,18 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
+	
+	
 	// ...
 	
+}
+
+void UWeaponComponent::BeginDestroy()
+{
+	shootingAnimation.Clear();
+	Dele_SpawnTrigger.Unbind();
+	
+	Super::BeginDestroy();
 }
 
 
