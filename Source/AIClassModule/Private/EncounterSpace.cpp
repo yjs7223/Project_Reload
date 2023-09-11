@@ -23,8 +23,6 @@ AEncounterSpace::AEncounterSpace()
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AEncounterSpace::OnOverlapBegin);
 	AI_Check = false;
 	AI_ActiveFalse = false;
-
-	
 }
 
 // Called when the game starts or when spawned

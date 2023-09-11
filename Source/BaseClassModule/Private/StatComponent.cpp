@@ -155,6 +155,8 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType
 	case EHitType::Knockback:
 		Knockback.Broadcast(attackPoint, bDie);
 		break;
+	case EHitType::Stun:
+		break;
 	case EHitType::MAX:
 		break;
 	default:

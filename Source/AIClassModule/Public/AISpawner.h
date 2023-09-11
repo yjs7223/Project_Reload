@@ -7,6 +7,7 @@
 #include "ST_Spawn.h"
 #include "AISpawner.generated.h"
 
+
 UCLASS()
 class AICLASSMODULE_API AAISpawner : public AActor
 {
@@ -32,6 +33,8 @@ public:
 	// 물량 스포너 확인
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool many_Spawn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool TriggerOn;
 
 	// 스포너 활성화 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
@@ -119,7 +122,7 @@ public:
 	void SpawnWave();
 	
 	// 웨이브 컨트롤
-	void WaveControl(float DeltaTime);
+	void WaveControl(const float DeltaTime);
 
 	// 스폰 지점 검사 후 변경
 	int SetSpawnSpot(int m_Spawn_Pos);
@@ -131,7 +134,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 		void SpawnEnable(bool p_flag);
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
-		void SpawnLastPoint(float DeltaTime);
-
+		void SpawnLastPoint(const float DeltaTime);
+	UFUNCTION()
+		void TriggerOnTrue();
 	void SetDataTable(int p_curWave);
 };
