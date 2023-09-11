@@ -4,6 +4,10 @@
 #include "MascotDrone.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Engine/StaticMesh.h"
+#include "WeaponComponent.h"
+
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -15,13 +19,18 @@ AMascotDrone::AMascotDrone()
 	m_FloatingCmp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingCmp"));
 	m_StaticMeshCmp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshCmp"));
 
+	//sphere Collision
+	CollisionMesh = CreateDefaultSubobject<USphereComponent>(FName("Sphere"));
+	CollisionMesh->InitSphereRadius(100.0f);
 
 
-	////Mesh
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh>
-	//	m_Mesh(TEXT("StaticMesh'/Game/_sjs/Drone/Drone_05/Mesh/SM_Drone_05.SM_Drone_05'"));
 
-	//m_StaticMeshCmp->SetStaticMesh(m_Mesh.Object);
+
+
+	//GetMeshComponent
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>
+		MeshAsset(TEXT("StaticMesh'/Game/_sjs/Drone/Drone_05/Mesh/SM_Drone_05.SM_Drone_05'"));
+	m_StaticMeshCmp->SetStaticMesh(MeshAsset.Object);
 
 }
 
@@ -30,7 +39,9 @@ void AMascotDrone::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+
+	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AMascotDrone::OverlapBegin);
+	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &AMascotDrone::OverlapEnd);
 	
 }
 
@@ -50,3 +61,19 @@ void AMascotDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void AMascotDrone::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (UWeaponComponent::CheckActorTag(OtherActor, TEXT("Enemy")))
+	{
+	
+		m_NearAI.Add(OtherActor);
+	}
+}
+
+void AMascotDrone::OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (UWeaponComponent::CheckActorTag(OtherActor, TEXT("Enemy")))
+	{
+		m_NearAI.Remove(OtherActor);
+	}
+}
