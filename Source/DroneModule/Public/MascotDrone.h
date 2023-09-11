@@ -53,4 +53,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "variable")
 	TArray<AActor*> m_NearAI;
+
+public:
+	//Skill
+	UFUNCTION(BlueprintCallable, Category = "MascotDrone")
+		TArray<AActor*> EMP();
 };
