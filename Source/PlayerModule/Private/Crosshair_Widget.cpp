@@ -237,7 +237,10 @@ void UCrosshair_Widget::CheckDie()
 
 		}
 	}
-
+	if (!weapon->m_result.GetActor())
+	{
+		return;
+	}
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{
