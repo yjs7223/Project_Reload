@@ -96,9 +96,14 @@ void AAIDog::BeginPlay()
 void AAIDog::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	StartExplosion();
-	ExplosionTimer(DeltaTime);
-	LightFlash(DeltaTime);
+	Time += DeltaTime;
+	if (Time >= 2.0f)
+	{
+		StartExplosion();
+		ExplosionTimer(DeltaTime);
+		LightFlash(DeltaTime);
+	}
+	
 }
 
 // Called to bind functionality to input
