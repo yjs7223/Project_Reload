@@ -198,7 +198,7 @@ void UWeaponComponent::PlayRandomShotSound()
 
 	//UGameplayStatics::PlaySoundAtLocation(this, playerweapondata->FireSound, owner->GetActorLocation(), 1.0f, pitch);
 
-	UAISense_Hearing::ReportNoiseEvent(GetWorld(), owner->GetActorLocation(), 1.0f, owner, 0.0f, FName(TEXT("Shooting")));
+	//UAISense_Hearing::ReportNoiseEvent(GetWorld(), owner->GetActorLocation(), 1.0f, owner, 0.0f, FName(TEXT("Shooting")));
 }
 
 void UWeaponComponent::SpawnImpactEffect(FHitResult result)

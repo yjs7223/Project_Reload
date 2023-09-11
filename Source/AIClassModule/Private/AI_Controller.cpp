@@ -237,7 +237,7 @@ void AAI_Controller::RunBTT()
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, GetControlRotation().Vector().ToString());
 	/*if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);

@@ -76,6 +76,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// 폭발
+	UFUNCTION(BlueprintCallable)
 	void Explosion();
 
 	// 이동
