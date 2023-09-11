@@ -29,21 +29,21 @@ void UAsyncNode::Activate()
 	//isEqual();
 }
 
-void UAsyncNode::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
-{
-	if (Result.IsSuccess())
-	{
-		// 이동이 성공적으로 완료됨
-		OnSuccess.Broadcast(temp, "Success! from c++");
-	}
-	else
-	{
-		// 이동이 실패함
-		OnFail.Broadcast(temp, "Fail");
-	}
-	RemoveFromRoot();
-}
-
+//void UAsyncNode::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+//{
+//	if (Result.IsSuccess())
+//	{
+//		// 이동이 성공적으로 완료됨
+//		OnSuccess.Broadcast(temp, "Success! from c++");
+//	}
+//	else
+//	{
+//		// 이동이 실패함
+//		OnFail.Broadcast(temp, "Fail");
+//	}
+//	RemoveFromRoot();
+//}
+//
 
 
 

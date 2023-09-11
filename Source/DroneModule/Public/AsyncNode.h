@@ -47,8 +47,8 @@ public:
 
 	virtual void Activate() override;
 
-	UFUNCTION()
-		void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);
+	/*UFUNCTION()
+		void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);*/
 
 
 };

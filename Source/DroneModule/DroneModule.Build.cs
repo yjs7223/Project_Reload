@@ -13,8 +13,8 @@ public class DroneModule : ModuleRules
             "Niagara", 
             "GameplayCameras", 
             "AIModule", 
-            "InputCore", 
-
+            "InputCore",
+            "BossModule",
         });
     }
 }
