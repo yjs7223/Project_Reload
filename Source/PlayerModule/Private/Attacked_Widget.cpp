@@ -34,7 +34,7 @@ void UAttacked_Widget::NativeConstruct()
 		{
 			stat = MyCharacter->stat;
 			stat->OnVisibleAttackedUIDelegate.BindUObject(this, &UAttacked_Widget::LowHp_Warning);
-			MyStatComp->OnCreateAttackedUIDelegate.BindUObject(this, &UAttacked_Widget::CreateSideBarWidget);
+			MyStatComp->OnCreateAttackedUIDelegate.AddUObject(this, &UAttacked_Widget::CreateSideBarWidget);
 		}
 	}
 
@@ -97,6 +97,10 @@ void UAttacked_Widget::CreateSideBarWidget(ABaseCharacter* Target)
 
 
 		UAttackedSideBarWidget* m_sidebar = CreateWidget<UAttackedSideBarWidget>(GetOwningPlayer(), AttackedSidebarWidget);
+		Attacked_Canvas->AddChildToCanvas(m_sidebar);
+		Cast<UCanvasPanelSlot>(m_sidebar->Slot)->SetAnchors(FAnchors(0.5, 0.5f));
+		Cast<UCanvasPanelSlot>(m_sidebar->Slot)->SetAlignment(FVector2D(0.5f, 0.5f));
+		Cast<UCanvasPanelSlot>(m_sidebar->Slot)->SetSize(FVector2D(300.f, 300.f));
 		m_sidebar->StartAttacked(Target);
 		m_sidebar->AddToViewport();
 		SideBarWidgets.Add(m_sidebar);

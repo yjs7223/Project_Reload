@@ -697,7 +697,7 @@ void UCoverComponent::StopCover()
 	mCoverShootingState = ECoverShootingState::None;
 	mPeekingState = EPeekingState::None;
 	SetIsFaceRight(true);
-
+	m_CanCoverPointNormal = FVector::ZeroVector;
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	m_Input->m_CanUnCrouch = true;
@@ -824,7 +824,7 @@ void UCoverComponent::StartPeeking()
 	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 80) return;
 
 	if(mPeekingState != EPeekingState::None) return;
-
+	//if (owner->GetController<AAIController>()) return;
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;

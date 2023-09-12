@@ -22,7 +22,7 @@ void UPlayerStatComponent::BeginDestroy()
 	OnVisibleHPUIDelegate.Clear();
 	OnChangedHealthDelegate.Clear();
 	OnVisibleAttackedUIDelegate.Unbind();
-	OnCreateAttackedUIDelegate.Unbind();
+	OnCreateAttackedUIDelegate.Clear();
 	OnVisibleInteractiveUIDelegate.Unbind();
 
 
@@ -67,7 +67,7 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 	OnVisibleHPUIDelegate.Broadcast();
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
-	OnCreateAttackedUIDelegate.ExecuteIfBound(attacker);
+	OnCreateAttackedUIDelegate.Broadcast(attacker);
 }
 
 void UPlayerStatComponent::CheckInteractiveObj()
