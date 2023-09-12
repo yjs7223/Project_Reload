@@ -66,8 +66,8 @@ void UAttackedSideBarWidget::StartAttacked(ABaseCharacter* Target)
 		FIntVector2 screensize;
 		GetOwningPlayer()->GetViewportSize(screensize.X, screensize.Y);
 		loc.X = 0;
-		loc.Y = (screensize.Y / 2);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, loc.ToString());
+		loc.Y = 0;
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, loc.ToString());
 		Attacked_SizeBox->SetRenderTranslation(loc);
 
 		if (AttackedSideBar_Anim)
