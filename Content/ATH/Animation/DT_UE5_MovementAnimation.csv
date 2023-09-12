@@ -1,0 +1,4 @@
+---,Idle,Idle_Crouch,JogStart,JogStop,Move,Run,SprintStart,Move_Crouch,Falling
+Pistol,"None","None","None","None","None","None","None","None","None"
+Rifle,"AnimSequence'/Game/NewAnim/Idle/AS_IdleRifleFF.AS_IdleRifleFF'","AnimSequence'/Game/NewAnim/Cover/AS_CrouchIdleRifle_01.AS_CrouchIdleRifle_01'","BlendSpace1D'/Game/NewAnim/MOVE/BS_JogStart1DFF.BS_JogStart1DFF'","AnimSequence'/Game/NewAnim/Moving/AS_JogStop_02.AS_JogStop_02'","BlendSpace1D'/Game/NewAnim/MOVE/BS_Jog1DFF.BS_Jog1DFF'","AnimSequence'/Game/NewAnim/Moving/AS_SprintLoopFF.AS_SprintLoopFF'","AnimSequence'/Game/NewAnim/MOVE/AS_SprintStart_01.AS_SprintStart_01'","BlendSpace1D'/Game/NewAnim/MOVE/BS_CrouchWalk1D.BS_CrouchWalk1D'","AnimSequence'/Game/NewAnim/hh/NewCharcterAnim/CyberpunkMetalhead/Demo/Animations/Manny/MM_Fall_Loop.MM_Fall_Loop'"
+Shotgun,"None","None","None","None","None","None","None","None","None"
