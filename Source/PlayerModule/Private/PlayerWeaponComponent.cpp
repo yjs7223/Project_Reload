@@ -211,7 +211,7 @@ void UPlayerWeaponComponent::Fire()
 	FActorSpawnParameters spawnparam;
 	spawnparam.Owner = owner;
 	//CameraHit
-	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
