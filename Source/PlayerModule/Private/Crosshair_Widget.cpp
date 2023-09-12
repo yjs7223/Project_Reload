@@ -236,6 +236,7 @@ void UCrosshair_Widget::CheckDie()
 			}
 
 		}
+
 	}
 	if (!weapon->m_result.GetActor())
 	{

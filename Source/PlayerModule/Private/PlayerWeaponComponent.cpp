@@ -211,10 +211,10 @@ void UPlayerWeaponComponent::Fire()
 	FActorSpawnParameters spawnparam;
 	spawnparam.Owner = owner;
 	//CameraHit
-	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
@@ -252,7 +252,7 @@ void UPlayerWeaponComponent::Fire()
 			{
 				bHit = true;
 				float damageVlaue = 0;
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.BoneName.ToString());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.BoneName.ToString());
 				if (m_result.BoneName == "head")
 				{
 					damageVlaue = CalcDamage(m_result, damage) * head_mag;
@@ -749,6 +749,8 @@ void UPlayerWeaponComponent::PlayRandomShotSound()
 	Super::PlayRandomShotSound();
 	float pitch = FMath::RandRange(0.9f, 1.2f);
 	UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->FireSound, GetOwner()->GetActorLocation(), 1.0f, pitch);
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), owner->GetActorLocation(), 1.0f, owner, 0.0f, FName(TEXT("Shooting")));
+
 }
 
 void UPlayerWeaponComponent::PlayCameraShake(float scale)

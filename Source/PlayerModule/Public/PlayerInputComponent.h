@@ -43,5 +43,6 @@ private:
 	void HPregen();
 
 private:
-	class UPlayerWeaponComponent* m_PlayerWeapon;
+	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
+	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
 };

@@ -49,21 +49,24 @@ void UAttacked_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 void UAttacked_Widget::LowHp_Warning()
 {
-	float value = stat->curHP / stat->maxHP;
-	if (value < 0.3)
+	if (this)
 	{
-		if (LowHP_Anim)
+		float value = stat->curHP / stat->maxHP;
+		if (value < 0.3)
 		{
-			if (!IsAnimationPlaying(LowHP_Anim))
+			if (LowHP_Anim)
 			{
-				PlayAnimation(LowHP_Anim, .0f, 0);
+				if (!IsAnimationPlaying(LowHP_Anim))
+				{
+					PlayAnimation(LowHP_Anim, .0f, 0);
+				}
 			}
 		}
-	}
-	else
-	{
-		StopAnimation(LowHP_Anim);
-		LowHP_Image->SetRenderOpacity(0.0f);
+		else
+		{
+			StopAnimation(LowHP_Anim);
+			LowHP_Image->SetRenderOpacity(0.0f);
+		}
 	}
 }
 
