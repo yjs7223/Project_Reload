@@ -21,6 +21,8 @@ public:
 
 	void CalcPointsPos();
 	void CalcGoalPos();
+	void CalcEnemysPos();
+	void AddEnemy(AActor* enemy);
 
 	bool CheckIfBehind(FVector cameraForward, FVector lookatNormal);
 
@@ -29,11 +31,20 @@ public:
 		class UOverlay* Compass_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCanvasPanel* Compass_Canvas;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Points_Image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Goal_Image;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		TSubclassOf<class UUserWidget> EnemyPointClass;
+
 	class UCanvasPanelSlot* Points_Slot;
 	class UCanvasPanelSlot* Goal_Slot;
+
+	TArray<AActor*> Enemys;
+	TArray<UUserWidget*> EnemyPoints;
 };

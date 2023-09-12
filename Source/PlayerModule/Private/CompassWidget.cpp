@@ -62,6 +62,39 @@ void UCompassWidget::CalcGoalPos()
 	}
 }
 
+void UCompassWidget::CalcEnemysPos()
+{
+	UCameraComponent* camera = GetOwningPlayerPawn()->FindComponentByClass<UCameraComponent>();
+	if (camera)
+	{
+		for (int i = 0; i < Enemys.Num(); i++)
+		{
+			if(!Enemys[i]->FindComponentByClass<UStatComponent>()->bDie)
+		}
+	}
+}
+
+void UCompassWidget::AddEnemy(AActor* enemy)
+{
+	if (Enemys.Find(enemy) == INDEX_NONE)
+	{
+		Enemys.Add(enemy);
+	}
+	else
+	{
+		return;
+	}
+
+	if (EnemyPointClass)
+	{
+		UUserWidget* epoint = CreateWidget<UUserWidget>(GetOwningPlayer(), EnemyPointClass);
+		Compass_Canvas->AddChildToCanvas(epoint);
+		Cast<UCanvasPanelSlot>(epoint->Slot)->SetSize(FVector2D(15.f, 10.f));
+		EnemyPoints.Add(epoint);
+	}
+	//create ememycompasswidget
+}
+
 bool UCompassWidget::CheckIfBehind(FVector cameraForward, FVector lookatNormal)
 {
 	float val = FVector::DotProduct(lookatNormal, cameraForward);
