@@ -22,7 +22,7 @@ public:
 	void CalcPointsPos();
 	void CalcGoalPos();
 	void CalcEnemysPos();
-	void AddEnemy(class ABaseCharacter* enemy);
+	void AddEnemyPoint(class ABaseCharacter* enemy);
 
 	bool CheckIfBehind(FVector cameraForward, FVector lookatNormal);
 
@@ -40,11 +40,12 @@ public:
 		class UImage* Goal_Image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		TSubclassOf<class UUserWidget> EnemyPointClass;
+		TSubclassOf<class UEnemyPointWidget> EnemyPointClass;
 
 	class UCanvasPanelSlot* Points_Slot;
 	class UCanvasPanelSlot* Goal_Slot;
 
 	TArray<ABaseCharacter*> Enemys;
-	TArray<UUserWidget*> EnemyPoints;
+	TArray<class UEnemyPointWidget*> EnemyPoints;
+	class UCameraComponent* PlayerCamera;
 };
