@@ -65,7 +65,8 @@
 				"CoreUObject",
 				"Slate",
 				"SlateCore",
-				"UMG"
+				"UMG",
+				"AIModule"
 			]
 		},
 		{

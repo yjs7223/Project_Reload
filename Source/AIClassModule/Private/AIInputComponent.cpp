@@ -31,7 +31,7 @@ void UAIInputComponent::AIRuning()
 	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	if (moveoncmp->e_move != EMove::Hit || moveoncmp->e_move != EMove::Stun)
+	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Normal;
 	}
@@ -42,7 +42,7 @@ void UAIInputComponent::AIStopRuning()
 	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	movement->SetMovementMode(MOVE_Walking);
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	if (moveoncmp->e_move != EMove::Hit || moveoncmp->e_move != EMove::Stun)
+	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Normal;
 	}
@@ -73,7 +73,7 @@ void UAIInputComponent::AIStartFire()
 	weaponcmp->StartFire();
 	weaponcmp->Fire();
 
-	if (moveoncmp->e_move != EMove::Hit)
+	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Attack;
 	}
@@ -86,7 +86,7 @@ void UAIInputComponent::AIStopFire()
 	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	weaponcmp->StopFire();
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	if (moveoncmp->e_move != EMove::Hit)
+	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Normal;
 	}
@@ -99,17 +99,21 @@ void UAIInputComponent::AIStartAiming()
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
 	UAIWeaponComponent* weapon = owner->FindComponentByClass<UAIWeaponComponent>();
 
-
-	cover->StartPeeking();
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	
+	if (movement->isRuning()) {
+		movement->SetMovementMode(MOVE_Walking);
+	}
+	
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	if (moveoncmp->e_move != EMove::Hit)
+	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Attack;
 	}
 
-	m_inputData.IsAiming = true;
+	cover->StartPeeking();
 	weapon->AimFalshOn();
-	
+	m_inputData.IsAiming = true;
 }
 
 void UAIInputComponent::AIStopAiming()
@@ -126,7 +130,11 @@ void UAIInputComponent::AIStopAiming()
 void UAIInputComponent::AIStartReload()
 {
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
-	moveoncmp->e_move = EMove::Attack;
+	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
+	{
+		moveoncmp->e_move = EMove::Attack;
+	}
+	
 	m_inputData.IsReload = true;
 
 }

@@ -10,7 +10,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
 //DECLARE_DELEGATE_OneParam(FOnChangedHeathDelegate, float);
 DECLARE_MULTICAST_DELEGATE(FOnVisibleHPUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAttackedUIDelegate);
-DECLARE_DELEGATE_OneParam(FOnCreateAttackedUIDelegate, class ABaseCharacter*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCreateAttackedUIDelegate, class ABaseCharacter*);
 DECLARE_DELEGATE_TwoParams(FOnVisibleInteractiveUIDelegate, bool, AActor*);
 
 /**

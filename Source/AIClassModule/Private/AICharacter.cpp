@@ -63,11 +63,11 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	DT_AIBaseStat = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIBaseStat.DT_AIBaseStat'"));
 	
 
-	ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_GrenadeDummy.BP_GrenadeDummy'"));
-	if (GrenadeData.Succeeded())
-	{
-		GrenadeBlueprint = (UClass*)GrenadeData.Object->GeneratedClass;
-	}
+	//ConstructorHelpers::FObjectFinder<UBlueprint> GrenadeData(TEXT("Blueprint'/Game/Aws/BP_GrenadeDummy.BP_GrenadeDummy'"));
+	//if (GrenadeData.Succeeded())
+	//{
+	//	GrenadeBlueprint = (UClass*)GrenadeData.Object->GeneratedClass;
+	//}
 
 	CollisionMesh = CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule")); //CreateDefaultSubobject<UCapsuleComponent>(FName("CapSule"));
 	CollisionMesh->SetupAttachment(RootComponent);
@@ -142,6 +142,8 @@ void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateWidget();
+
+	;
 }
 
 
@@ -221,27 +223,27 @@ void AAICharacter::IdleAnim()
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
 
-void AAICharacter::FireInTheHole(const AActor* myai,const float Velocity)
-{
-	float Gravity = 980.0f;
-	float Length_PlayerAI_XY = FVector2D((player->GetActorLocation().X - myai->GetActorLocation().X), (player->GetActorLocation().Y - myai->GetActorLocation().Y)).Length();
-	float M_PlayerAI_Z = player->GetActorLocation().Z - myai->GetActorLocation().Z;
-	float Gra_Leng = (Length_PlayerAI_XY * Length_PlayerAI_XY) * Gravity;
-	float Velocity_Z = (M_PlayerAI_Z * (Velocity * Velocity)) * 2;
-	float FourthSquare_Velocity = Velocity * Velocity * Velocity * Velocity;
-	float M_Velocity = FourthSquare_Velocity - ((Gra_Leng + Velocity_Z) * Gravity);
-	float D_Gra_Leng = 1 / (Length_PlayerAI_XY*Gravity);
-	FRotator Find_rotator = UKismetMathLibrary::FindLookAtRotation( myai->GetActorLocation(), player->GetActorLocation());
-	FRotator rotator = FRotator::ZeroRotator;
-	rotator.Roll = Find_rotator.Roll;
-	rotator.Yaw = Find_rotator.Yaw;
-	rotator.Pitch = UKismetMathLibrary::DegAtan((sqrt(M_Velocity) + (Velocity * Velocity)) * D_Gra_Leng);
-	if (M_Velocity >= 0)
-	{
-		GetWorld()->SpawnActor<AActor>(GrenadeBlueprint, myai->GetActorLocation(), rotator);
-	}
-
-}
+//void AAICharacter::FireInTheHole(const AActor* myai,const float Velocity)
+//{
+//	float Gravity = 980.0f;
+//	float Length_PlayerAI_XY = FVector2D((player->GetActorLocation().X - myai->GetActorLocation().X), (player->GetActorLocation().Y - myai->GetActorLocation().Y)).Length();
+//	float M_PlayerAI_Z = player->GetActorLocation().Z - myai->GetActorLocation().Z;
+//	float Gra_Leng = (Length_PlayerAI_XY * Length_PlayerAI_XY) * Gravity;
+//	float Velocity_Z = (M_PlayerAI_Z * (Velocity * Velocity)) * 2;
+//	float FourthSquare_Velocity = Velocity * Velocity * Velocity * Velocity;
+//	float M_Velocity = FourthSquare_Velocity - ((Gra_Leng + Velocity_Z) * Gravity);
+//	float D_Gra_Leng = 1 / (Length_PlayerAI_XY*Gravity);
+//	FRotator Find_rotator = UKismetMathLibrary::FindLookAtRotation( myai->GetActorLocation(), player->GetActorLocation());
+//	FRotator rotator = FRotator::ZeroRotator;
+//	rotator.Roll = Find_rotator.Roll;
+//	rotator.Yaw = Find_rotator.Yaw;
+//	rotator.Pitch = UKismetMathLibrary::DegAtan((sqrt(M_Velocity) + (Velocity * Velocity)) * D_Gra_Leng);
+//	if (M_Velocity >= 0)
+//	{
+//		GetWorld()->SpawnActor<AActor>(GrenadeBlueprint, myai->GetActorLocation(), rotator);
+//	}
+//
+//}
 
 void AAICharacter::Init()
 {

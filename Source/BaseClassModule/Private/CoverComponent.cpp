@@ -49,6 +49,7 @@ void UCoverComponent::BeginPlay()
 
 	if (m_PathFollowingComp == nullptr)
 	{
+		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
 		m_PathFollowingComp = NewObject<UPathFollowingComponent>(owner->GetController());
 		m_PathFollowingComp->RegisterComponentWithWorld(owner->GetController()->GetWorld());
 		m_PathFollowingComp->Initialize();
@@ -59,13 +60,13 @@ void UCoverComponent::BeginPlay()
 	SetIsFaceRight(true);
 
 	if (!Cast<AAIController>(owner->Controller)) {
-		PlayerCharacterTick.AddLambda([this](float DeltaTime) {SettingCoverPoint(DeltaTime); });
-		PlayerCharacterTick.AddLambda([this](float DeltaTime) {CalculCoverPath(DeltaTime); });
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPoint);
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::CalculCoverPath);
 	}
-	CoverCharacterTick.AddLambda([this](float DeltaTime) {RotateSet(DeltaTime); });
-	CoverCharacterTick.AddLambda([this](float DeltaTime) {AimSetting(DeltaTime); });
-	CoverCharacterTick.AddLambda([this](float DeltaTime) {CornenringCheck(DeltaTime); });
-	CoverCharacterTick.AddLambda([this](float DeltaTime) {BeCrouch(DeltaTime); });
+	CoverCharacterTick.AddUObject(this, &UCoverComponent::RotateSet);
+	CoverCharacterTick.AddUObject(this, &UCoverComponent::AimSetting);
+	CoverCharacterTick.AddUObject(this, &UCoverComponent::CornenringCheck);
+	CoverCharacterTick.AddUObject(this, &UCoverComponent::BeCrouch);
 }
 
 
@@ -174,15 +175,19 @@ bool UCoverComponent::StartAICover()
 		}
 
 	}
-
 	if (result.GetActor() == nullptr) return false;
-	 
-	RotateSet(0.0f);
+	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
+		m_CanCoverPointNormal = result.Normal;
+	}
 
-	owner->SetActorLocation(result.Location + result.Normal * capsule->GetScaledCapsuleRadius() * 1.01f);
+	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
+	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
 
+	PlayMontageStartCover.Broadcast();
+	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
+	RotateSet(0.0f);
 	return m_IsCover;
 }
 
@@ -692,7 +697,7 @@ void UCoverComponent::StopCover()
 	mCoverShootingState = ECoverShootingState::None;
 	mPeekingState = EPeekingState::None;
 	SetIsFaceRight(true);
-
+	m_CanCoverPointNormal = FVector::ZeroVector;
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	m_Input->m_CanUnCrouch = true;
@@ -803,7 +808,7 @@ bool UCoverComponent::isMustCrouch()
 		UEngineTypes::ConvertToTraceType(traceChanel),
 		false,
 		{},
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		tempResult,
 		true);
 
@@ -819,7 +824,7 @@ void UCoverComponent::StartPeeking()
 	if (FMath::Abs(m_Weapon->aimOffset.Yaw) > 80) return;
 
 	if(mPeekingState != EPeekingState::None) return;
-
+	//if (owner->GetController<AAIController>()) return;
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
