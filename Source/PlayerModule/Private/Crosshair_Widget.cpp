@@ -236,6 +236,7 @@ void UCrosshair_Widget::CheckDie()
 			}
 
 		}
+
 	}
 	if (!weapon->m_result.GetActor())
 	{
@@ -244,23 +245,24 @@ void UCrosshair_Widget::CheckDie()
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{
-		if (stat->bDie)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
-			//stat->isDie = false;
-			Kill_Overlay->SetRenderOpacity(1.0f);
-			GetWorld()->GetTimerManager().ClearTimer(KillTimer);
-			if (IsAnimationPlaying(KillAnim))
+			if (stat->bDie)
 			{
-				StopAnimation(KillAnim);
-			}
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
+				//stat->isDie = false;
+				Kill_Overlay->SetRenderOpacity(1.0f);
+				GetWorld()->GetTimerManager().ClearTimer(KillTimer);
+				if (IsAnimationPlaying(KillAnim))
+				{
+					StopAnimation(KillAnim);
+				}
 
-			GetWorld()->GetTimerManager().SetTimer(KillTimer,
-				FTimerDelegate::CreateLambda([&]()
-					{
-						PlayAnimationForward(KillAnim);
-					}
-			), .01f, false);
+				GetWorld()->GetTimerManager().SetTimer(KillTimer,
+					FTimerDelegate::CreateLambda([&]()
+						{
+							PlayAnimationForward(KillAnim);
+						}
+				), .01f, false);
+      }
 		}
 	}
 }
