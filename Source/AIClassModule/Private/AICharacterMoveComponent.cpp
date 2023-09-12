@@ -72,6 +72,7 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 				input->AIRuning();
 			}
 			timeDeltaTime = 0;
+
 			e_move = EMove::Normal;
 			break;
 		}
