@@ -48,13 +48,13 @@ void UPlayerHUDWidget::InitWidgets()
 
 void UPlayerHUDWidget::CreateDamageWidget(float value, FHitResult result)
 {
-	/*if (Damage_WidgetClass)
+	if (Damage_WidgetClass)
 	{
-		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(Cast<APlayerController>(GetController()), Damage_WidgetClass);
+		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(GetOwningPlayer(), Damage_WidgetClass);
 		if (dwidget)
 		{
 			dwidget->SetDamageText(value, result);
 			dwidget->AddToViewport();
 		}
-	}*/
+	}
 }
