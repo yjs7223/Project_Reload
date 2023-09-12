@@ -130,35 +130,3 @@ void UPlayerStatComponent::Interacting()
 	}
 }
 
-//void UPlayerStatComponent::Attacked(float p_damage)
-//{
-//	Super::Attacked(p_damage);
-//
-//	if (AttackedCameraShake)
-//	{
-//		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(AttackedCameraShake, 1.0f);
-//
-//	}
-//
-//	OnVisibleHPUIDelegate.Broadcast();
-//	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
-//	OnVisibleAttackedUIDelegate.ExecuteIfBound();
-//	
-//}
-//
-//void UPlayerStatComponent::Attacked(float p_damage, ACharacter* character)
-//{
-//	Super::Attacked(p_damage, character);
-//
-//	TargetEnemy = character;
-//
-//	if (AttackedCameraShake)
-//	{
-//		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(AttackedCameraShake, 1.0f);
-//	}
-//
-//	OnVisibleHPUIDelegate.Broadcast();
-//	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
-//	OnVisibleAttackedUIDelegate.ExecuteIfBound();
-//}
-
