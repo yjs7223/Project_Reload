@@ -31,36 +31,13 @@ void UCompassWidget::CalcPointsPos()
 	FVector2D pos;
 	pos.Y = 0;
 	pos.X = (GetOwningPlayer()->GetControlRotation().Yaw - 180) * -1.f * 10.f;
-<<<<<<< Updated upstream
-	return pos;
-=======
-	
 	Points_Slot->SetPosition(pos);
->>>>>>> Stashed changes
 }
 
 void UCompassWidget::CalcGoalPos()
 {
 	if (GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>()->InteractActor)
 	{
-<<<<<<< Updated upstream
-		FVector2D pos;
-
-		FVector2D normal;
-		FVector goalLoc = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>()->InteractActor->GetActorLocation();
-		FVector pcLoc = GetOwningPlayerPawn()->GetActorLocation();
-		FRotator rot = UKismetMathLibrary::FindLookAtRotation(goalLoc, pcLoc);
-		normal = FVector2D(rot.Vector());
-		normal.Normalize();
-		FVector2D(GetOwningPlayerPawn()->GetActorForwardVector());
-		float fdot = FVector2D::DotProduct(FVector2D(GetOwningPlayerPawn()->GetActorForwardVector()), normal);
-		float rdot = FVector2D::DotProduct(FVector2D(GetOwningPlayerPawn()->GetActorRightVector()), normal);
-		float val = (rdot / fdot) * 700.f;
-		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::SanitizeFloat(val));
-		pos.Y = 0;
-		pos.X = val;
-		return pos;
-=======
 		FVector2D pos = FVector2D::ZeroVector;
 		UCameraComponent* camera = GetOwningPlayerPawn()->FindComponentByClass<UCameraComponent>();
 		if (camera)
@@ -96,6 +73,5 @@ bool UCompassWidget::CheckIfBehind(FVector cameraForward, FVector lookatNormal)
 	else
 	{
 		return false;
->>>>>>> Stashed changes
 	}
 }
