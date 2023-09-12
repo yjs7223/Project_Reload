@@ -22,7 +22,7 @@ public:
 	void CalcPointsPos();
 	void CalcGoalPos();
 	void CalcEnemysPos();
-	void AddEnemy(AActor* enemy);
+	void AddEnemy(class ABaseCharacter* enemy);
 
 	bool CheckIfBehind(FVector cameraForward, FVector lookatNormal);
 
@@ -45,6 +45,6 @@ public:
 	class UCanvasPanelSlot* Points_Slot;
 	class UCanvasPanelSlot* Goal_Slot;
 
-	TArray<AActor*> Enemys;
+	TArray<ABaseCharacter*> Enemys;
 	TArray<UUserWidget*> EnemyPoints;
 };
