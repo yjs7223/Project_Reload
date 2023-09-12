@@ -99,17 +99,21 @@ void UAIInputComponent::AIStartAiming()
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
 	UAIWeaponComponent* weapon = owner->FindComponentByClass<UAIWeaponComponent>();
 
-
-	cover->StartPeeking();
+	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	
+	if (movement->isRuning()) {
+		movement->SetMovementMode(MOVE_Walking);
+	}
+	
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
 	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Attack;
 	}
 
-	m_inputData.IsAiming = true;
+	cover->StartPeeking();
 	weapon->AimFalshOn();
-	
+	m_inputData.IsAiming = true;
 }
 
 void UAIInputComponent::AIStopAiming()
