@@ -19,8 +19,10 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	FVector2D CalcPointsPos();
-	FVector2D CalcGoalPos();
+	void CalcPointsPos();
+	void CalcGoalPos();
+
+	bool CheckIfBehind(FVector cameraForward, FVector lookatNormal);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
@@ -33,5 +35,5 @@ public:
 		class UImage* Goal_Image;
 
 	class UCanvasPanelSlot* Points_Slot;
-	
+	class UCanvasPanelSlot* Goal_Slot;
 };

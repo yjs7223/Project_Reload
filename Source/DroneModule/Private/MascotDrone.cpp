@@ -72,7 +72,8 @@ void AMascotDrone::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	if (UWeaponComponent::CheckActorTag(OtherActor, TEXT("Enemy")))
 	{
 		if (!UWeaponComponent::CheckActorTag(OtherActor, TEXT("Barrel")))
-			m_NearAI.Add(OtherActor);
+			if (!UWeaponComponent::CheckActorTag(OtherActor, TEXT("Spider")))
+				m_NearAI.Add(OtherActor);
 	}
 }
 
@@ -81,8 +82,9 @@ void AMascotDrone::OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* 
 	if (UWeaponComponent::CheckActorTag(OtherActor, TEXT("Enemy")))
 	{
 		if (!UWeaponComponent::CheckActorTag(OtherActor, TEXT("Barrel")))
-			if(m_NearAI.Find(OtherActor))
-				m_NearAI.Remove(OtherActor);
+			if (!UWeaponComponent::CheckActorTag(OtherActor, TEXT("Spider")))
+				if(m_NearAI.Find(OtherActor))
+					m_NearAI.Remove(OtherActor);
 	}
 }
 
