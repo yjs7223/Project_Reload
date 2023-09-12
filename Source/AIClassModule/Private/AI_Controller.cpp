@@ -245,6 +245,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	}*/
 	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
+		SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 		//DistanceToPlayer = 0.0f;
 		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
 		{
