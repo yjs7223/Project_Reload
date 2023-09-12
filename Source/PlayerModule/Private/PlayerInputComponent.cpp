@@ -57,6 +57,8 @@ void UPlayerInputComponent::BeginPlay()
 	
 	UPlayerStatComponent* statcomp = owner->FindComponentByClass<UPlayerStatComponent>();
 	InputComponent->BindAction("Interactive", IE_Pressed, statcomp, &UPlayerStatComponent::Interacting);
+
+	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 }
 
 void UPlayerInputComponent::MoveForward(float Value)
@@ -72,7 +74,7 @@ void UPlayerInputComponent::MoveRight(float Value)
 void UPlayerInputComponent::InputMove()
 {
 	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
-	if (!covercomp->IsCover()) {
+	if (!covercomp->IsCover() && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
 		covercomp->StopCover();
 	}
 }

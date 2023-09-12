@@ -14,7 +14,7 @@
 #include "Player_HP_Widget.h"
 #include "Player_Ammo_Widget.h"
 #include "CoverComponent.h"
-
+#include "PlayerCharactorController.h"
 #include "Damage_Widget.h"
 #include "PlayerHUDWidget.h"
 #include "CameraControllComponent.h"
