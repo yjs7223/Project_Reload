@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "WeaponComponent.generated.h"
 
+DECLARE_DELEGATE(FDele_SpawnTrigger);
+
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
@@ -17,6 +19,7 @@ enum class EWeaponType : uint8
 	MAX			UMETA(Hidden)
 };
 
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
 {
@@ -24,8 +27,10 @@ class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
 
 public:
 	DECLARE_MULTICAST_DELEGATE(FPlayShottingAinmationDelegate);
+
 public:
 	FPlayShottingAinmationDelegate shootingAnimation;
+	FDele_SpawnTrigger Dele_SpawnTrigger;
 public:	
 	// Sets default values for this component's properties
 	UWeaponComponent();
@@ -33,6 +38,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 
 public:	
 	// Called every frame

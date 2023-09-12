@@ -41,32 +41,6 @@ void UCrosshair_Widget::NativeConstruct()
 	UTexture2D* texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/CrossHair_Texture/T_CrossHair_NormalHit.T_CrossHair_NormalHit'"));
 	FSlateBrush brush;
 	
-	/*brush.SetResourceObject(texture);
-	UOverlaySlot* hitslot;
-	if (Hit_image)
-	{
-		hitslot = Cast<UOverlaySlot>(Hit_image->Slot);
-		hitslot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
-		hitslot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
-
-		brush.SetImageSize(FVector2D(45.f, 45.f));
-		Hit_image->SetBrush(brush);
-		Hit_image->SetRenderOpacity(0.0f);
-	}*/
-
-	/*if (HeadHit_image)
-	{
-		hitslot = Cast<UOverlaySlot>(HeadHit_image->Slot);
-		hitslot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
-		hitslot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
-
-		brush.TintColor = FSlateColor(FColor::Red);
-		HeadHit_image->SetBrush(brush);
-		HeadHit_image->SetRenderScale(FVector2D(3.0f, 3.0f));
-		HeadHit_image->SetRenderTransformAngle(45.0f);
-		HeadHit_image->SetRenderOpacity(0.0f);
-	}*/
-	
 	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/yjs/UI/Materials/M_AmmoRadial.M_AmmoRadial'"));
 	if (mat)
 	{
@@ -93,6 +67,7 @@ void UCrosshair_Widget::NativeConstruct()
 		}
 	}
 
+	SetWidgetVisible();
 	bWidgetVisible = true;
 	widgetVisibleTime = 0;
 }
@@ -216,51 +191,57 @@ void UCrosshair_Widget::CheckDie()
 {
 
 	APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn());
-
-	if (weapon->bHit)
+	if (this)
 	{
-		if (weapon->headhit)
+		if (weapon->bHit)
 		{
-			weapon->bHit = false;
-			weapon->headhit = false;
-			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
-			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
-			Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
-		}
-		else
-		{
-			weapon->bHit = false;
-			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
-			Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
-			Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
-		}
+			if (weapon->headhit)
+			{
+				weapon->bHit = false;
+				weapon->headhit = false;
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
+				Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
+				Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
+				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
+				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
+			}
+			else
+			{
+				weapon->bHit = false;
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
+				Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
+				Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
+				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
+				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
+			}
 
-		GetWorld()->GetTimerManager().ClearTimer(HitTimer);
-		if (IsAnimationPlaying(HitAnim))
-		{
-			//Hit_Overlay->SetRenderOpacity(0.0f);
-			StopAnimation(HitAnim);
-		}
+			GetWorld()->GetTimerManager().ClearTimer(HitTimer);
+			if (IsAnimationPlaying(HitAnim))
+			{
+				//Hit_Overlay->SetRenderOpacity(0.0f);
+				StopAnimation(HitAnim);
+			}
 
-		if (HitAnim)
-		{
-			GetWorld()->GetTimerManager().SetTimer(HitTimer,
-				FTimerDelegate::CreateLambda([&]()
-					{
-						if (HitAnim)
+			if (HitAnim)
+			{
+				GetWorld()->GetTimerManager().SetTimer(HitTimer,
+					FTimerDelegate::CreateLambda([&]()
 						{
-							PlayAnimationForward(HitAnim);
+							if (HitAnim)
+							{
+								PlayAnimationForward(HitAnim);
+							}
 						}
-					}
-			), .01f, false);
-		}
-		
-	}
+				), .01f, false);
+			}
 
+		}
+
+	}
+	if (!weapon->m_result.GetActor())
+	{
+		return;
+	}
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{
@@ -312,54 +293,60 @@ void UCrosshair_Widget::SetAmmoImage()
 
 void UCrosshair_Widget::PlayReloadAnim()
 {
-	if (IsAnimationPlaying(FadeOutAnim))
+	if (this)
 	{
-		StopAnimation(FadeOutAnim);
-	}
-	Reload_Overlay->SetRenderOpacity(1.0f);
-	
-	if (ReloadAnim)
-	{
-		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, FTimerDelegate::CreateLambda([&]()
-			{
-				if (ReloadAnim)
+		if (IsAnimationPlaying(FadeOutAnim))
+		{
+			StopAnimation(FadeOutAnim);
+		}
+		Reload_Overlay->SetRenderOpacity(1.0f);
+
+		if (ReloadAnim)
+		{
+			GetWorld()->GetTimerManager().SetTimer(ReloadTimer, FTimerDelegate::CreateLambda([&]()
 				{
-					PlayAnimationForward(ReloadAnim);
-				}
-			}), 0.01f, false);
+					if (ReloadAnim)
+					{
+						PlayAnimationForward(ReloadAnim);
+					}
+				}), 0.01f, false);
+		}
 	}
 }
 
 void UCrosshair_Widget::SetWidgetVisible()
 {
-	GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
-	//StopAllAnimations();
-	if (IsAnimationPlaying(FadeOutAnim))
+	if (this)
 	{
-		StopAnimation(FadeOutAnim);
-	}
-	Crosshair_Overlay->SetRenderOpacity(1.0f);
-	Reload_Overlay->SetRenderOpacity(1.0f);
-	if (weapon)
-	{
-		if (weapon->bAiming || weapon->bFire)
+		GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
+		
+		if (IsAnimationPlaying(FadeOutAnim))
 		{
-			bWidgetVisible = true;
-			GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
-			Crosshair_Overlay->SetRenderOpacity(1.0f);
+			StopAnimation(FadeOutAnim);
 		}
-		else if(!weapon->bAiming && !weapon->bFire)
+		Crosshair_Overlay->SetRenderOpacity(1.0f);
+		Reload_Overlay->SetRenderOpacity(1.0f);
+		if (weapon)
 		{
-			if (FadeOutAnim)
+			if (weapon->bAiming || weapon->bFire)
 			{
-				bWidgetVisible = false;
-				GetWorld()->GetTimerManager().SetTimer(VisibleTimer, FTimerDelegate::CreateLambda([&]()
-					{
-						if (FadeOutAnim)
+				bWidgetVisible = true;
+				GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
+				Crosshair_Overlay->SetRenderOpacity(1.0f);
+			}
+			else if (!weapon->bAiming && !weapon->bFire)
+			{
+				if (FadeOutAnim)
+				{
+					bWidgetVisible = false;
+					GetWorld()->GetTimerManager().SetTimer(VisibleTimer, FTimerDelegate::CreateLambda([&]()
 						{
-							PlayAnimationForward(FadeOutAnim);
-						}
-					}), 5.f, false);
+							if (FadeOutAnim)
+							{
+								PlayAnimationForward(FadeOutAnim);
+							}
+						}), 5.f, false);
+				}
 			}
 		}
 	}

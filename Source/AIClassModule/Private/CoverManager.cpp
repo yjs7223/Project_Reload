@@ -21,13 +21,6 @@ void ACoverManager::BeginPlay()
 		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverSystem::StaticClass()));
 	commander = Cast<AAICommander>
 		(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
-	
-	
-
-
-
-
-
 }
 
 void ACoverManager::Tick(float DeltaTime)
@@ -61,12 +54,12 @@ void ACoverManager::CoverPointArray()
 
 	//CoverSystem->GenerateCovers(true, false);
 	//CoverSystem->custom_GenerateCovers(true, false, true,2500);
-	TArray<FCoverHandle> testarray;
-	CoverSystem->GetCoversWithinBounds(FBoxSphereBounds(FVector3d(CoverSystem->GetActorLocation()), FVector3d(20000.0f, 20000.0f, 20000.0f), 20000.0f), testarray);
-	if (!testarray.IsEmpty())
+	TArray<FCoverHandle> CoverManagerArray;
+	CoverSystem->GetCoversWithinBounds(FBoxSphereBounds(FVector3d(CoverSystem->GetActorLocation()), FVector3d(20000.0f, 20000.0f, 20000.0f), 20000.0f), CoverManagerArray);
+	if (!CoverManagerArray.IsEmpty())
 	{
 		commander->CoverArray.Reset();
-		for (auto item : testarray)
+		for (auto item : CoverManagerArray)
 		{
 			FCoverData coverdata;
 			CoverSystem->GetCoverData(item, coverdata);

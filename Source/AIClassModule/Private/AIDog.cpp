@@ -13,21 +13,10 @@ AAIDog::AAIDog()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionFX(TEXT("ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_B.P_Explosion_Big_B'"));
-	if (ExplosionFX.Succeeded())
-	{
-		explosionFX = ExplosionFX.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSound(TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Dog_Cue.Explosion_Dog_Cue'"));
-	if (ExplosionSound.Succeeded())
-	{
-		explosionSound = ExplosionSound.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<USoundBase> FlashSound(TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Timer_Cue.Explosion_Timer_Cue'"));
-	if (FlashSound.Succeeded())
-	{
-		flashSound = FlashSound.Object;
-	}
+	explosionFX = LoadObject<UParticleSystem>(NULL, TEXT("ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_B.P_Explosion_Big_B'"));
+	explosionSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Dog_Cue.Explosion_Dog_Cue'"));
+	flashSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Timer_Cue.Explosion_Timer_Cue'"));
+	MoveStart = false;
 }
 
 void AAIDog::StartExplosion()
@@ -91,6 +80,7 @@ void AAIDog::LightFlash(float t)
 void AAIDog::AIMove(const FVector Destination)
 {
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), Destination);
+	MoveStart = true;
 }
 
 // Called when the game starts or when spawned
@@ -106,9 +96,14 @@ void AAIDog::BeginPlay()
 void AAIDog::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	StartExplosion();
-	ExplosionTimer(DeltaTime);
-	LightFlash(DeltaTime);
+	Time += DeltaTime;
+	if (Time >= 2.0f)
+	{
+		StartExplosion();
+		ExplosionTimer(DeltaTime);
+		LightFlash(DeltaTime);
+	}
+	
 }
 
 // Called to bind functionality to input

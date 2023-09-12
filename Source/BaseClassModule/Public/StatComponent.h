@@ -13,6 +13,7 @@ enum class EHitType: uint8
 	None = 0	UMETA(Hidden),
 	Normal		UMETA(DisplayName = "Normal"),
 	Knockback	UMETA(DisplayName = "Knockback"),
+	Stun		UMETA(DisplayName = "Stun"),
 	MAX			UMETA(Hidden)
 };
 
@@ -86,7 +87,8 @@ public:
 		bool bDie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool isThreat;
+		bool bThreat;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 		float HitReactionScale;
 

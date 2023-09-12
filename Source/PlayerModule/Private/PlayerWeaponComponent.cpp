@@ -41,18 +41,6 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 		PlayerWeaponDataTable = DataTable.Object;
 	}
 
-	/*static ConstructorHelpers::FObjectFinder<UDataAsset> rifle_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Rifle.DA_Rifle'"));
-	if (rifle_da.Succeeded())
-	{
-
-		RifleDataAssets = Cast<UWeaponDataAsset>(rifle_da.Object);
-	}
-
-	static ConstructorHelpers::FObjectFinder<UDataAsset> pistol_da(TEXT("WeaponDataAsset'/Game/yjs/DA_Pistol.DA_Pistol'"));
-	if (pistol_da.Succeeded())
-	{
-		PistolDataAssets = Cast<UWeaponDataAsset>(pistol_da.Object);
-	}*/
 
 	static ConstructorHelpers::FObjectFinder<UDataAsset> hitimpact(TEXT("HitImapactDataAsset'/Game/yjs/DA_HItImapct.DA_HItImapct'"));
 	if (hitimpact.Succeeded())
@@ -65,23 +53,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 	{
 		fieldActor = fActor.Object;
 	}
-	/*weapontype = EWeaponType::TE_Rifle;
-	if (RifleDataAssets)
-	{
-		if (RifleDataAssets->WeaponSkeletalMesh)
-		{
-			WeaponMesh->SetSkeletalMesh(RifleDataAssets->WeaponSkeletalMesh);
-		}
-
-		if (RifleDataAssets->weaponAnim)
-		{
-			WeaponMesh->SetAnimInstanceClass(RifleDataAssets->weaponAnim);
-		}
-
-		FVector location = FVector::ZeroVector;
-		location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
-		WeaponMesh->SetRelativeLocation(location);
-	}*/
+	
 }
 
 void UPlayerWeaponComponent::BeginPlay()
@@ -242,7 +214,7 @@ void UPlayerWeaponComponent::Fire()
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
@@ -280,7 +252,7 @@ void UPlayerWeaponComponent::Fire()
 			{
 				bHit = true;
 				float damageVlaue = 0;
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.BoneName.ToString());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.BoneName.ToString());
 				if (m_result.BoneName == "head")
 				{
 					damageVlaue = CalcDamage(m_result, damage) * head_mag;
@@ -763,7 +735,7 @@ void UPlayerWeaponComponent::SpawnDecal(FHitResult result)
 	FVector DecalLocation = result.Location;
 	
 
-	UDecalComponent* decal = UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), Decal, DecalSize, DecalLocation, DecalRotation, 10.0f);
+	UDecalComponent* decal = UGameplayStatics::SpawnDecalAtLocation(result.GetActor(), PlayerWeaponDataAsset->BulletHole_Decals[0], DecalSize, DecalLocation, DecalRotation, 10.0f);
 	if (decal)
 	{
 		decal->SetFadeScreenSize(0.0f);
@@ -816,7 +788,7 @@ void UPlayerWeaponComponent::Threaten()
 					UStatComponent* stat = result.GetActor()->FindComponentByClass<UStatComponent>();
 					if (stat)
 					{
-						stat->isThreat = true;
+						stat->bThreat = true;
 					}
 				}
 			}

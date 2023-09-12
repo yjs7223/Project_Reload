@@ -23,27 +23,27 @@ class AICLASSMODULE_API UAIPatrolComponent : public UActorComponent
 public:	
 	UAIPatrolComponent();
 
-	// Å¸ÀÔ
+	// Å¸ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		Patrol_Type patrol_Type;
 
-	// ¾×ÅÍ
+	// ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		APatrolActor* patrol_Actor;
 
-	// AI Ä³¸¯ÅÍ
+	// AI Ä³ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		AAICharacter* owner;
 
-	// ÃÖ´ë ¼øÂû ¹øÈ£
+	// ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		int patrol_Num;
 
-	// ÇöÀç ¼øÂû ¹øÈ£
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		int cur_patrol_Num;
 
-	// ¼øÂû ¹æÇâ ( true : Á¤¹æÇâ, false : ¿ª¹æÇâ)
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ( true : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, false : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PatrolSetting")
 		bool patrol_Dir;
 
@@ -56,10 +56,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	// ¸ñÇ¥·Î ÀÌµ¿
+	// ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½Ìµï¿½
 	void PatrolMove(const FVector Destination);
 
-	// ¼øÂû ¹øÈ£ ³Ñ±â±â
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ñ±ï¿½ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Patrol")
 	void SetNextPatrolNum();
 };

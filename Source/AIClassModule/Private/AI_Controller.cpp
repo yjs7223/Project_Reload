@@ -54,11 +54,8 @@ AAI_Controller::AAI_Controller(const FObjectInitializer& ObjectInitializer)
 	}
 	behavior_tree_component = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	*/
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_BaseAIObject(TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/BaseAI/BB/BB_BaseAI.BB_BaseAI'"));
-	if (BB_BaseAIObject.Succeeded())
-	{
-		BBAsset = BB_BaseAIObject.Object;
-	}
+	BBAsset = LoadObject<UBlackboardData>(NULL, TEXT("BlackboardData'/Game/AI_Project/AI_Pakage/BaseAI/BB/BB_BaseAI.BB_BaseAI'"));
+	
 
 	commander = nullptr;
 	em_normal = false;
@@ -220,7 +217,7 @@ void AAI_Controller::SetUseCover()
 				else
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", false);
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
+					//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow , TEXT("false"));
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Blue, false, 0.1f);
 
 					/*DrawDebugCapsule(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetDistanceTo(player)
@@ -240,7 +237,7 @@ void AAI_Controller::RunBTT()
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, GetControlRotation().Vector().ToString());
 	/*if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);
@@ -253,7 +250,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		{
 			if (em_normal == false)
 			{
-				if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move != EMove::Hit)
+				if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move != EMove::Hit || GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move != EMove::Stun)
 				{
 					GetPawn()->FindComponentByClass<UAICharacterMoveComponent>()->e_move = EMove::Normal;
 				}

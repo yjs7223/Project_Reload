@@ -28,11 +28,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float impactRadius;				// 폭발 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
+		float Time;			
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float explosionTime;			// 폭발 타이머 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float curExplosionTime;			// 현재 폭발 시간
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		bool explosionEnabled;			// 폭발 활성화
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
+		bool MoveStart;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		float explosionStartDistance;	// 폭발 시작 거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
@@ -72,6 +76,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// 폭발
+	UFUNCTION(BlueprintCallable)
 	void Explosion();
 
 	// 이동

@@ -21,17 +21,34 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void TranslateHPWidget();
-	void TranslateAmmoWidget();
+	void InitWidgets();
+
+	void CreateDamageWidget(float value, FHitResult result);
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UPlayer_HP_Widget* Player_HP_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UPlayer_Ammo_Widget* Player_Ammo_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCrosshair_Widget* Crosshair_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UAttacked_Widget* Attacked_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UInteractiveWidget* InteractiveWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCompassWidget* CompassWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class APlayerCharacter* owner;
+		class ULineNaviWidget* LineNaviWidget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		class UPlayer_HP_Widget* WBP_PlayerHP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		class UUserWidget* WBP_AMMO;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UDamage_Widget> Damage_WidgetClass;
+	
 
 };
