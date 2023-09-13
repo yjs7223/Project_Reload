@@ -20,6 +20,6 @@ public:
 	float GetActorDegree(FVector p_PlayerLocation, FVector p_SelfLocation);
 
 	UFUNCTION(BlueprintCallable, Category = "Boss")
-	FVector MoveInCircle(FVector p_Center, float p_Radius, float Angle);
+	void MoveInCircle(FVector Origin, float Radius, float Angle);
 
 };
