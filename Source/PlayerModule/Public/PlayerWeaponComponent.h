@@ -12,6 +12,7 @@ DECLARE_DELEGATE(FOnChangedCrossHairDieDelegate);
 DECLARE_DELEGATE(FOnChangedAmmoUIDelegate);
 
 DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
+DECLARE_DELEGATE(FOnStopReloadUIDelegate);
 
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAmmoUIDelegate);
@@ -39,6 +40,7 @@ public:
 	FOnChangedAmmoUIDelegate OnChangedAmmoUIDelegate;
 
 	FOnPlayReloadUIDelegate OnPlayReloadUIDelegate;
+	FOnStopReloadUIDelegate OnStopReloadUIDelegate;
 
 protected:
 	// Called when the game starts
@@ -67,6 +69,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
 	void StopReload();
+	UFUNCTION(BlueprintCallable)
+	void FinshReload();
 	UFUNCTION(BlueprintCallable)
 	void WeaponChange();
 	void WeaponMeshSetting(class UPlayerWeaponDataAsset* WeapondataAsset);

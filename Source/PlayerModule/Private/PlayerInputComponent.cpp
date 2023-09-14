@@ -81,18 +81,15 @@ void UPlayerInputComponent::InputMove()
 
 void UPlayerInputComponent::Runing()
 {
-	UBaseCharacterMovementComponent* movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	UBaseCharacterMovementComponent* movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 	UCoverComponent* covercomp = owner->FindComponentByClass<UCoverComponent>();
 	if (covercomp->IsCover()) return;
 
 	if (movement->isRuning()) {
-		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Walking);
+		movement->SetMovementMode(MOVE_Walking);
 	}
 	else {
-		owner->FindComponentByClass<UBaseCharacterMovementComponent>()->SetMovementMode(MOVE_Custom, CMOVE_Runing);
-	}
-
-	if (movement->isRuning()) {
+		movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		m_inputData.IsAiming = false;
 	}
 }
@@ -158,11 +155,11 @@ void UPlayerInputComponent::ChangeSubWeapon()
 
 void UPlayerInputComponent::StartReload()
 {
-	m_PlayerWeapon->StartReload();
+	//m_PlayerWeapon->StartReload();
 	if (m_PlayerWeapon->bReload)
 	{
-		m_inputData.IsReload = true;
 	}
+	m_inputData.IsReload = true;
 }
 
 void UPlayerInputComponent::TestHud()
