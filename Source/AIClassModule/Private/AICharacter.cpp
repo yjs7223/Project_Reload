@@ -41,7 +41,7 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
 	AIStat = CreateDefaultSubobject<UAIStatComponent>(TEXT("AIStat"));
-	m_InputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
+	AIInputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 	AIControllerClass = AAI_Controller::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -133,7 +133,7 @@ void AAICharacter::BeginPlay()
 	AIMovement->SetComponentTickEnabled(false);
 	AIWeapon->SetComponentTickEnabled(false);
 	AIStat->SetComponentTickEnabled(false);
-	m_InputComponent->SetComponentTickEnabled(false);
+	AIInputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
 	//
 }
@@ -255,7 +255,7 @@ void AAICharacter::Init()
 	AIMovement->SetComponentTickEnabled(true);
 	AIWeapon->SetComponentTickEnabled(true);
 	AIStat->SetComponentTickEnabled(true);
-	m_InputComponent->SetComponentTickEnabled(true);
+	AIInputComponent->SetComponentTickEnabled(true);
 	m_CoverComponent->SetComponentTickEnabled(true);
 }
 
@@ -274,7 +274,7 @@ void AAICharacter::Dead()
 	AIWeapon->GetOwner()->GetWorldTimerManager().ClearTimer(AIWeapon->timer);
 
 	AIStat->SetComponentTickEnabled(false);
-	m_InputComponent->SetComponentTickEnabled(false);
+	AIInputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
 }
 
