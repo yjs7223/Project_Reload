@@ -88,6 +88,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoilTick(DeltaTime);
 	ReloadTick(DeltaTime);
 	RecoveryTick(DeltaTime);
+	CalculateBlockingTick(DeltaTime);
 
 	if (bAiming)
 	{
@@ -618,6 +619,25 @@ void UPlayerWeaponComponent::RecoilTick(float p_deltatime)
 	}
 }
 
+void UPlayerWeaponComponent::CalculateBlockingTick(float p_deltatime)
+{
+	FVector ViewPoint;
+	FRotator cameraRotation;
+	FHitResult result;
+	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
+	FCollisionQueryParams param(NAME_None, true, owner);
+	GetWorld()->LineTraceSingleByChannel(result, ViewPoint, ViewPoint + cameraRotation.Vector() * 100, ECC_Visibility, param);
+
+	if (result.bBlockingHit) {
+		float distance = (owner->GetActorLocation() - result.Location).Length();
+		if (distance < 106) {
+			m_IsWeaponBlocking = true;
+			return;
+		}
+	}
+	m_IsWeaponBlocking = false;
+}
+
 void UPlayerWeaponComponent::StartRecoil()
 {
 	bRecovery = false;
@@ -790,6 +810,11 @@ void UPlayerWeaponComponent::Threaten()
 			}
 		}
 	}
+}
+
+bool UPlayerWeaponComponent::IsWeaponBlocking()
+{
+	return m_IsWeaponBlocking;
 }
 
 
