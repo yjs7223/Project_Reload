@@ -45,7 +45,6 @@ public:
 	class UCanvasPanelSlot* Points_Slot;
 	class UCanvasPanelSlot* Goal_Slot;
 
-	TArray<ABaseCharacter*> Enemys;
 	TArray<class UEnemyPointWidget*> EnemyPoints;
 	class UCameraComponent* PlayerCamera;
 };

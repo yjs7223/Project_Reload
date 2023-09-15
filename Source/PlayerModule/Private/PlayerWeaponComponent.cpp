@@ -281,7 +281,7 @@ void UPlayerWeaponComponent::Fire()
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, m_rot, spawnparam);
 	if (bullet)
 	{
-		bullet->SpawnBulletFx(PlayerWeaponDataAsset->BulletTrailFXNiagara, m_rot.Vector(), owner);
+		bullet->SpawnBulletFx(PlayerWeaponDataAsset->BulletTrailFXNiagara, m_rot.Vector(), owner, PlayerWeaponDataAsset->Bullet_Passby_Sound);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnImpactEffect);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnDecal);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UPlayerWeaponComponent::SpawnField);
