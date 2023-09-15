@@ -66,6 +66,16 @@ void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& Shoo
 	}
 }
 
+void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection, ABaseCharacter* p_owner)
+{
+	if (BulletFXNiagara)
+	{
+		owner = p_owner;
+		BulletFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BulletFXNiagara, CollisionComponent, FName("none"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+		
+	}
+}
+
 void ABullet::HitCheck()
 {
 	FVector now_loc = GetActorLocation();
