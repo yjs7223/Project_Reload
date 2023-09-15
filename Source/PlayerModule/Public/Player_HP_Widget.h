@@ -20,6 +20,9 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual void NativeDestruct() override;
+
+
 	UFUNCTION(BlueprintCallable)
 	void SetPercent(float percent);
 	void MoveCircle(float deltatime);
@@ -60,7 +63,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		FTimerHandle WTimer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
 		class UWidgetAnimation* FadeOutAnimation;
 
 public:

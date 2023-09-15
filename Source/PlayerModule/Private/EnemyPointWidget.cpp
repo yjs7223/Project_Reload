@@ -43,4 +43,8 @@ void UEnemyPointWidget::SetPointOpacity()
 			}
 		}
 	}
+	else
+	{
+
+	}
 }
