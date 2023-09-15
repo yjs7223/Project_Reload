@@ -50,6 +50,7 @@ void UCompassWidget::CalcGoalPos()
 {
 	if (GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>()->InteractActor)
 	{
+		Goal_Image->SetRenderOpacity(1.0f);
 		FVector2D pos = FVector2D::ZeroVector;
 		if (PlayerCamera)
 		{
@@ -73,13 +74,19 @@ void UCompassWidget::CalcGoalPos()
 			Goal_Slot->SetPosition(pos);
 		}
 	}
+	else
+	{
+		Goal_Image->SetRenderOpacity(0.0f);
+	}
 }
 
 void UCompassWidget::CalcEnemysPos()
 {
-	FVector2D pos = FVector2D::ZeroVector;
+	
 	if (PlayerCamera)
 	{
+		FVector2D pos = FVector2D::ZeroVector;
+
 		for (int i = 0; i < EnemyPoints.Num(); i++)
 		{
 			if (EnemyPoints[i]->TargetEnemy)
@@ -129,10 +136,13 @@ void UCompassWidget::AddEnemyPoint(ABaseCharacter* enemy)
 				}
 			}
 		}
-	
 
 		UEnemyPointWidget* epoint = CreateWidget<UEnemyPointWidget>(GetOwningPlayer(), EnemyPointClass);
-		Compass_Canvas->AddChildToCanvas(epoint);
+		if (epoint->GetParent() != Compass_Canvas)
+		{
+			Compass_Canvas->AddChildToCanvas(epoint);
+			//epoint->AddToViewport();
+		}
 		Cast<UCanvasPanelSlot>(epoint->Slot)->SetSize(FVector2D(30.f, 20.f));
 		Cast<UCanvasPanelSlot>(epoint->Slot)->SetAnchors(FAnchors(0.5f, 0.5f));
 		Cast<UCanvasPanelSlot>(epoint->Slot)->SetAlignment(FVector2D(0.5f, 0.5f));

@@ -77,6 +77,13 @@ void UPlayer_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	//MoveCircle(InDeltaTime);
 }
 
+void UPlayer_HP_Widget::NativeDestruct()
+{
+	GetWorld()->GetTimerManager().ClearTimer(WTimer);
+
+	Super::NativeDestruct();
+}
+
 void UPlayer_HP_Widget::SetPercent(float percent)
 {
 	if (percent > 1.0f)
@@ -157,7 +164,7 @@ void UPlayer_HP_Widget::SetShear(FRotator rot)
 		s = FMath::Sin((rot.Yaw) / 180);
 	}
 	HP_Overlay->SetRenderShear(FVector2D((s * 10.0f), 0.0f));
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(rot.Yaw));
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(s));
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(s * 10.0f));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(rot.Yaw));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(s));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(s * 10.0f));
 }
