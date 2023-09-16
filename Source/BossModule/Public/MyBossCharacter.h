@@ -22,4 +22,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Boss")
 	void MoveInCircle(FVector Origin, float Radius, float Angle);
 
+	UFUNCTION(BlueprintCallable, Category = "Boss")
+	FVector GetLocationInCircle(FVector Origin, float Radius, float Angle);
+
 };

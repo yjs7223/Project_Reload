@@ -24,3 +24,15 @@ void AMyBossCharacter::MoveInCircle(FVector Origin, float Radius, float Angle)
     
     SetActorLocation(newLocation);
 }
+
+FVector AMyBossCharacter::GetLocationInCircle(FVector Origin, float Radius, float Angle)
+{
+    FVector newLocation;
+    float AngleInRadians = FMath::DegreesToRadians(Angle);
+
+    newLocation.X = Origin.X + Radius * FMath::Cos(AngleInRadians);
+    newLocation.Y = Origin.Y + Radius * FMath::Sin(AngleInRadians);
+    newLocation.Z = Origin.Z;
+
+    return newLocation;
+}
