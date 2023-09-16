@@ -20,12 +20,7 @@ UAICharacterMoveComponent::UAICharacterMoveComponent()
 	timeDeltaTime = 0.0;
 	lerpDeltaTime = 0.0;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MoveDataObject(TEXT("DataTable'/Game/AI_Project/DT/DT_Move.DT_Move'"));
-	if (DT_MoveDataObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable Succeed!"));
-		DT_Move = DT_MoveDataObject.Object;
-	}
+	DT_Move = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_Move.DT_Move'"));
 }
 
 
@@ -44,8 +39,7 @@ void UAICharacterMoveComponent::BeginPlay()
 void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	Time += DeltaTime;
-	
+	timeDeltaTime += DeltaTime;
 	switch (e_move)
 	{
 	case EMove::Patrol:
@@ -54,7 +48,6 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		lerpDeltaTime = 0;
 		break;
 	case EMove::Normal:
-		timeDeltaTime += DeltaTime;
 		if (timeDeltaTime >= m_ChangeTime)
 		{
 			timeDeltaTime = m_ChangeTime;
@@ -63,7 +56,6 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdNormal, lerpDeltaTime);
 		break;
 	case EMove::Attack:
-		timeDeltaTime += DeltaTime;
 		if (timeDeltaTime >= m_ParallelTime)
 		{
 			timeDeltaTime = m_ParallelTime;
@@ -71,9 +63,24 @@ void UAICharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		lerpDeltaTime = timeDeltaTime * m_AttackMulti;
 		Move_Speed = FMath::Lerp(m_SpdPatrol, m_SpdAttack, lerpDeltaTime);
 		break;
+	case EMove::Stun:
+		input->AIStopRuning();
+		Time += DeltaTime;
+		if (Time >= 3.0f)
+		{
+			if (owner->FindComponentByClass<UAIStatComponent>()->type != Enemy_Name::HEAVY) {
+				input->AIRuning();
+			}
+			timeDeltaTime = 0;
+
+			e_move = EMove::Normal;
+			break;
+		}
+		Move_Speed = 0.0f;
+		break;
 	case EMove::Hit:
 		input->AIStopRuning();
-		timeDeltaTime += DeltaTime;
+		Time += DeltaTime;
 		if (Time >= 0.5f)
 		{
 			if (owner->FindComponentByClass<UAIStatComponent>()->type != Enemy_Name::HEAVY) {

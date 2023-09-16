@@ -7,6 +7,8 @@
 #include "NiagaraComponent.h"
 #include "Engine/Classes/Components/SphereComponent.h"
 #include "BaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 
 // Sets default values
@@ -50,17 +52,27 @@ void ABullet::Tick(float DeltaTime)
 	HitCheck();
 }
 
-void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection, class ABaseCharacter* p_owner)
+void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection, class ABaseCharacter* p_owner, USoundCue* passby)
+{
+	if (BulletFXNiagara)
+	{
+		owner = p_owner;
+		BulletFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BulletFXNiagara, CollisionComponent, FName("none"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+		//UGameplayStatics::SpawnSoundAttached(passby, CollisionComponent);
+		//TArray<FNiagaraVariable> vars;
+		//BulletFXComponent->GetAsset()->GetExposedParameters().GetUserParameters(vars);
+		//FVector vec = vars[0].GetValue<FVector>();
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, vec.ToString());
+	}
+}
+
+void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection, ABaseCharacter* p_owner)
 {
 	if (BulletFXNiagara)
 	{
 		owner = p_owner;
 		BulletFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BulletFXNiagara, CollisionComponent, FName("none"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
 		
-		//TArray<FNiagaraVariable> vars;
-		//BulletFXComponent->GetAsset()->GetExposedParameters().GetUserParameters(vars);
-		//FVector vec = vars[0].GetValue<FVector>();
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, vec.ToString());
 	}
 }
 

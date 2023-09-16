@@ -79,6 +79,17 @@ void UCrosshair_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	UpdateCrosshair(InDeltaTime);
 }
 
+void UCrosshair_Widget::NativeDestruct()
+{
+	GetWorld()->GetTimerManager().ClearTimer(DotTimer);
+	GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
+	GetWorld()->GetTimerManager().ClearTimer(HitTimer);
+	GetWorld()->GetTimerManager().ClearTimer(KillTimer);
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
+
+	Super::NativeDestruct();
+}
+
 void UCrosshair_Widget::UpdateCrosshair(float DeltaTime)
 {
 	if (weapon)
@@ -183,7 +194,7 @@ void UCrosshair_Widget::MoveDot()
 
 				}
 		), .3f, false);
-
+		
 	}
 }
 
@@ -236,8 +247,12 @@ void UCrosshair_Widget::CheckDie()
 			}
 
 		}
-	}
 
+	}
+	if (!weapon->m_result.GetActor())
+	{
+		return;
+	}
 	UStatComponent* stat = weapon->m_result.GetActor()->FindComponentByClass<UStatComponent>();
 	if (stat)
 	{

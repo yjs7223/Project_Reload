@@ -34,7 +34,7 @@ void UAttacked_Widget::NativeConstruct()
 		{
 			stat = MyCharacter->stat;
 			stat->OnVisibleAttackedUIDelegate.BindUObject(this, &UAttacked_Widget::LowHp_Warning);
-			MyStatComp->OnCreateAttackedUIDelegate.BindUObject(this, &UAttacked_Widget::CreateSideBarWidget);
+			MyStatComp->OnCreateAttackedUIDelegate.AddUObject(this, &UAttacked_Widget::CreateSideBarWidget);
 		}
 	}
 
@@ -49,21 +49,24 @@ void UAttacked_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 void UAttacked_Widget::LowHp_Warning()
 {
-	float value = stat->curHP / stat->maxHP;
-	if (value < 0.3)
+	if (this)
 	{
-		if (LowHP_Anim)
+		float value = stat->curHP / stat->maxHP;
+		if (value < 0.3)
 		{
-			if (!IsAnimationPlaying(LowHP_Anim))
+			if (LowHP_Anim)
 			{
-				PlayAnimation(LowHP_Anim, .0f, 0);
+				if (!IsAnimationPlaying(LowHP_Anim))
+				{
+					PlayAnimation(LowHP_Anim, .0f, 0);
+				}
 			}
 		}
-	}
-	else
-	{
-		StopAnimation(LowHP_Anim);
-		LowHP_Image->SetRenderOpacity(0.0f);
+		else
+		{
+			StopAnimation(LowHP_Anim);
+			LowHP_Image->SetRenderOpacity(0.0f);
+		}
 	}
 }
 
@@ -94,8 +97,15 @@ void UAttacked_Widget::CreateSideBarWidget(ABaseCharacter* Target)
 
 
 		UAttackedSideBarWidget* m_sidebar = CreateWidget<UAttackedSideBarWidget>(GetOwningPlayer(), AttackedSidebarWidget);
+		if (m_sidebar->GetParent() != Attacked_Canvas)
+		{
+			Attacked_Canvas->AddChildToCanvas(m_sidebar);
+			//m_sidebar->AddToViewport();
+		}
+		Cast<UCanvasPanelSlot>(m_sidebar->Slot)->SetAnchors(FAnchors(0.5, 0.5f));
+		Cast<UCanvasPanelSlot>(m_sidebar->Slot)->SetAlignment(FVector2D(0.5f, 0.5f));
+		Cast<UCanvasPanelSlot>(m_sidebar->Slot)->SetSize(FVector2D(300.f, 300.f));
 		m_sidebar->StartAttacked(Target);
-		m_sidebar->AddToViewport();
 		SideBarWidgets.Add(m_sidebar);
 	}
 }

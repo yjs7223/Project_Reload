@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.0",
+	"EngineAssociation": "{CBAA50F7-49C9-332C-DB93-69BF2DF9D828}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -29,7 +29,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"CoreUObject",
-				"AIModule"
+				"AIModule",
+				"BaseClassModule"
 			]
 		},
 		{
@@ -64,7 +65,8 @@
 				"CoreUObject",
 				"Slate",
 				"SlateCore",
-				"UMG"
+				"UMG",
+				"AIModule"
 			]
 		},
 		{
@@ -134,9 +136,9 @@
 		},
 		{
 			"Name": "ChaosVehiclesPlugin",
-      "Enabled": true
-    },
-    {
+			"Enabled": true
+		},
+		{
 			"Name": "MultiUserClient",
 			"Enabled": true
 		}

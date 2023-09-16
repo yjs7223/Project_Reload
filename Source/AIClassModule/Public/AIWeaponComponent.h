@@ -170,7 +170,7 @@ public:
 		void Fire() override;
 	// AI Shot Timer
 	UFUNCTION(BlueprintCallable, Category = "Attack")
-		void ShotAITimer(float t);
+		void ShotAITimer(const float t);
 	// AI Shot Start
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void StartFire() override;

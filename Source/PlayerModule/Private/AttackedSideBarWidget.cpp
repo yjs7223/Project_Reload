@@ -19,10 +19,7 @@ void UAttackedSideBarWidget::NativeTick(const FGeometry& MyGeometry, float InDel
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (TargetEnemy)
-	{
-		SetAttackedAngle();
-	}
+	SetAttackedAngle();
 }
 
 void UAttackedSideBarWidget::SetAttackedAngle()
@@ -44,10 +41,20 @@ void UAttackedSideBarWidget::SetAttackedAngle()
 
 			}
 
-			if (TargetEnemy->FindComponentByClass<UPlayerStatComponent>()->bDie)
+			if (UStatComponent* Estat = TargetEnemy->FindComponentByClass<UStatComponent>())
 			{
-				TargetEnemy = nullptr;
-				Attacked_Overlay->SetRenderOpacity(0.0f);
+				if (Estat->bDie)
+				{
+					TargetEnemy = nullptr;
+					if (AttackedSideBar_Anim)
+					{
+						if (IsAnimationPlaying(AttackedSideBar_Anim))
+						{
+							StopAnimation(AttackedSideBar_Anim);
+						}
+					}
+					Attacked_Overlay->SetRenderOpacity(0.0f);
+				}
 			}
 		}
 	}
@@ -63,8 +70,8 @@ void UAttackedSideBarWidget::StartAttacked(ABaseCharacter* Target)
 		FIntVector2 screensize;
 		GetOwningPlayer()->GetViewportSize(screensize.X, screensize.Y);
 		loc.X = 0;
-		loc.Y = (screensize.Y / 2);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, loc.ToString());
+		loc.Y = 0;
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, loc.ToString());
 		Attacked_SizeBox->SetRenderTranslation(loc);
 
 		if (AttackedSideBar_Anim)

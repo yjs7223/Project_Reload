@@ -149,18 +149,18 @@ public:
 	UFUNCTION()
 		void ListAdd(AActor* ac);
 	UFUNCTION()
-		void ListStartSet(AEncounterSpace* en);
+		void ListStartSet(const AEncounterSpace* en);
 	UFUNCTION()
 		void ListTickSet();
 	UFUNCTION()
 		void SuppressionShare();
 
 	UFUNCTION()
-		void SetCommanderDataTable(FName EnemyName);
+		void SetCommanderDataTable(const FName EnemyName);
 	UFUNCTION()
 		void TargetTickSet();
 	UFUNCTION()
-		void CoverPointEn(AEncounterSpace* en);
+		void CoverPointEn(const AEncounterSpace* en);
 	UFUNCTION()
 		void CoverPointEnemy();
 	UFUNCTION()
@@ -173,11 +173,11 @@ public:
 	UFUNCTION()
 		bool IsCoverInsideFanArea(FVector CoverPoint, float FanAngle, FVector FanDirection);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
-		FVector OptimumPoint(FVector FinalLocation, AActor* AIactor, FVector MiddleLocation);
+		FVector OptimumPoint(const FVector FinalLocation, const AActor* AIactor, const FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
-		bool SameDetourPoint(FVector FinalLocation, FVector MiddleLocation);
+		bool SameDetourPoint(const FVector FinalLocation, const FVector MiddleLocation);
 	UFUNCTION(BlueprintCallable, Category = "AICommander")
-		void ZeroListCoverPoint(AActor* AIActor);
+		void ZeroListCoverPoint(const AActor* AIActor);
 	UFUNCTION(BlueprintImplementableEvent)
 		void RestoreArr();
 
