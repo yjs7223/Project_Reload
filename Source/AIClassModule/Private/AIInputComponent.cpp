@@ -61,16 +61,18 @@ void UAIInputComponent::AICrouching()
 
 	
 	if (owner->CanCrouch()) {
-		AI_Crouch = true;
 		owner->Crouch();
+		AI_Crouch = true;
+		
 	}
 }
 
 void UAIInputComponent::AIStopCrouching()
 {
 	UCoverComponent* cover = owner->FindComponentByClass<UCoverComponent>();
-	AI_Crouch = false;
 	owner->UnCrouch();
+	AI_Crouch = false;
+	
 
 }
 
