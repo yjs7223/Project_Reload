@@ -225,6 +225,20 @@ void AAI_Controller::SetUseCover()
 				}
 			}
 		}
+		if (GetWorld()->SweepSingleByChannel(result, start, playerLocation, GetPawn()->GetActorRotation().Quaternion(), ECC_Visibility,
+			FCollisionShape::MakeSphere(size), collisionParams))
+		{
+			if (result.GetActor()->ActorHasTag("Player"))
+			{
+				GetBlackboardComponent()->SetValueAsBool("AI_ShootingChk", true);
+			}
+			else
+			{
+				GetBlackboardComponent()->SetValueAsBool("AI_ShootingChk", false);
+			}
+
+
+		}
 	}
 }
 
