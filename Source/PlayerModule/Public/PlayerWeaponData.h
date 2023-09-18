@@ -35,25 +35,28 @@ public:
 
 	//�ִ� ��ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 MaxAmmo_num;
+	int32 MaxAmmo_num;
 
 	//��弦 ������ ����
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Head_Magnification;
+	float Head_Magnification;
 
 	//���ιݵ�
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float max_Horizontal_Recoil;
+	float max_Horizontal_Recoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float min_Horizontal_Recoil;
+	float min_Horizontal_Recoil;
 
 	//���ιݵ�
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float max_vertical_Recoil;
+	float max_vertical_Recoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float min_vertical_Recoil;
+	float min_vertical_Recoil;
 
 	//ź���� ����
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float spread_Power;
+	float spread_Power;
+	//총 길이
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float WeaponDistance;
 };

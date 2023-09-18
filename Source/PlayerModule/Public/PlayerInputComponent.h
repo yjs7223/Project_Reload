@@ -38,6 +38,7 @@ private:
 	void StopAiming();
 	void ChangeMainWeapon();
 	void ChangeSubWeapon();
+	void StopCover();
 
 	void TestHud();
 	void HPregen();
@@ -45,4 +46,5 @@ private:
 private:
 	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
 	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
+	TObjectPtr<class UCoverComponent> m_Covercomponent;
 };

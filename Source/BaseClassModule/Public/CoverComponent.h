@@ -20,6 +20,7 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FEndCoverEventDelegate);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerCharacterTickDelegate, float /*DeltaTime*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverCharacterTickDelegate, float /*DeltaTime*/);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverPointsSetDelegate, TArray<FNavPathPoint>);
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
 	FStartCoverEventDelegate PlayMontageStartCover;
@@ -30,6 +31,8 @@ public:
 	FPlayerCharacterTickDelegate PlayerCharacterTick;
 	/** 엄폐캐릭터의 엄폐 틱델리게이트 입니다 */
 	FCoverCharacterTickDelegate CoverCharacterTick;
+
+	FCoverPointsSetDelegate OnCoverPointsSetDelegate;
 public:
 	UCoverComponent();
 
@@ -38,7 +41,7 @@ protected:
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	/** 엄폐버튼을 눌렀을때 실행합니다 */
 	void PlayCover();
 	/**
@@ -76,7 +79,10 @@ public:
 	/** 코너링중이면 참을 반환합니다 */
 	bool IsCornering();
 	/** 피킹중이면 참을 반환합니다 */
-	bool isPeeking();
+	bool IsPeeking();
+	UFUNCTION(BlueprintCallable)
+	/** 피킹중임을 세팅해 줍니다*/
+	void SetIsPeeking(bool isPeeking);
 	/** 엄폐사격상태를 계산합니다 */
 	void CalculateCoverShoot(float DeltaTime);
 	/** 엄폐사격상태를 반환합니다 */
@@ -104,10 +110,10 @@ public:
 
 	/** AI용 엄폐시작 입니다 */
 	UFUNCTION(BlueprintCallable)
-		bool StartAICover();
+	bool StartAICover();
 
 	/** 엄폐시 수그려야하는지 반환합니다 */
-		bool isMustCrouch();
+	bool isMustCrouch();
 protected:
 	/** 코너링을 체크합니다*/
 	void CornenringCheck(float DeltaTime);
@@ -133,9 +139,9 @@ protected:
 protected:
 	/** 엄폐벽을 체크할 트레이스채널 입니다 */
 	static const ECollisionChannel traceChanel = ECC_GameTraceChannel1;
-	/** 엄폐오브젝트타입채널 입니다 */	
+	/** 엄폐오브젝트타입채널 입니다 */
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
-	
+
 private:
 
 	class UBaseCharacterMovementComponent* m_Movement;
@@ -150,12 +156,13 @@ private:
 	EPeekingState mPeekingState;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
-		bool m_IsCover;
+	bool m_IsCover;
 
-	
+
 private:
 	bool m_IsCorneringWait;
 	bool m_IsCornering;
+	bool m_IsPeeking;
 	float m_FaceRight;
 	float m_CurrentCorneringWaitTime;
 	float m_CorneringWaitTime;

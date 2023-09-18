@@ -30,7 +30,7 @@
 
 APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/CyberpunkMetalhead/Meshes/SKM_CyberpunkMetalhead_FullBodyA.SKM_CyberpunkMetalhead_FullBodyA'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_asset(TEXT("SkeletalMesh'/Game/Characters/CyberpunkMetalhead/Meshes/SKM_CyberpunkMetalhead_FullBodyA.SKM_CyberpunkMetalhead_FullBodyA'"));
 	if (sk_asset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(sk_asset.Object);
