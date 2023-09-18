@@ -22,29 +22,37 @@ struct FWeaponRowStruct : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	//��ü ź���
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 HoldAmmo_num;
 
-	//������
+	//전체 탄약수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Max_Damage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Min_Damage;
+	int32 HoldAmmo_num;
 
-	//����ӵ�
+	//데미지
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Max_Damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Min_Damage;
+
+	//연사속도
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Fire_Rate;
+
+	//최대사거리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Max_Range;
+
+	//데미지 편차값(랜덤값)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Fire_Rate;
 	
-	//�ִ��Ÿ�
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Max_Range;
 	
-	//������ ������(������)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Deviation;
+	float Deviation;
 
-	//�߻�Ƚ��
+	//발사횟수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Max_FireCount;
+	int Max_FireCount;
+
 };
