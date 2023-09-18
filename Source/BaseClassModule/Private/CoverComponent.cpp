@@ -238,13 +238,13 @@ void UCoverComponent::CalculCoverPath(float DeltaTime)
 		FPathFindingResult Result = NavSys->FindPathSync(Query);
 		FVector beforepoint = AgentNavLocation;
 		m_CoverPath = Result.Path->GetPathPoints();
+		OnCoverPointsSetDelegate.Broadcast(m_CoverPath);
 
-
-		for (auto& item : m_CoverPath)
+		/*for (auto& item : m_CoverPath)
 		{
 			DrawDebugLine(GetWorld(), beforepoint, item.Location, FColor::Red, false, DeltaTime, 0, 5.0f);
 			beforepoint = item.Location;
-		}
+		}*/
 	}
 
 
