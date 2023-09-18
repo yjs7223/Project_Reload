@@ -15,7 +15,9 @@
 void UPlayer_HP_Widget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL,TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP.M_RadialHP'"));
+
+
+	/*UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL,TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP.M_RadialHP'"));
 	if (mat)
 	{
 		HPmat = UMaterialInstanceDynamic::Create(mat, this);
@@ -49,7 +51,7 @@ void UPlayer_HP_Widget::NativeConstruct()
 	imageBrush.ImageSize = FVector2D(24.0f, 24.0f);
 	texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/HP_Texture/T_MoveCircle2.T_MoveCircle2'"));
 	imageBrush.SetResourceObject(texture);
-	MoveCircle2->SetBrush(imageBrush);
+	MoveCircle2->SetBrush(imageBrush);*/
 
 	moveValue1 = 0.0f;
 	moveValue2 = 0.3;
@@ -86,7 +88,7 @@ void UPlayer_HP_Widget::NativeDestruct()
 
 void UPlayer_HP_Widget::SetPercent(float percent)
 {
-	if (percent > 1.0f)
+	/*if (percent > 1.0f)
 	{
 		percent = 1.0f;
 	}
@@ -96,7 +98,7 @@ void UPlayer_HP_Widget::SetPercent(float percent)
 	}
 
 	HPmat->SetScalarParameterValue(FName(TEXT("Percent")), percent);
-	HP_image->SetBrushFromMaterial(HPmat);
+	HP_image->SetBrushFromMaterial(HPmat);*/
 }
 
 void UPlayer_HP_Widget::MoveCircle(float deltatime)
@@ -113,7 +115,7 @@ void UPlayer_HP_Widget::MoveCircle(float deltatime)
 
 void UPlayer_HP_Widget::SetBackMat()
 {
-	UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP_Back.M_RadialHP_Back'"));
+	/*UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP_Back.M_RadialHP_Back'"));
 	if (mat)
 	{
 		HPmat = UMaterialInstanceDynamic::Create(mat, this);
@@ -126,12 +128,12 @@ void UPlayer_HP_Widget::SetBackMat()
 			HP_image->SetBrushFromMaterial(HPmat);
 
 		}
-	}
+	}*/
 }
 
 void UPlayer_HP_Widget::SetWidgetVisible()
 {
-	GetWorld()->GetTimerManager().ClearTimer(WTimer);
+	/*GetWorld()->GetTimerManager().ClearTimer(WTimer);
 
 	if (this)
 	{
@@ -149,22 +151,5 @@ void UPlayer_HP_Widget::SetWidgetVisible()
 					PlayAnimationForward(FadeOutAnimation);
 				}
 			}), 5.f, false);
-	}
-}
-
-void UPlayer_HP_Widget::SetShear(FRotator rot)
-{
-	float s;
-	if (rot.Yaw > 0)
-	{
-		s = FMath::Sin((180 - rot.Yaw) / 180);
-	}
-	else
-	{
-		s = FMath::Sin((rot.Yaw) / 180);
-	}
-	HP_Overlay->SetRenderShear(FVector2D((s * 10.0f), 0.0f));
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(rot.Yaw));
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(s));
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(s * 10.0f));
+	}*/
 }

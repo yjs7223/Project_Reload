@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+
+
 #include "DroneAIController.generated.h"
 
 /**
@@ -31,4 +33,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "DroneAI_Controller")
 		void RunBTT();
+
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "MascotDrone")
+		bool DroneMoveTo(FVector p_vec, float p_radius);
+
 };

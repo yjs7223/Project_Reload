@@ -225,6 +225,20 @@ void AAI_Controller::SetUseCover()
 				}
 			}
 		}
+		if (GetWorld()->SweepSingleByChannel(result, start, playerLocation, GetPawn()->GetActorRotation().Quaternion(), ECC_Visibility,
+			FCollisionShape::MakeSphere(size), collisionParams))
+		{
+			if (result.GetActor()->ActorHasTag("Player"))
+			{
+				GetBlackboardComponent()->SetValueAsBool("AI_ShootingChk", true);
+			}
+			else
+			{
+				GetBlackboardComponent()->SetValueAsBool("AI_ShootingChk", false);
+			}
+
+
+		}
 	}
 }
 
@@ -237,7 +251,7 @@ void AAI_Controller::RunBTT()
 void AAI_Controller::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, GetControlRotation().Vector().ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, GetControlRotation().Vector().ToString());
 	/*if (DistanceToPlayer > SightConfig->LoseSightRadius)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);
@@ -245,6 +259,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	}*/
 	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
+		
 		//DistanceToPlayer = 0.0f;
 		if (GetPawn()->FindComponentByClass<UAICharacterMoveComponent>())
 		{
@@ -259,6 +274,10 @@ void AAI_Controller::Tick(float DeltaSeconds)
 			
 		}
 		
+	}
+	if (Blackboard->GetValueAsBool("Sight_In"))
+	{
+		SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 	}
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }

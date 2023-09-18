@@ -3,6 +3,7 @@
 
 #include "AsyncNode.h"
 #include "AIController.h"	
+#include "Kismet/GameplayStatics.h"
 
 UAsyncNode* UAsyncNode::DroneMoveTo(const int ID,AAIController* ctr, FVector loc, float p_AccRadius)
 {
@@ -12,7 +13,7 @@ UAsyncNode* UAsyncNode::DroneMoveTo(const int ID,AAIController* ctr, FVector loc
 	NewFeroxNod->m_MoveLoc = loc;
 	NewFeroxNod->m_AcceptanceRadius = p_AccRadius;
 
-	// OnMoveCompleted ÀÌº¥Æ® ÇÚµé·¯¸¦ ¼³Á¤
+	// OnMoveCompleted ï¿½Ìºï¿½Æ® ï¿½Úµé·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	/*if (ctr)
 	{
 		ctr->ReceiveMoveCompleted.AddDynamic(NewFeroxNod, &UAsyncNode::OnMoveCompleted);
@@ -26,6 +27,9 @@ void UAsyncNode::Activate()
 {
 	m_ctr->MoveToLocation(m_MoveLoc, m_AcceptanceRadius, false, false);
 
+
+	/*AActor* pc = Cast<AActor>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	m_ctr->MoveToActor(pc);*/
 	//isEqual();
 }
 
@@ -33,12 +37,12 @@ void UAsyncNode::Activate()
 //{
 //	if (Result.IsSuccess())
 //	{
-//		// ÀÌµ¿ÀÌ ¼º°øÀûÀ¸·Î ¿Ï·áµÊ
+//		// ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½
 //		OnSuccess.Broadcast(temp, "Success! from c++");
 //	}
 //	else
 //	{
-//		// ÀÌµ¿ÀÌ ½ÇÆÐÇÔ
+//		// ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //		OnFail.Broadcast(temp, "Fail");
 //	}
 //	RemoveFromRoot();
