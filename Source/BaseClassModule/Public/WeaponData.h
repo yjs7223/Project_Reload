@@ -22,6 +22,7 @@ struct FWeaponRowStruct : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
+
 	//전체 탄약수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 HoldAmmo_num;
@@ -41,6 +42,12 @@ public:
 	float Max_Range;
 
 	//데미지 편차값(랜덤값)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Fire_Rate;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Max_Range;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Deviation;
 

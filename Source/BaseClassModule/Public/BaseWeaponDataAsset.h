@@ -40,6 +40,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 	class USoundCue* ReloadMagOutSound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* Bullet_Passby_Sound;
+
 	//총구 화염 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 	class UParticleSystem* MuzzleFireParticle;
@@ -51,4 +54,7 @@ public:
 	//탄흔 데칼
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UMaterialInstance*> BulletHole_Decals;
+  
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<class UMaterialInstance*> BulletHole_Decals;
 };
