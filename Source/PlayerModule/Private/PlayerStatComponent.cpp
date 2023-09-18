@@ -22,7 +22,7 @@ void UPlayerStatComponent::BeginDestroy()
 	OnVisibleHPUIDelegate.Clear();
 	OnChangedHealthDelegate.Clear();
 	OnVisibleAttackedUIDelegate.Unbind();
-	OnCreateAttackedUIDelegate.Unbind();
+	OnCreateAttackedUIDelegate.Clear();
 	OnVisibleInteractiveUIDelegate.Unbind();
 
 
@@ -67,7 +67,7 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 	OnVisibleHPUIDelegate.Broadcast();
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
-	OnCreateAttackedUIDelegate.ExecuteIfBound(attacker);
+	OnCreateAttackedUIDelegate.Broadcast(attacker);
 }
 
 void UPlayerStatComponent::CheckInteractiveObj()
@@ -93,7 +93,7 @@ void UPlayerStatComponent::CheckInteractiveObj()
 		//상호작용 컴폰넌트가 존재하고 상호작용이 되지않은경우에만 활성화
 		if (myinteractive && !myinteractive->bInteractive && !myinteractive->bActive)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("intercheck"));
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("intercheck"));
 			myinteractive->ActiveInteractable();
 			OnVisibleInteractiveUIDelegate.ExecuteIfBound(myinteractive->bActive, InteractActor);
 		}
@@ -109,6 +109,7 @@ void UPlayerStatComponent::CheckInteractiveObj()
 				{
 					myinteractive->ActiveInteractable();
 					OnVisibleInteractiveUIDelegate.ExecuteIfBound(myinteractive->bActive, InteractActor);
+					InteractActor = nullptr;
 				}
 			}
 		}

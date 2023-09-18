@@ -34,6 +34,9 @@ public:
 		TArray<class UAttackedSideBarWidget*> SideBarWidgets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCanvasPanel* Attacked_Canvas;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* LowHP_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))

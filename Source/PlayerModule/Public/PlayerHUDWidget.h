@@ -25,6 +25,8 @@ public:
 
 	void CreateDamageWidget(float value, FHitResult result);
 
+	//static void TextTypeWriter();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UPlayer_HP_Widget* Player_HP_Widget;
