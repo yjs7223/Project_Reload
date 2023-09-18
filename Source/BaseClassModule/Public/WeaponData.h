@@ -22,29 +22,30 @@ struct FWeaponRowStruct : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	//ÀüÃ¼ Åº¾à¼ö
+	//ì „ì²´ íƒ„ì•½ìˆ˜
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 HoldAmmo_num;
+	int32 HoldAmmo_num;
 
-	//µ¥¹ÌÁö
+	//ë°ë¯¸ì§€
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Max_Damage;
+	float Max_Damage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Min_Damage;
+	float Min_Damage;
 
-	//¿¬»ç¼Óµµ
+	//ì—°ì‚¬ì†ë„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Fire_Rate;
-	
-	//ÃÖ´ë»ç°Å¸®
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Max_Range;
-	
-	//µ¥¹ÌÁö ÆíÂ÷°ª(·£´ı°ª)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Deviation;
+	float Fire_Rate;
 
-	//¹ß»çÈ½¼ö
+	//ìµœëŒ€ì‚¬ê±°ë¦¬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Max_FireCount;
+	float Max_Range;
+
+	//ë°ë¯¸ì§€ í¸ì°¨ê°’(ëœë¤ê°’)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Deviation;
+
+	//ë°œì‚¬íšŸìˆ˜
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Max_FireCount;
+
 };

@@ -78,7 +78,6 @@ public:
 
 	void ReloadTick(float Deltatime);
 	void RecoilTick(float p_deltatime);
-	void CalculateBlockingTick(float p_deltatime);
 	void StartRecoil();
 	void StopRecoil();
 	void RecoveryTick(float p_deltatime);
@@ -90,7 +89,6 @@ public:
 	void PlayCameraShake(float scale);
 	void SpawnField(FHitResult result);
 	void Threaten();
-	bool IsWeaponBlocking();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -165,6 +163,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
 
-private:
-	bool m_IsWeaponBlocking;
 };
