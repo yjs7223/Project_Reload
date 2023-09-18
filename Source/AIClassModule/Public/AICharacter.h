@@ -84,6 +84,8 @@ public:
 		class UAISensingComponent* AISensing;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class UAIStatComponent* AIStat;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
+		class UAIInputComponent* AIInputComponent;
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Compoenet)
 		class AAICommander* commander;*/
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
