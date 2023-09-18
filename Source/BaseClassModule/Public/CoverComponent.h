@@ -20,6 +20,7 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FEndCoverEventDelegate);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerCharacterTickDelegate, float /*DeltaTime*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverCharacterTickDelegate, float /*DeltaTime*/);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverPointsSetDelegate, TArray<FNavPathPoint>);
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
 	FStartCoverEventDelegate PlayMontageStartCover;
@@ -30,6 +31,8 @@ public:
 	FPlayerCharacterTickDelegate PlayerCharacterTick;
 	/** 엄폐캐릭터의 엄폐 틱델리게이트 입니다 */
 	FCoverCharacterTickDelegate CoverCharacterTick;
+
+	FCoverPointsSetDelegate OnCoverPointsSetDelegate;
 public:
 	UCoverComponent();
 
