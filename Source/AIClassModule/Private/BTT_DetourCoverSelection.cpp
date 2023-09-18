@@ -103,23 +103,24 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 											if (AIController->GetBlackboardComponent())
 											{
 
-												if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::InCover)
+												if (select_ai == nullptr)
 												{
-
-													if (select_ai == nullptr)
+													Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
+													select_ai = ai.Key;
+												}
+												else
+												{
+													if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
 													{
 														Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
 														select_ai = ai.Key;
 													}
-													else
-													{
-														if (Dis_Loc > FVector::Distance(cover, ai.Key->GetActorLocation()))
-														{
-															Dis_Loc = FVector::Distance(cover, ai.Key->GetActorLocation());
-															select_ai = ai.Key;
-														}
-													}
 												}
+												//if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::InCover)
+												//{
+
+													
+												//}
 
 											}
 
