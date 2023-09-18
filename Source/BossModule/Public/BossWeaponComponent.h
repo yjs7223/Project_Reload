@@ -16,12 +16,45 @@ public:
 	// Sets default values for this component's properties
 	UBossWeaponComponent();
 
-	// 최대 데미지
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BossWeaponSetting)
+		class ABaseCharacter* owner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		class USkeletalMeshComponent* WeaponMesh;
+
+		class USkeletalMeshComponent* playerMesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		class ACharacter* player;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
 		float boss_MaxDmg;
-	// 최소 데미지
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
 		float boss_MinDmg;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoil_Radius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float shot_MaxRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoilMax_Radius;
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoilMin_Radius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoil_Range;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		int shot_MaxCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FHitResult m_result;
 
 protected:
 	// Called when the game starts
@@ -32,6 +65,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// 공격
-	UFUNCTION(BlueprintCallable, Category = "Attack")
+	UFUNCTION(BlueprintCallable, Category = "BossAttack")
 		void TakeDamage(AActor* p_TargetActor, float p_Damage);
+
+	UFUNCTION(BlueprintCallable, Category = "BossAttack")
+		void Fire();
 };
