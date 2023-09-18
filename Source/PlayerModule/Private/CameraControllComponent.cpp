@@ -75,7 +75,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		tempCamerapos += m_Data->camerapos_Runing;
 	}
 
-	if (m_Cover && m_Cover->isPeeking()) {
+	if (m_Cover && m_Cover->getPeekingState() != EPeekingState::None) {
 		EPeekingState peekstate = m_Cover->getPeekingState();
 		if (peekstate == EPeekingState::FrontRight) {
 			tempCamerapos += m_Data->camerapos_FrontRightPeek;
@@ -105,7 +105,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	}
 
 	if (m_Cover->IsCover()) {
-		if (m_Cover->FaceRight() > 0.0f) {
+		if (m_Cover->IsFaceRight()) {
 			tempCamerapos += m_Data->camerapos_FaceRight;
 		}
 		else {
@@ -116,7 +116,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	if (owner->bIsCrouched) {
 		tempCamerapos += m_Data->camerapos_Crouch;
-		if (m_Cover->FaceRight() > 0.0f) {
+		if (m_Cover->IsFaceRight()) {
 			tempCamerapos += m_Data->camerapos_Crouch;
 		}
 		else {
@@ -125,6 +125,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			tempCamerapos += tempvec;
 		}
 	}
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("CameraPos : %s"), *tempCamerapos.ToString()));
 
 	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(m_FollowSpringArm->SocketOffset, tempCamerapos, DeltaTime, m_Data->m_PosSpeed);
 	m_FollowCamera->SetRelativeRotation(FMath::RInterpTo(m_FollowCamera->GetRelativeRotation(), tempCameraRot, DeltaTime, m_Data->m_RotSpeed));

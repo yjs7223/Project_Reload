@@ -87,7 +87,7 @@ void AAIDog::AIMove(const FVector Destination)
 void AAIDog::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	impactRadius = 500;
 	// 자기 라이트 넣기
 	light = FindComponentByClass<UPointLightComponent>();
 }
@@ -145,14 +145,14 @@ void AAIDog::Explosion()
 			}
 
 
-			if (Hit.GetActor()->ActorHasTag("Player") && !hitCheck)
+			if (Hit.GetActor()->ActorHasTag("Player") || Hit.GetActor()->ActorHasTag("Enemy"))
 			{
 				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, Hit.GetActor()->GetName());
 
 				auto temp = Hit.GetActor()->FindComponentByClass<UStatComponent>();
 				if (temp) {
 					//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
-					temp->Attacked(explosionDamage);
+					temp->Attacked(explosionDamage, nullptr,EHitType::Knockback,GetActorLocation() + FVector(0, 0, 50));
 				}
 
 				hitCheck = true;

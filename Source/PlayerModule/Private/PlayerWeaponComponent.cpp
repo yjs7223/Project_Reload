@@ -88,6 +88,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoilTick(DeltaTime);
 	ReloadTick(DeltaTime);
 	RecoveryTick(DeltaTime);
+	CalculateBlockingTick(DeltaTime);
 
 	if (bAiming)
 	{
@@ -161,6 +162,7 @@ void UPlayerWeaponComponent::InitData()
 		reloadCount = 0;
 		reloadvalue = 0;
 		ammoinfinite = false;
+		m_WeaponDistance = dataTable->WeaponDistance;
 	}
 	// ...
 }
@@ -413,9 +415,9 @@ void UPlayerWeaponComponent::StartReload()
 			return;
 		}
 
-		reloadvalue = 10;
+		//reloadvalue = 10;
 
-		curAmmo = 0;
+		//curAmmo = 0;
 		break;
 	case EWeaponType::TE_Rifle:
 		if (holdAmmo < 0)
@@ -436,16 +438,16 @@ void UPlayerWeaponComponent::StartReload()
 			return;
 		}
 
-		reloadvalue = 30 - curAmmo;
-		if (holdAmmo < reloadvalue)
-		{
-			reloadvalue = holdAmmo;
-			holdAmmo = 0;
-		}
-		else
-		{
-			holdAmmo -= reloadvalue;
-		}
+		//reloadvalue = 30 - curAmmo;
+		//if (holdAmmo < reloadvalue)
+		//{
+		//	reloadvalue = holdAmmo;
+		//	holdAmmo = 0;
+		//}
+		//else
+		//{
+		//	holdAmmo -= reloadvalue;
+		//}
 
 		curAmmo = 0;
 		break;
@@ -465,22 +467,22 @@ void UPlayerWeaponComponent::StartReload()
 			return;
 		}
 
-		reloadvalue = 30 - curAmmo;
-		if (holdAmmo < reloadvalue)
-		{
-			reloadvalue = holdAmmo;
-			holdAmmo = 0;
-		}
-		else
-		{
-			holdAmmo -= reloadvalue;
-		}
+		//reloadvalue = 30 - curAmmo;
+		//if (holdAmmo < reloadvalue)
+		//{
+		//	reloadvalue = holdAmmo;
+		//	holdAmmo = 0;
+		//}
+		//else
+		//{
+		//	holdAmmo -= reloadvalue;
+		//}
 
-		curAmmo = 0;
+		//curAmmo = 0;
 		break;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
+	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
 	OnPlayReloadUIDelegate.ExecuteIfBound();
 	bReload = true;
 }
@@ -488,8 +490,18 @@ void UPlayerWeaponComponent::StartReload()
 void UPlayerWeaponComponent::StopReload()
 {
 	reloadvalue = 0;
-	UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadCliplockedSound, owner->GetActorLocation());
+	OnStopReloadUIDelegate.ExecuteIfBound();
+
+	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadCliplockedSound, owner->GetActorLocation());
 	bReload = false;
+}
+
+void UPlayerWeaponComponent::FinshReload()
+{
+	curAmmo = maxAmmo;
+	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	StopReload();
 }
 
 void UPlayerWeaponComponent::WeaponChange()
@@ -501,32 +513,18 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* Weapondat
 {
 	if (WeapondataAsset)
 	{
-		FVector location = FVector::ZeroVector;
 		if (!WeapondataAsset->WeaponSkeletalMesh || !WeapondataAsset->WeaponAnim) {
-			ensure(0);
+			ensure(0 && "DA에 총 스켈레탈메쉬, 애니메이션 미할당");
 		}
 
 		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
 		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);
-		//Cast<>(WeapondataAsset->WeaponAnim)->AnimationSetting();
-		//switch (weapontype)
-		//{
-		//case EWeaponType::TE_Pistol:
-		//	break;
-		//case EWeaponType::TE_Rifle:
-		//	location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
-		//	break;
-		//case EWeaponType::TE_Shotgun:
-		//	break;
-		//default:
-		//	break;
-		//}
-		WeaponMesh->SetRelativeLocation(location);
 	}
 }
 
 void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 {
+	return;
 	if (bReload)
 	{
 		switch (weapontype)
@@ -797,6 +795,7 @@ void UPlayerWeaponComponent::Threaten()
 		}
 	}
 }
+
 
 
 

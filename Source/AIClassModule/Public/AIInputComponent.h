@@ -22,15 +22,27 @@ enum class AI_Anim_Type : uint8
 	Cover,
 };
 
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class AICLASSMODULE_API UAIInputComponent : public UBaseInputComponent
 {
 	GENERATED_BODY()
 
 protected:
 	virtual void BeginPlay() override;
-
-
+public:
+	//디버그용
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		bool AI_Crouch;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		bool AI_Cover;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		bool AI_Running;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		bool AI_Fire;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		bool AI_Aiming;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		bool AI_Reload;
 public:
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIMoveForward(float Value);

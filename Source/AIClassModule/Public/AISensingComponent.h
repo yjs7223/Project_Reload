@@ -16,14 +16,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool sensing;
-
-	float AimFwd_Radius;
-	float AimBwd_Radius;
-	float AimSide_Radius;
-
-	float AimFwd_Angle;
-	float AimBwd_Angle;
-	float AimSide_Angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+		float AimFwd_Radius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+		float AimBwd_Radius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+		float AimSide_Radius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+    	float AimFwd_Angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+		float AimBwd_Angle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+		float AimSide_Angle;
 
 	FTimerHandle sensingTimer;
 
