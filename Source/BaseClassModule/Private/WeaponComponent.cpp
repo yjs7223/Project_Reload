@@ -24,6 +24,8 @@ UWeaponComponent::UWeaponComponent()
 	//m_CanShooting = true;
 	Weapon_Handle_R_Name = TEXT("hand_r_Socket");
 	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
+	Arm_R_Name = TEXT("upperarm_r");
+	Arm_L_Name = TEXT("upperarm_l");
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
@@ -53,7 +55,7 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
-	
+	m_Cover = owner->FindComponentByClass<UCoverComponent>();
 	
 	// ...
 	
@@ -114,17 +116,19 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	FVector ViewPoint;
 	FRotator cameraRotation;
 	FHitResult result;
+	FName handleingName;
+	FVector start;
+	FVector end;
+
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
 
-	FVector start = owner->GetActorLocation();
+	start = owner->GetActorLocation();
+	handleingName = m_Cover->IsFaceRight() ? Arm_R_Name : Arm_L_Name;
 	start.Z += owner->GetDefaultHalfHeight() * (owner->bIsCrouched ? 0.25f : 0.5f);
 	start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius();
-
-	start = owner->GetMesh()->GetSocketLocation("upperarm_r");
-
-
-	FVector end = ViewPoint + cameraRotation.Vector() * 1000.0f;
+	start = owner->GetMesh()->GetSocketLocation(handleingName);
+	end = ViewPoint + cameraRotation.Vector() * 1000.0f;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
 		start,
 		end,
@@ -136,10 +140,11 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 	DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
-		float distance = (owner->GetActorLocation() - result.Location).Length();
+		float distance = (start - result.Location).Length();
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
+		//쏠떄 좌표기억
 
-		if (distance < m_WeaponDistance) {
+		if (distance < (m_IsWeaponBlocking ? m_WeaponDistance * 1.6f : m_WeaponDistance)) {
 
 			m_IsWeaponBlocking = true;
 			return;

@@ -806,7 +806,7 @@ bool UCoverComponent::isMustCrouch()
 	FCollisionQueryParams param(NAME_None, true, GetOwner());
 	TArray<AActor*> OutActors;
 
-	FHitResult tempResult;
+	/*FHitResult tempResult;
 	return !UKismetSystemLibrary::BoxTraceSingle(GetWorld(),
 		owner->GetActorLocation() + upVector,
 		end,
@@ -817,7 +817,7 @@ bool UCoverComponent::isMustCrouch()
 		{},
 		EDrawDebugTrace::None,
 		tempResult,
-		true);
+		true);*/
 
 
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
