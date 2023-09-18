@@ -55,6 +55,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UMaterialInstance*> BulletHole_Decals;
   
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<class UMaterialInstance*> BulletHole_Decals;
 };
