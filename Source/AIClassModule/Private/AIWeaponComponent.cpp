@@ -67,10 +67,10 @@ void UAIWeaponComponent::BeginPlay()
 // Called every frame
 void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	if (Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_InCover")) {
-		owner->GetController()->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), playerMesh->GetOwner()->GetActorLocation()));
+	/*if (Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsBool("AI_InCover")) {
+		owner->GetController()->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(),player->GetActorLocation()));
 
-	}
+	}*/
 
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
