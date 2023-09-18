@@ -58,4 +58,5 @@ public:
 	//Skill
 	UFUNCTION(BlueprintCallable, Category = "MascotDrone")
 		TArray<AActor*> EMP();
+
 };

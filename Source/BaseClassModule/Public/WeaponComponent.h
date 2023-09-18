@@ -31,7 +31,7 @@ public:
 public:
 	FPlayShottingAinmationDelegate shootingAnimation;
 	FDele_SpawnTrigger Dele_SpawnTrigger;
-public:	
+public:
 	// Sets default values for this component's properties
 	UWeaponComponent();
 
@@ -40,7 +40,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -49,98 +49,103 @@ public:
 
 	//ź�� �ʱ⼳��
 	UFUNCTION(BlueprintCallable)
-		void SetAmmo(int p_ammo);
+	void SetAmmo(int p_ammo);
+	void CalculateBlockingTick(float p_deltatime);
 
-		virtual void StartFire();
+	virtual void StartFire();
 
-		virtual void StopFire();
+	virtual void StopFire();
 
-		virtual void Fire();
+	virtual void Fire();
 
-		float getAimYaw();
-		float getAimPitch();
+	float getAimYaw();
+	float getAimPitch();
 
-		void AimSetting();
+	void AimSetting();
 
-		UFUNCTION(BlueprintCallable)
-		void SetHandleing(bool isFaceRight, bool isCoverUse = false);
+	UFUNCTION(BlueprintCallable)
+	void SetHandleing(bool isFaceRight, bool isCoverUse = false);
 
-		virtual void PlayRandomShotSound();
+	virtual void PlayRandomShotSound();
 
-		void SpawnImpactEffect(FHitResult result);
+	void SpawnImpactEffect(FHitResult result);
 
-		float CalcDamage(FHitResult result, FVector2D p_damage);
+	float CalcDamage(FHitResult result, FVector2D p_damage);
 
-		static bool CheckActorTag(AActor* actor, FName tag);
+	static bool CheckActorTag(AActor* actor, FName tag);
+	bool IsWeaponBlocking();
 
 public:
 	//����ĳ����
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		class ABaseCharacter* owner;
+	class ABaseCharacter* owner;
 
 	//�ܿ�ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		int holdAmmo;
+	int holdAmmo;
 
 	//����ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		int curAmmo;
+	int curAmmo;
 
 	//�ִ� ��ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		int maxAmmo;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		bool bFire;
+	int maxAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		bool bReload;
+	bool bFire;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		bool bHit;
+	bool bReload;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		bool bAiming;
+	bool bHit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	bool bAiming;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Weapon)
-		bool m_CanShooting;
+	bool m_CanShooting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		FVector2D damage;
+	FVector2D damage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_firerate;
+	float m_firerate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int m_firecount;
+	int m_firecount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxRange;
+	float MaxRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Deviation;
+	float Deviation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		FRotator aimOffset;
+	FRotator aimOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		class USkeletalMeshComponent* WeaponMesh;
+	class USkeletalMeshComponent* WeaponMesh;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		class TSubclassOf<UAnimInstance> RifleAnimation;
+	class TSubclassOf<UAnimInstance> RifleAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		class TSubclassOf<UAnimInstance> PistolAnimation;
+	class TSubclassOf<UAnimInstance> PistolAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-		EWeaponType weapontype;
+	EWeaponType weapontype;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UHitImapactDataAsset* HitImpactDataAsset;
+	class UHitImapactDataAsset* HitImpactDataAsset;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
 	FName Weapon_Handle_R_Name;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
 	FName Weapon_Handle_L_Name;
+protected:
+	bool m_IsWeaponBlocking;
+	float m_WeaponDistance;
 };
