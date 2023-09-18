@@ -73,6 +73,7 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 Content/Level_Dummy/*
+Content/__ExternalActors__/*
 Content/LevelPrototyping/*
 Content/ThirdPersonKit/*
 Content/StarterContent/*
@@ -28277,3 +28278,8 @@ Content/Aws/Aws_Level/Subway/Textures/Tunnel/Wire/T_TunnelWire_E2.uasset
 Content/Aws/Aws_Level/Subway/Textures/Tunnel/Wire/T_TunnelWire_E3.uasset
 Content/Aws/Aws_Level/Subway/Textures/Tunnel/Wire/T_TunnelWire_N.uasset
 Content/Aws/Aws_Level/Subway/Textures/Tunnel/Wire/T_TunnelWire_SRM.uasset
+Content/__ExternalActors__/All_Level/Packed_BP/Lv_Elevation_01_03/5/H6/SGQN7VK9CR0I92PZNLR7J9.uasset
+Content/__ExternalActors__/All_Level/Packed_BP/Lv_Elevation_01_03/C/9A/7JSSNLKSUO9VESXNYHP0CS.uasset
+Content/__ExternalActors__/All_Level/Packed_BP/Lv_Elevation_01_04/4/NR/0KXUPSL70ULZOH9W64JXYX.uasset
+Content/__ExternalActors__/All_Level/Packed_BP/Lv_Elevation_01_04/C/6N/JLAH02YSNXL7VZ7HJE9D0M.uasset
+Content/__ExternalActors__/All_Level/Packed_BP/Lv_GroundRocks_01_04/D/E2/67OBUITBLPTZOR6KE6FN6U.uasset

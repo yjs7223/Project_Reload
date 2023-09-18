@@ -19,10 +19,7 @@ void UAttackedSideBarWidget::NativeTick(const FGeometry& MyGeometry, float InDel
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (TargetEnemy)
-	{
-		SetAttackedAngle();
-	}
+	SetAttackedAngle();
 }
 
 void UAttackedSideBarWidget::SetAttackedAngle()
@@ -49,6 +46,13 @@ void UAttackedSideBarWidget::SetAttackedAngle()
 				if (Estat->bDie)
 				{
 					TargetEnemy = nullptr;
+					if (AttackedSideBar_Anim)
+					{
+						if (IsAnimationPlaying(AttackedSideBar_Anim))
+						{
+							StopAnimation(AttackedSideBar_Anim);
+						}
+					}
 					Attacked_Overlay->SetRenderOpacity(0.0f);
 				}
 			}

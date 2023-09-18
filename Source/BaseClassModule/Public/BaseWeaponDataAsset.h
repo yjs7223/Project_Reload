@@ -16,39 +16,42 @@ class BASECLASSMODULE_API UBaseWeaponDataAsset : public UPrimaryDataAsset
 	
 public:
 
-	//ÃÑ±â ½ºÄÌ·¹Å»¸Þ½Ã
+	//ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½Ì·ï¿½Å»ï¿½Þ½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* WeaponSkeletalMesh;
 
-	//¿þÆù ¾Ö´Ï¸ÅÀÌ¼Ç
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class TSubclassOf<UAnimInstance> WeaponAnim;
 
-	//ÃÑ±â ¹ß»ç »ç¿îµå
+	//ï¿½Ñ±ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* FireSound;
 
-	//ÀçÀåÀü ³ë¸®¼è ¼Ò¸®
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ë¸®ï¿½ï¿½ ï¿½Ò¸ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadCliplockedSound;
 
-	//ÀçÀåÀü ÅºÃ¢ »ðÀÔ¼Ò¸®
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ÅºÃ¢ ï¿½ï¿½ï¿½Ô¼Ò¸ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadMagInSound;
 
-	//ÀçÀåÀü ÅºÃ¢ ÇØÃ¼¼Ò¸®
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ÅºÃ¢ ï¿½ï¿½Ã¼ï¿½Ò¸ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadMagOutSound;
 
-	//ÃÑ±¸ È­¿° ÆÄÆ¼Å¬
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* Bullet_Passby_Sound;
+
+	//ï¿½Ñ±ï¿½ È­ï¿½ï¿½ ï¿½ï¿½Æ¼Å¬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UParticleSystem* MuzzleFireParticle;
 
-	//ÃÑ¾Ë ³ªÀÌ¾Æ°¡¶óÀÌÆåÆ®
+	//ï¿½Ñ¾ï¿½ ï¿½ï¿½ï¿½Ì¾Æ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
 		class UNiagaraSystem* BulletTrailFXNiagara;
 
-	//ÅºÈç µ¥Ä®
+	//Åºï¿½ï¿½ ï¿½ï¿½Ä®
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<UMaterialInstance*> BulletHole_Decals;
+		TArray<class UMaterialInstance*> BulletHole_Decals;
 };
