@@ -8,6 +8,7 @@
 #include "WeaponComponent.h"
 
 #include "Components/SphereComponent.h"
+#include "DroneAIController.h"
 
 
 // Sets default values
