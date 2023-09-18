@@ -13,45 +13,46 @@ UCLASS()
 class BASECLASSMODULE_API UBaseWeaponDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 
-	//�ѱ� ���̷�Ż�޽�
+	//총기 스켈레탈메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMesh* WeaponSkeletalMesh;
+	USkeletalMesh* WeaponSkeletalMesh;
 
-	//���� �ִϸ��̼�
+	//웨폰 애니메이션
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class TSubclassOf<UAnimInstance> WeaponAnim;
+	class TSubclassOf<UAnimInstance> WeaponAnim;
 
-	//�ѱ� �߻� ����
+	//총기 발사 사운드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
-		class USoundCue* FireSound;
+	class USoundCue* FireSound;
 
-	//������ �븮�� �Ҹ�
+	//재장전 노리쇠 소리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
-		class USoundCue* ReloadCliplockedSound;
+	class USoundCue* ReloadCliplockedSound;
 
-	//������ źâ ���ԼҸ�
+	//재장전 탄창 삽입소리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
-		class USoundCue* ReloadMagInSound;
+	class USoundCue* ReloadMagInSound;
 
-	//������ źâ ��ü�Ҹ�
+	//재장전 탄창 해체소리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
-		class USoundCue* ReloadMagOutSound;
+	class USoundCue* ReloadMagOutSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* Bullet_Passby_Sound;
 
-	//�ѱ� ȭ�� ��ƼŬ
+	//총구 화염 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
-		class UParticleSystem* MuzzleFireParticle;
+	class UParticleSystem* MuzzleFireParticle;
 
-	//�Ѿ� ���̾ư�������Ʈ
+	//총알 나이아가라 이펙트
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
-		class UNiagaraSystem* BulletTrailFXNiagara;
+	class UNiagaraSystem* BulletTrailFXNiagara;
 
-	//ź�� ��Į
+	//탄흔 데칼
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<class UMaterialInstance*> BulletHole_Decals;
+	TArray<UMaterialInstance*> BulletHole_Decals;
+  
 };
