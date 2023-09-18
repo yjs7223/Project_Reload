@@ -29,6 +29,7 @@ class BASECLASSMODULE_API UBaseCharacterMovementComponent : public UCharacterMov
 	GENERATED_BODY()
 		
 public:
+	UFUNCTION(BlueprintCallable)
 	bool isRuning() const;
 public:
 	/** Check if pawn is falling */
