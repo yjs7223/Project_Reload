@@ -24,6 +24,8 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual void NativeDestruct() override;
+
 	void UpdateCrosshair(float DeltaTime);
 
 	void SetCrosshairTranslation();
