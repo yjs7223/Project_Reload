@@ -35,6 +35,7 @@ void UDialogueWidget::SetDialogueText(FName rowName)
 	UDataTable* DialogueScripts = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/yjs/TextLog/DT_DialogueScripts.DT_DialogueScripts'"));
 	if (DialogueScripts)
 	{
+		Dialogue_Overlay->SetRenderOpacity(1.0f);
 		GetOwningPlayer()->GetWorldTimerManager().ClearTimer(WritingTimer);
 
 		FDialogueRowStruct* dialogue = DialogueScripts->FindRow<FDialogueRowStruct>(rowName, FString("Row isn't exist"));
@@ -84,5 +85,6 @@ void UDialogueWidget::WriteDialogueText()
 	if (nowLen == lineLen)
 	{
 		GetOwningPlayer()->GetWorldTimerManager().ClearTimer(WritingTimer);
+		PlayAnimationForward(DialogueAnimation);
 	}
 }

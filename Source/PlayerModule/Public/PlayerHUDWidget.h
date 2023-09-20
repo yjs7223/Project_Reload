@@ -25,7 +25,8 @@ public:
 
 	void CreateDamageWidget(float value, FHitResult result);
 
-	//static void TextTypeWriter();
+	void SetWidgetVisible(bool p_visible);
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
@@ -52,5 +53,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDamage_Widget> Damage_WidgetClass;
 	
-
+	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
+		class UWidgetAnimation* FadeOutAnimation;
 };

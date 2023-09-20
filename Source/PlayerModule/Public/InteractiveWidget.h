@@ -21,6 +21,7 @@ public:
 
 	void ActiveInteractWidget(bool p_bActive, AActor* InterActor);
 
+	void SetInterWidgetLoc(FVector normal);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))

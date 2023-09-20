@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UTextBlock* Dialogue_Name;
 
+	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
+		class UWidgetAnimation* DialogueAnimation;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float writingSpeed;
 
