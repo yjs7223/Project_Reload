@@ -10,6 +10,7 @@
 #include "Damage_Widget.h"
 #include "LineNaviWidget.h"
 #include "InteractiveWidget.h"
+#include "DestinationWidget.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerInputComponent.h"
 #include "Animation/WidgetAnimation.h"
@@ -73,6 +74,7 @@ void UPlayerHUDWidget::SetWidgetVisible(bool p_visible)
 		Player_HP_Widget->SetRenderOpacity(1.0f);
 		Player_Ammo_Widget->SetRenderOpacity(1.0f);
 		Crosshair_Widget->SetRenderOpacity(1.0f);
+		DestinationWidget->SetRenderOpacity(1.0f);
 
 		if (IsAnimationPlaying(FadeOutAnimation))
 		{

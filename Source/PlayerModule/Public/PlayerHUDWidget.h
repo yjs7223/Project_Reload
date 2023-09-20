@@ -47,9 +47,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UCompassWidget* CompassWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UDialogueWidget* DialogueWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UMissionWidget* MissionWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UDestinationWidget* DestinationWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineNaviWidget* LineNaviWidget;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDamage_Widget> Damage_WidgetClass;
 	
