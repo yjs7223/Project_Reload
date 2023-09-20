@@ -19,7 +19,10 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void SetMissionText();
+	UFUNCTION(BlueprintCallable)
+	void SetMissionText(FName rowName);
+
+	void WriteMissionText();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
@@ -33,4 +36,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UTextBlock* Mission_Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float writingSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bHighlight;
+
+public:
+	FName nowRowName;
+	FString fullLine;
+	int32 lineLen;
+	int32 nowLen;
+	FTimerHandle WritingTimer;
 };
