@@ -50,7 +50,7 @@ void UBossWeaponComponent::TakeDamage(AActor* p_TargetActor, float p_Damage)
 	}
 }
 
-void UBossWeaponComponent::Fire()
+FRotator UBossWeaponComponent::Fire(FVector Start)
 {
 	FVector loc;
 	FRotator rot;
@@ -61,27 +61,27 @@ void UBossWeaponComponent::Fire()
 	x = FMath::RandRange(-recoil_Radius, recoil_Radius);
 	y = FMath::RandRange(-recoil_Radius, recoil_Radius);
 
-	//¸ÓÁñ Ãß°¡ÇØ¼­ ÀÌ¸§ º¯°æÇÏ±â
-	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ø¼ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½
+	//FVector start = WeaponMesh->GetSocketLocation(TEXT("SM_MachineGun_L"));
 	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_05"));
 
-	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
+	FVector end = Start + ((playerLocation - Start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
 
 	FCollisionQueryParams traceParams;
 
-	// Á¶ÁØ ¹æÇâ Ã¼Å©
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+	if (GetWorld()->LineTraceSingleByChannel(m_result, Start, playerLocation, ECC_Visibility, traceParams))
 	{
-		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		// AI°¡ ¾ÕÀ» ¸·°í ÀÖÀ» ¶§ »ç°Ý ºÒ°¡´É
+		rot = UKismetMathLibrary::FindLookAtRotation(Start, m_result.Location);
+		// AIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½
 		if (m_result.GetActor()->ActorHasTag("Enemy"))
 		{
-			return;
+			return rot;
 		}
 	}
 
-	// »ç°Ý ¹æÇâ Ã¼Å©
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, traceParams))
+	// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+	if (GetWorld()->LineTraceSingleByChannel(m_result, Start, end, ECC_GameTraceChannel6, traceParams))
 	{
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
@@ -94,26 +94,27 @@ void UBossWeaponComponent::Fire()
 			}
 		}
 		//SpawnImpactEffect(m_result);
-		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+		rot = UKismetMathLibrary::FindLookAtRotation(Start, m_result.Location);
 	}
 
-	//Åõ»çÃ¼ »ý¼º
-	/*ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, rot);
-	if (bullet)
+	//ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), Start, rot);
+	/*if (bullet)
 	{
 		bullet->SpawnBulletFx(AIWeaponDataAsset->BulletTrailFXNiagara, rot.Vector(), owner);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UAIWeaponComponent::SpawnImpactEffect);
 	}*/
 
-	// Á¡Á¡ ¹Ýµ¿ÀÌ ÁÙ¾îµê
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ýµï¿½ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½
 	if (recoil_Radius > recoilMin_Radius)
 	{
 		recoil_Radius -= (recoilMax_Radius - recoilMin_Radius) / shot_MaxCount;
 	}
 	else
 	{
-		// ÃÖ¼Ò·Î °íÁ¤
+		// ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½
 		recoil_Radius = recoilMin_Radius;
 	}
+
+	return rot;
 }
 

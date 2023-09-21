@@ -64,10 +64,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// °ø°Ý
+	// ï¿½ï¿½ï¿½ï¿½
 	UFUNCTION(BlueprintCallable, Category = "BossAttack")
 		void TakeDamage(AActor* p_TargetActor, float p_Damage);
 
 	UFUNCTION(BlueprintCallable, Category = "BossAttack")
-		void Fire();
+		FRotator Fire(FVector Start);
 };
