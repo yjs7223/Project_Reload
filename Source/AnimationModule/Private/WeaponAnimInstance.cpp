@@ -3,6 +3,7 @@
 
 #include "WeaponAnimInstance.h"
 #include "WeaponComponent.h"
+#include "playerWeaponComponent.h"
 #include "PlayerInputComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
@@ -58,6 +59,10 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (mWeapon) {
 		mAimYaw = mWeapon->getAimYaw();
 		mAimPitch = mWeapon->getAimPitch();
+		if (UPlayerWeaponComponent* playerWeapon = Cast<UPlayerWeaponComponent>(mWeapon)) {
+			mIsAiming = playerWeapon->IsWeaponBlocking() ? false : mIsAiming;
+		}
+		
 	}
 	if (m_Movement) {
 		mIsRuning = m_Movement->isRuning();

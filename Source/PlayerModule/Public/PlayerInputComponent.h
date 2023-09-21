@@ -16,9 +16,11 @@ class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 
 public:
 	DECLARE_MULTICAST_DELEGATE(FChangedWeapon);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnWidgetVisible, bool);
 
 public:
 	FChangedWeapon OnChangedWeapon;
+	FOnWidgetVisible OnWidgetVisible;
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,11 +40,14 @@ private:
 	void StopAiming();
 	void ChangeMainWeapon();
 	void ChangeSubWeapon();
+	void StopCover();
 
-	void TestHud();
+	void VisibleHud();
+	void HPreduce();
 	void HPregen();
 
 private:
 	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
 	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
+	TObjectPtr<class UCoverComponent> m_Covercomponent;
 };

@@ -11,6 +11,8 @@
 #include "LineNaviWidget.h"
 #include "InteractiveWidget.h"
 #include "PlayerWeaponComponent.h"
+#include "PlayerInputComponent.h"
+#include "Animation/WidgetAnimation.h"
 #include "UMG.h"
 
 void UPlayerHUDWidget::NativePreConstruct()
@@ -29,6 +31,11 @@ void UPlayerHUDWidget::NativeConstruct()
 	if (UPlayerWeaponComponent* weaponComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerWeaponComponent>())
 	{
 		weaponComp->OnSpawnDamageUIDelegate.BindUObject(this, &UPlayerHUDWidget::CreateDamageWidget);
+	}
+
+	if (UPlayerInputComponent* inputComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerInputComponent>())
+	{
+		inputComp->OnWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetWidgetVisible);
 	}
 }
 
@@ -55,6 +62,25 @@ void UPlayerHUDWidget::CreateDamageWidget(float value, FHitResult result)
 		{
 			dwidget->SetDamageText(value, result);
 			dwidget->AddToViewport();
+		}
+	}
+}
+
+void UPlayerHUDWidget::SetWidgetVisible(bool p_visible)
+{
+	if (FadeOutAnimation)
+	{
+		Player_HP_Widget->SetRenderOpacity(1.0f);
+		Player_Ammo_Widget->SetRenderOpacity(1.0f);
+		Crosshair_Widget->SetRenderOpacity(1.0f);
+
+		if (IsAnimationPlaying(FadeOutAnimation))
+		{
+			StopAnimation(FadeOutAnimation);
+		}
+		if (p_visible)
+		{
+			PlayAnimationForward(FadeOutAnimation);
 		}
 	}
 }

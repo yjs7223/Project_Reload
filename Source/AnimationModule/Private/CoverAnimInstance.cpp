@@ -69,31 +69,31 @@ void UCoverAnimInstance::NativeBeginPlay()
 
 void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (m_Input) {
-		FInputData* data = m_Input->getInput();
-		mIsReload = data->IsReload;
-		mIsFire = data->IsFire;
-		mIsAiming = data->IsAiming;
-	}
-	if (mWeapon) {
-		mAimYaw = mWeapon->getAimYaw();
-		mAimPitch = mWeapon->getAimPitch();
-	}
-	if (mCover) {
-		mIsCover = mCover->IsCover();
-		mIsFaceRight = mCover->FaceRight() >= 0;
-		mIsCornering = mCover->IsCornering();
-		mPeekingState = mCover->getPeekingState();
-		mCoverSootingState = mCover->getCoverSootingState();
-		mIsConerWait = mCover->IsTurnWait();
-		if (mPeekingState != EPeekingState::None) {
-			mLastPeekingState = mPeekingState;
-		}
-		
+	if (!m_Input) return;
+	if (!mWeapon) return;
+	if (!mCover) return;
 
-		mIsPeeking = mLastPeekingState != EPeekingState::None;
-		mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
+	FInputData* data = m_Input->getInput();
+	mIsReload = data->IsReload;
+	mIsFire = data->IsFire && !mWeapon->IsWeaponBlocking();
+	mIsAiming = data->IsAiming && !mWeapon->IsWeaponBlocking();
+	
+	mAimYaw = mWeapon->getAimYaw();
+	mAimPitch = mWeapon->getAimPitch();
+
+	mIsCover = mCover->IsCover();
+	mIsFaceRight = mCover->FaceRight() >= 0;
+	mIsCornering = mCover->IsCornering();
+	mPeekingState = mCover->getPeekingState();
+	mCoverSootingState = mCover->getCoverSootingState();
+	mIsConerWait = mCover->IsTurnWait();
+	if (mPeekingState != EPeekingState::None) {
+		mLastPeekingState = mPeekingState;
 	}
+
+
+	mIsPeeking = mLastPeekingState != EPeekingState::None;
+	mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
 
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;

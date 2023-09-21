@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "StatComponent.h"
 #include "ST_Spawn.h"
+#include "AICharacter.h"
 #include "AIStatComponent.generated.h"
 
 

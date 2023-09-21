@@ -44,7 +44,7 @@ public:
 		class UImage* HP_image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* HPInner_image;
+		class UProgressBar* HP_Bar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* OuterCircle_image;

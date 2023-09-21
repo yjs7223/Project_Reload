@@ -61,9 +61,9 @@ void UCrosshair_Widget::NativeConstruct()
 			MyWeaponComp->OnChangedCrossHairAmmoDelegate.BindUObject(this, &UCrosshair_Widget::SetAmmoImage);
 			MyWeaponComp->OnChangedCrossHairHitDelegate.BindUObject(this, &UCrosshair_Widget::MoveDot);
 			MyWeaponComp->OnChangedCrossHairDieDelegate.BindUObject(this, &UCrosshair_Widget::CheckDie);
-			MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
+			//MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 			MyWeaponComp->OnPlayReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::PlayReloadAnim);
-			MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UCrosshair_Widget::SetWidgetVisible);
+			//MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 		}
 	}
 
@@ -327,7 +327,7 @@ void UCrosshair_Widget::PlayReloadAnim()
 
 void UCrosshair_Widget::SetWidgetVisible()
 {
-	if (this)
+	/*if (this)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(VisibleTimer);
 		
@@ -360,6 +360,6 @@ void UCrosshair_Widget::SetWidgetVisible()
 				}
 			}
 		}
-	}
+	}*/
 }
 
