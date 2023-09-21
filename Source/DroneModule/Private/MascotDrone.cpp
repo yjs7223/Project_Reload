@@ -6,7 +6,9 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/StaticMesh.h"
 #include "WeaponComponent.h"
-
+//
+//#include "Components/SceneComponent.h"
+//#include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "DroneAIController.h"
 
@@ -18,26 +20,49 @@ AMascotDrone::AMascotDrone()
 	PrimaryActorTick.bCanEverTick = true;
 
 	m_FloatingCmp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingCmp"));
-	m_StaticMeshCmp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshCmp"));
-
-	
 
 
-
-
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Face")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wing")));
 
 	//GetMeshComponent
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>
-		MeshAsset(TEXT("StaticMesh'/Game/_sjs/Drone/Drone_05/Mesh/SM_Drone_05.SM_Drone_05'"));
-	m_StaticMeshCmp->SetStaticMesh(MeshAsset.Object);
+	m_StaticMeshCmp[0]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Body.Drone_Body'")));
+	m_StaticMeshCmp[1]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Face.Drone_Face'")));
+	m_StaticMeshCmp[2]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Ring.Drone_Ring'")));
+	m_StaticMeshCmp[3]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Turret.Drone_Turret'")));
+	m_StaticMeshCmp[4]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Wing.Drone_Wing'")));
+
+	for (int i = 1; i < m_StaticMeshCmp.Num(); i++)
+	{
+		m_StaticMeshCmp[i]->AttachToComponent(m_StaticMeshCmp[0], FAttachmentTransformRules::KeepRelativeTransform);
+	}
 
 
 	//sphere Collision
-	CollisionMesh = CreateDefaultSubobject<USphereComponent>(FName("Sphere"));
+	CollisionMesh = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	CollisionMesh->InitSphereRadius(100.0f);
+	CollisionMesh->AttachToComponent(m_StaticMeshCmp[0], FAttachmentTransformRules::KeepRelativeTransform);
 
-	CollisionMesh->AttachToComponent(m_StaticMeshCmp,FAttachmentTransformRules::KeepRelativeTransform);
 
+
+
+
+	//나이아가라 
+	m_Empcmp = CreateDefaultSubobject<USceneComponent>(TEXT("Empcmp"));
+
+
+	m_EmpEffect.Add(CreateDefaultSubobject<UNiagaraComponent>(TEXT("PreExplosion")));
+	m_EmpEffect.Add(CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion")));
+
+	for (auto& i : m_EmpEffect)
+	{
+		i->AttachToComponent(m_Empcmp, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+
+	m_Empcmp->AttachToComponent(m_StaticMeshCmp[0], FAttachmentTransformRules::KeepRelativeTransform);
 
 }
 
