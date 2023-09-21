@@ -123,15 +123,20 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
 
-	start = owner->GetActorLocation();
+	//start = owner->GetActorLocation(); 
+	//root
+	start = owner->GetMesh()->GetSocketLocation("pelvis");
 	handleingName = m_Cover->IsFaceRight() ? Arm_R_Name : Arm_L_Name;
-	start.Z += owner->GetDefaultHalfHeight() * (owner->bIsCrouched ? 0.25f : 0.5f);
-	start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius();
-	start = owner->GetMesh()->GetSocketLocation(handleingName);
+	if (m_Cover->IsPeeking()) {
+		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() *0.75f;
+	}
+	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
+	//start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight();
+	//start = owner->GetMesh()->GetSocketLocation(handleingName);
 
 
 	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
-	end = ViewPoint + cameraRotation.Vector() * 1000.0f;
+	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
 		start,
 		end,
@@ -140,14 +145,14 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		{ owner },
 		EDrawDebugTrace::ForOneFrame,
 		result, false);
-	ArmPoint = FMath::Lerp(ArmPoint, result.Location, testval);
-	DrawDebugSphere(GetWorld(), ArmPoint, 10, 32, FColor::Blue);
+	
+	DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
-		float distance = (owner->GetActorLocation() - ArmPoint).Length();
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
-		//쏠떄 좌표기억
+		float distance = (owner->GetActorLocation() - result.Location).Length();
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
+		
 
-		if (distance < (bFire ? m_WeaponDistance : m_WeaponDistance * 1.4f)) {
+		if (distance < m_WeaponDistance) {
 
 			m_IsWeaponBlocking = true;
 			return;

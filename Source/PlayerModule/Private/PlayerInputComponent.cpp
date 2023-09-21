@@ -170,9 +170,7 @@ void UPlayerInputComponent::StopCover()
 void UPlayerInputComponent::StartReload()
 {
 	//m_PlayerWeapon->StartReload();
-	if (m_PlayerWeapon->bReload)
-	{
-	}
+	if(!m_PlayerWeapon->CanReload()) return;
 	m_inputData.IsReload = true;
 }
 
