@@ -61,7 +61,7 @@ void UCoverComponent::BeginPlay()
 
 	if (!Cast<AAIController>(owner->Controller)) {
 		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPoint);
-		PlayerCharacterTick.AddUObject(this, &UCoverComponent::CalculCoverPath);
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPath);
 	}
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::RotateSet);
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::AimSetting);
@@ -218,9 +218,11 @@ void UCoverComponent::CornenringCheck(float DeltaTime)
 	}
 }
 
-void UCoverComponent::CalculCoverPath(float DeltaTime)
+TArray<FNavPathPoint> UCoverComponent::CalculCoverPath()
 {
-	if (m_CanCoverPoint == FVector::ZeroVector) return;
+	if (m_CanCoverPoint == FVector::ZeroVector) return {};
+
+
 
 	AController* Controller = owner->GetController();
 	FVector GoalLocation = m_CanCoverPoint;
@@ -229,25 +231,22 @@ void UCoverComponent::CalculCoverPath(float DeltaTime)
 	{
 		UE_LOG(LogNavigation, Warning, TEXT("UNavigationSystemV1::SimpleMoveToActor called for NavSys:%s Controller:%s controlling Pawn:%s (if any of these is None then there's your problem"),
 			*GetNameSafe(NavSys), *GetNameSafe(Controller), Controller ? *GetNameSafe(Controller->GetPawn()) : TEXT("NULL"));
-		return;
+		return {};
 	}
 	const FVector AgentNavLocation = Controller->GetNavAgentLocation();
 	const ANavigationData* NavData = NavSys->GetNavDataForProps(Controller->GetNavAgentPropertiesRef(), AgentNavLocation);
 	if (NavData) {
 		FPathFindingQuery Query(Controller, *NavData, AgentNavLocation, GoalLocation);
 		FPathFindingResult Result = NavSys->FindPathSync(Query);
-		FVector beforepoint = AgentNavLocation;
-		m_CoverPath = Result.Path->GetPathPoints();
-		OnCoverPointsSetDelegate.Broadcast(m_CoverPath);
-
-		/*for (auto& item : m_CoverPath)
-		{
-			DrawDebugLine(GetWorld(), beforepoint, item.Location, FColor::Red, false, DeltaTime, 0, 5.0f);
-			beforepoint = item.Location;
-		}*/
+		return Result.Path->GetPathPoints();
 	}
 
+	return {};
+}
 
+void UCoverComponent::SettingCoverPath(float DeltaTime)
+{
+	OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
 }
 
 void UCoverComponent::AimSetting(float DeltaTime)
@@ -643,11 +642,6 @@ FVector UCoverComponent::getCanCoverPoint()
 FVector UCoverComponent::GetPointNormal()
 {
 	return m_CanCoverPointNormal;
-}
-
-TArray<FNavPathPoint>& UCoverComponent::getCoverPath()
-{
-	return m_CoverPath;
 }
 
 bool UCoverComponent::StartCover()

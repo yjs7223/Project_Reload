@@ -155,4 +155,8 @@ protected:
 	bool m_IsWeaponBlocking;
 	float m_WeaponDistance;
 	TObjectPtr<class UCoverComponent> m_Cover;
-};
+
+	FVector ArmPoint;
+	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = true))
+	float testval;
+ };

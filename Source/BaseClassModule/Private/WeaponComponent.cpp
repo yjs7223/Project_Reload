@@ -128,6 +128,9 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	start.Z += owner->GetDefaultHalfHeight() * (owner->bIsCrouched ? 0.25f : 0.5f);
 	start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius();
 	start = owner->GetMesh()->GetSocketLocation(handleingName);
+
+
+	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
 	end = ViewPoint + cameraRotation.Vector() * 1000.0f;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
 		start,
@@ -137,14 +140,14 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		{ owner },
 		EDrawDebugTrace::ForOneFrame,
 		result, false);
-
-	DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
+	ArmPoint = FMath::Lerp(ArmPoint, result.Location, testval);
+	DrawDebugSphere(GetWorld(), ArmPoint, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
-		float distance = (start - result.Location).Length();
-		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
+		float distance = (owner->GetActorLocation() - ArmPoint).Length();
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
 		//쏠떄 좌표기억
 
-		if (distance < (m_IsWeaponBlocking ? m_WeaponDistance * 1.6f : m_WeaponDistance)) {
+		if (distance < (bFire ? m_WeaponDistance : m_WeaponDistance * 1.4f)) {
 
 			m_IsWeaponBlocking = true;
 			return;
