@@ -11,6 +11,7 @@
 #include "LineNaviWidget.h"
 #include "InteractiveWidget.h"
 #include "DestinationWidget.h"
+#include "PauseWidget.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerInputComponent.h"
 #include "Animation/WidgetAnimation.h"
@@ -36,7 +37,9 @@ void UPlayerHUDWidget::NativeConstruct()
 
 	if (UPlayerInputComponent* inputComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerInputComponent>())
 	{
-		inputComp->OnWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetWidgetVisible);
+		inputComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
+		inputComp->OnAllWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetAllWidgetVisible);
+		inputComp->OnCreatePauseWidget.BindUObject(this, &UPlayerHUDWidget::CreatePauseWidget);
 	}
 }
 
@@ -67,22 +70,63 @@ void UPlayerHUDWidget::CreateDamageWidget(float value, FHitResult result)
 	}
 }
 
-void UPlayerHUDWidget::SetWidgetVisible(bool p_visible)
+void UPlayerHUDWidget::SetCombatWidgetVisible(bool p_visible)
 {
-	if (FadeOutAnimation)
+	if (CombatFadeOutAnimation)
+	{
+		Player_HP_Widget->SetRenderOpacity(1.0f);
+		Player_Ammo_Widget->SetRenderOpacity(1.0f);
+		Crosshair_Widget->SetRenderOpacity(1.0f);
+		//DestinationWidget->SetRenderOpacity(1.0f);
+
+		if (IsAnimationPlaying(CombatFadeOutAnimation))
+		{
+			StopAnimation(CombatFadeOutAnimation);
+		}
+		if (p_visible)
+		{
+			PlayAnimationForward(CombatFadeOutAnimation);
+		}
+	}
+}
+
+void UPlayerHUDWidget::SetAllWidgetVisible(bool p_visible)
+{
+	if (CombatFadeOutAnimation)
 	{
 		Player_HP_Widget->SetRenderOpacity(1.0f);
 		Player_Ammo_Widget->SetRenderOpacity(1.0f);
 		Crosshair_Widget->SetRenderOpacity(1.0f);
 		DestinationWidget->SetRenderOpacity(1.0f);
 
-		if (IsAnimationPlaying(FadeOutAnimation))
+		if (IsAnimationPlaying(CombatFadeOutAnimation))
 		{
-			StopAnimation(FadeOutAnimation);
+			StopAnimation(CombatFadeOutAnimation);
 		}
 		if (p_visible)
 		{
-			PlayAnimationForward(FadeOutAnimation);
+			PlayAnimationForward(CombatFadeOutAnimation);
+		}
+
+		if (IsAnimationPlaying(DesFadeOutAnimation))
+		{
+			StopAnimation(DesFadeOutAnimation);
+		}
+		if (p_visible)
+		{
+			PlayAnimationForward(DesFadeOutAnimation);
+		}
+	}
+}
+
+void UPlayerHUDWidget::CreatePauseWidget()
+{
+	if (Pause_WidgetClass)
+	{
+		UPauseWidget* pwidget = CreateWidget<UPauseWidget>(GetOwningPlayer(), Pause_WidgetClass);
+		if (pwidget)
+		{
+			pwidget->AddToViewport();
 		}
 	}
 }

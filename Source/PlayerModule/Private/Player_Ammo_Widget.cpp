@@ -78,7 +78,7 @@ void UPlayer_Ammo_Widget::UpdateAmmo()
 	}
 }
 
-void UPlayer_Ammo_Widget::SetWidgetVisible()
+void UPlayer_Ammo_Widget::SetCombatWidgetVisible()
 {
 	/*if (weapon)
 	{

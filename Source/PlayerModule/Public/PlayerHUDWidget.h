@@ -25,8 +25,11 @@ public:
 
 	void CreateDamageWidget(float value, FHitResult result);
 
-	void SetWidgetVisible(bool p_visible);
+	void SetCombatWidgetVisible(bool p_visible);
 
+	void SetAllWidgetVisible(bool p_visible);
+
+	void CreatePauseWidget();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
@@ -61,7 +64,13 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDamage_Widget> Damage_WidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UPauseWidget> Pause_WidgetClass;
 	
 	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
-		class UWidgetAnimation* FadeOutAnimation;
+		class UWidgetAnimation* CombatFadeOutAnimation;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
+		class UWidgetAnimation* DesFadeOutAnimation;
 };

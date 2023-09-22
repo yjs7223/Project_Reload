@@ -5,6 +5,9 @@
 #include "DestinationActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "PlayerHUDWidget.h"
+#include "CompassWidget.h"
+#include "PlayerCharacter.h"
 #include "UMG.h"
 
 void UDestinationWidget::NativeConstruct()
@@ -14,23 +17,24 @@ void UDestinationWidget::NativeConstruct()
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADestinationActor::StaticClass(), desActors);
 	ArraySorting();
+	for (int i = 0; i < desActors.Num(); i++)
+	{
+		ADestinationActor* da = Cast<ADestinationActor>(desActors[i]);
+		da->OnUpdateDesUIDelegate.BindUObject(this, &UDestinationWidget::PopDesActor);
+	}
 
 	nowDes = desActors[0];
-	
+	if (nowDes)
+	{
+		Cast<APlayerCharacter>(GetOwningPlayerPawn())->PlayerHUDWidget->CompassWidget->goalActor = nowDes;
+	}
 }
 
 void UDestinationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (nowDes)
-	{
-		FVector2D loc;
-		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), nowDes->GetActorLocation(), loc, false))
-		{
-			Des_Overlay->SetRenderTranslation(loc);
-		}
-	}
+	SetTranslation();
 }
 
 void UDestinationWidget::ArraySorting()
@@ -50,11 +54,38 @@ void UDestinationWidget::ArraySorting()
 
 void UDestinationWidget::SetTranslation()
 {
-	if (nowDes != desActors[0])
+	if (nowDes)
 	{
-		desActors.RemoveAt(0);
-		nowDes = desActors[0];
-
+		FVector2D loc;
+		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), nowDes->GetActorLocation(), loc, true))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("In screen"));
+			Des_Overlay->SetRenderTranslation(loc);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("Out screen"));
+		}
 	}
-
 }
+
+void UDestinationWidget::PopDesActor(AActor* p_desact)
+{
+	desActors.RemoveAt(0);
+	p_desact->Destroy();
+
+	if (desActors.Num() > 0 && desActors[0])
+	{
+		nowDes = desActors[0];
+		if (nowDes)
+		{
+			Cast<APlayerCharacter>(GetOwningPlayerPawn())->PlayerHUDWidget->CompassWidget->goalActor = nowDes;
+		}
+	}
+	else
+	{
+		Des_Overlay->SetRenderOpacity(0.0f);
+		Cast<APlayerCharacter>(GetOwningPlayerPawn())->PlayerHUDWidget->CompassWidget->goalActor = nullptr;
+	}
+}
+
