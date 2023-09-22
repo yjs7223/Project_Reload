@@ -196,12 +196,14 @@ void UCoverComponent::CornenringCheck(float DeltaTime)
 {
 	if (m_IsCorneringWait) {
 		m_IsCorneringWait = false;
+		OnVisibleCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime != 0.0f, IsFaceRight());
+		OnSetPercentCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime);
 		m_CurrentCorneringWaitTime += DeltaTime;
+
 	}
 	else {
 		m_CurrentCorneringWaitTime = 0.0f;
 	}
-
 	if (m_CurrentCorneringWaitTime > m_CorneringWaitTime) {
 		m_CurrentCorneringWaitTime = 0.0f;
 		StartCornering(); 
