@@ -24,6 +24,8 @@ UWeaponComponent::UWeaponComponent()
 	//m_CanShooting = true;
 	Weapon_Handle_R_Name = TEXT("hand_r_Socket");
 	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
+	Arm_R_Name = TEXT("upperarm_r");
+	Arm_L_Name = TEXT("upperarm_l");
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
@@ -53,7 +55,7 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
-	
+	m_Cover = owner->FindComponentByClass<UCoverComponent>();
 	
 	// ...
 	
@@ -114,17 +116,21 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	FVector ViewPoint;
 	FRotator cameraRotation;
 	FHitResult result;
+	FVector start;
+	FVector end;
+
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
 
-	FVector start = owner->GetActorLocation();
-	start.Z += owner->GetDefaultHalfHeight() * (owner->bIsCrouched ? 0.25f : 0.5f);
-	start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius();
+	start = owner->GetMesh()->GetSocketLocation("pelvis");
+	if (m_Cover->IsPeeking()) {
+		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() *0.75f;
+	}
+	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
 
-	start = owner->GetMesh()->GetSocketLocation("upperarm_r");
 
-
-	FVector end = ViewPoint + cameraRotation.Vector() * 1000.0f;
+	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
+	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
 		start,
 		end,
@@ -133,11 +139,12 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		{ owner },
 		EDrawDebugTrace::ForOneFrame,
 		result, false);
-
+	
 	DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
+		
 
 		if (distance < m_WeaponDistance) {
 
