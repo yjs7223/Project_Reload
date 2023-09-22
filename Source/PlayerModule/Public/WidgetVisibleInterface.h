@@ -22,7 +22,7 @@ class PLAYERMODULE_API IWidgetVisibleInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void SetWidgetVisible(float deltatime, float maxtime, class UOverlay* overlay);
-	virtual void SetWidgetVisible(class UOverlay* overlay);
-	virtual void SetWidgetVisible();
+	virtual void SetCombatWidgetVisible(float deltatime, float maxtime, class UOverlay* overlay);
+	virtual void SetCombatWidgetVisible(class UOverlay* overlay);
+	virtual void SetCombatWidgetVisible();
 };

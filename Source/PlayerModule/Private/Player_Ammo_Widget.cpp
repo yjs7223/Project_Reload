@@ -46,7 +46,7 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 		if (UPlayerWeaponComponent* MyWeaponComp = Cast<UPlayerWeaponComponent>(MyCharacter->weapon))
 		{
 			weapon = MyCharacter->weapon;
-			MyWeaponComp->OnVisibleAmmoUIDelegate.BindUObject(this, &UPlayer_Ammo_Widget::SetWidgetVisible);
+			//MyWeaponComp->OnVisibleAmmoUIDelegate.BindUObject(this, &UPlayer_Ammo_Widget::SetWidgetVisible);
 			MyWeaponComp->OnChangedAmmoUIDelegate.BindUObject(this, &UPlayer_Ammo_Widget::UpdateAmmo);
 		}
 	}
@@ -78,9 +78,9 @@ void UPlayer_Ammo_Widget::UpdateAmmo()
 	}
 }
 
-void UPlayer_Ammo_Widget::SetWidgetVisible()
+void UPlayer_Ammo_Widget::SetCombatWidgetVisible()
 {
-	if (weapon)
+	/*if (weapon)
 	{
 		if (weapon->bAiming || weapon->bFire)
 		{
@@ -92,5 +92,5 @@ void UPlayer_Ammo_Widget::SetWidgetVisible()
 			bWidgetVisible = false;
 			Ammo_Overlay->SetRenderOpacity(0.0f);
 		}
-	}
+	}*/
 }

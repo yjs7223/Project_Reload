@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InteractiveWidget.generated.h"
+#include "PauseWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PLAYERMODULE_API UInteractiveWidget : public UUserWidget
+class PLAYERMODULE_API UPauseWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -19,18 +19,18 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void ActiveInteractWidget(bool p_bActive, AActor* InterActor);
+	UFUNCTION()
+	void StopPause();
 
-	void SetInterWidgetLoc(FVector normal);
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UOverlay* Interactive_Overlay;
+	UFUNCTION()
+	void ExitGame();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* Interactive_Image;
+		class UCanvasPanel* Compass_Canvas;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* InteractiveObj;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UButton* Pause_Button;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UButton* Exit_Button;
 };

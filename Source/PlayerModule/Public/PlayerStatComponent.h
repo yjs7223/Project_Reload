@@ -12,6 +12,7 @@ DECLARE_MULTICAST_DELEGATE(FOnVisibleHPUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAttackedUIDelegate);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCreateAttackedUIDelegate, class ABaseCharacter*);
 DECLARE_DELEGATE_TwoParams(FOnVisibleInteractiveUIDelegate, bool, AActor*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSetInteractUIDelegate, FVector);
 
 /**
  * 
@@ -53,6 +54,7 @@ public:
 	FOnVisibleAttackedUIDelegate OnVisibleAttackedUIDelegate;
 	FOnCreateAttackedUIDelegate OnCreateAttackedUIDelegate;
 	FOnVisibleInteractiveUIDelegate OnVisibleInteractiveUIDelegate;
+	FOnSetInteractUIDelegate OnSetInteractUIDelegate;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UMatineeCameraShake> AttackedCameraShake;

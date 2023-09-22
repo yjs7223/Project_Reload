@@ -5,6 +5,7 @@
 #include "BaseCharacter.h"
 #include "MatineeCameraShake.h"
 #include "InteractiveComponent.h"
+#include "PlayerInputComponent.h"
 
 
 UPlayerStatComponent::UPlayerStatComponent()
@@ -32,7 +33,7 @@ void UPlayerStatComponent::BeginDestroy()
 void UPlayerStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	SetComponentTickInterval(0.2f);
+	//SetComponentTickInterval(0.2f);
 
 	CheckInteractiveObj();
 }
@@ -50,6 +51,7 @@ void UPlayerStatComponent::RecoverHP(float p_HP)
 	Super::RecoverHP(p_HP);
 
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
+	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 }
 
 void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
@@ -64,7 +66,8 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 
 	}
 
-	OnVisibleHPUIDelegate.Broadcast();
+	owner->FindComponentByClass<UPlayerInputComponent>()->OnCombatWidgetVisible.Broadcast(true);
+	//OnVisibleHPUIDelegate.Broadcast();
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 	OnCreateAttackedUIDelegate.Broadcast(attacker);
@@ -77,11 +80,11 @@ void UPlayerStatComponent::CheckInteractiveObj()
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	FVector end = start + (cameraRotation.Vector() * 500.0f);
 	FHitResult result;
-
 	if (GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_GameTraceChannel8, FCollisionShape::MakeSphere(30.0f)))
 	{
 		//DrawDebugSphere(GetWorld(), result.Location, 30.0f, 50.0f, FColor::Red, true);
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("intercheck"));
+		OnSetInteractUIDelegate.Broadcast(result.ImpactPoint);
 
 		//상호작용 오브젝트가 존재하지않거나 다른오브젝트일경우 타겟변경
 		if (!InteractActor || InteractActor != result.GetActor())

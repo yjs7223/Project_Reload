@@ -340,9 +340,7 @@ void UPlayerWeaponComponent::StartAiming()
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
-	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
-	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 
 }
 
@@ -354,7 +352,6 @@ void UPlayerWeaponComponent::StopAiming()
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
-	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
 
@@ -371,8 +368,6 @@ void UPlayerWeaponComponent::StartFire()
 	Fire();
 	bFire = true;
 
-	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
-	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 
 	startRot = owner->GetController()->GetControlRotation();
 	if (weapontype == EWeaponType::TE_Rifle)
@@ -392,8 +387,6 @@ void UPlayerWeaponComponent::StopFire()
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		bFire = false;
 		
-		OnVisibleCrossHairUIDelegate.ExecuteIfBound();
-		OnVisibleAmmoUIDelegate.ExecuteIfBound();
 		StartRecovery();
 	}
 }
