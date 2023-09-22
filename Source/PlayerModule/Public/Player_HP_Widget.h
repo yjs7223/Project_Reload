@@ -28,7 +28,7 @@ public:
 	void MoveCircle(float deltatime);
 	void SetBackMat();
 
-	void SetWidgetVisible() override;
+	void SetCombatWidgetVisible() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -62,7 +62,7 @@ public:
 		FTimerHandle WTimer;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
-		class UWidgetAnimation* FadeOutAnimation;
+		class UWidgetAnimation* CombatFadeOutAnimation;
 
 public:
 	bool bWidgetVisible;

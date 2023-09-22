@@ -28,7 +28,7 @@ public:
 
 	void RemovePrevPoint(int index);
 
-	virtual void SetWidgetVisible() override;
+	virtual void SetCombatWidgetVisible() override;
 
 	void SetCoverLine(TArray<FNavPathPoint> p_CoverLocs);
 

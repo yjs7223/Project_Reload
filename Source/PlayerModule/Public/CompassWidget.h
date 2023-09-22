@@ -47,4 +47,6 @@ public:
 
 	TArray<class UEnemyPointWidget*> EnemyPoints;
 	class UCameraComponent* PlayerCamera;
+
+	AActor* goalActor;
 };

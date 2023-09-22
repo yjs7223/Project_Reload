@@ -65,12 +65,12 @@ void UPlayer_HP_Widget::NativeConstruct()
 			stat = MyCharacter->stat;
 			//MyStatComp->OnChangedHealthDelegate.AddRaw
 			MyStatComp->OnChangedHealthDelegate.AddUObject(this, &UPlayer_HP_Widget::SetPercent);
-			MyStatComp->OnVisibleHPUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
+			MyStatComp->OnVisibleHPUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetCombatWidgetVisible);
 			//MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
 		}
 	}
 
-	SetWidgetVisible();
+	SetCombatWidgetVisible();
 }
 
 void UPlayer_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -135,7 +135,7 @@ void UPlayer_HP_Widget::SetBackMat()
 	}*/
 }
 
-void UPlayer_HP_Widget::SetWidgetVisible()
+void UPlayer_HP_Widget::SetCombatWidgetVisible()
 {
 	/*
 	GetWorld()->GetTimerManager().ClearTimer(WTimer);
