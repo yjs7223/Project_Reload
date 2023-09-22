@@ -116,23 +116,17 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	FVector ViewPoint;
 	FRotator cameraRotation;
 	FHitResult result;
-	FName handleingName;
 	FVector start;
 	FVector end;
 
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
 
-	//start = owner->GetActorLocation(); 
-	//root
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
-	handleingName = m_Cover->IsFaceRight() ? Arm_R_Name : Arm_L_Name;
 	if (m_Cover->IsPeeking()) {
 		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() *0.75f;
 	}
 	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
-	//start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight();
-	//start = owner->GetMesh()->GetSocketLocation(handleingName);
 
 
 	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
