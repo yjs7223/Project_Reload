@@ -17,6 +17,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool sensing;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+		float Target_MinRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
 		float AimFwd_Radius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
 		float AimBwd_Radius;

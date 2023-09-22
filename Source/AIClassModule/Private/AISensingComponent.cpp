@@ -144,6 +144,7 @@ void UAISensingComponent::SetDataTable(const FName EnemyName)
 {
 	curAIRangeData = AIRangeData->FindRow<FST_Range>(EnemyName, TEXT(""));
 
+	Target_MinRange = curAIRangeData->Target_MinRange;
 	AimBwd_Radius = curAIRangeData->AimBwd_Radius;
 	AimFwd_Radius = curAIRangeData->AimFwd_Radius;
 	AimSide_Radius = curAIRangeData->AimSide_Radius;

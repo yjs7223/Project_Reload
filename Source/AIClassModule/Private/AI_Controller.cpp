@@ -4,6 +4,7 @@
 #include "AI_Controller.h"
 #include "AICharacter.h"
 #include "AICommander.h"
+#include "AISensingComponent.h"
 #include "ST_Range.h"
 #include "BaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -73,6 +74,7 @@ void AAI_Controller::BeginPlay()
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BBAsset, BlackboardComp);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
+	sensing = GetPawn()->FindComponentByClass<UAISensingComponent>();
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
 
@@ -301,6 +303,8 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 	}
+	Blackboard->SetValueAsBool("Target_MinRange", sensing->MinRangeCheck());
+	Blackboard->SetValueAsVector("Target_Location", player->GetActorLocation());
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 
