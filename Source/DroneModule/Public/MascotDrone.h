@@ -30,6 +30,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
+public:
 
 	//Component
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Component")

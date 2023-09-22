@@ -8,7 +8,7 @@
 #include "WeaponComponent.h"
 //
 //#include "Components/SceneComponent.h"
-//#include "NiagaraComponent.h"
+#include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "DroneAIController.h"
 
@@ -35,6 +35,9 @@ AMascotDrone::AMascotDrone()
 	m_StaticMeshCmp[3]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Turret.Drone_Turret'")));
 	m_StaticMeshCmp[4]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Wing.Drone_Wing'")));
 
+
+	m_StaticMeshCmp[0]->SetRelativeScale3D(FVector(.3f, .3f, .3f));
+
 	for (int i = 1; i < m_StaticMeshCmp.Num(); i++)
 	{
 		m_StaticMeshCmp[i]->AttachToComponent(m_StaticMeshCmp[0], FAttachmentTransformRules::KeepRelativeTransform);
@@ -47,9 +50,6 @@ AMascotDrone::AMascotDrone()
 	CollisionMesh->AttachToComponent(m_StaticMeshCmp[0], FAttachmentTransformRules::KeepRelativeTransform);
 
 
-
-
-
 	//나이아가라 
 	m_Empcmp = CreateDefaultSubobject<USceneComponent>(TEXT("Empcmp"));
 
@@ -57,12 +57,20 @@ AMascotDrone::AMascotDrone()
 	m_EmpEffect.Add(CreateDefaultSubobject<UNiagaraComponent>(TEXT("PreExplosion")));
 	m_EmpEffect.Add(CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion")));
 
+	m_EmpEffect[0]->SetAsset(LoadObject<UNiagaraSystem>(NULL, TEXT("NiagaraSystem'/Game/_sjs/Drone/NS_Electrical_PreExplosion.NS_Electrical_PreExplosion'")));
+	m_EmpEffect[1]->SetAsset(LoadObject<UNiagaraSystem>(NULL, TEXT("NiagaraSystem'/Game/_sjs/Drone/NS_Electrical_Explosion.NS_Electrical_Explosion'")));
+
+
 	for (auto& i : m_EmpEffect)
 	{
 		i->AttachToComponent(m_Empcmp, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 
 	m_Empcmp->AttachToComponent(m_StaticMeshCmp[0], FAttachmentTransformRules::KeepRelativeTransform);
+
+
+	//AI컨트롤러 세팅
+	AIControllerClass = ADroneAIController::StaticClass();
 
 }
 
@@ -74,6 +82,10 @@ void AMascotDrone::BeginPlay()
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AMascotDrone::OverlapBegin);
 		CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &AMascotDrone::OverlapEnd);
+
+
+	//BT실행
+	Cast<ADroneAIController>(GetController())->RunBTT();
 	
 }
 
