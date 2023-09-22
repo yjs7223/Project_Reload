@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InteractiveWidget.generated.h"
+#include "DestinationWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PLAYERMODULE_API UInteractiveWidget : public UUserWidget
+class PLAYERMODULE_API UDestinationWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -19,18 +19,23 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void ActiveInteractWidget(bool p_bActive, AActor* InterActor);
+	void ArraySorting();
 
-	void SetInterWidgetLoc(FVector normal);
+	
+
+	void SetTranslation();
+
+	void PopDesActor(AActor* p_desact);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UOverlay* Interactive_Overlay;
+		class UOverlay* Des_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* Interactive_Image;
+		class UImage* Des_image;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* InteractiveObj;
 
+	TArray<AActor*> desActors;
+
+	AActor* nowDes;
 };

@@ -12,6 +12,8 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PLAYERMODULE_API UPlayerMoveComponent : public UActorComponent, public IPlayerMovable
 {
 	GENERATED_BODY()
+public:
+
 
 public:
 	// Sets default values for this component's properties
