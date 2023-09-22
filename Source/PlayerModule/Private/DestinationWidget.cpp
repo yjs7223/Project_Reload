@@ -22,8 +22,9 @@ void UDestinationWidget::NativeConstruct()
 		ADestinationActor* da = Cast<ADestinationActor>(desActors[i]);
 		da->OnUpdateDesUIDelegate.BindUObject(this, &UDestinationWidget::PopDesActor);
 	}
-
-	nowDes = desActors[0];
+	if (desActors.Num() > 0) {
+		nowDes = desActors[0];
+	}
 	if (nowDes)
 	{
 		Cast<APlayerCharacter>(GetOwningPlayerPawn())->PlayerHUDWidget->CompassWidget->goalActor = nowDes;
