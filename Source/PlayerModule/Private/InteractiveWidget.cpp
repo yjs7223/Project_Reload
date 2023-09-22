@@ -17,6 +17,7 @@ void UInteractiveWidget::NativeConstruct()
 	if (UPlayerStatComponent* statComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>())
 	{
 		statComp->OnVisibleInteractiveUIDelegate.BindUObject(this, &UInteractiveWidget::ActiveInteractWidget);
+		statComp->OnSetInteractUIDelegate.AddUObject(this, &UInteractiveWidget::SetInterWidgetLoc);
 	}
 }
 
@@ -25,16 +26,6 @@ void UInteractiveWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	Super::NativeTick(MyGeometry, InDeltaTime); 
 	
 
-	if (InteractiveObj)
-	{
-		FVector2D loc;
-		FRotator rot = UKismetMathLibrary::FindLookAtRotation(InteractiveObj->GetActorLocation(), GetOwningPlayerPawn()->GetActorLocation());
-		FVector objloc = InteractiveObj->GetActorLocation() + (rot.Vector() * 100.0f) + FVector::UpVector * 30.0f;
-		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), objloc, loc, false))
-		{
-			Interactive_Overlay->SetRenderTranslation(loc);
-		}
-	}
 }
 
 void UInteractiveWidget::ActiveInteractWidget(bool p_bActive, AActor* InterActor)
@@ -49,5 +40,19 @@ void UInteractiveWidget::ActiveInteractWidget(bool p_bActive, AActor* InterActor
 	}
 
 	InteractiveObj = InterActor;
+}
+
+void UInteractiveWidget::SetInterWidgetLoc(FVector normal)
+{
+	if (InteractiveObj)
+	{
+		FVector2D loc;
+		//FRotator rot = UKismetMathLibrary::FindLookAtRotation(InteractiveObj->GetActorLocation(), GetOwningPlayerPawn()->GetActorLocation());
+		//FVector objloc = InteractiveObj->GetActorLocation() + (normal * 50.0f) + FVector::UpVector * 30.0f;
+		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), normal, loc, false))
+		{
+			Interactive_Overlay->SetRenderTranslation(loc);
+		}
+	}
 }
 

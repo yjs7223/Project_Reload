@@ -69,6 +69,7 @@ void AAI_Controller::BeginPlay()
 	SetFocus(PlayerPawn);*/
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	//DistanceToPlayer = 0.0f;
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BBAsset, BlackboardComp);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
@@ -257,6 +258,27 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
 	}*/
+
+	if (commander != nullptr)
+	{
+		b_detour = false;
+		for (auto detour : commander->DetourCoverArray)
+		{
+			if (FVector::Distance(GetPawn()->GetActorLocation(), detour) <= 100)
+			{
+				b_detour = true;
+			}
+		}
+
+		if (b_detour == true)
+		{
+			Blackboard->SetValueAsBool("AI_Detour", true);
+		}
+		else
+		{
+			Blackboard->SetValueAsBool("AI_Detour", false);
+		}
+	}
 	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
 		

@@ -145,7 +145,18 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
 	FName Weapon_Handle_L_Name;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
+	FName Arm_R_Name;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
+	FName Arm_L_Name;
 protected:
 	bool m_IsWeaponBlocking;
 	float m_WeaponDistance;
-};
+	TObjectPtr<class UCoverComponent> m_Cover;
+
+	FVector ArmPoint;
+	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = true))
+	float testval;
+ };

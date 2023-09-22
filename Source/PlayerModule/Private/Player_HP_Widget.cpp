@@ -15,7 +15,7 @@
 void UPlayer_HP_Widget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	
 
 	/*UMaterialInterface* mat = LoadObject<UMaterialInterface>(NULL,TEXT("Material'/Game/yjs/UI/Materials/M_RadialHP.M_RadialHP'"));
 	if (mat)
@@ -65,12 +65,12 @@ void UPlayer_HP_Widget::NativeConstruct()
 			stat = MyCharacter->stat;
 			//MyStatComp->OnChangedHealthDelegate.AddRaw
 			MyStatComp->OnChangedHealthDelegate.AddUObject(this, &UPlayer_HP_Widget::SetPercent);
-			MyStatComp->OnVisibleHPUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
-			MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
+			MyStatComp->OnVisibleHPUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetCombatWidgetVisible);
+			//MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UPlayer_HP_Widget::SetWidgetVisible);
 		}
 	}
 
-	SetWidgetVisible();
+	SetCombatWidgetVisible();
 }
 
 void UPlayer_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -88,7 +88,7 @@ void UPlayer_HP_Widget::NativeDestruct()
 
 void UPlayer_HP_Widget::SetPercent(float percent)
 {
-	/*if (percent > 1.0f)
+	if (percent > 1.0f)
 	{
 		percent = 1.0f;
 	}
@@ -97,8 +97,12 @@ void UPlayer_HP_Widget::SetPercent(float percent)
 		percent = 0.0f;
 	}
 
-	HPmat->SetScalarParameterValue(FName(TEXT("Percent")), percent);
-	HP_image->SetBrushFromMaterial(HPmat);*/
+	if (HP_Bar)
+	{
+		HP_Bar->SetPercent(percent);
+	}
+	//HPmat->SetScalarParameterValue(FName(TEXT("Percent")), percent);
+	//HP_image->SetBrushFromMaterial(HPmat);
 }
 
 void UPlayer_HP_Widget::MoveCircle(float deltatime)
@@ -131,9 +135,10 @@ void UPlayer_HP_Widget::SetBackMat()
 	}*/
 }
 
-void UPlayer_HP_Widget::SetWidgetVisible()
+void UPlayer_HP_Widget::SetCombatWidgetVisible()
 {
-	/*GetWorld()->GetTimerManager().ClearTimer(WTimer);
+	/*
+	GetWorld()->GetTimerManager().ClearTimer(WTimer);
 
 	if (this)
 	{
@@ -151,5 +156,6 @@ void UPlayer_HP_Widget::SetWidgetVisible()
 					PlayAnimationForward(FadeOutAnimation);
 				}
 			}), 5.f, false);
-	}*/
+	}
+	*/
 }

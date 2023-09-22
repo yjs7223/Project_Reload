@@ -48,7 +48,7 @@ void ULineNaviWidget::NativeConstruct()
 
 	if (APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
 	{
-		MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &ULineNaviWidget::SetWidgetVisible);
+		MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &ULineNaviWidget::SetCombatWidgetVisible);
 
 		if (UCoverComponent* myCover = MyCharacter->FindComponentByClass<UCoverComponent>())
 		{
@@ -133,7 +133,7 @@ void ULineNaviWidget::RemovePrevPoint(int index)
 	}
 }
 
-void ULineNaviWidget::SetWidgetVisible()
+void ULineNaviWidget::SetCombatWidgetVisible()
 {
 	if (!bWidgetVisible)
 	{
@@ -174,5 +174,5 @@ void ULineNaviWidget::SetCoverLine(TArray<FNavPathPoint> p_CoverLocs)
 		}
 	}
 
-	SetWidgetVisible();
+	SetCombatWidgetVisible();
 }
