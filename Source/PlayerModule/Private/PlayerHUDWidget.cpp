@@ -12,9 +12,11 @@
 #include "InteractiveWidget.h"
 #include "DestinationWidget.h"
 #include "PauseWidget.h"
+#include "CorneringWidget.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerInputComponent.h"
 #include "Animation/WidgetAnimation.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "UMG.h"
 
 void UPlayerHUDWidget::NativePreConstruct()
@@ -46,6 +48,9 @@ void UPlayerHUDWidget::NativeConstruct()
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+
+	SetCorneringTranslation();
 }
 
 void UPlayerHUDWidget::InitWidgets()
@@ -127,6 +132,18 @@ void UPlayerHUDWidget::CreatePauseWidget()
 		if (pwidget)
 		{
 			pwidget->AddToViewport();
+		}
+	}
+}
+
+void UPlayerHUDWidget::SetCorneringTranslation()
+{
+	if (CorneringWidget)
+	{
+		FVector2D loc;
+		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), GetOwningPlayerPawn()->GetActorLocation(), loc, true))
+		{
+			CorneringWidget->SetRenderTranslation(loc);
 		}
 	}
 }

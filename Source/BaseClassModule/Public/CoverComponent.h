@@ -21,6 +21,9 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerCharacterTickDelegate, float /*DeltaTime*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverCharacterTickDelegate, float /*DeltaTime*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverPointsSetDelegate, TArray<FNavPathPoint>);
+	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool, bool);
+	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float);
+
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
 	FStartCoverEventDelegate PlayMontageStartCover;
@@ -33,6 +36,10 @@ public:
 	FCoverCharacterTickDelegate CoverCharacterTick;
 
 	FCoverPointsSetDelegate OnCoverPointsSetDelegate;
+
+	FOnVisibleCorneringWidget OnVisibleCorneringWidget;
+
+	FOnSetPercentCorneringWidget OnSetPercentCorneringWidget;
 public:
 	UCoverComponent();
 
