@@ -167,6 +167,7 @@ void UPlayerInputComponent::StopCover()
 	UBaseCharacterMovementComponent* movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 
 	if (m_Covercomponent->IsCover()) return;
+	if (!m_Covercomponent->GetCoverWall()) return;
 
 	m_Covercomponent->StopCover();
 }
@@ -175,9 +176,7 @@ void UPlayerInputComponent::StartReload()
 {
 	OnCombatWidgetVisible.Broadcast(true);
 	//m_PlayerWeapon->StartReload();
-	if (m_PlayerWeapon->bReload)
-	{
-	}
+	if(!m_PlayerWeapon->CanReload()) return;
 	m_inputData.IsReload = true;
 }
 
