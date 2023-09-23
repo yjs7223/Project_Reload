@@ -21,24 +21,23 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerCharacterTickDelegate, float /*DeltaTime*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverCharacterTickDelegate, float /*DeltaTime*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverPointsSetDelegate, TArray<FNavPathPoint>);
-	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool, bool);
-	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float);
+	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool /*bvisible*/, bool /*bright*/);
+	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float /*percent*/);
 
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
 	FStartCoverEventDelegate PlayMontageStartCover;
 	/** 엄폐해제 몽타주재생 델리게이트입니다 */
 	FEndCoverEventDelegate PlayMontageEndCover;
-
 	/** 플레이어캐릭터의 엄폐 틱델리게이트 입니다 */
 	FPlayerCharacterTickDelegate PlayerCharacterTick;
 	/** 엄폐캐릭터의 엄폐 틱델리게이트 입니다 */
 	FCoverCharacterTickDelegate CoverCharacterTick;
-
+	/** UI 커버포인트 세팅 델리게이트 입니다 */
 	FCoverPointsSetDelegate OnCoverPointsSetDelegate;
-
+	/** UI 코너링 위젯 델리게이트 입니다 */
 	FOnVisibleCorneringWidget OnVisibleCorneringWidget;
-
+	/** 코너링 퍼센트 위젯UI 델리게이트 입니다 */
 	FOnSetPercentCorneringWidget OnSetPercentCorneringWidget;
 public:
 	UCoverComponent();
