@@ -54,6 +54,8 @@ public:
 		class ACharacter* player; //cast
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool em_normal;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		bool b_detour;
 
 	FHitResult result;
 

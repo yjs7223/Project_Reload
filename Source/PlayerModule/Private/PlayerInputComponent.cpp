@@ -13,6 +13,8 @@
 #include "Player_HP_Widget.h"
 #include "BaseCharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -47,15 +49,14 @@ void UPlayerInputComponent::BeginPlay()
 	InputComponent->BindAction("Aim", IE_Pressed, m_Covercomponent.Get(), &UCoverComponent::StartPeeking);
 	InputComponent->BindAction("Aim", IE_Released, m_Covercomponent.Get(), &UCoverComponent::StopPeeking);
 
-	InputComponent->BindAction("TestInput", IE_Pressed, this, &UPlayerInputComponent::TestHud);
+	InputComponent->BindAction("HP_reduce", IE_Pressed, this, &UPlayerInputComponent::HPreduce);
 	InputComponent->BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
 
-	InputComponent->BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
+	//APlayerCharacter* pc = Cast<APlayerCharacter>(owner);
+	InputComponent->BindAction("UI_Visible", IE_Pressed, this, &UPlayerInputComponent::VisibleHud);
+	InputComponent->BindAction("GamePause", IE_Pressed, this, &UPlayerInputComponent::GamePause);
 
-	APlayerCharacter* pc = Cast<APlayerCharacter>(owner);
-	InputComponent->BindAction("UI_Visible", IE_Pressed, pc, &APlayerCharacter::WidgetShow);
-	
-	UPlayerStatComponent* statcomp = owner->FindComponentByClass<UPlayerStatComponent>();
+	UPlayerStatComponent* statcomp = GetOwner()->FindComponentByClass<UPlayerStatComponent>();
 	InputComponent->BindAction("Interactive", IE_Pressed, statcomp, &UPlayerStatComponent::Interacting);
 
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
@@ -107,6 +108,7 @@ void UPlayerInputComponent::Crouching()
 
 void UPlayerInputComponent::StartFire()
 {
+	OnCombatWidgetVisible.Broadcast(false);
 	if (!m_inputData.IsReload)
 	{
 		m_PlayerWeapon->StartFire();
@@ -119,12 +121,14 @@ void UPlayerInputComponent::StartFire()
 
 void UPlayerInputComponent::StopFire()
 {
+	OnCombatWidgetVisible.Broadcast(true);
 	m_inputData.IsFire = false;
 	m_PlayerWeapon->StopFire();
 }
 
 void UPlayerInputComponent::StartAiming()
 {
+	OnCombatWidgetVisible.Broadcast(false);
 	UBaseCharacterMovementComponent* movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 	m_inputData.IsAiming = true;
 	if (movement->isRuning()) {
@@ -139,6 +143,7 @@ void UPlayerInputComponent::StartAiming()
 
 void UPlayerInputComponent::StopAiming()
 {
+	OnCombatWidgetVisible.Broadcast(true);
 	m_inputData.IsAiming = false;
 	m_PlayerWeapon->StopAiming();
 }
@@ -162,20 +167,26 @@ void UPlayerInputComponent::StopCover()
 	UBaseCharacterMovementComponent* movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 
 	if (m_Covercomponent->IsCover()) return;
+	if (!m_Covercomponent->GetCoverWall()) return;
 
 	m_Covercomponent->StopCover();
 }
 
 void UPlayerInputComponent::StartReload()
 {
+	OnCombatWidgetVisible.Broadcast(true);
 	//m_PlayerWeapon->StartReload();
-	if (m_PlayerWeapon->bReload)
-	{
-	}
+	if(!m_PlayerWeapon->CanReload()) return;
 	m_inputData.IsReload = true;
 }
 
-void UPlayerInputComponent::TestHud()
+void UPlayerInputComponent::VisibleHud()
+{
+	OnAllWidgetVisible.Broadcast(true);
+
+}
+
+void UPlayerInputComponent::HPreduce()
 {
 	owner->FindComponentByClass<UPlayerStatComponent>()->Attacked(100.0f);
 }
@@ -183,4 +194,13 @@ void UPlayerInputComponent::TestHud()
 void UPlayerInputComponent::HPregen()
 {
 	owner->FindComponentByClass<UStatComponent>()->RecoverHP(100000.0f);
+}
+
+void UPlayerInputComponent::GamePause()
+{
+	if (!UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		OnCreatePauseWidget.ExecuteIfBound();
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
 }
