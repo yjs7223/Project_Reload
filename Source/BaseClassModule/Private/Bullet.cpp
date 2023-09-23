@@ -22,7 +22,7 @@ ABullet::ABullet()
 	CollisionComponent->InitSphereRadius(65.0f);
 	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Bullet"));
 	RootComponent = CollisionComponent;
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
@@ -107,6 +107,7 @@ void ABullet::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* 
 {
 	if (OtherActor && UWeaponComponent::CheckActorTag(OtherActor, "Player"))
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player hit"));
 		PlayPassbySound(SweepResult.Location);
 	}
 }
