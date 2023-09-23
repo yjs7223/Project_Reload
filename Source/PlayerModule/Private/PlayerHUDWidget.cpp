@@ -13,6 +13,7 @@
 #include "DestinationWidget.h"
 #include "PauseWidget.h"
 #include "CorneringWidget.h"
+#include "Player_Cover_Widget.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerInputComponent.h"
 #include "Animation/WidgetAnimation.h"
