@@ -24,6 +24,7 @@ UCameraControllComponent::UCameraControllComponent()
 		m_CameraControllData = DataTable.Object;
 	}
 	
+	cameraState = ECameraState::Default;
 	// ...
 }
 
@@ -34,8 +35,12 @@ void UCameraControllComponent::BeginPlay()
 	Super::BeginPlay();
 
 	owner = dynamic_cast<ACharacter*>(GetOwner());
-	
-	m_Data = reinterpret_cast<FCameraControllData*>(m_CameraControllData->GetRowMap().begin().Value());
+
+	static const UEnum* CameraStateEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECameraState"), true);
+
+	m_Data = m_CameraControllData->FindRow<FCameraControllData>(FName((CameraStateEnum->GetDisplayNameTextByValue((int)cameraState).ToString())), TEXT(""));
+
+	//m_Data = reinterpret_cast<FCameraControllData*>(m_CameraControllData->GetRowMap().begin().Value());
 
 	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
@@ -45,6 +50,7 @@ void UCameraControllComponent::BeginPlay()
 	m_FollowSpringArm->SocketOffset = m_Data->camerapos;
 	m_FollowSpringArm->SetRelativeLocation(FVector(0.0, 0.0, owner->GetDefaultHalfHeight() * 1.5));
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+
 
 }
 

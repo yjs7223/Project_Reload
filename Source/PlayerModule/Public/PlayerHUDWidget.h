@@ -61,11 +61,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UDestinationWidget* DestinationWidget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class ULineNaviWidget* LineNaviWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCorneringWidget* CorneringWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UPlayer_Cover_Widget* CoverWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UCorneringWidget* CorneringWidget;
+		class ULineNaviWidget* LineNaviWidget;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDamage_Widget> Damage_WidgetClass;
