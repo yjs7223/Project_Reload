@@ -74,7 +74,7 @@ void AAI_Controller::BeginPlay()
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BBAsset, BlackboardComp);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
-	sensing = GetPawn()->FindComponentByClass<UAISensingComponent>();
+	
 	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
 	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
 
@@ -259,7 +259,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
-	}*/
+	}*/\
+	if (!sensing)
+	{
+		if (GetPawn())
+		{
+			sensing = GetPawn()->FindComponentByClass<UAISensingComponent>();
+		}
+	}
+	
 
 	if (commander != nullptr)
 	{
