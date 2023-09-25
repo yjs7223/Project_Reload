@@ -73,6 +73,8 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 Content/Level_Dummy/*
+Content/__ExternalObjects__/All_Level/*
+Content/__ExternalObjects__/*
 Content/__ExternalActors__/*
 Content/LevelPrototyping/*
 Content/ThirdPersonKit/*
