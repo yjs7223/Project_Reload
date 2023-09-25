@@ -249,6 +249,7 @@ TArray<FNavPathPoint> UCoverComponent::CalculCoverPath()
 
 void UCoverComponent::SettingCoverPath(float DeltaTime)
 {
+	if (!m_IsCover) return;
 	OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
 }
 
@@ -397,6 +398,7 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 {
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	//커버가능ui visible 델리게이트 실행
+
 }
 
 FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)

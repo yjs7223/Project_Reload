@@ -24,10 +24,8 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-
-public:
-		class UBehaviorTree* btree;
-
+protected:
+	class UBehaviorTree* btree;
 
 public:
 
@@ -37,7 +35,10 @@ public:
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "MascotDrone")
+	UFUNCTION(BlueprintCallable, Category = "Move")
 		bool DroneMoveTo(FVector p_vec, float p_radius);
+
+	UFUNCTION(BlueprintCallable, Category = "Rot")
+		bool DroneFocus(float time);
 
 };
