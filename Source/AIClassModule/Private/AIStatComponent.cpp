@@ -85,6 +85,7 @@ void UAIStatComponent::IndirectAttacked(float p_Value)
 
 void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
+	bAttacked = true;
 	DI_SupRange = 1 / sup_MaxRange;
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));

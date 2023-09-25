@@ -12,6 +12,7 @@ DECLARE_MULTICAST_DELEGATE(FOnVisibleHPUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAttackedUIDelegate);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCreateAttackedUIDelegate, class ABaseCharacter*);
 DECLARE_DELEGATE_TwoParams(FOnVisibleInteractiveUIDelegate, bool, AActor*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSetInteractUIDelegate, FVector);
 
 /**
  * 
@@ -47,12 +48,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Interacting();
 
+
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;
 	FOnVisibleAttackedUIDelegate OnVisibleAttackedUIDelegate;
 	FOnCreateAttackedUIDelegate OnCreateAttackedUIDelegate;
 	FOnVisibleInteractiveUIDelegate OnVisibleInteractiveUIDelegate;
+	FOnSetInteractUIDelegate OnSetInteractUIDelegate;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UMatineeCameraShake> AttackedCameraShake;
@@ -60,4 +63,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* InteractActor;
 	
+	FTimerHandle HpRecoverTimer;
+	FTimerHandle StandbyTimer;
 };

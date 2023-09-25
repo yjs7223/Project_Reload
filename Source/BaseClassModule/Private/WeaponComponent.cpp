@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Perception/AISense_Hearing.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -20,9 +21,11 @@ UWeaponComponent::UWeaponComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	m_CanShooting = true;
+	//m_CanShooting = true;
 	Weapon_Handle_R_Name = TEXT("hand_r_Socket");
 	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
+	Arm_R_Name = TEXT("upperarm_r");
+	Arm_L_Name = TEXT("upperarm_l");
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
@@ -52,7 +55,7 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
-	
+	m_Cover = owner->FindComponentByClass<UCoverComponent>();
 	
 	// ...
 	
@@ -72,6 +75,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	AimSetting();
+	CalculateBlockingTick(DeltaTime);
 	// ...
 }
 
@@ -103,6 +107,52 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 		curAmmo = 30;
 		break;
 	}
+}
+
+void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
+{
+	if(!Cast<APlayerController>(owner->Controller)) return;
+	
+	FVector ViewPoint;
+	FRotator cameraRotation;
+	FHitResult result;
+	FVector start;
+	FVector end;
+
+	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
+	FCollisionQueryParams param(NAME_None, true, owner);
+
+	start = owner->GetMesh()->GetSocketLocation("pelvis");
+	if (m_Cover->IsPeeking()) {
+		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() *0.75f;
+	}
+	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
+
+
+	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
+	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
+	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+		start,
+		end,
+		UEngineTypes::ConvertToTraceType(ECC_Visibility),
+		false,
+		{ owner },
+		EDrawDebugTrace::ForOneFrame,
+		result, false);
+	
+	DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
+	if (result.bBlockingHit) {
+		float distance = (owner->GetActorLocation() - result.Location).Length();
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
+		
+
+		if (distance < m_WeaponDistance) {
+
+			m_IsWeaponBlocking = true;
+			return;
+		}
+	}
+	m_IsWeaponBlocking = false;
 }
 
 void UWeaponComponent::StartFire()
@@ -303,4 +353,9 @@ bool UWeaponComponent::CheckActorTag(AActor* actor, FName tag)
 	}
 
 	return false;
+}
+
+bool UWeaponComponent::IsWeaponBlocking()
+{
+	return m_IsWeaponBlocking;
 }

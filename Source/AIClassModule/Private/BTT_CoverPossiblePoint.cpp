@@ -55,6 +55,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 			for (auto coverenemy : commander->CoverEnemyArray)
 			{
 				B_distance = false;
+
 				for (auto coverlist : commander->List_CoverPoint)
 				{
 					if (enemy.Value != coverlist.Key)
@@ -85,7 +86,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 					}
 					else
 					{
-						if (FVector::Distance(coverenemy, subAi.Key->GetActorLocation()) < 50)
+						if (FVector::Distance(coverenemy, subAi.Key->GetActorLocation()) < 200)
 						{
 							B_distance = true;
 						}
@@ -155,7 +156,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 						}
 						else
 						{
-							if (FVector::Distance(coverenemy, subAi.Key->GetActorLocation()) < 50)
+							if (FVector::Distance(coverenemy, subAi.Key->GetActorLocation()) < 200)
 							{
 								B_distance = true;
 							}

@@ -7,6 +7,8 @@
 #include "Blueprint/UserWidget.h"
 #include "LineNaviWidget.generated.h"
 
+
+
 /**
  * 
  */
@@ -26,11 +28,15 @@ public:
 
 	void RemovePrevPoint(int index);
 
-	virtual void SetWidgetVisible() override;
+	virtual void SetCombatWidgetVisible() override;
+
+	void SetCoverLine(TArray<FNavPathPoint> p_CoverLocs);
 
 public:
 	TArray<AActor*> LinePoints;
 	TArray<FVector2D> PointLocations;
+
+	TArray<FVector2D> CoverLocs;
 
 	bool bWidgetVisible;
 	FTimerHandle VisibleTimer;

@@ -12,6 +12,7 @@ DECLARE_DELEGATE(FOnChangedCrossHairDieDelegate);
 DECLARE_DELEGATE(FOnChangedAmmoUIDelegate);
 
 DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
+DECLARE_DELEGATE(FOnStopReloadUIDelegate);
 
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_DELEGATE(FOnVisibleAmmoUIDelegate);
@@ -39,6 +40,7 @@ public:
 	FOnChangedAmmoUIDelegate OnChangedAmmoUIDelegate;
 
 	FOnPlayReloadUIDelegate OnPlayReloadUIDelegate;
+	FOnStopReloadUIDelegate OnStopReloadUIDelegate;
 
 protected:
 	// Called when the game starts
@@ -66,38 +68,28 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
+	bool CanReload();
 	void StopReload();
+	UFUNCTION(BlueprintCallable)
+	void FinshReload();
 	UFUNCTION(BlueprintCallable)
 	void WeaponChange();
 	void WeaponMeshSetting(class UPlayerWeaponDataAsset* WeapondataAsset);
 
 
 	void ReloadTick(float Deltatime);
-
 	void RecoilTick(float p_deltatime);
-
 	void StartRecoil();
-
 	void StopRecoil();
-
 	void RecoveryTick(float p_deltatime);
-
 	void StartRecovery();
-
 	void StopRcovery();
-
 	float easeOutExpo(float t, float b, float c, float d);
-
 	void SpawnDecal(FHitResult result);
-
 	void PlayRandomShotSound() override;
-
 	void PlayCameraShake(float scale);
-
 	void SpawnField(FHitResult result);
-
 	void Threaten();
-
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -171,4 +163,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TObjectPtr<UBlueprint> fieldActor;
+
 };

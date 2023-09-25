@@ -6,6 +6,7 @@
 #include "NaviPoint.h"
 #include "Rendering/DrawElements.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "CoverComponent.h"
 #include "PlayerCharacter.h"
 
 void ULineNaviWidget::NativeConstruct()
@@ -47,7 +48,12 @@ void ULineNaviWidget::NativeConstruct()
 
 	if (APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
 	{
-		MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &ULineNaviWidget::SetWidgetVisible);
+		MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &ULineNaviWidget::SetCombatWidgetVisible);
+
+		if (UCoverComponent* myCover = MyCharacter->FindComponentByClass<UCoverComponent>())
+		{
+			myCover->OnCoverPointsSetDelegate.AddUObject(this, &ULineNaviWidget::SetCoverLine);
+		}
 	}
 
 }
@@ -94,7 +100,9 @@ int32 ULineNaviWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allo
 	{
 		const FPaintGeometry PG = AllottedGeometry.ToPaintGeometry();
 		const int32 LayerIdNew = LayerId + 1;
-		FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, PointLocations, ESlateDrawEffect::None, FLinearColor::Yellow, true, 1.0f);
+		//FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, PointLocations, ESlateDrawEffect::None, FLinearColor::Yellow, true, 1.0f);
+
+		FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, CoverLocs, ESlateDrawEffect::None, FLinearColor::Blue, true, 3.0f);
 	}
 
 
@@ -125,7 +133,7 @@ void ULineNaviWidget::RemovePrevPoint(int index)
 	}
 }
 
-void ULineNaviWidget::SetWidgetVisible()
+void ULineNaviWidget::SetCombatWidgetVisible()
 {
 	if (!bWidgetVisible)
 	{
@@ -145,4 +153,26 @@ void ULineNaviWidget::SetWidgetVisible()
 				bWidgetVisible = false;
 			}), 5.f, false);
 	}
+}
+
+void ULineNaviWidget::SetCoverLine(TArray<FNavPathPoint> p_CoverLocs)
+{
+	CoverLocs.Empty();
+
+	if (p_CoverLocs.Num() == 0)
+	{
+		return;
+	}
+
+	FVector2D loc;
+	for (int i = 0; i < p_CoverLocs.Num(); i++)
+	{
+		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), p_CoverLocs[i].Location, loc, false))
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, loc.ToString());
+			CoverLocs.Add(loc);
+		}
+	}
+
+	SetCombatWidgetVisible();
 }

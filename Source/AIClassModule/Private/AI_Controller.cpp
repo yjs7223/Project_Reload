@@ -4,6 +4,7 @@
 #include "AI_Controller.h"
 #include "AICharacter.h"
 #include "AICommander.h"
+#include "AISensingComponent.h"
 #include "ST_Range.h"
 #include "BaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -68,15 +69,19 @@ void AAI_Controller::BeginPlay()
 	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	SetFocus(PlayerPawn);*/
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	//DistanceToPlayer = 0.0f;
-	UBlackboardComponent* BlackboardComp = Blackboard;
-	UseBlackboard(BBAsset, BlackboardComp);
-	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
-	Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
-	Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
+	if (player)
+	{
+		//DistanceToPlayer = 0.0f;
+		commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
+		UBlackboardComponent* BlackboardComp = Blackboard;
+		UseBlackboard(BBAsset, BlackboardComp);
+		playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
+		Blackboard->SetValueAsVector("AI_MoveLocation", FVector::ZeroVector);
+		Blackboard->SetValueAsVector("AI_CoverLocation", FVector::ZeroVector);
 
-	GetWorldTimerManager().ClearTimer(timer);
-	GetWorldTimerManager().SetTimer(timer, this, &AAI_Controller::SetUseCover, 0.6, true, 0.0f);
+		GetWorldTimerManager().ClearTimer(timer);
+		GetWorldTimerManager().SetTimer(timer, this, &AAI_Controller::SetUseCover, 0.6, true, 0.0f);
+	}
 }
 
 //void AAI_Controller::OnTargetDetected(AActor* actor, FAIStimulus Stimulus)
@@ -256,7 +261,36 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
-	}*/
+	}*/\
+	if (!sensing)
+	{
+		if (GetPawn())
+		{
+			sensing = GetPawn()->FindComponentByClass<UAISensingComponent>();
+		}
+	}
+	
+
+	if (commander != nullptr)
+	{
+		b_detour = false;
+		for (auto detour : commander->DetourCoverArray)
+		{
+			if (FVector::Distance(GetPawn()->GetActorLocation(), detour) <= 100)
+			{
+				b_detour = true;
+			}
+		}
+
+		if (b_detour == true)
+		{
+			Blackboard->SetValueAsBool("AI_Detour", true);
+		}
+		else
+		{
+			Blackboard->SetValueAsBool("AI_Detour", false);
+		}
+	}
 	if (Blackboard->GetValueAsObject("Target") != nullptr)
 	{
 		
@@ -279,6 +313,8 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 	}
+	Blackboard->SetValueAsBool("Target_MinRange", sensing->MinRangeCheck());
+	Blackboard->SetValueAsVector("Target_Location", player->GetActorLocation());
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 

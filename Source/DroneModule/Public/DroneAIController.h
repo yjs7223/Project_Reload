@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+
+
 #include "DroneAIController.generated.h"
 
 /**
@@ -22,13 +24,21 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-
-public:
-		class UBehaviorTree* btree;
-
+protected:
+	class UBehaviorTree* btree;
 
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "DroneAI_Controller")
 		void RunBTT();
+
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Move")
+		bool DroneMoveTo(FVector p_vec, float p_radius);
+
+	UFUNCTION(BlueprintCallable, Category = "Rot")
+		bool DroneFocus(float time);
+
 };

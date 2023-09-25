@@ -88,6 +88,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoilTick(DeltaTime);
 	ReloadTick(DeltaTime);
 	RecoveryTick(DeltaTime);
+	CalculateBlockingTick(DeltaTime);
 
 	if (bAiming)
 	{
@@ -161,6 +162,7 @@ void UPlayerWeaponComponent::InitData()
 		reloadCount = 0;
 		reloadvalue = 0;
 		ammoinfinite = false;
+		m_WeaponDistance = dataTable->WeaponDistance;
 	}
 	// ...
 }
@@ -202,7 +204,7 @@ void UPlayerWeaponComponent::Fire()
 
 	cameraRotation.Yaw += FMath::RandRange(-spread, spread);
 	cameraRotation.Pitch += FMath::RandRange(-spread, spread);
-	end = start + (cameraRotation.Vector() * 99999);
+	end = start + (cameraRotation.Vector() * 15000.0);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
@@ -338,9 +340,7 @@ void UPlayerWeaponComponent::StartAiming()
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
-	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnChangedAmmoUIDelegate.ExecuteIfBound();
-	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 
 }
 
@@ -352,7 +352,6 @@ void UPlayerWeaponComponent::StopAiming()
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
-	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
 	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 }
 
@@ -369,8 +368,6 @@ void UPlayerWeaponComponent::StartFire()
 	Fire();
 	bFire = true;
 
-	OnVisibleCrossHairUIDelegate.ExecuteIfBound();
-	OnVisibleAmmoUIDelegate.ExecuteIfBound();
 
 	startRot = owner->GetController()->GetControlRotation();
 	if (weapontype == EWeaponType::TE_Rifle)
@@ -390,8 +387,6 @@ void UPlayerWeaponComponent::StopFire()
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		bFire = false;
 		
-		OnVisibleCrossHairUIDelegate.ExecuteIfBound();
-		OnVisibleAmmoUIDelegate.ExecuteIfBound();
 		StartRecovery();
 	}
 }
@@ -404,92 +399,39 @@ void UPlayerWeaponComponent::StartReload()
 	{
 		return;
 	}
-	switch (weapontype)
-	{
-	case EWeaponType::TE_Pistol:
-		if (curAmmo >= 10)
-		{
-			bReload = false;
-			return;
-		}
-
-		reloadvalue = 10;
-
-		curAmmo = 0;
-		break;
-	case EWeaponType::TE_Rifle:
-		if (holdAmmo < 0)
-		{
-			reloadvalue = 30;
-			curAmmo = 0;
-			break;
-		}
-		if (holdAmmo == 0)
-		{
-			bReload = false;
-			return;
-		}
-
-		if (curAmmo >= 30)
-		{
-			bReload = false;
-			return;
-		}
-
-		reloadvalue = 30 - curAmmo;
-		if (holdAmmo < reloadvalue)
-		{
-			reloadvalue = holdAmmo;
-			holdAmmo = 0;
-		}
-		else
-		{
-			holdAmmo -= reloadvalue;
-		}
-
-		curAmmo = 0;
-		break;
-	case EWeaponType::TE_Shotgun:
-
-		break;
-	default:
-		if (holdAmmo <= 0)
-		{
-			bReload = false;
-			return;
-		}
-
-		if (curAmmo >= 30)
-		{
-			bReload = false;
-			return;
-		}
-
-		reloadvalue = 30 - curAmmo;
-		if (holdAmmo < reloadvalue)
-		{
-			reloadvalue = holdAmmo;
-			holdAmmo = 0;
-		}
-		else
-		{
-			holdAmmo -= reloadvalue;
-		}
-
-		curAmmo = 0;
-		break;
-	}
-
-	UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
+	
+	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
 	OnPlayReloadUIDelegate.ExecuteIfBound();
-	bReload = true;
+	bReload = CanReload();
+}
+
+bool UPlayerWeaponComponent::CanReload()
+{
+	if (curAmmo >= maxAmmo)
+	{
+		return false;
+	}
+	else if (holdAmmo == 0) {
+		return false;
+	}
+	return true;
 }
 
 void UPlayerWeaponComponent::StopReload()
 {
 	reloadvalue = 0;
-	UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadCliplockedSound, owner->GetActorLocation());
+	OnStopReloadUIDelegate.ExecuteIfBound();
+
+	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadCliplockedSound, owner->GetActorLocation());
 	bReload = false;
+}
+
+void UPlayerWeaponComponent::FinshReload()
+{
+	curAmmo = maxAmmo;
+	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	StopReload();
 }
 
 void UPlayerWeaponComponent::WeaponChange()
@@ -501,32 +443,18 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* Weapondat
 {
 	if (WeapondataAsset)
 	{
-		FVector location = FVector::ZeroVector;
 		if (!WeapondataAsset->WeaponSkeletalMesh || !WeapondataAsset->WeaponAnim) {
-			ensure(0);
+			ensure(0 && "DA에 총 스켈레탈메쉬, 애니메이션 미할당");
 		}
 
 		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
 		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);
-		//Cast<>(WeapondataAsset->WeaponAnim)->AnimationSetting();
-		//switch (weapontype)
-		//{
-		//case EWeaponType::TE_Pistol:
-		//	break;
-		//case EWeaponType::TE_Rifle:
-		//	location = FVector(1.619504, 0.306273, 2.024439) * FVector(-1.0, -1.0, 1.0);
-		//	break;
-		//case EWeaponType::TE_Shotgun:
-		//	break;
-		//default:
-		//	break;
-		//}
-		WeaponMesh->SetRelativeLocation(location);
 	}
 }
 
 void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 {
+	return;
 	if (bReload)
 	{
 		switch (weapontype)
@@ -797,6 +725,7 @@ void UPlayerWeaponComponent::Threaten()
 		}
 	}
 }
+
 
 
 

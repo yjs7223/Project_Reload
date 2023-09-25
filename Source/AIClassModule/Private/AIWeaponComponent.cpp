@@ -146,7 +146,7 @@ void UAIWeaponComponent::Fire()
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), start, rot);
 	if (bullet)
 	{
-		bullet->SpawnBulletFx(AIWeaponDataAsset->BulletTrailFXNiagara, rot.Vector(), owner);
+		bullet->SpawnBulletFx(AIWeaponDataAsset->BulletTrailFXNiagara, rot.Vector(), owner, AIWeaponDataAsset->Bullet_Passby_Sound);
 		bullet->OnBulletHitDelegate.AddUObject(this, &UAIWeaponComponent::SpawnImpactEffect);
 	}
 

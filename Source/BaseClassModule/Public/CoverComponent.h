@@ -20,16 +20,28 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FEndCoverEventDelegate);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerCharacterTickDelegate, float /*DeltaTime*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverCharacterTickDelegate, float /*DeltaTime*/);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverPointsSetDelegate, TArray<FNavPathPoint>);
+	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool /*bvisible*/, bool /*bright*/);
+	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float /*percent*/);
+  DECLARE_DELEGATE_OneParam(FOnVisibleCoverWidget, FVector);
+
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
 	FStartCoverEventDelegate PlayMontageStartCover;
 	/** 엄폐해제 몽타주재생 델리게이트입니다 */
 	FEndCoverEventDelegate PlayMontageEndCover;
-
 	/** 플레이어캐릭터의 엄폐 틱델리게이트 입니다 */
 	FPlayerCharacterTickDelegate PlayerCharacterTick;
 	/** 엄폐캐릭터의 엄폐 틱델리게이트 입니다 */
 	FCoverCharacterTickDelegate CoverCharacterTick;
+	/** UI 커버포인트 세팅 델리게이트 입니다 */
+	FCoverPointsSetDelegate OnCoverPointsSetDelegate;
+	/** UI 코너링 위젯 델리게이트 입니다 */
+	FOnVisibleCorneringWidget OnVisibleCorneringWidget;
+	/** 코너링 퍼센트 위젯UI 델리게이트 입니다 */
+	FOnSetPercentCorneringWidget OnSetPercentCorneringWidget;
+
+	FOnVisibleCoverWidget OnVisibleCoverWidget;
 public:
 	UCoverComponent();
 
@@ -38,7 +50,7 @@ protected:
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	/** 엄폐버튼을 눌렀을때 실행합니다 */
 	void PlayCover();
 	/**
@@ -76,7 +88,10 @@ public:
 	/** 코너링중이면 참을 반환합니다 */
 	bool IsCornering();
 	/** 피킹중이면 참을 반환합니다 */
-	bool isPeeking();
+	bool IsPeeking();
+	UFUNCTION(BlueprintCallable)
+	/** 피킹중임을 세팅해 줍니다*/
+	void SetIsPeeking(bool isPeeking);
 	/** 엄폐사격상태를 계산합니다 */
 	void CalculateCoverShoot(float DeltaTime);
 	/** 엄폐사격상태를 반환합니다 */
@@ -104,17 +119,17 @@ public:
 
 	/** AI용 엄폐시작 입니다 */
 	UFUNCTION(BlueprintCallable)
-		bool StartAICover();
+	bool StartAICover();
 
 	/** 엄폐시 수그려야하는지 반환합니다 */
-		bool isMustCrouch();
+	bool isMustCrouch();
 protected:
-	/** 코너링을 체크합니다*/
+	/** 코너링을 체크합니다 */
 	void CornenringCheck(float DeltaTime);
-	/** 엄폐경로를 계산합니다
-	* @warning 현재 디버그만 찍습니다
-	*/
-	void CalculCoverPath(float DeltaTime);
+	/** 엄폐경로를 계산합니다 */
+	TArray<FNavPathPoint> CalculCoverPath();
+	/** 엄폐경로를 UI에 세팅합니다 */
+	void SettingCoverPath(float DeltaTime);
 	/** 엄폐를 시작합니다 */
 	bool StartCover();
 	/** 앞에 엄폐벽이있는지 체크합니다 */
@@ -133,9 +148,9 @@ protected:
 protected:
 	/** 엄폐벽을 체크할 트레이스채널 입니다 */
 	static const ECollisionChannel traceChanel = ECC_GameTraceChannel1;
-	/** 엄폐오브젝트타입채널 입니다 */	
+	/** 엄폐오브젝트타입채널 입니다 */
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
-	
+
 private:
 
 	class UBaseCharacterMovementComponent* m_Movement;
@@ -147,15 +162,17 @@ private:
 	class UPathFollowingComponent* m_PathFollowingComp;
 	enum class ECoverShootingState mCoverShootingState;
 	UPROPERTY(VisibleInstanceOnly, meta = (AllowPrivateAccess = true))
-	EPeekingState mPeekingState;
+	EPeekingState m_PeekingState;
+	EPeekingState m_PeekingInitialState;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
-		bool m_IsCover;
+	bool m_IsCover;
 
-	
+
 private:
 	bool m_IsCorneringWait;
 	bool m_IsCornering;
+	bool m_IsPeeking;
 	float m_FaceRight;
 	float m_CurrentCorneringWaitTime;
 	float m_CorneringWaitTime;
@@ -165,5 +182,5 @@ private:
 	class ACharacter* owner;
 
 	bool m_IsWillPosSetting;
-	TArray<FNavPathPoint> m_CoverPath;
+
 };

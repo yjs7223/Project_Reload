@@ -5,6 +5,11 @@
 #include "UObject/ConstructorHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/Controller.h"
+
+
 
 ADroneAIController::ADroneAIController()
 {
@@ -38,4 +43,32 @@ void ADroneAIController::Tick(float DeltaSeconds)
 void ADroneAIController::RunBTT()
 {
 	RunBehaviorTree(btree);
+}
+
+bool ADroneAIController::DroneMoveTo(FVector p_vec, float p_radius)
+{
+	bool isArrive = false;
+
+	MoveToLocation(p_vec,p_radius,false,false);
+
+	DrawDebugBox(GetWorld(), p_vec, FVector(10, 10, 10), FColor::Red);
+	DrawDebugBox(GetWorld(), GetPawn()->GetActorLocation(), FVector(10, 10, 10), FColor::Blue);
+
+	float test = FVector::Dist(GetPawn()->GetActorLocation(), p_vec);
+	if (p_radius > FVector::Dist(GetPawn()->GetActorLocation(), p_vec))
+	{
+		isArrive = true;
+	}
+
+
+	return isArrive;
+}
+
+bool ADroneAIController::DroneFocus(float time)
+{
+
+	AActor* Player = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	//FMath::RInterpTo(GetActorRotation,)
+	return false;
 }
