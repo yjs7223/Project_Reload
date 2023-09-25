@@ -67,7 +67,7 @@ void UCrosshair_Widget::NativeConstruct()
 		}
 	}
 
-	SetWidgetVisible();
+	SetCombatWidgetVisible();
 	bWidgetVisible = true;
 	widgetVisibleTime = 0;
 }
@@ -325,7 +325,7 @@ void UCrosshair_Widget::PlayReloadAnim()
 	}
 }
 
-void UCrosshair_Widget::SetWidgetVisible()
+void UCrosshair_Widget::SetCombatWidgetVisible()
 {
 	/*if (this)
 	{

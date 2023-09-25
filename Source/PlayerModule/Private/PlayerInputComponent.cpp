@@ -13,6 +13,8 @@
 #include "Player_HP_Widget.h"
 #include "BaseCharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 
 void UPlayerInputComponent::BeginPlay()
 {
@@ -52,7 +54,8 @@ void UPlayerInputComponent::BeginPlay()
 
 	//APlayerCharacter* pc = Cast<APlayerCharacter>(owner);
 	InputComponent->BindAction("UI_Visible", IE_Pressed, this, &UPlayerInputComponent::VisibleHud);
-	
+	InputComponent->BindAction("GamePause", IE_Pressed, this, &UPlayerInputComponent::GamePause);
+
 	UPlayerStatComponent* statcomp = GetOwner()->FindComponentByClass<UPlayerStatComponent>();
 	InputComponent->BindAction("Interactive", IE_Pressed, statcomp, &UPlayerStatComponent::Interacting);
 
@@ -105,7 +108,7 @@ void UPlayerInputComponent::Crouching()
 
 void UPlayerInputComponent::StartFire()
 {
-	OnWidgetVisible.Broadcast(false);
+	OnCombatWidgetVisible.Broadcast(false);
 	if (!m_inputData.IsReload)
 	{
 		m_PlayerWeapon->StartFire();
@@ -118,14 +121,14 @@ void UPlayerInputComponent::StartFire()
 
 void UPlayerInputComponent::StopFire()
 {
-	OnWidgetVisible.Broadcast(true);
+	OnCombatWidgetVisible.Broadcast(true);
 	m_inputData.IsFire = false;
 	m_PlayerWeapon->StopFire();
 }
 
 void UPlayerInputComponent::StartAiming()
 {
-	OnWidgetVisible.Broadcast(false);
+	OnCombatWidgetVisible.Broadcast(false);
 	UBaseCharacterMovementComponent* movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 	m_inputData.IsAiming = true;
 	if (movement->isRuning()) {
@@ -140,7 +143,7 @@ void UPlayerInputComponent::StartAiming()
 
 void UPlayerInputComponent::StopAiming()
 {
-	OnWidgetVisible.Broadcast(true);
+	OnCombatWidgetVisible.Broadcast(true);
 	m_inputData.IsAiming = false;
 	m_PlayerWeapon->StopAiming();
 }
@@ -164,23 +167,22 @@ void UPlayerInputComponent::StopCover()
 	UBaseCharacterMovementComponent* movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 
 	if (m_Covercomponent->IsCover()) return;
+	if (!m_Covercomponent->GetCoverWall()) return;
 
 	m_Covercomponent->StopCover();
 }
 
 void UPlayerInputComponent::StartReload()
 {
-	OnWidgetVisible.Broadcast(true);
+	OnCombatWidgetVisible.Broadcast(true);
 	//m_PlayerWeapon->StartReload();
-	if (m_PlayerWeapon->bReload)
-	{
-	}
+	if(!m_PlayerWeapon->CanReload()) return;
 	m_inputData.IsReload = true;
 }
 
 void UPlayerInputComponent::VisibleHud()
 {
-	OnWidgetVisible.Broadcast(true);
+	OnAllWidgetVisible.Broadcast(true);
 
 }
 
@@ -192,4 +194,13 @@ void UPlayerInputComponent::HPreduce()
 void UPlayerInputComponent::HPregen()
 {
 	owner->FindComponentByClass<UStatComponent>()->RecoverHP(100000.0f);
+}
+
+void UPlayerInputComponent::GamePause()
+{
+	if (!UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		OnCreatePauseWidget.ExecuteIfBound();
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
 }

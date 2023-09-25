@@ -14,4 +14,28 @@ class PLAYERMODULE_API UDestinationWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void NativeConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	void ArraySorting();
+
+	
+
+	void SetTranslation();
+
+	void PopDesActor(AActor* p_desact);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Des_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* Des_image;
+
+
+	TArray<AActor*> desActors;
+
+	AActor* nowDes;
 };

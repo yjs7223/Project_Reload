@@ -51,6 +51,7 @@ void UPlayerStatComponent::RecoverHP(float p_HP)
 	Super::RecoverHP(p_HP);
 
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
+	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 }
 
 void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
@@ -65,7 +66,7 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 
 	}
 
-	owner->FindComponentByClass<UPlayerInputComponent>()->OnWidgetVisible.Broadcast(true);
+	owner->FindComponentByClass<UPlayerInputComponent>()->OnCombatWidgetVisible.Broadcast(true);
 	//OnVisibleHPUIDelegate.Broadcast();
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();

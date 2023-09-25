@@ -30,6 +30,11 @@ public:
 	void SpawnBulletFx(class UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection, class ABaseCharacter* p_owner, class USoundCue* passby);
 	void SpawnBulletFx(class UNiagaraSystem* BulletFXNiagara, const FVector& ShootDirection, class ABaseCharacter* p_owner);
 	void HitCheck();
+	void PlayPassbySound(FVector p_loc);
+
+	UFUNCTION()
+		void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -40,6 +45,7 @@ public:
 		class UNiagaraComponent* BulletFXComponent;
 
 	class ABaseCharacter* owner;
+	class USoundCue* passbySound;
 
 public:
 	FVector prev_loc;

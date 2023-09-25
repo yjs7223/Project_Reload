@@ -204,7 +204,7 @@ void UPlayerWeaponComponent::Fire()
 
 	cameraRotation.Yaw += FMath::RandRange(-spread, spread);
 	cameraRotation.Pitch += FMath::RandRange(-spread, spread);
-	end = start + (cameraRotation.Vector() * 99999);
+	end = start + (cameraRotation.Vector() * 15000.0);
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("fire"));
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FRotator m_rot;
@@ -399,85 +399,22 @@ void UPlayerWeaponComponent::StartReload()
 	{
 		return;
 	}
-	switch (weapontype)
-	{
-	case EWeaponType::TE_Pistol:
-		if (curAmmo >= 10)
-		{
-			bReload = false;
-			return;
-		}
-
-		//reloadvalue = 10;
-
-		//curAmmo = 0;
-		break;
-	case EWeaponType::TE_Rifle:
-		if (holdAmmo < 0)
-		{
-			reloadvalue = 30;
-			curAmmo = 0;
-			break;
-		}
-		if (holdAmmo == 0)
-		{
-			bReload = false;
-			return;
-		}
-
-		if (curAmmo >= 30)
-		{
-			bReload = false;
-			return;
-		}
-
-		//reloadvalue = 30 - curAmmo;
-		//if (holdAmmo < reloadvalue)
-		//{
-		//	reloadvalue = holdAmmo;
-		//	holdAmmo = 0;
-		//}
-		//else
-		//{
-		//	holdAmmo -= reloadvalue;
-		//}
-
-		curAmmo = 0;
-		break;
-	case EWeaponType::TE_Shotgun:
-
-		break;
-	default:
-		if (holdAmmo <= 0)
-		{
-			bReload = false;
-			return;
-		}
-
-		if (curAmmo >= 30)
-		{
-			bReload = false;
-			return;
-		}
-
-		//reloadvalue = 30 - curAmmo;
-		//if (holdAmmo < reloadvalue)
-		//{
-		//	reloadvalue = holdAmmo;
-		//	holdAmmo = 0;
-		//}
-		//else
-		//{
-		//	holdAmmo -= reloadvalue;
-		//}
-
-		//curAmmo = 0;
-		break;
-	}
-
+	
 	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
 	OnPlayReloadUIDelegate.ExecuteIfBound();
-	bReload = true;
+	bReload = CanReload();
+}
+
+bool UPlayerWeaponComponent::CanReload()
+{
+	if (curAmmo >= maxAmmo)
+	{
+		return false;
+	}
+	else if (holdAmmo == 0) {
+		return false;
+	}
+	return true;
 }
 
 void UPlayerWeaponComponent::StopReload()
