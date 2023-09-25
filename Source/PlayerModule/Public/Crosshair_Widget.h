@@ -42,7 +42,7 @@ public:
 
 	void PlayReloadAnim();
 
-	virtual void SetWidgetVisible() override;
+	virtual void SetCombatWidgetVisible() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

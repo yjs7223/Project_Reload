@@ -28,7 +28,7 @@ public:
 	void MoveCircle(float deltatime);
 	void SetBackMat();
 
-	void SetWidgetVisible() override;
+	void SetCombatWidgetVisible() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -44,7 +44,7 @@ public:
 		class UImage* HP_image;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-		class UImage* HPInner_image;
+		class UProgressBar* HP_Bar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* OuterCircle_image;
@@ -62,7 +62,7 @@ public:
 		FTimerHandle WTimer;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
-		class UWidgetAnimation* FadeOutAnimation;
+		class UWidgetAnimation* CombatFadeOutAnimation;
 
 public:
 	bool bWidgetVisible;

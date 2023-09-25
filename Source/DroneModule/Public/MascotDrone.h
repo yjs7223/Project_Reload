@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+
+#include "NiagaraComponent.h"
+#include "Components/SceneComponent.h"
 #include "MascotDrone.generated.h"
 
 UCLASS()
@@ -27,14 +30,20 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
+public:
 
 	//Component
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Component")
 	class UFloatingPawnMovement* m_FloatingCmp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
-	class UStaticMeshComponent* m_StaticMeshCmp;
+	 TArray <UStaticMeshComponent*> m_StaticMeshCmp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+		class USceneComponent* m_Empcmp;
 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+		 TArray <UNiagaraComponent*> m_EmpEffect;
 
 public:
 	//SphereCollisionTrigger
@@ -58,5 +67,7 @@ public:
 	//Skill
 	UFUNCTION(BlueprintCallable, Category = "MascotDrone")
 		TArray<AActor*> EMP();
+
+	bool EmpDelay = false;
 
 };

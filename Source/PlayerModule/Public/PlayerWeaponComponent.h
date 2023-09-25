@@ -68,6 +68,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
+	bool CanReload();
 	void StopReload();
 	UFUNCTION(BlueprintCallable)
 	void FinshReload();

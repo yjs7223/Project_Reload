@@ -48,7 +48,7 @@ void UCompassWidget::CalcPointsPos()
 
 void UCompassWidget::CalcGoalPos()
 {
-	if (GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>()->InteractActor)
+	if (goalActor)
 	{
 		Goal_Image->SetRenderOpacity(1.0f);
 		FVector2D pos = FVector2D::ZeroVector;
@@ -57,11 +57,12 @@ void UCompassWidget::CalcGoalPos()
 			FVector2D normal;
 
 			//goalobj로 대체예정
-			FVector goalLoc = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>()->InteractActor->GetActorLocation();
+			FVector goalLoc = goalActor->GetActorLocation();
 			FVector cameraLoc = PlayerCamera->GetComponentLocation();
 			FRotator rot = UKismetMathLibrary::FindLookAtRotation(goalLoc, cameraLoc);
 			if (CheckIfBehind(PlayerCamera->GetForwardVector(), rot.Vector()))
 			{
+				Goal_Image->SetRenderOpacity(0.0f);
 				return;
 			}
 			normal = FVector2D(rot.Vector());

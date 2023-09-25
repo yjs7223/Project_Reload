@@ -9,6 +9,7 @@
 #include "BaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "WeaponComponent.h"
 
 
 // Sets default values
@@ -18,10 +19,10 @@ ABullet::ABullet()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	CollisionComponent->InitSphereRadius(5.0f);
+	CollisionComponent->InitSphereRadius(65.0f);
 	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Bullet"));
 	RootComponent = CollisionComponent;
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
@@ -43,6 +44,8 @@ void ABullet::BeginPlay()
 	prev_loc = GetActorLocation();
 	ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
 	InitialLifeSpan = 3.0f;
+
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnSphereBeginOverlap);
 }
 
 // Called every frame
@@ -58,11 +61,7 @@ void ABullet::SpawnBulletFx(UNiagaraSystem* BulletFXNiagara, const FVector& Shoo
 	{
 		owner = p_owner;
 		BulletFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(BulletFXNiagara, CollisionComponent, FName("none"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
-		//UGameplayStatics::SpawnSoundAttached(passby, CollisionComponent);
-		//TArray<FNiagaraVariable> vars;
-		//BulletFXComponent->GetAsset()->GetExposedParameters().GetUserParameters(vars);
-		//FVector vec = vars[0].GetValue<FVector>();
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, vec.ToString());
+		passbySound = passby;
 	}
 }
 
@@ -94,6 +93,32 @@ void ABullet::HitCheck()
 	}
 	prev_loc = now_loc;
 
+}
+
+void ABullet::PlayPassbySound(FVector p_loc)
+{
+	if (passbySound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, passbySound, p_loc);
+	}
+}
+
+void ABullet::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && UWeaponComponent::CheckActorTag(OtherActor, "Player"))
+	{
+		FVector start = GetActorLocation();
+		FVector end = start + start.ForwardVector * 100.0f;
+		FHitResult result;
+		FCollisionQueryParams param(NAME_None, true, this);
+		if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_GameTraceChannel6, param))
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("hitpassby"));
+			return;
+		}
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("passby"));
+		PlayPassbySound(SweepResult.Location);
+	}
 }
 
 
