@@ -92,7 +92,8 @@
 				"AIModule",
 				"CoreUObject",
 				"AICoverSystem",
-				"UMG"
+				"UMG",
+				"ChaosVehicles"
 			]
 		}
 	],

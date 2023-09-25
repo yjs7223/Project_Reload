@@ -7,6 +7,15 @@
 #include "Engine/DataTable.h"
 #include "CameraControllComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class ECameraState : uint8
+{
+	None = 0	UMETA(Hidden),
+	Default		UMETA(DisplayName = "Default"),
+	Vehicle		UMETA(DisplayName = "Vehicle"),
+	MAX			UMETA(Hidden)
+};
+
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -40,6 +49,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* m_CameraControllData;
 	struct FCameraControllData* m_Data;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ECameraState cameraState;
 };
 
 USTRUCT(Atomic, BlueprintType)
