@@ -107,7 +107,16 @@ void ABullet::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* 
 {
 	if (OtherActor && UWeaponComponent::CheckActorTag(OtherActor, "Player"))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player hit"));
+		FVector start = GetActorLocation();
+		FVector end = start + start.ForwardVector * 100.0f;
+		FHitResult result;
+		FCollisionQueryParams param(NAME_None, true, this);
+		if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_GameTraceChannel6, param))
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("hitpassby"));
+			return;
+		}
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("passby"));
 		PlayPassbySound(SweepResult.Location);
 	}
 }
