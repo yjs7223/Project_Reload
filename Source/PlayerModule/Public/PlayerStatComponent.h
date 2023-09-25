@@ -48,6 +48,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Interacting();
 
+
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;
 	FOnVisibleHPUIDelegate OnVisibleHPUIDelegate;
@@ -62,4 +63,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* InteractActor;
 	
+	FTimerHandle HpRecoverTimer;
+	FTimerHandle StandbyTimer;
 };
