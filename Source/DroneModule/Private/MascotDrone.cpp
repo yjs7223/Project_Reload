@@ -11,7 +11,7 @@
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "DroneAIController.h"
-
+#include "Engine/EngineTypes.h"
 
 // Sets default values
 AMascotDrone::AMascotDrone()
@@ -56,10 +56,11 @@ AMascotDrone::AMascotDrone()
 
 	m_EmpEffect.Add(CreateDefaultSubobject<UNiagaraComponent>(TEXT("PreExplosion")));
 	m_EmpEffect.Add(CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion")));
+	
 
 	m_EmpEffect[0]->SetAsset(LoadObject<UNiagaraSystem>(NULL, TEXT("NiagaraSystem'/Game/_sjs/Drone/NS_Electrical_PreExplosion.NS_Electrical_PreExplosion'")));
 	m_EmpEffect[1]->SetAsset(LoadObject<UNiagaraSystem>(NULL, TEXT("NiagaraSystem'/Game/_sjs/Drone/NS_Electrical_Explosion.NS_Electrical_Explosion'")));
-
+	
 
 	for (auto& i : m_EmpEffect)
 	{
@@ -72,6 +73,10 @@ AMascotDrone::AMascotDrone()
 	//AI컨트롤러 세팅
 	AIControllerClass = ADroneAIController::StaticClass();
 
+	////왜안먹히누
+	m_EmpEffect[0]->Deactivate();
+	m_EmpEffect[1]->Deactivate();
+
 }
 
 // Called when the game starts or when spawned
@@ -81,8 +86,10 @@ void AMascotDrone::BeginPlay()
 
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AMascotDrone::OverlapBegin);
-		CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &AMascotDrone::OverlapEnd);
+	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &AMascotDrone::OverlapEnd);
 
+	m_EmpEffect[0]->Activate();
+	m_EmpEffect[1]->Deactivate();
 
 	//BT실행
 	Cast<ADroneAIController>(GetController())->RunBTT();
@@ -128,5 +135,35 @@ void AMascotDrone::OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 TArray<AActor*> AMascotDrone::EMP()
 {
+	m_EmpEffect[0]->Deactivate();
+	if (m_EmpEffect[1]->IsActive())
+	{
+		m_EmpEffect[1]->Deactivate();
+	}
+
+	if (EmpDelay == false)
+	{
+		m_EmpEffect[1]->Activate();
+		EmpDelay = true;
+
+
+		FTimerHandle EMPTimerHandle;
+		float EMPDelayTime = 3;
+		if (1)
+		{
+			GetWorld()->GetTimerManager().SetTimer(EMPTimerHandle, FTimerDelegate::CreateLambda([&]()
+				{
+					// 코드 구현
+					m_EmpEffect[0]->Activate();
+					m_EmpEffect[1]->Deactivate();
+
+
+					EmpDelay = false;
+					// TimerHandle 초기화
+					GetWorld()->GetTimerManager().ClearTimer(EMPTimerHandle);
+				}), EMPDelayTime, false);
+		}
+	}
+
 	return m_NearAI;
 }
