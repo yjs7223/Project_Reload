@@ -16,12 +16,45 @@ public:
 	// Sets default values for this component's properties
 	UBossWeaponComponent();
 
-	// ÃÖ´ë µ¥¹ÌÁö
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BossWeaponSetting)
+		class ABaseCharacter* owner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		class USkeletalMeshComponent* WeaponMesh;
+
+		class USkeletalMeshComponent* playerMesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		class ACharacter* player;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
 		float boss_MaxDmg;
-	// ÃÖ¼Ò µ¥¹ÌÁö
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
 		float boss_MinDmg;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoil_Radius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float shot_MaxRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoilMax_Radius;
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoilMin_Radius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		float recoil_Range;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossWeaponSetting")
+		int shot_MaxCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FHitResult m_result;
 
 protected:
 	// Called when the game starts
@@ -31,7 +64,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// °ø°Ý
-	UFUNCTION(BlueprintCallable, Category = "Attack")
+	// ï¿½ï¿½ï¿½ï¿½
+	UFUNCTION(BlueprintCallable, Category = "BossAttack")
 		void TakeDamage(AActor* p_TargetActor, float p_Damage);
+
+	UFUNCTION(BlueprintCallable, Category = "BossAttack")
+		FRotator Fire(FVector Start);
 };
