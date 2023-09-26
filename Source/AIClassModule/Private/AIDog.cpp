@@ -3,6 +3,7 @@
 
 #include "AIDog.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "StatComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
@@ -13,7 +14,7 @@ AAIDog::AAIDog()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	explosionFX = LoadObject<UParticleSystem>(NULL, TEXT("ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_B.P_Explosion_Big_B'"));
+	explosionNi = LoadObject<UNiagaraSystem>(NULL, TEXT("NiagaraSystem'/Game/CarVFX/Niagara/Explosion/NS_Car_Expl_1.NS_Car_Expl_1'"));
 	explosionSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Dog_Cue.Explosion_Dog_Cue'"));
 	flashSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Timer_Cue.Explosion_Timer_Cue'"));
 	MoveStart = false;
@@ -160,8 +161,10 @@ void AAIDog::Explosion()
 		}
 	}
 
+
 	// 폭발이펙트
-	UGameplayStatics::SpawnEmitterAtLocation(this, explosionFX, GetActorLocation());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, explosionNi, GetActorLocation(),FRotator::ZeroRotator,FVector3d(0.5));
+		//(this, explosionNi, GetActorLocation());
 	// 폭발사운드
 	UGameplayStatics::SpawnSoundAtLocation(this, explosionSound, GetActorLocation());
 
