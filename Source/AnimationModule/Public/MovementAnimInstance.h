@@ -27,7 +27,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UBlendSpace* JogStart;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	UAnimSequence* JogStop;
+	UBlendSpace* JogStop;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UBlendSpace* Move;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
