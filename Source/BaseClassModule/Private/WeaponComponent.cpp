@@ -26,7 +26,7 @@ UWeaponComponent::UWeaponComponent()
 	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
 	Arm_R_Name = TEXT("upperarm_r");
 	Arm_L_Name = TEXT("upperarm_l");
-
+	
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
 	if (sk_rifle.Succeeded())
@@ -111,6 +111,15 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
+#if (UE_BUILD_DEBUG == 1)
+	EDrawDebugTrace::Type debugtype = EDrawDebugTrace::ForOneFrame;
+#define	DrawDebugSphere(...) DrawDebugSphere(__VA_ARGS__)
+#else
+	EDrawDebugTrace::Type debugtype = EDrawDebugTrace::None;
+#define	DrawDebugSphere(...)
+
+#endif // UE_BUILD_DEBUG
+
 	if(!Cast<APlayerController>(owner->Controller)) return;
 	
 	FVector ViewPoint;
@@ -128,6 +137,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	}
 	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
 
+	
 
 	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
 	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
