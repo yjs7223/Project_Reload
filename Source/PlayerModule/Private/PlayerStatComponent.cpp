@@ -49,7 +49,11 @@ void UPlayerStatComponent::SetHP(float p_HP)
 void UPlayerStatComponent::RecoverHP(float p_HP)
 {
 	Super::RecoverHP(p_HP);
-
+	if (curHP >= maxHP)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(StandbyTimer);
+		GetWorld()->GetTimerManager().ClearTimer(HpRecoverTimer);
+	}
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 }
@@ -57,6 +61,8 @@ void UPlayerStatComponent::RecoverHP(float p_HP)
 void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
 	Super::Attacked(p_damage, attacker, hittype, attackPoint);
+	GetWorld()->GetTimerManager().ClearTimer(StandbyTimer);
+	GetWorld()->GetTimerManager().ClearTimer(HpRecoverTimer);
 
 	TargetEnemy = attacker;
 
@@ -71,6 +77,15 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
 	OnCreateAttackedUIDelegate.Broadcast(attacker);
+
+	GetWorld()->GetTimerManager().SetTimer(StandbyTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			GetWorld()->GetTimerManager().SetTimer(HpRecoverTimer, FTimerDelegate::CreateLambda([&]()
+				{
+					RecoverHP(5.0f);
+				}), 0.1f, true);
+
+		}), 10.f, false);
 }
 
 void UPlayerStatComponent::CheckInteractiveObj()
@@ -133,4 +148,5 @@ void UPlayerStatComponent::Interacting()
 		}
 	}
 }
+
 

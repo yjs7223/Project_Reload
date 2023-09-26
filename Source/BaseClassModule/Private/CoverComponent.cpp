@@ -97,9 +97,12 @@ void UCoverComponent::PlayCover()
 	}
 	//엄폐 가능지점이 존재하면 엄폐지점으로 뛰어갑니다
 	if (m_CanCoverPoint != FVector::ZeroVector) {
+		if (m_IsCover) {
+			OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+		}
+		StopCover();
 		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		m_Inputdata->IsAiming = false;
-		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
 		return;
@@ -194,10 +197,11 @@ bool UCoverComponent::StartAICover()
 
 void UCoverComponent::CornenringCheck(float DeltaTime)
 {
+	OnVisibleCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime != 0.0f, IsFaceRight());
+	OnSetPercentCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime);
 	if (m_IsCorneringWait) {
 		m_IsCorneringWait = false;
-		OnVisibleCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime != 0.0f, IsFaceRight());
-		OnSetPercentCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime);
+
 		m_CurrentCorneringWaitTime += DeltaTime;
 
 	}

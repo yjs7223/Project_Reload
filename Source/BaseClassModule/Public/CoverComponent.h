@@ -23,7 +23,7 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FCoverPointsSetDelegate, TArray<FNavPathPoint>);
 	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool /*bvisible*/, bool /*bright*/);
 	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float /*percent*/);
-  DECLARE_DELEGATE_OneParam(FOnVisibleCoverWidget, FVector);
+	DECLARE_DELEGATE_OneParam(FOnVisibleCoverWidget, FVector);
 
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
