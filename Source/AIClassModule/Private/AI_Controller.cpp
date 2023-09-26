@@ -4,6 +4,7 @@
 #include "AI_Controller.h"
 #include "AICharacter.h"
 #include "AICommander.h"
+#include "AISensingComponent.h"
 #include "ST_Range.h"
 #include "BaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -260,7 +261,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
-	}*/
+	}*/\
+	if (!sensing)
+	{
+		if (GetPawn())
+		{
+			sensing = GetPawn()->FindComponentByClass<UAISensingComponent>();
+		}
+	}
+	
 
 	if (commander != nullptr)
 	{
@@ -304,6 +313,8 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 	}
+	Blackboard->SetValueAsBool("Target_MinRange", sensing->MinRangeCheck());
+	Blackboard->SetValueAsVector("Target_Location", player->GetActorLocation());
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);
 }
 

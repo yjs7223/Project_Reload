@@ -7,6 +7,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Controller.h"
 
 
 
@@ -61,4 +62,13 @@ bool ADroneAIController::DroneMoveTo(FVector p_vec, float p_radius)
 
 
 	return isArrive;
+}
+
+bool ADroneAIController::DroneFocus(float time)
+{
+
+	AActor* Player = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	//FMath::RInterpTo(GetActorRotation,)
+	return false;
 }
