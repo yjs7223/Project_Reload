@@ -97,12 +97,12 @@ void UCoverComponent::PlayCover()
 	}
 	//엄폐 가능지점이 존재하면 엄폐지점으로 뛰어갑니다
 	if (m_CanCoverPoint != FVector::ZeroVector) {
-		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
-		m_Inputdata->IsAiming = false;
 		if (m_IsCover) {
 			OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
 		}
 		StopCover();
+		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
+		m_Inputdata->IsAiming = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
 		return;
