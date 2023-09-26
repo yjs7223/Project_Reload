@@ -402,6 +402,7 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 {
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	//커버가능ui visible 델리게이트 실행
+	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
 
 }
 
