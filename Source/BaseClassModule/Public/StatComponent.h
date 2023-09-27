@@ -17,7 +17,7 @@ enum class EHitType: uint8
 	MAX			UMETA(Hidden)
 };
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class BASECLASSMODULE_API UStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -29,7 +29,7 @@ public:
 	FKnockbackDelegate Knockback;
 	UPROPERTY(BlueprintReadWrite)
 	FDieDelegate diePlay;
-public:	
+public:
 	// Sets default values for this component's properties
 	UStatComponent();
 
@@ -39,64 +39,54 @@ protected:
 	virtual void BeginDestroy() override;
 
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-
 	UFUNCTION(BlueprintCallable)
-		ABaseCharacter* GetCharacter();
+	ABaseCharacter* GetCharacter();
 
 	//Default HP Setting
-	//UFUNCTION(BlueprintCallable)
 	virtual void SetHP(float p_HP);
 
 	//Recover currnetHP
 	virtual void RecoverHP(float p_HP);
 
 	//Damage process
-	/*
-	virtual void Attacked(float p_damage);
-	virtual void Attacked(float p_damage, FHitResult result);
-	virtual void Attacked(float p_damage, class ACharacter* character);
-	virtual void Attacked(FHitResult result);*/
-
 	UFUNCTION(BlueprintCallable)
 	void Attacked_BP(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
 	virtual void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
 	virtual void IndirectAttacked(float p_Value);
 
-
+	bool IsStun() { return bIsStun; }
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		class ABaseCharacter* TargetEnemy;
+	class ABaseCharacter* TargetEnemy;
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		float maxHP;
+	float maxHP;
 
 	//now hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		float curHP;
+	float curHP;
 
 	//When Character is attacked   isAttacked = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool bAttacked;
+	bool bAttacked;
 
 	//When Character's currentHP <= 0  isDie = true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool bDie;
+	bool bDie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		bool bThreat;
-
+	bool bThreat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-		float HitReactionScale;
+	float HitReactionScale;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	FVector hitNormal;
 
 protected:
-	UPROPERTY()
-		class ABaseCharacter* owner;
+	class ABaseCharacter* owner;
 
+	bool bIsStun;
 };

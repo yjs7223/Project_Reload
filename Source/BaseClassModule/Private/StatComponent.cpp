@@ -36,6 +36,7 @@ void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	bAttacked = false;
 	// ...
 }
 
@@ -77,6 +78,7 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType
 		diePlay.Broadcast();
 	}
 
+	FTimerHandle stuntimer;
 	switch (hittype)
 	{
 	case EHitType::None:
@@ -88,6 +90,14 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType
 
 		break;
 	case EHitType::Stun:
+		bIsStun = true;
+		
+		owner->GetWorldTimerManager().SetTimer(stuntimer, 
+			[this]() 
+			{
+				bIsStun = false; 
+			}
+		, 3.0f, false);
 		break;
 	case EHitType::MAX:
 		break;
