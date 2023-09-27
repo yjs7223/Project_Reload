@@ -33,6 +33,7 @@
 #include "CoverComponent.h"
 #include "AIStatComponent.h"
 #include "AICharacterMoveComponent.h"
+#include "EncounterSpace.h"
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -90,7 +91,7 @@ void AAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	mesh = FindComponentByClass<USkeletalMeshComponent>();
 
 	switch (FindComponentByClass<UAIStatComponent>()->type)
@@ -276,6 +277,7 @@ void AAICharacter::Dead()
 	AIStat->SetComponentTickEnabled(false);
 	AIInputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
+	commander->Now_en->spawn->count_Kill++;
 }
 
 
