@@ -42,31 +42,22 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-
 	UFUNCTION(BlueprintCallable)
 	ABaseCharacter* GetCharacter();
 
 	//Default HP Setting
-	//UFUNCTION(BlueprintCallable)
 	virtual void SetHP(float p_HP);
 
 	//Recover currnetHP
 	virtual void RecoverHP(float p_HP);
 
 	//Damage process
-	/*
-	virtual void Attacked(float p_damage);
-	virtual void Attacked(float p_damage, FHitResult result);
-	virtual void Attacked(float p_damage, class ACharacter* character);
-	virtual void Attacked(FHitResult result);*/
-
 	UFUNCTION(BlueprintCallable)
 	void Attacked_BP(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
 	virtual void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector);
 	virtual void IndirectAttacked(float p_Value);
 
-
+	bool IsStun() { return bIsStun; }
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	class ABaseCharacter* TargetEnemy;
@@ -88,7 +79,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	bool bThreat;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	float HitReactionScale;
 
@@ -96,7 +86,7 @@ public:
 	FVector hitNormal;
 
 protected:
-	UPROPERTY()
 	class ABaseCharacter* owner;
 
+	bool bIsStun;
 };
