@@ -75,6 +75,8 @@ public:
 	void SetCanCoverPoint(FVector point);
 	/** 엄폐중이면 참을 반환합니다 */
 	bool IsCover();
+	/** 다음 엄폐로 넘어가는중이면 참입니다*/
+	bool IsNextCover();
 	/** 코너링대기중이면 참을 반환합니다 */
 	bool IsTurnWait();
 	/** m_FaceRight값을 반환 합니다 */
@@ -102,8 +104,6 @@ public:
 	FVector getCanCoverPoint();
 	/** 엄폐가능 위치에서 노말값을 반환합니다 */
 	FVector GetPointNormal();
-
-	TArray<FNavPathPoint>& getCoverPath();
 
 	/** 피킹을 시작합니다 */
 	void StartPeeking();
@@ -173,6 +173,7 @@ private:
 	bool m_IsCorneringWait;
 	bool m_IsCornering;
 	bool m_IsPeeking;
+	bool m_IsNextCover;
 	float m_FaceRight;
 	float m_CurrentCorneringWaitTime;
 	float m_CorneringWaitTime;
