@@ -100,7 +100,12 @@ void UCoverComponent::PlayCover()
 		if (m_IsCover) {
 			OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
 		}
-		StopCover();
+	
+		if (m_IsCover) {
+			m_IsNextCover = true;
+		}
+		//StopCover(); 
+		m_IsCover = false;
 		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		m_Inputdata->IsAiming = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
@@ -253,8 +258,12 @@ TArray<FNavPathPoint> UCoverComponent::CalculCoverPath()
 
 void UCoverComponent::SettingCoverPath(float DeltaTime)
 {
-	if (!m_IsCover) return;
-	OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+	if (!(IsCover() || m_IsNextCover)) {
+		OnCoverPointsSetDelegate.Broadcast({});
+	}
+	else {
+		OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+	}
 }
 
 void UCoverComponent::AimSetting(float DeltaTime)
@@ -277,38 +286,18 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 
 	if (IsPeeking()) return;
-	//if (aimOffset.Yaw > 45) {
-	//	aimOffset.Yaw -= 180;
-	//	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
-	//		SetIsFaceRight(true);
-	//	}
-	//}
-	//else if (aimOffset.Yaw < -45) {
-	//	aimOffset.Yaw += 180;
-	//	aimOffset.Yaw *= -1.0f;
-	//	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
-	//		SetIsFaceRight(false);
-	//	}
-	//}
-
-	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw > 0) {
-		aimOffset.Yaw -= 180;
-		SetIsFaceRight(true);
+	if (m_Inputdata->IsAiming || m_Inputdata->IsFire) {
 		
-		if (mCoverShootingState == ECoverShootingState::None) {
-
+		if (aimOffset.Yaw > 0) {
+			aimOffset.Yaw -= 180;
+			SetIsFaceRight(true);
+		}
+		else {
+			aimOffset.Yaw += 180;
+			aimOffset.Yaw *= -1.0f;
+			SetIsFaceRight(false);
 		}
 	}
-	else if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw < 0) {
-		aimOffset.Yaw += 180;
-		aimOffset.Yaw *= -1.0f;
-		SetIsFaceRight(false);
-
-		if (mCoverShootingState == ECoverShootingState::None) {
-
-		}
-	}
-
 }
 
 void UCoverComponent::RotateSet(float DeltaTime)
@@ -547,6 +536,11 @@ void UCoverComponent::SetCanCoverPoint(FVector point)
 bool UCoverComponent::IsCover()
 {
 	return m_IsCover;
+}
+
+bool UCoverComponent::IsNextCover()
+{
+	return m_IsNextCover;
 }
 
 bool UCoverComponent::IsTurnWait()
@@ -1021,6 +1015,7 @@ AActor* UCoverComponent::GetCoverWall()
 
 void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
+	m_IsNextCover = false;
 	if (IsCover()) return;
 	if (!Result.IsSuccess()) return;
 	if (!StartCover()) return;
