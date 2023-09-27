@@ -187,7 +187,7 @@ bool UCoverComponent::StartAICover()
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
-	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
+	SetIsFaceRight(true);
 
 	PlayMontageStartCover.Broadcast();
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
@@ -837,7 +837,7 @@ bool UCoverComponent::isMustCrouch()
 void UCoverComponent::StartPeeking()
 {
 	if (!m_IsCover) return; 
-	if (!m_Weapon->IsWeaponBlocking()) return;
+	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(owner->GetController())) return;
 	if (m_PeekingState != EPeekingState::None) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
