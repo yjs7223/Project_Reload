@@ -3,11 +3,20 @@
 
 #include "CorneringWidget.h"
 #include "CoverComponent.h"
+#include "PlayerCharacter.h"
 #include "UMG.h"
 
 void UCorneringWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (UCoverComponent* coverComp = GetOwningPlayerPawn()->FindComponentByClass<UCoverComponent>())
+	{
+		coverComp->OnVisibleCorneringWidget.BindUObject(this, &UCorneringWidget::SetVisibleCorneringWidget);
+		coverComp->OnSetPercentCorneringWidget.BindUObject(this, &UCorneringWidget::SetCorneringPercent);
+
+		SetVisibleCorneringWidget(false, true);
+	}
 }
 
 void UCorneringWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

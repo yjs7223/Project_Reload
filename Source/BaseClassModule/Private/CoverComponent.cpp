@@ -97,9 +97,17 @@ void UCoverComponent::PlayCover()
 	}
 	//엄폐 가능지점이 존재하면 엄폐지점으로 뛰어갑니다
 	if (m_CanCoverPoint != FVector::ZeroVector) {
+		if (m_IsCover) {
+			OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+		}
+	
+		if (m_IsCover) {
+			m_IsNextCover = true;
+		}
+		//StopCover(); 
+		m_IsCover = false;
 		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		m_Inputdata->IsAiming = false;
-		m_IsCover = false;
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(owner->GetController(), m_CanCoverPoint);
 		owner->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), m_CanCoverPoint));
 		return;
@@ -194,10 +202,11 @@ bool UCoverComponent::StartAICover()
 
 void UCoverComponent::CornenringCheck(float DeltaTime)
 {
+	OnVisibleCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime != 0.0f, IsFaceRight());
+	OnSetPercentCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime);
 	if (m_IsCorneringWait) {
 		m_IsCorneringWait = false;
-		OnVisibleCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime != 0.0f, IsFaceRight());
-		OnSetPercentCorneringWidget.ExecuteIfBound(m_CurrentCorneringWaitTime);
+
 		m_CurrentCorneringWaitTime += DeltaTime;
 
 	}
@@ -249,7 +258,12 @@ TArray<FNavPathPoint> UCoverComponent::CalculCoverPath()
 
 void UCoverComponent::SettingCoverPath(float DeltaTime)
 {
-	OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+	if (!(IsCover() || m_IsNextCover)) {
+		OnCoverPointsSetDelegate.Broadcast({});
+	}
+	else {
+		OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+	}
 }
 
 void UCoverComponent::AimSetting(float DeltaTime)
@@ -272,38 +286,18 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 
 	if (IsPeeking()) return;
-	//if (aimOffset.Yaw > 45) {
-	//	aimOffset.Yaw -= 180;
-	//	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
-	//		SetIsFaceRight(true);
-	//	}
-	//}
-	//else if (aimOffset.Yaw < -45) {
-	//	aimOffset.Yaw += 180;
-	//	aimOffset.Yaw *= -1.0f;
-	//	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
-	//		SetIsFaceRight(false);
-	//	}
-	//}
-
-	if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw > 0) {
-		aimOffset.Yaw -= 180;
-		SetIsFaceRight(true);
+	if (m_Inputdata->IsAiming || m_Inputdata->IsFire) {
 		
-		if (mCoverShootingState == ECoverShootingState::None) {
-
+		if (aimOffset.Yaw > 0) {
+			aimOffset.Yaw -= 180;
+			SetIsFaceRight(true);
+		}
+		else {
+			aimOffset.Yaw += 180;
+			aimOffset.Yaw *= -1.0f;
+			SetIsFaceRight(false);
 		}
 	}
-	else if ((m_Inputdata->IsAiming || m_Inputdata->IsFire) && aimOffset.Yaw < 0) {
-		aimOffset.Yaw += 180;
-		aimOffset.Yaw *= -1.0f;
-		SetIsFaceRight(false);
-
-		if (mCoverShootingState == ECoverShootingState::None) {
-
-		}
-	}
-
 }
 
 void UCoverComponent::RotateSet(float DeltaTime)
@@ -397,7 +391,7 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 {
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	//커버가능ui visible 델리게이트 실행
-	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
+
 }
 
 FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
@@ -542,6 +536,11 @@ void UCoverComponent::SetCanCoverPoint(FVector point)
 bool UCoverComponent::IsCover()
 {
 	return m_IsCover;
+}
+
+bool UCoverComponent::IsNextCover()
+{
+	return m_IsNextCover;
 }
 
 bool UCoverComponent::IsTurnWait()
@@ -832,7 +831,7 @@ bool UCoverComponent::isMustCrouch()
 void UCoverComponent::StartPeeking()
 {
 	if (!m_IsCover) return; 
-	if (!m_Weapon->IsWeaponBlocking()) return;
+	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(owner->GetController())) return;
 	if (m_PeekingState != EPeekingState::None) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
@@ -1016,6 +1015,7 @@ AActor* UCoverComponent::GetCoverWall()
 
 void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
+	m_IsNextCover = false;
 	if (IsCover()) return;
 	if (!Result.IsSuccess()) return;
 	if (!StartCover()) return;

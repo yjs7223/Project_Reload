@@ -124,7 +124,7 @@ public:
 		void IdleAnim();
 	/*UFUNCTION(BlueprintCallable, Category = "Grenade")
 		void FireInTheHole(const AActor* myai, const float Velocity);*/
-
-	void Init();
+	UFUNCTION(BlueprintCallable)
+		void Init();
 	void Dead();
 };

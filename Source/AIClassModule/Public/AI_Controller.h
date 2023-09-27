@@ -56,7 +56,8 @@ public:
 		bool em_normal;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool b_detour;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+		class UAISensingComponent* sensing;
 	FHitResult result;
 
 	class USkeletalMeshComponent* playerMesh;
