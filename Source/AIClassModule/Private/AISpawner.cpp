@@ -237,7 +237,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 
 int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 {
-	// 플레이어와 가깝지 않다면 소환
+	// 플레이어와 가깝지 않다면 소환w
 	if (spawn_Spots[spawn_Spot]->GetDistanceTo(player) >= 50)
 	{
 		p_Spawn_Pos = spawn_Spot;
