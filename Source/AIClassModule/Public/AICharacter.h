@@ -60,6 +60,8 @@ public:
 		float sup_sharetime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float ai_HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICommander* commander;
 
 
 	
