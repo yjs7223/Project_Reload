@@ -36,6 +36,7 @@ void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	bAttacked = false;
 	// ...
 }
 
@@ -61,76 +62,6 @@ void UStatComponent::RecoverHP(float p_HP)
 	
 }
 
-//void UStatComponent::Attacked_BP(float p_damage, FVector attackPoint, EHitType hittype)
-//{
-//	curHP -= p_damage;
-//	bAttacked = true;
-//	if (curHP < 0.0f)
-//	{
-//		curHP = 0.0f;
-//		bDie = true;
-//		diePlay.Broadcast();
-//	}
-//	switch (hittype)
-//	{
-//	case EHitType::None:
-//		break;
-//	case EHitType::Normal:
-//		break;
-//	case EHitType::Knockback:
-//		Knockback.Broadcast(attackPoint, bDie);
-//		break;
-//	case EHitType::MAX:
-//		break;
-//	default:
-//		break;
-//	}
-//}
-//
-//void UStatComponent::Attacked(float p_damage)
-//{
-//	curHP -= p_damage;
-//	bAttacked = true;
-//	if (curHP < 0.0f)
-//	{
-//		curHP = 0.0f;
-//		bDie = true;
-//		diePlay.Broadcast();
-//	}
-//	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(curHP));
-//}
-//
-//void UStatComponent::Attacked(float p_damage, FHitResult result)
-//{
-//
-//	curHP -= p_damage;
-//	bAttacked = true;
-//	if (curHP < 0.0f)
-//	{
-//		curHP = 0.0f;
-//		bDie = true;
-//		diePlay.Broadcast();
-//	}
-//
-//}
-//
-//void UStatComponent::Attacked(float p_damage, ACharacter* character)
-//{
-//	curHP -= p_damage;
-//	bAttacked = true;
-//	if (curHP < 0.0f)
-//	{
-//		curHP = 0.0f;
-//		bDie = true;
-//		diePlay.Broadcast();
-//	}
-//}
-//
-//void UStatComponent::Attacked(FHitResult result)
-//{
-//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("indirection hit"));
-//}
-
 void UStatComponent::Attacked_BP(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
 	Attacked(p_damage, attacker, hittype, attackPoint);
@@ -147,6 +78,7 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType
 		diePlay.Broadcast();
 	}
 
+	FTimerHandle stuntimer;
 	switch (hittype)
 	{
 	case EHitType::None:
@@ -155,8 +87,17 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType
 		break;
 	case EHitType::Knockback:
 		Knockback.Broadcast(attackPoint, bDie);
+
 		break;
 	case EHitType::Stun:
+		bIsStun = true;
+		
+		owner->GetWorldTimerManager().SetTimer(stuntimer, 
+			[this]() 
+			{
+				bIsStun = false; 
+			}
+		, 3.0f, false);
 		break;
 	case EHitType::MAX:
 		break;

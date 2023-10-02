@@ -38,7 +38,7 @@ void AAISpawner::BeginPlay()
 	pointTime = 0;
 	pointSpawnCheck = false;
 	SetDataTable(curWave);
-
+	Total_EnemyNum = (spawn_Wave[Enemy_Name::RIFLE] + spawn_Wave[Enemy_Name::SNIPER] + spawn_Wave[Enemy_Name::HEAVY], spawn_Wave[Enemy_Name::ZOMBIE]);
 	TArray<AActor*> basechars;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCharacter::StaticClass(), basechars);
 	for (auto var : basechars)
@@ -170,7 +170,17 @@ void AAISpawner::WaveControl(const float DeltaTime)
 	{
 		return;
 	}
-
+	if (TriggerOn == true)
+	{
+		if (!check_Overlap)
+		{
+			check_Overlap = true;
+		}
+		if (waveEnd)
+		{
+			waveEnd = false;
+		}
+	}
 	// 마지막 웨이브인지 확인 및 스폰
 	if (check_Overlap && !spawnCheck)
 	{
@@ -206,8 +216,6 @@ void AAISpawner::WaveControl(const float DeltaTime)
 				if (spawn_Delay >= (*curSpawnData).spawn_Delay)
 				{
 					SpawnWave();
-					spawn_Delay = 0;
-					TriggerOn = false;
 				}
 			}
 		}
@@ -215,8 +223,10 @@ void AAISpawner::WaveControl(const float DeltaTime)
 
 	if (last_Spawn && spawnCheck)
 	{
+		TriggerOn = false;
 		check_Overlap = false;
 		waveEnd = true;
+		curWave = 0;
 	}
 	// 다음 웨이브
 	else if (spawnCheck)
@@ -227,7 +237,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 
 int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 {
-	// 플레이어와 가깝지 않다면 소환
+	// 플레이어와 가깝지 않다면 소환w
 	if (spawn_Spots[spawn_Spot]->GetDistanceTo(player) >= 50)
 	{
 		p_Spawn_Pos = spawn_Spot;

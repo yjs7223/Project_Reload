@@ -166,8 +166,8 @@ void UPlayerInputComponent::StopCover()
 {
 	UBaseCharacterMovementComponent* movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 
-	if (m_Covercomponent->IsCover()) return;
-	if (!m_Covercomponent->GetCoverWall()) return;
+	if (!m_Covercomponent->IsNextCover()) return;
+
 
 	m_Covercomponent->StopCover();
 }

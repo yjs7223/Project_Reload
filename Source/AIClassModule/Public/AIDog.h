@@ -43,6 +43,8 @@ public:
 		float explosionDamage;			// 폭발 데미지
 
 	// 폭발 파티클
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = fx)
+		class UNiagaraSystem* explosionNi;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion")
 		UParticleSystem* explosionFX;
 	// 폭발 사운드

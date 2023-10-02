@@ -134,6 +134,7 @@ void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitTy
 		}
 
 	}
+	FTimerHandle stuntimer;
 	switch (hittype)
 	{
 	case EHitType::None:
@@ -151,6 +152,14 @@ void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitTy
 	case EHitType::Stun:
 		moveoncmp->Time = 0;
 		moveoncmp->e_move = EMove::Stun;
+		bIsStun = true;
+
+		owner->GetWorldTimerManager().SetTimer(stuntimer,
+			[this]()
+			{
+				bIsStun = false;
+			}
+		, 3.0f, false);
 		break;
 	case EHitType::MAX:
 		break;
