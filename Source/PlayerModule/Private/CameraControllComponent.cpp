@@ -57,38 +57,35 @@ void UCameraControllComponent::BeginPlay()
 void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	bool debugtype = false;
 	int count = 1;
 	FString tempKey = TEXT("Default");
 	
-	FCameraControllData tempControllData = 
-		Cast<UCameraControllPakage>(m_CameraControllStructData->CameraControllMap[TEXT("Default")].GetDefaultObject())->Data;
-	
+	FCameraControllData tempControllData = m_CameraControllStructData->DefaultCameraControll->GetDefaultObject<UCameraControllPakage>()->Data;
+
 	m_CameraControllStructData->foreach(
-		[this, &tempControllData, &count, &tempKey](FString key, UCameraControllPakage* value)
+		[this, &tempControllData, &count, &tempKey, &debugtype](FString key, UCameraControllPakage* value)
 		{
 			if (value->IsControlled()) {
 				tempControllData += value->Data;
 				++count;
-
-#if (UE_BUILD_DEBUG == 1)
-				tempKey = FString::Printf(TEXT("%s, %s"), *tempKey, *key);
-#else
-#endif // UE_BUILD_DEBUG
+				if (debugtype) {
+					tempKey = FString::Printf(TEXT("%s, %s"), *tempKey, *key);
+				}
 			}
 		});
-
-#if (UE_BUILD_DEBUG == 1)
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("CameraState (%s)"), tempKey), true, true, FColor::Green, DeltaTime);
-#else
-#endif // UE_BUILD_DEBUG
+	
+	if (debugtype) {
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("CameraState (%s)"), *tempKey), true, true, FColor::Green, DeltaTime);
+	}
 
 	if (count > 1) {
 		float inverseCount = 1.0f / (float)count;
-		tempControllData.CameraLengthSpeed *= inverseCount;
-		tempControllData.magnificationSpeed *= inverseCount;
+		tempControllData.magnification *= inverseCount;
 		tempControllData.PosSpeed *= inverseCount;
 		tempControllData.RotSpeed *= inverseCount;
+		tempControllData.CameraLengthSpeed *= inverseCount;
+		tempControllData.magnificationSpeed *= inverseCount;
 	}
 
 	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(

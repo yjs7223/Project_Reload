@@ -19,12 +19,12 @@ public:
 	/** 카메라 회전 값 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator camerarot;
-	/** 스프링암 길이 값*/
+	/** 스프링암 길이 값 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TargetArmLenght;
 	/** 카메라 배율 값 (FOV) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float magnification;
+	float magnification = 1.0f;
 
 	/** 카메라 위치 속도 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -61,7 +61,7 @@ public:
 	FCameraControllData Data;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<class ACharacter> owner;
 };
 
@@ -111,4 +111,6 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, TSubclassOf<UCameraControllPakage>> CameraControllMap;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UCameraControllPakage> DefaultCameraControll;
 };

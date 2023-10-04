@@ -28,24 +28,6 @@ UWeaponComponent::UWeaponComponent()
 	Arm_L_Name = TEXT("upperarm_l");
 	
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
-	if (sk_rifle.Succeeded())
-	{
-		RifleMesh = sk_rifle.Object;
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-	}
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_pistol(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/PIstolScifi/SKM_PistolSciFi.SKM_PistolSciFi'"));
-	if (sk_pistol.Succeeded())
-	{
-		PistolMesh = sk_pistol.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_shotgun(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Shotgun/SKM_Shotgun.SKM_Shotgun'"));
-	if (sk_shotgun.Succeeded())
-	{
-		ShotgunMesh = sk_shotgun.Object;
-	}*/
 	// ...
 }
 
@@ -84,11 +66,6 @@ void UWeaponComponent::InitData()
 
 }
 
-//void UWeaponComponent::bindInput(UInputComponent* PlayerInputComponent)
-//{
-//	return;
-//}
-
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
 	holdAmmo = p_ammo;
@@ -111,15 +88,6 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
-#if (UE_BUILD_DEBUG == 1)
-	EDrawDebugTrace::Type debugtype = EDrawDebugTrace::ForOneFrame;
-#define	DrawDebugSphere(...) DrawDebugSphere(__VA_ARGS__)
-#else
-	EDrawDebugTrace::Type debugtype = EDrawDebugTrace::None;
-#define	DrawDebugSphere(...)
-
-#endif // UE_BUILD_DEBUG
-
 	if(!Cast<APlayerController>(owner->Controller)) return;
 	
 	FVector ViewPoint;
@@ -147,10 +115,10 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		result, false);
 	
-	DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
+	//DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
@@ -368,4 +336,9 @@ bool UWeaponComponent::CheckActorTag(AActor* actor, FName tag)
 bool UWeaponComponent::IsWeaponBlocking()
 {
 	return m_IsWeaponBlocking;
+}
+
+bool UWeaponComponent::IsAiming()
+{
+	return bAiming && !IsWeaponBlocking();
 }
