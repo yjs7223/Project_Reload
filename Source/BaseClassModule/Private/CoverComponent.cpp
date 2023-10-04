@@ -192,7 +192,7 @@ bool UCoverComponent::StartAICover()
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
-	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
+	SetIsFaceRight(true);
 
 	PlayMontageStartCover.Broadcast();
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
@@ -391,6 +391,7 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 {
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	//커버가능ui visible 델리게이트 실행
+	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
 
 }
 
