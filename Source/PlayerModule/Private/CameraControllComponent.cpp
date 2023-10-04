@@ -102,7 +102,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	m_FollowCamera->FieldOfView = FMath::FInterpTo(
 		m_FollowCamera->FieldOfView, 
-		InitFOV - (InitFOV * (1 - tempControllData.magnification)),
+		InitFOV - (InitFOV * (tempControllData.magnification - 1)),
 		DeltaTime,
 		tempControllData.magnificationSpeed);
 	
