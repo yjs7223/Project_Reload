@@ -59,7 +59,18 @@ protected:
 	bool mIsDie;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	bool mIsHit;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
+	bool m_IsStun;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
+	bool m_IsKnockback;
 
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
+	float m_HitX;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
+	float m_HitY;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
+	float m_HitReactionScale;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* m_AnimationTable;

@@ -14,6 +14,8 @@ void UCorneringWidget::NativeConstruct()
 	{
 		coverComp->OnVisibleCorneringWidget.BindUObject(this, &UCorneringWidget::SetVisibleCorneringWidget);
 		coverComp->OnSetPercentCorneringWidget.BindUObject(this, &UCorneringWidget::SetCorneringPercent);
+
+		SetVisibleCorneringWidget(false, true);
 	}
 }
 
