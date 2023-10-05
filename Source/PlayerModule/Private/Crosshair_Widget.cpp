@@ -98,14 +98,7 @@ void UCrosshair_Widget::UpdateCrosshair(float DeltaTime)
 		{
 			weapon->m_firecount = 0;
 		}
-		if(weapon->bAiming)
-		{ 
-			CalcOffset(weapon->m_spreadPower * weapon->AimingRecoilValue);
-		}
-		else
-		{
-			CalcOffset(weapon->m_spreadPower);
-		}
+		CalcOffset(weapon->m_spreadPower);
 		SetCrosshairTranslation();
 		//SetAmmoImage();
 	}
