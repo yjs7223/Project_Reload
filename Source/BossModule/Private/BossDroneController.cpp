@@ -15,7 +15,7 @@ ABossDroneController::ABossDroneController()
 	if (BTObject.Succeeded())
 	{
 		btree = BTObject.Object;
-		UE_LOG(LogTemp, Warning, TEXT("Set BehaviorTree Succeed!"));
+		UE_LOG(LogTemp, Warning, TEXT("Set Drone BehaviorTree Succeed!"));
 	}
 
 	static ConstructorHelpers::FObjectFinder<UBlackboardData>
@@ -25,7 +25,7 @@ ABossDroneController::ABossDroneController()
 	{
 		BBAsset = BBObject.Object;
 		btree->BlackboardAsset = BBAsset;
-		UE_LOG(LogTemp, Warning, TEXT("Set BlackBoard Succeed!"));
+		UE_LOG(LogTemp, Warning, TEXT("Set Drone BlackBoard Succeed!"));
 	}
 }
 
