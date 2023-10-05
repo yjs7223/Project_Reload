@@ -13,6 +13,8 @@ bool FStatAnimationTable::IsVaild()
 
 UStatsAnimInstance::UStatsAnimInstance()
 {
+	m_IsStun = false;
+	m_IsKnockback = false;
 }
 
 void UStatsAnimInstance::NativeBeginPlay()
@@ -46,7 +48,12 @@ void UStatsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	if (mStats) {
 		mIsDie = mStats->bDie;
-		//mIsHit = mStats->isHit;
+		mIsHit = mStats->bAttacked;
+		m_HitX = mStats->hitNormal.X;
+		m_HitY = mStats->hitNormal.Y;
+		m_HitReactionScale = mStats->HitReactionScale;
+
+		m_IsStun = mStats->IsStun();
 	}
 }
 

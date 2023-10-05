@@ -3,6 +3,7 @@
 
 #include "Player_Cover_Widget.h"
 #include "CoverComponent.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "UMG.h"
 
 void UPlayer_Cover_Widget::NativeConstruct()
@@ -26,5 +27,11 @@ void UPlayer_Cover_Widget::SetVisibleCoverWidget(FVector point)
 	else
 	{
 		Cover_Overlay->SetRenderOpacity(1.0f);
+
+		FVector2D loc;
+		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), point, loc, false))
+		{
+			Cover_Overlay->SetRenderTranslation(loc);
+		}
 	}
 }
