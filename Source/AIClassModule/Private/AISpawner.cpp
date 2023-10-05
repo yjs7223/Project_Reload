@@ -216,6 +216,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 				if (spawn_Delay >= (*curSpawnData).spawn_Delay)
 				{
 					SpawnWave();
+					spawn_Delay = 0;
 				}
 			}
 		}
