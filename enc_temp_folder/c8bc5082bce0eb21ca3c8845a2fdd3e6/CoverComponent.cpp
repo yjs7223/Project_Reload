@@ -19,7 +19,6 @@
 #include "BaseCharacterMovementComponent.h"
 #include "NavigationSystem.h"
 #include "AIController.h"
-#include "StatComponent.h"
 #define LOCTEXT_NAMESPACE "CoverComponent"
 
 // Sets default values for this component's properties
@@ -69,10 +68,6 @@ void UCoverComponent::BeginPlay()
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::AimSetting);
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::CornenringCheck);
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::BeCrouch);
-	UStatComponent* stat = owner->FindComponentByClass<UStatComponent>();
-	stat->Knockback.AddLambda([this]() {
-		StopCover();
-		});
 }
 
 

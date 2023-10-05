@@ -7,9 +7,7 @@
 #include "Engine/DataTable.h"
 #include "Engine/DataAsset.h"
 #include "CameraControllComponent.generated.h"
-namespace EEasingFunc {
-	enum Type;
-}
+
 USTRUCT(BlueprintType)
 struct FCameraControllData
 {
@@ -28,8 +26,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float magnification = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EEasingFunc::Type> posEaseType;
 	/** 카메라 위치 속도 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float PosSpeed;

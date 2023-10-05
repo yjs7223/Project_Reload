@@ -10,7 +10,6 @@
 #include "Components/CapsuleComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include <Kismet/KismetSystemLibrary.h>
-#include <Kismet/KismetMathLibrary.h>
 #include "BaseInputComponent.h"
 
 // Sets default values for this component's properties
@@ -79,7 +78,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	if (debugtype) {
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("CameraState (%s)"), *tempKey), true, true, FColor::Green, DeltaTime);
 	}
-	
+
 	if (count > 1) {
 		float inverseCount = 1.0f / (float)count;
 		tempControllData.magnification *= inverseCount;
@@ -88,7 +87,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		tempControllData.CameraLengthSpeed *= inverseCount;
 		tempControllData.magnificationSpeed *= inverseCount;
 	}
-	UKismetMathLibrary::Ease(tempControllData.camerapos, tempControllData.camerapos, 1.0f, EEasingFunc::CircularIn);
+
 	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(
 		m_FollowSpringArm->SocketOffset, 
 		tempControllData.camerapos, 
