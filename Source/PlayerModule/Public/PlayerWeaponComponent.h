@@ -135,6 +135,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float pitchRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxPitchRecoilValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float TotalPitchRecoilValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float AimingRecoilValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector2D yawRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector2D pitchRange;
