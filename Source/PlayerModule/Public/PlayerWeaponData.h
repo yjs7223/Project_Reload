@@ -53,6 +53,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float min_vertical_Recoil;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxPitchRecoilValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AimingRecoilValue;
+
 	//ź���� ����
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float spread_Power;
