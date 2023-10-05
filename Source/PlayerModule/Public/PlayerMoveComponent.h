@@ -43,6 +43,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool IsCanMove();
 
+	UFUNCTION(BlueprintCallable)
+	void SettingRotate(FRotator _rot);
 
 private:
 	ACharacter* owner;
@@ -52,7 +54,7 @@ private:
 	struct FInputData* m_Inputdata;
 	class UPathFollowingComponent* m_PathFollowingComp;
 	class UBaseCharacterMovementComponent* m_Movement;
-	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+	UPROPERTY(EditAnywhere, Category = Gameplay)
 		FRotator mTargetRotate;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
 		bool mCanMove;
