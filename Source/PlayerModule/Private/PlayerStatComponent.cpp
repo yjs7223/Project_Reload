@@ -76,7 +76,10 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 	//OnVisibleHPUIDelegate.Broadcast();
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
-	OnCreateAttackedUIDelegate.Broadcast(attacker);
+	if (attacker)
+	{
+		OnCreateAttackedUIDelegate.Broadcast(attacker);
+	}
 
 	GetWorld()->GetTimerManager().SetTimer(StandbyTimer, FTimerDelegate::CreateLambda([&]()
 		{
