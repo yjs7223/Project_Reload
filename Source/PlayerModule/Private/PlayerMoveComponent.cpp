@@ -73,7 +73,7 @@ void UPlayerMoveComponent::Turning(float DeltaTime)
 		
 		return;
 	}
-
+	
 	owner->SetActorRelativeRotation(FMath::RInterpTo(owner->GetActorRotation(), mTargetRotate, DeltaTime, turningspped));
 	float yawValue = FMath::Abs((owner->GetActorRotation() - mTargetRotate).Yaw);
 	if (yawValue < 5 || yawValue > 355) {
@@ -133,6 +133,11 @@ void UPlayerMoveComponent::SetCanUnCrouch(bool canCrouch)
 bool UPlayerMoveComponent::IsCanMove()
 {
 	return mCanMove;
+}
+
+void UPlayerMoveComponent::SettingRotate(FRotator _rot)
+{
+	mTargetRotate = _rot;
 }
 
 
