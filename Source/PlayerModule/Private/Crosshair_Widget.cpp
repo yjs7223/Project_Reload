@@ -286,15 +286,15 @@ void UCrosshair_Widget::CheckDie()
 
 void UCrosshair_Widget::SetAmmoImage()
 {
-	float ammovalue = 0;
+	float ammovalue = weapon->curAmmo / weapon->maxAmmo;
 
-	switch (weapon->weapontype)
+	/*switch (weapon->weapontype)
 	{
 	case EWeaponType::TE_Pistol:
 		ammovalue = weapon->curAmmo / 10.0f;
 		break;
 	case EWeaponType::TE_Rifle:
-		ammovalue = weapon->curAmmo / 30.0f;
+		ammovalue = weapon->curAmmo / weapon->maxAmmo;
 		break;
 	case EWeaponType::TE_Shotgun:
 		ammovalue = weapon->curAmmo / 7.0f;
@@ -302,7 +302,7 @@ void UCrosshair_Widget::SetAmmoImage()
 	default:
 		ammovalue = weapon->curAmmo / 30.0f;
 		break;
-	}
+	}*/
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(ammovalue));
 	AmmoMat->SetScalarParameterValue(FName(TEXT("Percent")), ammovalue);
