@@ -128,5 +128,8 @@ public:
 		void FireInTheHole(const AActor* myai, const float Velocity);*/
 	UFUNCTION(BlueprintCallable)
 		void Init();
-	void Dead();
+	UFUNCTION(BlueprintCallable)
+		void Dead();
+	UFUNCTION(BlueprintCallable)
+		void RemoveAI();
 };
