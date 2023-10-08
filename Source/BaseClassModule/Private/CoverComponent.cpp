@@ -197,7 +197,7 @@ bool UCoverComponent::StartAICover()
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
-	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
+	SetIsFaceRight(true);
 
 	PlayMontageStartCover.Broadcast();
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
@@ -396,6 +396,7 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 {
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	//커버가능ui visible 델리게이트 실행
+	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
 
 }
 
@@ -836,8 +837,9 @@ bool UCoverComponent::isMustCrouch()
 void UCoverComponent::StartPeeking()
 {
 	if (!m_IsCover) return; 
-	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(owner->GetController())) return;
 	if (m_PeekingState != EPeekingState::None) return;
+	AController* controller = owner->GetController();
+	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(controller)) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
@@ -868,7 +870,7 @@ void UCoverComponent::StartPeeking()
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 
-		if (!result.GetActor()) {
+		if (!result.GetActor() && Cast<APlayerController>(controller)) {
 			if (owner->bIsCrouched) {
 				m_PeekingState |= EPeekingState::LowRight;
 			}
@@ -906,7 +908,7 @@ void UCoverComponent::StartPeeking()
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
-		if (!result.GetActor()) {
+		if (!result.GetActor() && Cast<APlayerController>(controller)) {
 			if (owner->bIsCrouched) {
 				m_PeekingState = EPeekingState::LowLeft;
 			}

@@ -32,11 +32,17 @@ public:
 	virtual float GetMaxSpeed() const override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void SetMovementMode(EMovementMode NewMovementMode, uint8 NewCustomMode = 0) override;
-
+	virtual void SetPostLandedPhysics(const FHitResult& Hit) override;
+  
 protected:
 	virtual void PhysCustom(float deltaTime, int32 Iterations);
 
 public:
-	UPROPERTY(Category = "Character Movement: MaxRuningSpeed", EditAnywhere, BlueprintReadWrite)
-	float MaxRuningSpeed = 600.0f;
+	UPROPERTY(Category = "Character Movement: CMOVE_Runing", EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
+		float MaxRuningSpeed = 600.0f;
+protected:
+
+private:
+	uint8 CustomMovementModeBeforeFalling;
+
 };

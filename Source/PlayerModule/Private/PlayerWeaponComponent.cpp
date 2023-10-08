@@ -157,13 +157,20 @@ void UPlayerWeaponComponent::InitData()
 		yawRange = FVector2D(dataTable->min_Horizontal_Recoil, dataTable->max_Horizontal_Recoil);
 		pitchRange = FVector2D(dataTable->min_vertical_Recoil, dataTable->max_vertical_Recoil);
 		m_firerate = dataTable->Fire_Rate;
+		MaxPitchRecoilValue = dataTable->MaxPitchRecoilValue;
+		AimingRecoilValue = dataTable->AimingRecoilValue;
 		TickCount = 1;
 		headhit = false;
 		reloadCount = 0;
 		reloadvalue = 0;
 		ammoinfinite = false;
 		m_WeaponDistance = dataTable->WeaponDistance;
+
+
+		//OnChangedAmmoUIDelegate.ExecuteIfBound();
 	}
+
+
 	// ...
 }
 
@@ -195,7 +202,7 @@ void UPlayerWeaponComponent::Fire()
 	float spread = 0;
 	if (bAiming)
 	{
-		spread = m_firecount * m_spreadPower * 0.5;
+		spread = m_firecount * m_spreadPower * AimingRecoilValue;
 	}
 	else
 	{
@@ -385,7 +392,7 @@ void UPlayerWeaponComponent::StopFire()
 		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		bFire = false;
-		
+		TotalPitchRecoilValue = 0.0f;
 		StartRecovery();
 	}
 }
@@ -552,16 +559,37 @@ void UPlayerWeaponComponent::StartRecoil()
 {
 	bRecovery = false;
 	bRecoil = true;
+
 	if (m_firecount == 1)
 	{
 		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
 		pitchRecoilValue = FMath::RandRange(pitchRange.X * 2.0f, pitchRange.Y * 1.5f);
+		if (bAiming && AimingRecoilValue > 0.0f)
+		{
+			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
+			pitchRecoilValue = pitchRecoilValue * AimingRecoilValue;
+		}
 	}
 	else
 	{
 		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
-		pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
+		if (TotalPitchRecoilValue >= MaxPitchRecoilValue)
+		{
+			pitchRecoilValue = FMath::RandRange(pitchRange.X, pitchRange.Y);
+		}
+		else
+		{
+			pitchRecoilValue = 0.0f;
+		}
+
+		if (bAiming && AimingRecoilValue > 0.0f)
+		{
+			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
+			pitchRecoilValue = pitchRecoilValue * AimingRecoilValue;
+		}
 	}
+
+	TotalPitchRecoilValue += pitchRecoilValue;
 	//yawRecoveryValue += yawRecoilValue;
 	//pitchRecoveryValue += pitchRecoilValue;
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("recoil start"));

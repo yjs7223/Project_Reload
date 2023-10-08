@@ -38,7 +38,7 @@ void AAISpawner::BeginPlay()
 	pointTime = 0;
 	pointSpawnCheck = false;
 	SetDataTable(curWave);
-
+	Total_EnemyNum = (spawn_Wave[Enemy_Name::RIFLE] + spawn_Wave[Enemy_Name::SNIPER] + spawn_Wave[Enemy_Name::HEAVY], spawn_Wave[Enemy_Name::ZOMBIE]);
 	TArray<AActor*> basechars;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCharacter::StaticClass(), basechars);
 	for (auto var : basechars)
@@ -94,6 +94,14 @@ void AAISpawner::SpawnWave()
 
 			commander->ListAdd(Cast<AActor>(temp));
 			rifleCount++;
+			if (ai->GetController() != nullptr)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController != nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+				}
+			}
 		}
 	}
 	else if (sniperCount < spawn_Wave[Enemy_Name::SNIPER])
@@ -114,6 +122,14 @@ void AAISpawner::SpawnWave()
 
 			commander->ListAdd(Cast<AActor>(temp));
 			sniperCount++;
+			if (ai->GetController() != nullptr)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController != nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+				}
+			}
 		}
 	}
 	else if (heavyCount < spawn_Wave[Enemy_Name::HEAVY])
@@ -132,6 +148,14 @@ void AAISpawner::SpawnWave()
 			ai->Init();
 			commander->ListAdd(Cast<AActor>(temp));
 			heavyCount++;
+			if (ai->GetController() != nullptr)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController != nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+				}
+			}
 		}
 	}
 	else if (zombieCount < spawn_Wave[Enemy_Name::ZOMBIE])
@@ -170,7 +194,23 @@ void AAISpawner::WaveControl(const float DeltaTime)
 	{
 		return;
 	}
-
+	if (TriggerOn == true)
+	{
+		SetDataTable(curWave);
+		if (!check_Overlap)
+		{
+			check_Overlap = true;
+		}
+		if (waveEnd)
+		{
+			waveEnd = false;
+		}
+		if (spawnCheck)
+		{
+			spawnCheck = false;
+		}
+		
+	}
 	// 마지막 웨이브인지 확인 및 스폰
 	if (check_Overlap && !spawnCheck)
 	{
@@ -207,7 +247,6 @@ void AAISpawner::WaveControl(const float DeltaTime)
 				{
 					SpawnWave();
 					spawn_Delay = 0;
-					TriggerOn = false;
 				}
 			}
 		}
@@ -215,8 +254,11 @@ void AAISpawner::WaveControl(const float DeltaTime)
 
 	if (last_Spawn && spawnCheck)
 	{
+		TriggerOn = false;
 		check_Overlap = false;
 		waveEnd = true;
+		curWave = 0;
+		
 	}
 	// 다음 웨이브
 	else if (spawnCheck)
@@ -227,7 +269,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 
 int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 {
-	// 플레이어와 가깝지 않다면 소환
+	// 플레이어와 가깝지 않다면 소환w
 	if (spawn_Spots[spawn_Spot]->GetDistanceTo(player) >= 50)
 	{
 		p_Spawn_Pos = spawn_Spot;
@@ -292,17 +334,19 @@ void AAISpawner::SpawnLastPoint(const float DeltaTime)
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 					pointSpawnCheck = true;
 					pointTime = 0;
-
-					for (auto& ai : en->AIArray)
+					if (en != nullptr)
 					{
-						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-						if (AIController != nullptr)
+						for (auto& ai : en->AIArray)
 						{
-							AIController->GetBlackboardComponent()->SetValueAsObject("Target", cpyLastPoint);
-						}
-						else
-						{
-							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+							AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+							if (AIController != nullptr)
+							{
+								AIController->GetBlackboardComponent()->SetValueAsObject("Target", cpyLastPoint);
+							}
+							else
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+							}
 						}
 					}
 				}

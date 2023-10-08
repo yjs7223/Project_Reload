@@ -60,6 +60,8 @@ public:
 		float sup_sharetime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float ai_HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		class AAICommander* commander;
 
 
 	
@@ -126,5 +128,8 @@ public:
 		void FireInTheHole(const AActor* myai, const float Velocity);*/
 	UFUNCTION(BlueprintCallable)
 		void Init();
-	void Dead();
+	UFUNCTION(BlueprintCallable)
+		void Dead();
+	UFUNCTION(BlueprintCallable)
+		void RemoveAI();
 };

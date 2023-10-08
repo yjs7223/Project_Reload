@@ -11,7 +11,7 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UTexture2D* texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/T_Bullet_UI.T_Bullet_UI'"));
+	/*UTexture2D* texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/T_Bullet_UI.T_Bullet_UI'"));
 	FSlateBrush brush;
 	brush.SetResourceObject(texture);
 	brush.SetImageSize(FVector2D(48.0f, 48.0f));
@@ -24,7 +24,6 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 	Ammo_Infinite_image->SetBrush(brush);
 	Ammo_Infinite_image->SetRenderOpacity(0.0f);
 
-	//��Ʈ�����Ű��
 	FSlateFontInfo fontinfo;
 	UFont* font = LoadObject<UFont>(NULL, TEXT("Font'/Game/yjs/UI/Fonts/Pretendard-Medium_Font.Pretendard-Medium_Font'"));
 	fontinfo.FontObject = font;
@@ -36,7 +35,7 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 	fontinfo.FontObject = font;
 	fontinfo.Size = 34;
 	fontinfo.OutlineSettings = 1;
-	Cur_Ammo_Text->SetFont(fontinfo);
+	Cur_Ammo_Text->SetFont(fontinfo);*/
 
 	bWidgetVisible = true;
 	widgetVisibleTime = 0;
@@ -50,6 +49,8 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 			MyWeaponComp->OnChangedAmmoUIDelegate.BindUObject(this, &UPlayer_Ammo_Widget::UpdateAmmo);
 		}
 	}
+
+	UpdateAmmo();
 }
 
 void UPlayer_Ammo_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

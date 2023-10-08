@@ -33,6 +33,7 @@
 #include "CoverComponent.h"
 #include "AIStatComponent.h"
 #include "AICharacterMoveComponent.h"
+#include "EncounterSpace.h"
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -90,7 +91,7 @@ void AAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 	mesh = FindComponentByClass<USkeletalMeshComponent>();
 
 	switch (FindComponentByClass<UAIStatComponent>()->type)
@@ -260,6 +261,30 @@ void AAICharacter::Init()
 }
 
 void AAICharacter::Dead()
+{
+	SetActorTickEnabled(false);
+
+	AIPatrol->SetComponentTickEnabled(false);
+
+	AISensing->SetComponentTickEnabled(false);
+	AISensing->GetOwner()->GetWorldTimerManager().ClearTimer(AISensing->sensingTimer);
+
+	AIMovement->SetComponentTickEnabled(false);
+
+	AIWeapon->SetComponentTickEnabled(false);
+	AIWeapon->GetOwner()->GetWorldTimerManager().ClearTimer(AIWeapon->timer);
+
+	AIStat->SetComponentTickEnabled(false);
+	AIInputComponent->SetComponentTickEnabled(false);
+	m_CoverComponent->SetComponentTickEnabled(false);
+	if (commander->Now_en->spawn != nullptr)
+	{
+		commander->Now_en->spawn->count_Kill++;
+	}
+	
+}
+
+void AAICharacter::RemoveAI()
 {
 	SetActorTickEnabled(false);
 
