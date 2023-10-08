@@ -49,6 +49,8 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 			MyWeaponComp->OnChangedAmmoUIDelegate.BindUObject(this, &UPlayer_Ammo_Widget::UpdateAmmo);
 		}
 	}
+
+	UpdateAmmo();
 }
 
 void UPlayer_Ammo_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
