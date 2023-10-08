@@ -265,9 +265,9 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 {
 	if (HitImpactDataAsset)
 	{
-		UNiagaraSystem* hitFXNiagara;
+		UNiagaraSystem* hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
 
-		if (CheckActorTag(result.GetActor(), TEXT("Enemy")))
+		if (CheckActorTag(result.GetActor(), TEXT("Enemy")) || CheckActorTag(result.GetActor(), TEXT("Player")))
 		{
 			if (CheckActorTag(result.GetActor(), TEXT("Robot")))
 			{
@@ -279,7 +279,7 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 			}
 			else
 			{
-				hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+				//hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
 			}
 		}
 		else

@@ -114,6 +114,14 @@ void AAISpawner::SpawnWave()
 
 			commander->ListAdd(Cast<AActor>(temp));
 			sniperCount++;
+			if (ai->GetController() != nullptr)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController != nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+				}
+			}
 		}
 	}
 	else if (heavyCount < spawn_Wave[Enemy_Name::HEAVY])
@@ -303,17 +311,19 @@ void AAISpawner::SpawnLastPoint(const float DeltaTime)
 					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 					pointSpawnCheck = true;
 					pointTime = 0;
-
-					for (auto& ai : en->AIArray)
+					if (en != nullptr)
 					{
-						AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
-						if (AIController != nullptr)
+						for (auto& ai : en->AIArray)
 						{
-							AIController->GetBlackboardComponent()->SetValueAsObject("Target", cpyLastPoint);
-						}
-						else
-						{
-							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+							AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+							if (AIController != nullptr)
+							{
+								AIController->GetBlackboardComponent()->SetValueAsObject("Target", cpyLastPoint);
+							}
+							else
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+							}
 						}
 					}
 				}

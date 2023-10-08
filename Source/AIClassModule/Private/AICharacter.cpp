@@ -284,4 +284,23 @@ void AAICharacter::Dead()
 	
 }
 
+void AAICharacter::RemoveAI()
+{
+	SetActorTickEnabled(false);
+
+	AIPatrol->SetComponentTickEnabled(false);
+
+	AISensing->SetComponentTickEnabled(false);
+	AISensing->GetOwner()->GetWorldTimerManager().ClearTimer(AISensing->sensingTimer);
+
+	AIMovement->SetComponentTickEnabled(false);
+
+	AIWeapon->SetComponentTickEnabled(false);
+	AIWeapon->GetOwner()->GetWorldTimerManager().ClearTimer(AIWeapon->timer);
+
+	AIStat->SetComponentTickEnabled(false);
+	AIInputComponent->SetComponentTickEnabled(false);
+	m_CoverComponent->SetComponentTickEnabled(false);
+}
+
 
