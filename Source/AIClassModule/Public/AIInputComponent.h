@@ -29,6 +29,7 @@ class AICLASSMODULE_API UAIInputComponent : public UBaseInputComponent
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 public:
 	//디버그용
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
@@ -43,6 +44,10 @@ public:
 		bool AI_Aiming;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
 		bool AI_Reload;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		class UBaseCharacterMovementComponent* movement;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIInput)
+		class UCoverComponent* covercomp;
 public:
 	UFUNCTION(BlueprintCallable, Category = "AIAnim")
 	void AIMoveForward(float Value);
