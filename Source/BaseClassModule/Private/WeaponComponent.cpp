@@ -21,7 +21,7 @@ UWeaponComponent::UWeaponComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	//m_CanShooting = true;
+	//m_CanShooting = true;	
 	Weapon_Handle_R_Name = TEXT("hand_r_Socket");
 	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
 	Arm_R_Name = TEXT("upperarm_r");
@@ -113,13 +113,13 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		result, false);
 	
 	//DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
 		
 
 		if (distance < m_WeaponDistance) {

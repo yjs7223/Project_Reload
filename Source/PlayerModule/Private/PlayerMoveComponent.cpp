@@ -140,4 +140,15 @@ void UPlayerMoveComponent::SettingRotate(FRotator _rot)
 	mTargetRotate = _rot;
 }
 
+bool UPlayerMoveComponent::IsControllerTurn()
+{
+	return TurnRate != 0.0f;
+}
+
+void UPlayerMoveComponent::truning(float turn)
+{
+	TurnRate = turn;
+}
+
+
 
