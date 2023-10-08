@@ -40,6 +40,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void SetMovementMode(EMovementMode NewMovementMode, uint8 NewCustomMode = 0) override;
+	virtual void SetPostLandedPhysics(const FHitResult& Hit) override;
 protected:
 	virtual void PhysCustom(float deltaTime, int32 Iterations);
 
@@ -50,6 +51,6 @@ public:
 protected:
 
 private:
-	
+	uint8 CustomMovementModeBeforeFalling;
 
 };
