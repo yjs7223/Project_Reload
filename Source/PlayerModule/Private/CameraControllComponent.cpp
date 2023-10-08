@@ -29,16 +29,21 @@ void UCameraControllComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	owner = dynamic_cast<ACharacter*>(GetOwner());
+	//m_PlayerCharacter = Cast<ACharacter>(GetOwner());
+	m_PlayerCharacter = GetOwner<APlayerController>()->GetPawn<ACharacter>();
 
-	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
-	m_Cover = owner->FindComponentByClass<UCoverComponent>();
-	m_Weapon = owner->FindComponentByClass<UWeaponComponent>();
-	m_FollowCamera = owner->FindComponentByClass<UCameraComponent>();
-	m_FollowSpringArm = owner->FindComponentByClass<USpringArmComponent>();
-	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	m_Input = m_PlayerCharacter->FindComponentByClass<UBaseInputComponent>();
+	m_Cover = m_PlayerCharacter->FindComponentByClass<UCoverComponent>();
+	m_Weapon = m_PlayerCharacter->FindComponentByClass<UWeaponComponent>();
+	m_FollowCamera = m_PlayerCharacter->FindComponentByClass<UCameraComponent>();
+	m_FollowSpringArm = m_PlayerCharacter->FindComponentByClass<USpringArmComponent>();
+	m_Movement = m_PlayerCharacter->FindComponentByClass<UBaseCharacterMovementComponent>();
 
-	InitArmLength = m_FollowSpringArm->TargetArmLength;
+	m_DefaultPos = m_FollowSpringArm->SocketOffset;
+	m_DefaultRot = m_FollowCamera->GetRelativeRotation();
+	m_DefaultArmLength = m_FollowSpringArm->TargetArmLength;
+	m_DefaultMagnification = 1.0f;
+	
 	InitFOV = m_FollowCamera->FieldOfView;
 
 	//m_FollowSpringArm->SocketOffset = m_Data->camerapos;
@@ -46,77 +51,79 @@ void UCameraControllComponent::BeginPlay()
 	if (m_CameraControllStructData) {
 		m_CameraControllStructData->foreach(
 			[this](FString key, UCameraControllPakage* value) {
-				value->NativeInitalize(owner);
+				value->NativeInitalize(m_PlayerCharacter);
 				value->Initalize();
 			});
 	}
+	m_CameraControllStructData->m_FaceRight.Initalize();
+	m_CameraControllStructData->m_Crouch.Initalize();
 
 }
 
+
+void UCameraControllComponent::SetDebugMode(bool isEnable)
+{
+	DebugMode = isEnable;
+}
 
 // Called every frame
 void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	bool debugtype = false;
-	int count = 1;
-	FString tempKey = TEXT("Default");
-	
-	FCameraControllData tempControllData = m_CameraControllStructData->DefaultCameraControll->GetDefaultObject<UCameraControllPakage>()->Data;
 
-	m_CameraControllStructData->foreach(
-		[this, &tempControllData, &count, &tempKey, &debugtype](FString key, UCameraControllPakage* value)
-		{
-			if (value->IsControlled()) {
-				tempControllData += value->Data;
-				++count;
-				if (debugtype) {
-					tempKey = FString::Printf(TEXT("%s, %s"), *tempKey, *key);
-				}
-			}
-		});
+	FString tempKey = TEXT("");
 	
-	if (debugtype) {
+	FVector defaultPos = m_DefaultPos;
+	FRotator defaultRot = m_DefaultRot;
+	float defaultArmLength = m_DefaultArmLength;
+	float defaultMagnification = m_DefaultMagnification;
+
+	for (auto& item : m_CameraControllStructData->CameraControllMap)
+	{
+		UCameraControllPakage* value = item.Value.GetDefaultObject();
+
+		bool iscontroll = value->IsControlled();
+		value->Data.Temp(DeltaTime, iscontroll);
+		defaultPos += value->Data.camerapos.CurrentValue;
+		defaultRot += value->Data.camerarot.CurrentValue;
+		defaultArmLength += value->Data.SpringArmLength.CurrentValue;
+		defaultMagnification += value->Data.magnification.CurrentValue;
+		if (iscontroll && DebugMode) {
+			tempKey = FString::Printf(TEXT("%s, %s"), *tempKey, *item.Key);
+		}
+	}
+
+	if (DebugMode) {
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("CameraState (%s)"), *tempKey), true, true, FColor::Green, DeltaTime);
 	}
-	
-	if (count > 1) {
-		float inverseCount = 1.0f / (float)count;
-		tempControllData.magnification *= inverseCount;
-		tempControllData.PosSpeed *= inverseCount;
-		tempControllData.RotSpeed *= inverseCount;
-		tempControllData.CameraLengthSpeed *= inverseCount;
-		tempControllData.magnificationSpeed *= inverseCount;
-	}
-	UKismetMathLibrary::Ease(tempControllData.camerapos, tempControllData.camerapos, 1.0f, EEasingFunc::CircularIn);
-	m_FollowSpringArm->SocketOffset = FMath::VInterpTo(
-		m_FollowSpringArm->SocketOffset, 
-		tempControllData.camerapos, 
-		DeltaTime, 
-		tempControllData.PosSpeed);
-	
-	m_FollowCamera->SetRelativeRotation(FMath::RInterpTo(
-		m_FollowCamera->GetRelativeRotation(), 
-		tempControllData.camerarot, 
-		DeltaTime, 
-		tempControllData.RotSpeed));
 
-	m_FollowCamera->FieldOfView = FMath::FInterpTo(
-		m_FollowCamera->FieldOfView, 
-		InitFOV - (InitFOV * (tempControllData.magnification - 1)),
-		DeltaTime,
-		tempControllData.magnificationSpeed);
-	
-	m_FollowSpringArm->TargetArmLength = FMath::FInterpTo(
-		m_FollowSpringArm->TargetArmLength, 
-		tempControllData.TargetArmLenght, 
-		DeltaTime, 
-		tempControllData.CameraLengthSpeed);
+	m_FollowSpringArm->SocketOffset = defaultPos;
+	m_FollowCamera->SetRelativeRotation(defaultRot);
+	m_FollowSpringArm->TargetArmLength = defaultArmLength;
+	m_FollowCamera->FieldOfView = InitFOV - (InitFOV * (defaultMagnification - 1));
+
+	m_CameraControllStructData->m_FaceRight.Easing(m_Cover->IsFaceRight() ? -DeltaTime : DeltaTime);
+	m_FollowSpringArm->SocketOffset.Y = UKismetMathLibrary::Ease(
+		defaultPos.Y,
+		-defaultPos.Y, 
+		m_CameraControllStructData->m_FaceRight.time,
+		m_CameraControllStructData->m_FaceRight.posEaseType);
+
+	m_CameraControllStructData->m_Crouch.Easing(m_PlayerCharacter->bIsCrouched ? -DeltaTime : DeltaTime);
+	m_FollowSpringArm->TargetOffset.Z = UKismetMathLibrary::Ease(
+		m_PlayerCharacter->GetDefaultHalfHeight(),
+		m_PlayerCharacter->GetDefaultHalfHeight() * 2.0f,
+		m_CameraControllStructData->m_Crouch.time,
+		m_CameraControllStructData->m_Crouch.posEaseType);
 }
 
-void UCameraControllPakage::NativeInitalize(ACharacter* _owner)
+void UCameraControllPakage::NativeInitalize(ACharacter* _m_PlayerCharacter)
 {
-	owner = _owner;
+	m_PlayerCharacter = _m_PlayerCharacter;
+	Data.camerapos.Initalize();
+	Data.camerarot.Initalize();
+	Data.SpringArmLength.Initalize();
+	Data.magnification.Initalize();
 }
 
 void UCameraControllPakageDataAsset::foreach(TFunction<void(FString, UCameraControllPakage*)> fn)
@@ -127,15 +134,60 @@ void UCameraControllPakageDataAsset::foreach(TFunction<void(FString, UCameraCont
 	}
 }
 
-void FCameraControllData::operator+=(const FCameraControllData& other)
+void FCameraControllDataElement::Initalize()
 {
-	camerapos += other.camerapos;
-	camerarot += other.camerarot;
-	TargetArmLenght += other.TargetArmLenght;
-	magnification += other.magnification;
+	if (blendIn != 0) {
+		InvblendIn = 1.0f / blendIn ;
+	}
+	else {
+		InvblendIn = FLT_MAX;
+	}
+	if (blendOut != 0) {
+		InvblendOut = 1.0f / blendOut;
+	}
+	else {
+		InvblendOut = FLT_MAX;
+	}
+}
 
-	PosSpeed += other.PosSpeed;
-	RotSpeed += other.RotSpeed;
-	CameraLengthSpeed += other.CameraLengthSpeed;
-	magnificationSpeed += other.magnificationSpeed;
+void FCameraControllDataElement::Easing(float DeltaTime)
+{
+	if (DeltaTime > 0) {
+		time = FMath::Clamp(time + (DeltaTime * InvblendIn), 0.0f, 1.0f);
+	}
+	else {
+		time = FMath::Clamp(time + (DeltaTime * InvblendOut), 0.0f, 1.0f);
+	}
+}
+
+void FCameraControllDataElementReal::Easing(float DeltaTime)
+{
+	Super::Easing(DeltaTime);
+	CurrentValue = UKismetMathLibrary::Ease(0, TargetValue, time, posEaseType);
+}
+
+void FCameraControllDataElementVector::Easing(float DeltaTime)
+{
+	Super::Easing(DeltaTime);
+	CurrentValue = UKismetMathLibrary::VEase(FVector::ZeroVector, TargetValue, time, posEaseType);
+}
+
+void FCameraControllDataElementRotater::Easing(float DeltaTime)
+{
+	Super::Easing(DeltaTime);
+	CurrentValue = UKismetMathLibrary::REase(FRotator::ZeroRotator, TargetValue, time, true, posEaseType);
+}
+
+FCameraControllData::FCameraControllData()
+{
+
+}
+
+void FCameraControllData::Temp(float DeltaTime, bool isChecked)
+{
+	float deltatime = isChecked ? DeltaTime : -DeltaTime;
+	camerapos.Easing(deltatime);
+	camerarot.Easing(deltatime);
+	SpringArmLength.Easing(deltatime);
+	magnification.Easing(deltatime);
 }

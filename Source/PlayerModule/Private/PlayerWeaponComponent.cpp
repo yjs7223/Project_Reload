@@ -222,8 +222,6 @@ void UPlayerWeaponComponent::Fire()
 
 		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		FVector dis = start - m_result.Location;
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
 		end = m_rot.Vector() * 1000000.0f;
 
 		//WeaponHit
@@ -235,6 +233,7 @@ void UPlayerWeaponComponent::Fire()
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			end = m_rot.Vector() * 99999;
+
 		}
 	}
 	else
@@ -443,9 +442,8 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* Weapondat
 {
 	if (WeapondataAsset)
 	{
-		if (!WeapondataAsset->WeaponSkeletalMesh || !WeapondataAsset->WeaponAnim) {
-			ensure(0 && "DA에 총 스켈레탈메쉬, 애니메이션 미할당");
-		}
+		ensureMsgf(WeapondataAsset->WeaponSkeletalMesh && WeapondataAsset->WeaponAnim, 
+			TEXT("DA에 총 스켈레탈메쉬, 애니메이션 미할당"));
 
 		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
 		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);

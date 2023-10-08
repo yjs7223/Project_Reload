@@ -76,6 +76,9 @@ public:
 	bool IsWeaponBlocking();
 	UFUNCTION(BlueprintCallable)
 	bool IsAiming();
+	UFUNCTION(BlueprintCallable)
+	FVector getWeaponHitLocation();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	class ABaseCharacter* owner;
@@ -143,4 +146,5 @@ protected:
 	bool m_IsWeaponBlocking;
 	float m_WeaponDistance;
 	TObjectPtr<class UCoverComponent> m_Cover;
+	FVector m_WeaponHitLocation;
  };

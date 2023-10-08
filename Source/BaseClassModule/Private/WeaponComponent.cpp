@@ -101,27 +101,25 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 	if (m_Cover->IsPeeking()) {
-		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() *0.75f;
+		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() * 0.75f;
 	}
 	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
 
-	
-
-	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
-	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
+	end = start + owner->Controller->GetControlRotation().Vector() * 15000.0f;
+	//end = start + (cameraRotation.Vector() * 15000.0);
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
 		start,
 		end,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForOneFrame,
 		result, false);
 	
 	//DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
-		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
 		
 
 		if (distance < m_WeaponDistance) {
@@ -129,6 +127,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 			m_IsWeaponBlocking = true;
 			return;
 		}
+		m_WeaponHitLocation = result.Location;
 	}
 	m_IsWeaponBlocking = false;
 }
@@ -341,4 +340,9 @@ bool UWeaponComponent::IsWeaponBlocking()
 bool UWeaponComponent::IsAiming()
 {
 	return bAiming && !IsWeaponBlocking();
+}
+
+FVector UWeaponComponent::getWeaponHitLocation()
+{
+	return m_WeaponHitLocation;
 }

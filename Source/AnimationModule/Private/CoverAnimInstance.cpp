@@ -69,9 +69,9 @@ void UCoverAnimInstance::NativeBeginPlay()
 
 void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (!m_Input) return;
-	if (!mWeapon) return;
-	if (!mCover) return;
+	if (!(m_Input)) return;
+	if (!(mWeapon)) return;
+	if (!(mCover)) return;
 
 	FInputData* data = m_Input->getInput();
 	mIsReload = data->IsReload;
