@@ -94,6 +94,14 @@ void AAISpawner::SpawnWave()
 
 			commander->ListAdd(Cast<AActor>(temp));
 			rifleCount++;
+			if (ai->GetController() != nullptr)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController != nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+				}
+			}
 		}
 	}
 	else if (sniperCount < spawn_Wave[Enemy_Name::SNIPER])
@@ -140,6 +148,14 @@ void AAISpawner::SpawnWave()
 			ai->Init();
 			commander->ListAdd(Cast<AActor>(temp));
 			heavyCount++;
+			if (ai->GetController() != nullptr)
+			{
+				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
+				if (AIController != nullptr)
+				{
+					AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+				}
+			}
 		}
 	}
 	else if (zombieCount < spawn_Wave[Enemy_Name::ZOMBIE])
@@ -180,6 +196,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 	}
 	if (TriggerOn == true)
 	{
+		SetDataTable(curWave);
 		if (!check_Overlap)
 		{
 			check_Overlap = true;
@@ -188,6 +205,11 @@ void AAISpawner::WaveControl(const float DeltaTime)
 		{
 			waveEnd = false;
 		}
+		if (spawnCheck)
+		{
+			spawnCheck = false;
+		}
+		
 	}
 	// 마지막 웨이브인지 확인 및 스폰
 	if (check_Overlap && !spawnCheck)
@@ -236,6 +258,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 		check_Overlap = false;
 		waveEnd = true;
 		curWave = 0;
+		
 	}
 	// 다음 웨이브
 	else if (spawnCheck)
