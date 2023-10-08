@@ -165,7 +165,12 @@ void UPlayerWeaponComponent::InitData()
 		reloadvalue = 0;
 		ammoinfinite = false;
 		m_WeaponDistance = dataTable->WeaponDistance;
+
+
+		//OnChangedAmmoUIDelegate.ExecuteIfBound();
 	}
+
+
 	// ...
 }
 
