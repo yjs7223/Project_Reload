@@ -28,7 +28,7 @@ UCoverComponent::UCoverComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	m_CorneringWaitTime = 1.0f;
+	m_CorneringWaitTime = 0.5f;
 	// ...
 }
 

@@ -174,4 +174,10 @@ public:
 	FCameraControllDataElement m_FaceRight;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", meta = (DisplayName = "Crouch"))
 	FCameraControllDataElement m_Crouch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DataBackUp", meta = (DisplayName = "Crouch"))
+	FVector m_DefaultPos;
+	FRotator m_DefaultRot;
+	float m_DefaultArmLength;
+	float m_DefaultMagnification;
 };
