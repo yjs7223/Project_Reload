@@ -566,7 +566,10 @@ bool UCoverComponent::IsFaceRight()
 
 void UCoverComponent::SetIsFaceRight(bool faceRight)
 {
+	//기존 FaceRight를 바꿔야 할떄
 	if ((FaceRight() > 0.0f) != faceRight) {
+		//위젯위치변경델리게이트실행
+		OnFaceRightCoverWidget.ExecuteIfBound(faceRight);
 		faceRight ? m_FaceRight = 1.0f : m_FaceRight = -1.0f;
 		m_Weapon->SetHandleing(faceRight);
 	}

@@ -9,13 +9,13 @@
 DECLARE_DELEGATE(FOnChangedCrossHairAmmoDelegate);
 DECLARE_DELEGATE(FOnChangedCrossHairHitDelegate);
 DECLARE_DELEGATE(FOnChangedCrossHairDieDelegate);
-DECLARE_DELEGATE(FOnChangedAmmoUIDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnChangedAmmoUIDelegate);
 
 DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
 DECLARE_DELEGATE(FOnStopReloadUIDelegate);
 
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
-DECLARE_DELEGATE(FOnVisibleAmmoUIDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnVisibleAmmoUIDelegate);
 
 DECLARE_DELEGATE_TwoParams(FOnSpawnDamageUIDelegate, float, FHitResult);
 
