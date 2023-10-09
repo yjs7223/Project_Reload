@@ -88,6 +88,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
 		float pointTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
+		int Total_EnemyNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
 		bool pointSpawnCheck;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LastPointSetting")
