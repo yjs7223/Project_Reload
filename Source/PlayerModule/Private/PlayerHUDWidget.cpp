@@ -16,6 +16,7 @@
 #include "Player_Cover_Widget.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerInputComponent.h"
+#include "CoverComponent.h"
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "UMG.h"
@@ -43,6 +44,11 @@ void UPlayerHUDWidget::NativeConstruct()
 		inputComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
 		inputComp->OnAllWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetAllWidgetVisible);
 		inputComp->OnCreatePauseWidget.BindUObject(this, &UPlayerHUDWidget::CreatePauseWidget);
+	}
+
+	if (UCoverComponent* coverComp = GetOwningPlayerPawn()->FindComponentByClass<UCoverComponent>())
+	{
+		coverComp->OnFaceRightCoverWidget.BindUObject(this, &UPlayerHUDWidget::SetFaceRightWidget);
 	}
 }
 
@@ -82,6 +88,8 @@ void UPlayerHUDWidget::SetCombatWidgetVisible(bool p_visible)
 	{
 		Player_HP_Widget->SetRenderOpacity(1.0f);
 		Player_Ammo_Widget->SetRenderOpacity(1.0f);
+		Player_HP_Widget_L->SetRenderOpacity(1.0f);
+		Player_Ammo_Widget_L->SetRenderOpacity(1.0f);
 		Crosshair_Widget->SetRenderOpacity(1.0f);
 		//DestinationWidget->SetRenderOpacity(1.0f);
 
@@ -102,6 +110,8 @@ void UPlayerHUDWidget::SetAllWidgetVisible(bool p_visible)
 	{
 		Player_HP_Widget->SetRenderOpacity(1.0f);
 		Player_Ammo_Widget->SetRenderOpacity(1.0f);
+		Player_HP_Widget_L->SetRenderOpacity(1.0f);
+		Player_Ammo_Widget_L->SetRenderOpacity(1.0f);
 		Crosshair_Widget->SetRenderOpacity(1.0f);
 		DestinationWidget->SetRenderOpacity(1.0f);
 
@@ -146,5 +156,19 @@ void UPlayerHUDWidget::SetCorneringTranslation()
 		{
 			CorneringWidget->SetRenderTranslation(loc);
 		}
+	}
+}
+
+void UPlayerHUDWidget::SetFaceRightWidget(bool p_bFaceright)
+{
+	if (p_bFaceright)
+	{
+		Right_Overlay->SetRenderOpacity(1.0f);
+		Left_Overlay->SetRenderOpacity(0.0f);
+	}
+	else
+	{
+		Right_Overlay->SetRenderOpacity(0.0f);
+		Left_Overlay->SetRenderOpacity(1.0f);
 	}
 }

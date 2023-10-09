@@ -24,6 +24,7 @@ public:
 	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool /*bvisible*/, bool /*bright*/);
 	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float /*percent*/);
 	DECLARE_DELEGATE_OneParam(FOnVisibleCoverWidget, FVector);
+	DECLARE_DELEGATE_OneParam(FOnFaceRightCoverWidget, bool);
 
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
@@ -42,6 +43,8 @@ public:
 	FOnSetPercentCorneringWidget OnSetPercentCorneringWidget;
 
 	FOnVisibleCoverWidget OnVisibleCoverWidget;
+
+	FOnFaceRightCoverWidget OnFaceRightCoverWidget;
 public:
 	UCoverComponent();
 
