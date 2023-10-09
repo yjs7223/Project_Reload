@@ -80,6 +80,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	
 	mAimYaw = mWeapon->getAimYaw();
 	mAimPitch = mWeapon->getAimPitch();
+	m_IsWeaponUse = mWeapon->m_CanShooting;
 
 	mIsCover = mCover->IsCover();
 	mIsFaceRight = mCover->FaceRight() >= 0;
@@ -94,7 +95,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	mIsPeeking = mLastPeekingState != EPeekingState::None;
 	mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
 
-	mSpinRotater = (mIsPeeking || mIsReload) ? FRotator(0.0, 0.0, 0.0) : FRotator(0.0, 180.0, 0.0);
+	mSpinRotater = (m_IsWeaponUse || mIsReload) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);
 
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;
