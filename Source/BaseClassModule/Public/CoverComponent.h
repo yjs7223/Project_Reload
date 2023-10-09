@@ -101,7 +101,9 @@ public:
 	void CalculateCoverShoot(float DeltaTime);
 	/** 엄폐사격상태를 반환합니다 */
 	ECoverShootingState getCoverSootingState();
+	UFUNCTION(BlueprintCallable)
 	/** 피킹상태를 반환합니다 */
+	UFUNCTION(BlueprintCallable)
 	EPeekingState getPeekingState();
 	/** 엄폐가능 위치를 반환합니다 */
 	FVector getCanCoverPoint();
@@ -179,6 +181,8 @@ private:
 	bool m_IsNextCover;
 	float m_FaceRight;
 	float m_CurrentCorneringWaitTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "CorneringWaitTime"))
 	float m_CorneringWaitTime;
 	FVector m_Turnlookpoint;
 	FVector m_CanCoverPoint;

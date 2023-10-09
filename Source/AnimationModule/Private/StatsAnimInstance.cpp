@@ -46,15 +46,15 @@ void UStatsAnimInstance::NativeBeginPlay()
 
 void UStatsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (mStats) {
-		mIsDie = mStats->bDie;
-		mIsHit = mStats->bAttacked;
-		m_HitX = mStats->hitNormal.X;
-		m_HitY = mStats->hitNormal.Y;
-		m_HitReactionScale = mStats->HitReactionScale;
+	if (!(mStats)) return;
 
-		m_IsStun = mStats->IsStun();
-	}
+	mIsDie = mStats->bDie;
+	mIsHit = mStats->bAttacked;
+	m_HitX = mStats->hitNormal.X;
+	m_HitY = mStats->hitNormal.Y;
+	m_HitReactionScale = mStats->HitReactionScale;
+
+	m_IsStun = mStats->IsStun();
 }
 
 void UStatsAnimInstance::UWeaponAnimInstance()

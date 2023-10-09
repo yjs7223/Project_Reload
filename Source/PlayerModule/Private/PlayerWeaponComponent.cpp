@@ -229,8 +229,6 @@ void UPlayerWeaponComponent::Fire()
 
 		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		FVector dis = start - m_result.Location;
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
 		end = m_rot.Vector() * 1000000.0f;
 
 		//WeaponHit
@@ -242,6 +240,7 @@ void UPlayerWeaponComponent::Fire()
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			end = m_rot.Vector() * 99999;
+
 		}
 	}
 	else
@@ -450,9 +449,8 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* Weapondat
 {
 	if (WeapondataAsset)
 	{
-		if (!WeapondataAsset->WeaponSkeletalMesh || !WeapondataAsset->WeaponAnim) {
-			ensure(0 && "DA에 총 스켈레탈메쉬, 애니메이션 미할당");
-		}
+		ensureMsgf(WeapondataAsset->WeaponSkeletalMesh && WeapondataAsset->WeaponAnim, 
+			TEXT("DA에 총 스켈레탈메쉬, 애니메이션 미할당"));
 
 		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
 		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);
@@ -732,23 +730,13 @@ void UPlayerWeaponComponent::Threaten()
 	end = start + (cameraRotation.Vector() * 99999);
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FHitResult result;
-	//GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(50.0f))
-	//DrawDebugSphere(GetWorld(), start, 50.0f, 50.0f, FColor::Red, true);
+
 	if (GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_GameTraceChannel3, FCollisionShape::MakeSphere(50.0f)))
 	{
-		//DrawDebugSphere(GetWorld(), result.Location, 50.0f, 50.0f, FColor::Red, true);
-		if (result.GetActor())
-		{
-			if (result.GetActor()->Tags.Num() > 0)
-			{
-				if (result.GetActor()->ActorHasTag("Enemy"))
-				{
-					UStatComponent* stat = result.GetActor()->FindComponentByClass<UStatComponent>();
-					if (stat)
-					{
-						stat->bThreat = true;
-					}
-				}
+		AActor* actor = result.GetActor();
+		if (actor && actor->Tags.Num() > 0 && actor->ActorHasTag("Enemy")) {
+			if (UStatComponent* stat = actor->FindComponentByClass<UStatComponent>()) {
+				stat->bThreat = true;
 			}
 		}
 	}

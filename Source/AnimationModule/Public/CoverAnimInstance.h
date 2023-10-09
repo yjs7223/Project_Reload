@@ -64,55 +64,57 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		class UBaseInputComponent* m_Input;
+	class UBaseInputComponent* m_Input;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		class UCoverComponent* mCover;
+	class UCoverComponent* mCover;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		class UWeaponComponent* mWeapon;
+	class UWeaponComponent* mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		class USkeletalMeshComponent* mWeaponMesh;
+	class USkeletalMeshComponent* mWeaponMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = animation)
-		FName mRightHandName;
+	FName mRightHandName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = animation)
-		FName mLeftHandName;
+	FName mLeftHandName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsCover;
+	bool mIsCover;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsFaceRight;
+	bool mIsFaceRight;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsCrouching;
+	bool mIsCrouching;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsMoving;
+	bool mIsMoving;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsCornering;
+	bool mIsCornering;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsAiming;
+	bool mIsAiming;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsPeeking;
+	bool mIsPeeking;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsFire;
+	bool mIsFire;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		float mAimYaw;
+	float mAimYaw;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		float mAimPitch;
+	float mAimPitch;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsReload;
+	bool mIsReload;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsCoverShooting;
+	bool mIsCoverShooting;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsConerWait;
+	bool mIsConerWait;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation , meta = (DisplayName = "IsWeaponUse"))
+	bool m_IsWeaponUse;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		EPeekingState  mPeekingState;
+	EPeekingState  mPeekingState;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		EPeekingState  mLastPeekingState;
+	EPeekingState  mLastPeekingState;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		ECoverShootingState  mCoverSootingState;
+	ECoverShootingState  mCoverSootingState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		FRotator mSpinRotater;
+	FRotator mSpinRotater;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		FVector mBeforPos;
+	FVector mBeforPos;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* m_AnimationTable;
