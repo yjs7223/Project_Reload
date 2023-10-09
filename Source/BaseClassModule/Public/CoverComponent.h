@@ -98,6 +98,7 @@ public:
 	void CalculateCoverShoot(float DeltaTime);
 	/** 엄폐사격상태를 반환합니다 */
 	ECoverShootingState getCoverSootingState();
+	UFUNCTION(BlueprintCallable)
 	/** 피킹상태를 반환합니다 */
 	UFUNCTION(BlueprintCallable)
 	EPeekingState getPeekingState();
