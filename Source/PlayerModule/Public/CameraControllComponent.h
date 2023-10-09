@@ -5,25 +5,122 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
+#include "Engine/DataAsset.h"
 #include "CameraControllComponent.generated.h"
 
-UENUM(BlueprintType)
-enum class ECameraState : uint8
+namespace EEasingFunc {
+	enum Type;
+}
+#pragma region FCameraControllDataElement
+USTRUCT(BlueprintType)
+struct FCameraControllDataElement 
 {
-	None = 0	UMETA(Hidden),
-	Default		UMETA(DisplayName = "Default"),
-	Vehicle		UMETA(DisplayName = "Vehicle"),
-	MAX			UMETA(Hidden)
+	GENERATED_BODY()
+public:
+	void Initalize();
+	virtual void Easing(float DeltaTime);
+
+	float time;
+	float InvblendIn;
+	float InvblendOut;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float blendIn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float blendOut;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<EEasingFunc::Type> posEaseType;
+
+
+};
+USTRUCT(BlueprintType)
+struct FCameraControllDataElementReal : public FCameraControllDataElement
+{
+	GENERATED_BODY()
+public:
+	virtual void Easing(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TargetValue;
+	float CurrentValue;
 };
 
+USTRUCT(BlueprintType)
+struct FCameraControllDataElementVector : public FCameraControllDataElement 
+{
+	GENERATED_BODY()
+public:
+	virtual void Easing(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector TargetValue;
+	FVector CurrentValue;
+};
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+USTRUCT(BlueprintType)
+struct FCameraControllDataElementRotater : public FCameraControllDataElement
+{
+	GENERATED_BODY()
+public:
+	virtual void Easing(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRotator TargetValue;
+	FRotator CurrentValue;
+};
+#pragma endregion
+
+USTRUCT(BlueprintType)
+struct FCameraControllData
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	FCameraControllData();
+
+	void Temp(float DeltaTime, bool isChecked);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FCameraControllDataElementVector camerapos;
+	/** 카메라 회전 값 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FCameraControllDataElementRotater camerarot;
+	/** 스프링암 길이 값 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FCameraControllDataElementReal SpringArmLength;
+	/** 카메라 배율 값 (FOV) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FCameraControllDataElementReal magnification;
+
+	float time;
+};
+
+UCLASS(Blueprintable)
+class UCameraControllPakage : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void Initalize();
+	UFUNCTION(BlueprintImplementableEvent)
+	bool IsControlled();
+
+	void NativeInitalize(class ACharacter* _m_PlayerCharacterr);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FCameraControllData Data;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<class ACharacter> m_PlayerCharacter;
+};
+
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PLAYERMODULE_API UCameraControllComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
+
 	// Sets default values for this component's properties
 	UCameraControllComponent();
 
@@ -34,82 +131,53 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UFUNCTION(BlueprintCallable)
-		bool isAimChangeFinish();
-
-	ACharacter* owner;
-	class UCameraComponent* m_FollowCamera;
-	class USpringArmComponent* m_FollowSpringArm;
-	class UCoverComponent* m_Cover;
-	class UWeaponComponent* m_Weapon;
-	class UBaseInputComponent* m_Input;
-	class UBaseCharacterMovementComponent* m_Movement;
+	UFUNCTION(Exec)
+	void SetDebugMode(bool isEnable);
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UDataTable* m_CameraControllData;
-	struct FCameraControllData* m_Data;
+	UCameraControllPakageDataAsset* m_CameraControllStructData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECameraState cameraState;
+protected:
+	TObjectPtr<ACharacter> m_PlayerCharacter;
+	TObjectPtr<class UCameraComponent> m_FollowCamera;
+	TObjectPtr<class USpringArmComponent> m_FollowSpringArm;
+	TObjectPtr<class UCoverComponent> m_Cover;
+	TObjectPtr<class UWeaponComponent> m_Weapon;
+	TObjectPtr<class UBaseInputComponent> m_Input;
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
+
+
+	FVector m_DefaultPos;
+	FRotator m_DefaultRot;
+	float m_DefaultArmLength;
+	float m_DefaultMagnification;
+
+	float InitFOV;
+
+	bool DebugMode = false;
 };
 
-USTRUCT(Atomic, BlueprintType)
-struct FCameraControllData : public FTableRowBase
+UCLASS()
+class UCameraControllPakageDataAsset : public UPrimaryDataAsset
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
+
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos;
+	void foreach(TFunction<void(FString, UCameraControllPakage*)> fn);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_Runing;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DataAsset")
+	TMap<FString, TSubclassOf<UCameraControllPakage>> CameraControllMap;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_Cover;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", meta = (DisplayName = "FaceRight"))
+	FCameraControllDataElement m_FaceRight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", meta = (DisplayName = "Crouch"))
+	FCameraControllDataElement m_Crouch;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_Aiming;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_FaceRight;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_FaceLeft;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_Crouch;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_FrontRightPeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_FrontLeftPeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_HighRightPeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_HighLeftPeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_LowRightPeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector camerapos_LowLeftPeek;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FRotator camerarot_aiming;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FRotator camerarot_PeekingLeft;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FRotator camerarot_PeekingLRight;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float AimingArmLength;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float IdleArmLength;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float TargetArmLenght;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_PosSpeed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_RotSpeed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_LengthSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DataBackUp", meta = (DisplayName = "Crouch"))
+	FVector m_DefaultPos;
+	FRotator m_DefaultRot;
+	float m_DefaultArmLength;
+	float m_DefaultMagnification;
 };

@@ -32,17 +32,16 @@ void UMovementAnimInstance::NativeBeginPlay()
 
 void UMovementAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (owner) {
-		FVector tempVelocity = owner->GetVelocity();
-		mMoveSpeed = tempVelocity.Length();
-		mDirection = UKismetAnimationLibrary::CalculateDirection(tempVelocity, owner->GetActorRotation());
+	if (!(owner)) return;
+	if (!(m_Movement)) return;
 
-		mIsMoving = mMoveSpeed > 0;
-		mIsCrouching = owner->bIsCrouched;
-	}
-	if (m_Movement) {
-		mIsRuning = m_Movement->isRuning();
-	}
+	FVector tempVelocity = owner->GetVelocity();
+	mMoveSpeed = tempVelocity.Length();
+	mDirection = UKismetAnimationLibrary::CalculateDirection(tempVelocity, owner->GetActorRotation());
+
+	mIsMoving = mMoveSpeed > 0;
+	mIsCrouching = owner->bIsCrouched;
+	mIsRuning = m_Movement->isRuning();
 }
 
 void UMovementAnimInstance::AnimationSetting()

@@ -176,6 +176,8 @@ private:
 	bool m_IsNextCover;
 	float m_FaceRight;
 	float m_CurrentCorneringWaitTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "CorneringWaitTime"))
 	float m_CorneringWaitTime;
 	FVector m_Turnlookpoint;
 	FVector m_CanCoverPoint;
