@@ -43,10 +43,11 @@ void AEncounterSpace::BeginPlay()
 void AEncounterSpace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!AI_Check)
+	AICheck();
+	/*if (!AI_Check)
 	{
-		AICheck();
-	}
+		
+	}*/
 	if (AI_ActiveTrue)
 	{
 		for (auto m_ai : AIArray)
@@ -60,7 +61,7 @@ void AEncounterSpace::Tick(float DeltaTime)
 void AEncounterSpace::AICheck()
 {
 	this->GetOverlappingActors(AIArray, AAICharacter::StaticClass());
-	AI_Check = true;
+	//AI_Check = true;
 }
 
 void AEncounterSpace::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
