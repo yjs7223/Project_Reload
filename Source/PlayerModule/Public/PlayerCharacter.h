@@ -53,6 +53,8 @@ public:
 		class UPlayerHUDWidget* PlayerHUDWidget;
 
 	FTimerHandle DamageTimer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	double asdqw;
     
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -65,7 +67,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UPlayerMoveComponent* m_PlayerMove;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		class UCameraControllComponent* m_CameraControll;
+
 
 };

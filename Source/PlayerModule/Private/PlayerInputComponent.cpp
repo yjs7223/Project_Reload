@@ -14,6 +14,7 @@
 #include "BaseCharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PlayerMoveComponent.h"
 
 
 void UPlayerInputComponent::BeginPlay()
@@ -21,6 +22,7 @@ void UPlayerInputComponent::BeginPlay()
 	Super::BeginPlay();
 	m_PlayerWeapon = owner->FindComponentByClass<UPlayerWeaponComponent>();
 	m_Covercomponent = owner->FindComponentByClass<UCoverComponent>();
+	UPlayerMoveComponent* move = owner->FindComponentByClass<UPlayerMoveComponent>();
 	TObjectPtr<class UInputComponent> InputComponent = owner->InputComponent;
 
 	InputComponent->BindAxis("Move Forward / Backward", this, &UPlayerInputComponent::MoveForward);
@@ -28,6 +30,7 @@ void UPlayerInputComponent::BeginPlay()
 	InputComponent->BindAction("Move", IE_Pressed, this, &UPlayerInputComponent::InputMove);
 
 	InputComponent->BindAxis("Turn Right / Left Mouse", owner, &ACharacter::AddControllerYawInput);
+	InputComponent->BindAxis("Turn Right / Left Mouse", move, &UPlayerMoveComponent::truning);
 	InputComponent->BindAxis("Look Up / Down Mouse", owner, &ACharacter::AddControllerPitchInput);
 
 	InputComponent->BindAction("Crouch", IE_Pressed, this, &UPlayerInputComponent::Crouching);
