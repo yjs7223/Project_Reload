@@ -291,7 +291,8 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 			if (mesh)
 			{
 				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
-				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+				
+				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.3f, .3f, .3f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
 
 			}
 		}

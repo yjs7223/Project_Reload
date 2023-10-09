@@ -28,7 +28,7 @@ AAISpawner::AAISpawner()
 void AAISpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
+	curWave = 0;
 	if (Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass())) != nullptr)
 	{
 		commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
@@ -99,7 +99,15 @@ void AAISpawner::SpawnWave()
 				AIController = Cast<AAI_Controller>(Cast<AAICharacter>(ai)->GetController());
 				if (AIController != nullptr)
 				{
-					AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+					if (AIController->GetBlackboardComponent() != nullptr)
+					{
+						if (AIController->GetBlackboardComponent()->GetValueAsBool("Simple_Run") == false)
+						{
+							AIController->GetBlackboardComponent()->SetValueAsObject("Target", player);
+							AIController->GetBlackboardComponent()->SetValueAsEnum("Combat", 1);
+						}
+					}
+					
 				}
 			}
 		}
@@ -270,7 +278,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 int AAISpawner::SetSpawnSpot(int p_Spawn_Pos)
 {
 	// 플레이어와 가깝지 않다면 소환w
-	if (spawn_Spots[spawn_Spot]->GetDistanceTo(player) >= 50)
+	if (spawn_Spots[spawn_Spot]->GetDistanceTo(player) >= 0)
 	{
 		p_Spawn_Pos = spawn_Spot;
 	}
@@ -331,7 +339,7 @@ void AAISpawner::SpawnLastPoint(const float DeltaTime)
 					cpyLastPoint = GetWorld()->SpawnActor<AActor>(lastPoint, player->GetTransform(), SpawnParams);
 					//cpyLastPoint->SetActorLocation(cpyLastPoint->GetActorLocation() - FVector(0, 0, 30));
 
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
+					//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("LastPoint!"));
 					pointSpawnCheck = true;
 					pointTime = 0;
 					if (en != nullptr)
@@ -345,7 +353,7 @@ void AAISpawner::SpawnLastPoint(const float DeltaTime)
 							}
 							else
 							{
-								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+								//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
 							}
 						}
 					}
