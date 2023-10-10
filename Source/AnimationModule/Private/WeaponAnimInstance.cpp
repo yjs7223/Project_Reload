@@ -60,6 +60,7 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	mAimYaw = mWeapon->getAimYaw();
 	mAimPitch = mWeapon->getAimPitch();
+	m_CanShooting = mWeapon->m_CanShooting;
 
 	if (m_Movement) {
 		mIsRuning = m_Movement->isRuning();
