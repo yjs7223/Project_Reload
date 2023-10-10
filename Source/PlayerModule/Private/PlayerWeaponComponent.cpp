@@ -342,7 +342,7 @@ void UPlayerWeaponComponent::StartAiming()
 	bAiming = true;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
-	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3, true, 0.0f);
+	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3f, true, 0.0f);
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
@@ -740,6 +740,8 @@ void UPlayerWeaponComponent::Threaten()
 			}
 		}
 	}
+
+
 }
 
 
