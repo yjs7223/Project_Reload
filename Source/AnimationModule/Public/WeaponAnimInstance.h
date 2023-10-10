@@ -57,32 +57,45 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayEquipMontage();
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-	class UBaseInputComponent* m_Input;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-	class UWeaponComponent* mWeapon;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-	class UBaseCharacterMovementComponent* m_Movement;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class ACharacter> m_Owner;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UBaseInputComponent> m_Input;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UWeaponComponent> mWeapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UCoverComponent> m_Cover;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float mAimYaw;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float mAimPitch;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool mIsAiming;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool mIsFire;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool mIsFireing;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool mIsReload;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool mIsRuning;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true, DisplayName = "CanShooting"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "CanShooting"))
 	bool m_CanShooting;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsUsingWeapon"))
+	bool m_IsUsingWeapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "UpperMirror"))
+	bool m_UpperMirror;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "UseUnderBody"))
+	bool m_UseUnderBody;
+
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* m_AnimationTable;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	struct FWeaponAnimationTable m_CurrentAnimation;
 
 

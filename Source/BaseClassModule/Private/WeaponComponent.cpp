@@ -14,6 +14,7 @@
 #include "Sound/SoundCue.h"
 #include "Perception/AISense_Hearing.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Pakurable.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -39,6 +40,11 @@ void UWeaponComponent::BeginPlay()
 	owner = GetOwner<ABaseCharacter>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
 	
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() == 1) {
+		m_PakurComp = pakurArr[0];
+	}
+	m_CanShooting = false;
 	// ...
 	
 }
@@ -71,13 +77,13 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	holdAmmo = p_ammo;
 	switch (weapontype)
 	{
-	case EWeaponType::TE_Pistol:
+	case EWeaponType::Pistol:
 		curAmmo = 10;
 		break;
-	case EWeaponType::TE_Rifle:
+	case EWeaponType::Rifle:
 		curAmmo = 30;
 		break;
-	case EWeaponType::TE_Shotgun:
+	case EWeaponType::Shotgun:
 		curAmmo = 7;
 		break;
 	default:
@@ -350,7 +356,23 @@ bool UWeaponComponent::IsAiming()
 	return bAiming && !IsWeaponBlocking();
 }
 
+bool UWeaponComponent::IsFireing()
+{
+	return bFire && !IsWeaponBlocking();
+}
+
 FVector UWeaponComponent::getWeaponHitLocation()
 {
 	return m_WeaponHitLocation;
+}
+
+bool UWeaponComponent::IsUsingWeapon()
+{
+	bool isPakuru = false;
+	
+	if (m_PakurComp && m_PakurComp->GetClass()) {
+		isPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
+	} 
+
+	return (IsAiming() || IsFireing()) && !isPakuru;
 }
