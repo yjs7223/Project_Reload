@@ -131,8 +131,9 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void SetCameraDebugMode(bool isEnable);
+	UFUNCTION(Exec)
+	void SetDebugMode(bool isEnable);
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraControllPakageDataAsset* m_CameraControllStructData;

@@ -61,7 +61,7 @@ void UCameraControllComponent::BeginPlay()
 }
 
 
-void UCameraControllComponent::SetCameraDebugMode(bool isEnable)
+void UCameraControllComponent::SetDebugMode(bool isEnable)
 {
 	DebugMode = isEnable;
 }

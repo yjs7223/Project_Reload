@@ -1,8 +1,8 @@
 using UnrealBuildTool;
 
-public class PlayerModule : ModuleRules
+public class VehicleModule : ModuleRules
 {
-    public PlayerModule(ReadOnlyTargetRules Target) : base(Target)
+    public VehicleModule(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -16,10 +16,9 @@ public class PlayerModule : ModuleRules
             "AIModule", 
             "InputCore", 
             "UMG",
-            //"UMGEditor",
+            "UMGEditor",
 
         });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
     }
 }

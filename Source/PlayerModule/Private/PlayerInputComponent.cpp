@@ -153,15 +153,15 @@ void UPlayerInputComponent::StopAiming()
 
 void UPlayerInputComponent::ChangeMainWeapon()
 {
-	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Rifle) return;
-	m_PlayerWeapon->weapontype = EWeaponType::TE_Rifle;
+	if (m_PlayerWeapon->weapontype == EWeaponType::Rifle) return;
+	m_PlayerWeapon->weapontype = EWeaponType::Rifle;
 	OnChangedWeapon.Broadcast();
 }
 	
 void UPlayerInputComponent::ChangeSubWeapon()
 {
-	if (m_PlayerWeapon->weapontype == EWeaponType::TE_Pistol) return;
-	m_PlayerWeapon->weapontype = EWeaponType::TE_Pistol;
+	if (m_PlayerWeapon->weapontype == EWeaponType::Pistol) return;
+	m_PlayerWeapon->weapontype = EWeaponType::Pistol;
 	OnChangedWeapon.Broadcast();
 }
 
