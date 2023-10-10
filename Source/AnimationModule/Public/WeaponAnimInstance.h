@@ -58,26 +58,27 @@ public:
 	void PlayEquipMontage();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		class UBaseInputComponent* m_Input;
+	class UBaseInputComponent* m_Input;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
-		class UWeaponComponent* mWeapon;
+	class UWeaponComponent* mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	class UBaseCharacterMovementComponent* m_Movement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		float mAimYaw;
+	float mAimYaw;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		float mAimPitch;
+	float mAimPitch;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsAiming;
+	bool mIsAiming;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsFire;
+	bool mIsFire;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsFireing;
+	bool mIsFireing;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsReload;
+	bool mIsReload;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
-		bool mIsRuning;
-
+	bool mIsRuning;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true, DisplayName = "CanShooting"))
+	bool m_CanShooting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* m_AnimationTable;
 

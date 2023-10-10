@@ -86,6 +86,11 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	}
 }
 
+void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
+{
+
+}
+
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
 	if(!Cast<APlayerController>(owner->Controller)) return;
@@ -100,12 +105,14 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	FCollisionQueryParams param(NAME_None, true, owner);
 
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
-	if (m_Cover->IsPeeking()) {
-		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() * 0.75f;
-	}
-	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
 
-	end = start + owner->Controller->GetControlRotation().Vector() * 15000.0f;
+	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
+	if (m_Cover->IsPeeking()) {
+		start += owner->GetActorRightVector() * 21.0f * m_Cover->FaceRight();
+		//start = owner->GetMesh()->GetSocketLocation(Arm_R_Name);
+	}
+
+	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
 	//end = start + (cameraRotation.Vector() * 15000.0);
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
 		start,
@@ -113,7 +120,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForOneFrame,
 		result, false);
 	
 	//DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);

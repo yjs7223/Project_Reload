@@ -50,12 +50,11 @@ public:
 	//ź�� �ʱ⼳��
 	UFUNCTION(BlueprintCallable)
 	void SetAmmo(int p_ammo);
+	void CalculateWeaponHitLocation(float p_deltatime);
 	void CalculateBlockingTick(float p_deltatime);
 
 	virtual void StartFire();
-
 	virtual void StopFire();
-
 	virtual void Fire();
 
 	float getAimYaw();
