@@ -100,8 +100,13 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				}
 				
 			}
-			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-
+			if (aic)
+			{
+				if (aic->commander->GetBlackboardComponent())
+				{
+					aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
+				}
+			}
 		}
 	}
 }

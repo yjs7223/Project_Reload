@@ -51,8 +51,8 @@ bool ADroneAIController::DroneMoveTo(FVector p_vec, float p_radius)
 
 	MoveToLocation(p_vec,p_radius,false,false);
 
-	DrawDebugBox(GetWorld(), p_vec, FVector(10, 10, 10), FColor::Red);
-	DrawDebugBox(GetWorld(), GetPawn()->GetActorLocation(), FVector(10, 10, 10), FColor::Blue);
+	/*DrawDebugBox(GetWorld(), p_vec, FVector(10, 10, 10), FColor::Red);
+	DrawDebugBox(GetWorld(), GetPawn()->GetActorLocation(), FVector(10, 10, 10), FColor::Blue);*/
 
 	float test = FVector::Dist(GetPawn()->GetActorLocation(), p_vec);
 	if (p_radius > FVector::Dist(GetPawn()->GetActorLocation(), p_vec))

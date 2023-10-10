@@ -277,9 +277,12 @@ void AAICharacter::Dead()
 	AIStat->SetComponentTickEnabled(false);
 	AIInputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
-	if (commander->Now_en->spawn != nullptr)
+	if (commander != nullptr)
 	{
-		commander->Now_en->spawn->count_Kill++;
+		if (commander->Now_en->spawn != nullptr)
+		{
+			commander->Now_en->spawn->count_Kill++;
+		}
 	}
 	
 }

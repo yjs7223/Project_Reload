@@ -71,8 +71,8 @@ void UPlayerWeaponComponent::BeginDestroy()
 	OnChangedCrossHairHitDelegate.Unbind();
 	OnChangedCrossHairDieDelegate.Unbind();
 	OnVisibleCrossHairUIDelegate.Unbind();
-	OnVisibleAmmoUIDelegate.Unbind();
-	OnChangedAmmoUIDelegate.Unbind();
+	OnVisibleAmmoUIDelegate.Clear();
+	OnChangedAmmoUIDelegate.Clear();
 	OnPlayReloadUIDelegate.Unbind();
 	OnSpawnDamageUIDelegate.Unbind();
 
@@ -320,7 +320,7 @@ void UPlayerWeaponComponent::Fire()
 
 
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
-	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.Broadcast();
 	StartRecoil();
 	UAnimInstance* animinstatce = WeaponMesh->GetAnimInstance();
 	if (animinstatce->GetClass()->ImplementsInterface(UEmptyShellSpawnable::StaticClass())) {
@@ -342,11 +342,11 @@ void UPlayerWeaponComponent::StartAiming()
 	bAiming = true;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
-	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3, true, 0.0f);
+	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3f, true, 0.0f);
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
-	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.Broadcast();
 
 }
 
@@ -358,7 +358,7 @@ void UPlayerWeaponComponent::StopAiming()
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
-	OnVisibleAmmoUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.Broadcast();
 }
 
 void UPlayerWeaponComponent::StartFire()
@@ -436,7 +436,7 @@ void UPlayerWeaponComponent::FinshReload()
 {
 	curAmmo = maxAmmo;
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
-	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.Broadcast();
 	StopReload();
 }
 
@@ -485,7 +485,7 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 				UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagInSound, owner->GetActorLocation());
 			}
 			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
-			OnChangedAmmoUIDelegate.ExecuteIfBound();
+			OnChangedAmmoUIDelegate.Broadcast();
 		}
 
 		switch (weapontype)
@@ -740,6 +740,8 @@ void UPlayerWeaponComponent::Threaten()
 			}
 		}
 	}
+
+
 }
 
 
