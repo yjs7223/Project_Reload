@@ -96,6 +96,7 @@ void AAIDog::Tick(float DeltaTime)
 	Time += DeltaTime;
 	if (Time >= 2.0f)
 	{
+		//경고UI출력시작
 		StartExplosion();
 		ExplosionTimer(DeltaTime);
 		LightFlash(DeltaTime);
