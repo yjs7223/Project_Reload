@@ -33,7 +33,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 	for (auto sup : aic->commander->List_Suppression)
 	{
-		if (sup.Value >= support_default)
+d		if (sup.Value >= support_default)
 		{
 			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
 			Dis_start = false;
@@ -100,8 +100,13 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				}
 				
 			}
-			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-
+			if (aic)
+			{
+				if (aic->commander->GetBlackboardComponent())
+				{
+					aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
+				}
+			}
 		}
 	}
 }
