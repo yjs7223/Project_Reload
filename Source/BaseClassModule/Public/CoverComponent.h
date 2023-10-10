@@ -24,6 +24,7 @@ public:
 	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool /*bvisible*/, bool /*bright*/);
 	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float /*percent*/);
 	DECLARE_DELEGATE_OneParam(FOnVisibleCoverWidget, FVector);
+	DECLARE_DELEGATE_OneParam(FOnFaceRightCoverWidget, bool);
 
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
@@ -42,6 +43,8 @@ public:
 	FOnSetPercentCorneringWidget OnSetPercentCorneringWidget;
 
 	FOnVisibleCoverWidget OnVisibleCoverWidget;
+
+	FOnFaceRightCoverWidget OnFaceRightCoverWidget;
 public:
 	UCoverComponent();
 
@@ -98,7 +101,9 @@ public:
 	void CalculateCoverShoot(float DeltaTime);
 	/** 엄폐사격상태를 반환합니다 */
 	ECoverShootingState getCoverSootingState();
+	
 	/** 피킹상태를 반환합니다 */
+	UFUNCTION(BlueprintCallable)
 	EPeekingState getPeekingState();
 	/** 엄폐가능 위치를 반환합니다 */
 	FVector getCanCoverPoint();
@@ -176,6 +181,8 @@ private:
 	bool m_IsNextCover;
 	float m_FaceRight;
 	float m_CurrentCorneringWaitTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "CorneringWaitTime"))
 	float m_CorneringWaitTime;
 	FVector m_Turnlookpoint;
 	FVector m_CanCoverPoint;

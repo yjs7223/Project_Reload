@@ -46,7 +46,7 @@ void UPlayer_Ammo_Widget::NativeConstruct()
 		{
 			weapon = MyCharacter->weapon;
 			//MyWeaponComp->OnVisibleAmmoUIDelegate.BindUObject(this, &UPlayer_Ammo_Widget::SetWidgetVisible);
-			MyWeaponComp->OnChangedAmmoUIDelegate.BindUObject(this, &UPlayer_Ammo_Widget::UpdateAmmo);
+			MyWeaponComp->OnChangedAmmoUIDelegate.AddUObject(this, &UPlayer_Ammo_Widget::UpdateAmmo);
 		}
 	}
 

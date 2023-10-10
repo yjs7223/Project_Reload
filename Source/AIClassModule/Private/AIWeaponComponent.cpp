@@ -304,7 +304,7 @@ void UAIWeaponComponent::CheckTrace()
 	{
 		if (result.GetActor()->ActorHasTag("Last"))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CheckTrace()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CheckTrace()"));
 			GetWorld()->DestroyActor(result.GetActor());
 		}
 	}

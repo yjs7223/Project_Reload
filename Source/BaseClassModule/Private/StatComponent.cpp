@@ -22,7 +22,6 @@ void UStatComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
 	// ...
-	
 }
 
 void UStatComponent::BeginDestroy()

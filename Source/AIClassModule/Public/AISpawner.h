@@ -106,7 +106,8 @@ public:
 	bool last_Spawn;
 	float spawn_Condition;
 	float spawn_Delay;
-	int spawn_Spot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int spawn_Spot;
 	enum Spawn_Type spawn_Type;
 	TMap<Enemy_Name, int> spawn_Wave;
 

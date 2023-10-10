@@ -13,10 +13,10 @@ AAIDog::AAIDog()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	explosionEnabled = false;
 	explosionNi = LoadObject<UNiagaraSystem>(NULL, TEXT("NiagaraSystem'/Game/CarVFX/Niagara/Explosion/NS_Car_Expl_1.NS_Car_Expl_1'"));
 	explosionSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Dog_Cue.Explosion_Dog_Cue'"));
-	flashSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/Explosion_Timer_Cue.Explosion_Timer_Cue'"));
+	flashSound = LoadObject<USoundBase>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/ExplosionCount_Dog_Cue.ExplosionCount_Dog_Cue'"));
 	MoveStart = false;
 }
 
@@ -25,22 +25,18 @@ void AAIDog::StartExplosion()
 	FVector pLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	float const distance = FVector::Dist(pLocation, GetActorLocation());
 
-	AIMove(pLocation);
+	
 	if (!explosionEnabled)
 	{
+		AIMove(pLocation);
 		// 폭발타이머 시작거리
 		if (distance < explosionStartDistance)
 		{
 			explosionEnabled = true;
+			UGameplayStatics::SpawnSoundAtLocation(this, flashSound, GetActorLocation());
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Explosion Start!"));
 			light->ToggleVisibility();
 		}
-	}
-
-	// 즉시폭발 최소거리
-	if (distance < 100.0f)
-	{
-		Explosion();
 	}
 }
 
@@ -48,8 +44,8 @@ void AAIDog::ExplosionTimer(float t)
 {
 	if (explosionEnabled)
 	{
-		curExplosionTime -= t;
-		if (curExplosionTime < 0.f)
+		explosionTime -= t;
+		if (explosionTime < 0.f)
 		{
 			Explosion();
 		}
@@ -65,7 +61,7 @@ void AAIDog::LightFlash(float t)
 		{
 			light->ToggleVisibility(!light->IsVisible());
 			// 깜박임 사운드
-			UGameplayStatics::SpawnSoundAtLocation(this, flashSound, GetActorLocation());
+			
 			if (curExplosionTime * 0.2f > 0.1f)
 			{
 				flashTime = curExplosionTime * 0.2f;
@@ -88,7 +84,7 @@ void AAIDog::AIMove(const FVector Destination)
 void AAIDog::BeginPlay()
 {
 	Super::BeginPlay();
-	impactRadius = 500;
+	impactRadius = 250;
 	// 자기 라이트 넣기
 	light = FindComponentByClass<UPointLightComponent>();
 }
@@ -100,6 +96,7 @@ void AAIDog::Tick(float DeltaTime)
 	Time += DeltaTime;
 	if (Time >= 2.0f)
 	{
+		//경고UI출력시작
 		StartExplosion();
 		ExplosionTimer(DeltaTime);
 		LightFlash(DeltaTime);

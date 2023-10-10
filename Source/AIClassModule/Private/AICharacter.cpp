@@ -153,9 +153,9 @@ void AAICharacter::InitWidget()
 {
 	if (HPWidgetComponent)
 	{
-		HPWidgetComponent->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
-		HPWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		HPWidgetComponent->SetDrawSize(FVector2D(600.0f, 100.0f));
+		//HPWidgetComponent->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
+		//HPWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+		//HPWidgetComponent->SetDrawSize(FVector2D(600.0f, 100.0f));
 
 		if (HP_Widget)
 		{
@@ -221,7 +221,7 @@ void AAICharacter::SetDataTable(const FName EnemyName)
 void AAICharacter::IdleAnim()
 {
 	//PlayAnimMontage(idle_Montage, 1.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
 
 //void AAICharacter::FireInTheHole(const AActor* myai,const float Velocity)
@@ -289,6 +289,7 @@ void AAICharacter::Dead()
 
 void AAICharacter::RemoveAI()
 {
+
 	SetActorTickEnabled(false);
 
 	AIPatrol->SetComponentTickEnabled(false);

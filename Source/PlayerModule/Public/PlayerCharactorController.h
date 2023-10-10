@@ -9,14 +9,16 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PLAYERMODULE_API APlayerCharactorController : public APlayerController
 {
 	GENERATED_BODY()
 public:
 	APlayerCharactorController();
 
-public:
-
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCameraControllComponent> m_CameraControll;
 };
