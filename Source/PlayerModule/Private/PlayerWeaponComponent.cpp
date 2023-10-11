@@ -107,17 +107,22 @@ void UPlayerWeaponComponent::InitData()
 		FPlayerWeaponStruct* dataTable;
 		switch (weapontype)
 		{
-		case EWeaponType::TE_Pistol:
+		case EWeaponType::Pistol:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Pistol"), FString(""));
 			maxAmmo = dataTable->MaxAmmo_num;
 			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_PistolAsset.DA_PistolAsset'"));
 			break;
-		case EWeaponType::TE_Rifle:
+		case EWeaponType::Rifle:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Rifle"), FString(""));
-			maxAmmo = 30;
+			maxAmmo = dataTable->MaxAmmo_num;
 			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_RifleAsset.DA_RifleAsset'"));
 			break;
-		case EWeaponType::TE_Shotgun:
+		case EWeaponType::Heavy:
+			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Heavy"), FString(""));
+			maxAmmo = dataTable->MaxAmmo_num;
+			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_HeavyAsset.DA_HeavyAsset'"));
+			break;
+		case EWeaponType::Shotgun:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Shotgun"), FString(""));
 			break;
 		default:
@@ -130,6 +135,14 @@ void UPlayerWeaponComponent::InitData()
 		{
 			//WeaponMesh.set
 			WeaponMeshSetting(PlayerWeaponDataAsset);
+			for (auto& item : PlayerWeaponDataAsset->Attachments)
+			{
+				UStaticMeshComponent* meshcomp = NewObject<UStaticMeshComponent>(owner);
+
+				meshcomp->SetupAttachment(WeaponMesh, item.Key);
+				meshcomp->SetStaticMesh(item.Value);
+				meshcomp->RegisterComponentWithWorld(owner->GetWorld());
+			}
 			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
 			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
 			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
@@ -376,7 +389,8 @@ void UPlayerWeaponComponent::StartFire()
 
 
 	startRot = owner->GetController()->GetControlRotation();
-	if (weapontype == EWeaponType::TE_Rifle)
+
+	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 	{
 		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
 	}
@@ -386,7 +400,7 @@ void UPlayerWeaponComponent::StopFire()
 {
 	if (bFire)
 	{
-		if (weapontype == EWeaponType::TE_Rifle)
+		if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
@@ -464,10 +478,10 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 	{
 		switch (weapontype)
 		{
-		case EWeaponType::TE_Pistol:
+		case EWeaponType::Pistol:
 			reloadCount += Deltatime * 6;
 			break;
-		case EWeaponType::TE_Rifle:
+		case EWeaponType::Rifle:
 			reloadCount += Deltatime * 20;
 			break;
 
@@ -490,13 +504,13 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 
 		switch (weapontype)
 		{
-		case EWeaponType::TE_Pistol:
+		case EWeaponType::Pistol:
 			if (curAmmo == 10)
 			{
 				StopReload();
 			}
 			break;
-		case EWeaponType::TE_Rifle:
+		case EWeaponType::Rifle:
 			if (holdAmmo == 0)
 			{
 				if (curAmmo == reloadvalue)
@@ -510,7 +524,7 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 				StopReload();
 			}
 			break;
-		case EWeaponType::TE_Shotgun:
+		case EWeaponType::Shotgun:
 			break;
 		default:
 			if (holdAmmo == 0)
