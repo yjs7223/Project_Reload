@@ -142,8 +142,9 @@ void AAICharacter::BeginPlay()
 void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateWidget();
-	AIStat->SetComponentTickEnabled(true);
+	UpdateWidget(); 
+	AIInputComponent->PrimaryComponentTick.bCanEverTick = true;
+	AIInputComponent->SetComponentTickEnabled(true);
 }
 
 
