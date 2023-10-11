@@ -16,6 +16,7 @@ UBTS_SupportState::UBTS_SupportState()
 
 	NodeName = TEXT("SupportState");
 	Dis_start = false;
+	DT_On = false;
 }
 
 void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -27,13 +28,19 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	UWorld* World = ControllingPawn->GetWorld();
 	if (nullptr == World) return;
+	if (!DT_On)
+	{
+		SetDataTable("Rifle_E");
+		DT_On = true;
+	}
+
 	if (!aic)
 	{
 		aic = Cast<AAI_Controller>(OwnerComp.GetAIOwner());
 	}
 	for (auto sup : aic->commander->List_Suppression)
 	{
-d		if (sup.Value >= support_default)
+		if (sup.Value >= support_default)
 		{
 			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
 			Dis_start = false;
@@ -60,6 +67,7 @@ d		if (sup.Value >= support_default)
 
 			}
 			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
+
 		}
 		else
 		{

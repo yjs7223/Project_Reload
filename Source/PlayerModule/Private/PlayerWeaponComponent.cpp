@@ -233,7 +233,7 @@ void UPlayerWeaponComponent::Fire()
 
 		//WeaponHit
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
-		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+		/*if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
@@ -241,7 +241,7 @@ void UPlayerWeaponComponent::Fire()
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			end = m_rot.Vector() * 99999;
 
-		}
+		}*/
 	}
 	else
 	{
