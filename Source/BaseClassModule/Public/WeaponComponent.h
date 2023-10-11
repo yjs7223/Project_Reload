@@ -50,12 +50,11 @@ public:
 	//ź�� �ʱ⼳��
 	UFUNCTION(BlueprintCallable)
 	void SetAmmo(int p_ammo);
+	void CalculateWeaponHitLocation(float p_deltatime);
 	void CalculateBlockingTick(float p_deltatime);
 
 	virtual void StartFire();
-
 	virtual void StopFire();
-
 	virtual void Fire();
 
 	float getAimYaw();
@@ -74,41 +73,32 @@ public:
 
 	static bool CheckActorTag(AActor* actor, FName tag);
 	bool IsWeaponBlocking();
+	UFUNCTION(BlueprintCallable)
+	bool IsAiming();
+	UFUNCTION(BlueprintCallable)
+	FVector getWeaponHitLocation();
 
 public:
-	//����ĳ����
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	class ABaseCharacter* owner;
-
-	//�ܿ�ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	int holdAmmo;
-
-	//����ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	int curAmmo;
-
-	//�ִ� ��ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	int maxAmmo;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bFire;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bReload;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bHit;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bAiming;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Weapon)
 	bool m_CanShooting;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	FVector2D damage;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float m_firerate;
 
@@ -155,8 +145,5 @@ protected:
 	bool m_IsWeaponBlocking;
 	float m_WeaponDistance;
 	TObjectPtr<class UCoverComponent> m_Cover;
-
-	FVector ArmPoint;
-	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = true))
-	float testval;
+	FVector m_WeaponHitLocation;
  };

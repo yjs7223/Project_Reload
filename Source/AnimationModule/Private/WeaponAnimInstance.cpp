@@ -51,14 +51,16 @@ void UWeaponAnimInstance::NativeBeginPlay()
 
 void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (!m_Input) return;
-	if (!mWeapon) return;
+	if (!(m_Input)) return;
+	if (!(mWeapon)) return;
+
 	mIsAiming = m_Input->getInput()->IsAiming && !mWeapon->IsWeaponBlocking();
 	mIsFire = m_Input->getInput()->IsFire && !mWeapon->IsWeaponBlocking();
 	mIsReload = m_Input->getInput()->IsReload;
 
 	mAimYaw = mWeapon->getAimYaw();
 	mAimPitch = mWeapon->getAimPitch();
+	m_CanShooting = mWeapon->m_CanShooting;
 
 	if (m_Movement) {
 		mIsRuning = m_Movement->isRuning();

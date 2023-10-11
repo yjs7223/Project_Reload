@@ -19,6 +19,7 @@
 #include "BaseCharacterMovementComponent.h"
 #include "NavigationSystem.h"
 #include "AIController.h"
+#include "StatComponent.h"
 #define LOCTEXT_NAMESPACE "CoverComponent"
 
 // Sets default values for this component's properties
@@ -27,7 +28,7 @@ UCoverComponent::UCoverComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	m_CorneringWaitTime = 1.0f;
+	m_CorneringWaitTime = 0.5f;
 	// ...
 }
 
@@ -68,6 +69,10 @@ void UCoverComponent::BeginPlay()
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::AimSetting);
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::CornenringCheck);
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::BeCrouch);
+	UStatComponent* stat = owner->FindComponentByClass<UStatComponent>();
+	stat->Knockback.AddLambda([this](FVector a, bool b) {
+		StopCover();
+		});
 }
 
 
@@ -283,18 +288,20 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	else {
 		m_PeekingState = EPeekingState::None;
 	}
-
+	
 
 	if (IsPeeking()) return;
-	if (m_Inputdata->IsAiming || m_Inputdata->IsFire) {
-		
-		if (aimOffset.Yaw > 0) {
-			aimOffset.Yaw -= 180;
+	
+	if (aimOffset.Yaw > 0) {
+		aimOffset.Yaw -= 180;
+		if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
 			SetIsFaceRight(true);
 		}
-		else {
-			aimOffset.Yaw += 180;
-			aimOffset.Yaw *= -1.0f;
+	}
+	else {
+		aimOffset.Yaw += 180;
+		aimOffset.Yaw *= -1.0f;
+		if (m_Weapon->m_CanShooting && !m_Inputdata->IsReload) {
 			SetIsFaceRight(false);
 		}
 	}
@@ -561,7 +568,10 @@ bool UCoverComponent::IsFaceRight()
 
 void UCoverComponent::SetIsFaceRight(bool faceRight)
 {
+	//기존 FaceRight를 바꿔야 할떄
 	if ((FaceRight() > 0.0f) != faceRight) {
+		//위젯위치변경델리게이트실행
+		OnFaceRightCoverWidget.ExecuteIfBound(faceRight);
 		faceRight ? m_FaceRight = 1.0f : m_FaceRight = -1.0f;
 		m_Weapon->SetHandleing(faceRight);
 	}
@@ -700,6 +710,11 @@ void UCoverComponent::StopCover()
 {
 	if (m_IsCover) {
 		PlayMontageEndCover.Broadcast();
+	}
+
+	for (auto& item : owner->GetComponentsByInterface(UPlayerMovable::StaticClass()))
+	{
+		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
 
 	m_Movement->SetMovementMode(MOVE_Walking);
@@ -881,6 +896,7 @@ void UCoverComponent::StartPeeking()
 			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
 				m_PeekingState = EPeekingState::FrontRight;
+				owner->UnCrouch();
 				return;
 			}
 		}
@@ -918,6 +934,7 @@ void UCoverComponent::StartPeeking()
 			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
 			if (!result.GetActor()) {
 				m_PeekingState = EPeekingState::FrontLeft;
+				owner->UnCrouch();
 				return;
 			}
 		}
@@ -940,55 +957,24 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 	case EPeekingState::FrontLeft:
 		break;
 	case EPeekingState::HighRight:
-		//if (aimOffset.Yaw >= 0) {
-		//	if (!m_Input->m_CanUnCrouch) {
-		//		mPeekingState = EPeekingState::LowRight;
-		//		owner->Crouch();
-		//	}
-		//}
 		if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking()) {
 			m_PeekingState = EPeekingState::LowRight;
 			owner->Crouch();
 		}
-		else if (m_Weapon->IsWeaponBlocking()) {
-			//StopPeeking();
-		}
 		break;
 	case EPeekingState::HighLeft:
-		//if (aimOffset.Yaw <= -20) {
-		//	if (!m_Input->m_CanUnCrouch) {
-		//		mPeekingState = EPeekingState::LowLeft;
-		//		owner->Crouch();
-		//	}
-		//}
 		if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking()) {
 			m_PeekingState = EPeekingState::LowLeft;
 			owner->Crouch();
 		}
-		else if (m_Weapon->IsWeaponBlocking()) {
-			//StopPeeking();
-		} 
 		break;
 	case EPeekingState::LowRight:
-		/*if (aimOffset.Yaw < -10) {
-			mPeekingState = EPeekingState::HighRight;
-			if (owner->bIsCrouched) {
-				owner->UnCrouch();
-			}
-		}*/
 		if (m_Weapon->IsWeaponBlocking()) {
 			m_PeekingState = EPeekingState::HighRight;
 			owner->UnCrouch();
 		}
 		break;
 	case EPeekingState::LowLeft:
-		/*if (aimOffset.Yaw > -10) {
-			mPeekingState = EPeekingState::HighLeft;
-			if (owner->bIsCrouched) {
-				owner->UnCrouch();
-			}
-		}*/
-
 		if (m_Weapon->IsWeaponBlocking()) {
 			m_PeekingState = EPeekingState::HighLeft;
 			owner->UnCrouch();

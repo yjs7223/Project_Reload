@@ -33,12 +33,26 @@ public:
 
 	void SetCorneringTranslation();
 
+	void SetFaceRightWidget(bool p_bFaceright);
+
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Right_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Left_Overlay;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UPlayer_HP_Widget* Player_HP_Widget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UPlayer_Ammo_Widget* Player_Ammo_Widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UPlayer_HP_Widget* Player_HP_Widget_L;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UPlayer_Ammo_Widget* Player_Ammo_Widget_L;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UCrosshair_Widget* Crosshair_Widget;
