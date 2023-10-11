@@ -8,6 +8,7 @@
 #include "BaseCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "BaseInputComponent.h"
+#include "CoverComponent.h"
 
 
 bool FWeaponAnimationTable::IsVaild()
@@ -18,19 +19,17 @@ bool FWeaponAnimationTable::IsVaild()
 
 UWeaponAnimInstance::UWeaponAnimInstance()
 {
-	/*static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/ATH/Animation/DT_WeaponAnimation.DT_WeaponAnimation'"));
-	if (DataTable.Succeeded())
-	{
-		m_AnimationTable = DataTable.Object;
-	}*/
+
 }
 
 void UWeaponAnimInstance::NativeBeginPlay()
 {
-	ACharacter* owner = Cast<ACharacter>(TryGetPawnOwner());
-	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
+	m_Owner = Cast<ACharacter>(TryGetPawnOwner());
+	m_Input = m_Owner->FindComponentByClass<UBaseInputComponent>();
+	m_Movement = m_Owner->FindComponentByClass<UBaseCharacterMovementComponent>();
+	mWeapon = m_Owner->FindComponentByClass<UWeaponComponent>();
+	m_Cover = m_Owner->FindComponentByClass<UCoverComponent>();
 
-	mWeapon = owner->FindComponentByClass<UWeaponComponent>(); 
 	mWeapon->shootingAnimation.AddLambda(
 		[this]() {
 			Montage_Play(m_CurrentAnimation.Shooting);
@@ -45,7 +44,6 @@ void UWeaponAnimInstance::NativeBeginPlay()
 	}
 
 
-	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 	AnimationSetting();
 }
 
@@ -53,6 +51,8 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	if (!(m_Input)) return;
 	if (!(mWeapon)) return;
+	if (!m_Movement) return;
+	if (!m_Cover) return;
 
 	mIsAiming = m_Input->getInput()->IsAiming && !mWeapon->IsWeaponBlocking();
 	mIsFire = m_Input->getInput()->IsFire && !mWeapon->IsWeaponBlocking();
@@ -60,12 +60,17 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	mAimYaw = mWeapon->getAimYaw();
 	mAimPitch = mWeapon->getAimPitch();
+	m_CanShooting = mWeapon->m_CanShooting;
+	m_IsUsingWeapon = mWeapon->IsUsingWeapon();
 
-	if (m_Movement) {
-		mIsRuning = m_Movement->isRuning();
-	}
+	m_UpperMirror = !m_Cover->IsFaceRight();
+
+	mIsRuning = m_Movement->isRuning();
+
+
+	m_UseUnderBody = m_Cover->IsCover() || (m_IsUsingWeapon && m_Movement->Velocity.SizeSquared() <= 100.0 && !m_Owner->bIsCrouched);
 }
-	
+
 void UWeaponAnimInstance::AnimationSetting()
 {
 	if (!m_AnimationTable) return;
