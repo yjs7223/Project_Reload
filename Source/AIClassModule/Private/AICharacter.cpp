@@ -143,8 +143,7 @@ void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateWidget();
-
-	;
+	AIStat->SetComponentTickEnabled(true);
 }
 
 

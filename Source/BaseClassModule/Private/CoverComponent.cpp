@@ -1004,7 +1004,7 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 		break;
 	case EPeekingState::HighLeft:
 		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
-		if (isMustCrouch() && aimOffset.Yaw < -5.0f) {
+		if (isMustCrouch() && aimOffset.Yaw < -10.0f) {
 			m_PeekingState = EPeekingState::LowLeft;
 			owner->Crouch();
 		}
