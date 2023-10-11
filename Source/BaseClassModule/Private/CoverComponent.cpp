@@ -49,11 +49,13 @@ void UCoverComponent::BeginPlay()
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
-	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
-	if (ensure(pakurArr.Num() == 1)) {
-		m_PakurComp = pakurArr[0];
+	if (UWeaponComponent::CheckActorTag(owner, TEXT("Player")))
+	{
+		TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+		if (ensure(pakurArr.Num() == 1)) {
+			m_PakurComp = pakurArr[0];
+		}
 	}
-
 	if (m_PathFollowingComp == nullptr)
 	{
 		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
