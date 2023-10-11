@@ -43,7 +43,6 @@ void UAIWeaponComponent::BeginPlay()
 
 	use_Shot_State = true;
 	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
-
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
@@ -285,11 +284,11 @@ void UAIWeaponComponent::PlayRandomShotSound()
 	float pitch = FMath::RandRange(0.9f, 1.2f);
 	if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::HEAVY || owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 	{
-		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/SC_AIRifleShotSound.SC_AIRifleShotSound'"));
+		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/RifleSound_Cue.RifleSound_Cue'"));
 	}
 	else if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::SNIPER)
 	{
-		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/SniperFireSound_Cue.SniperFireSound_Cue'"));
+		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/SniperNew_Cue.SniperNew_Cue'"));
 	}
 	
 	UGameplayStatics::PlaySoundAtLocation(this, AI_FireSound, owner->GetActorLocation(), 1.0f, pitch);
