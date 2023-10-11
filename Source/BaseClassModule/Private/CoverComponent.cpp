@@ -20,6 +20,7 @@
 #include "NavigationSystem.h"
 #include "AIController.h"
 #include "StatComponent.h"
+#include "Pakurable.h"
 #define LOCTEXT_NAMESPACE "CoverComponent"
 
 // Sets default values for this component's properties
@@ -48,6 +49,11 @@ void UCoverComponent::BeginPlay()
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (ensure(pakurArr.Num() == 1)) {
+		m_PakurComp = pakurArr[0];
+	}
+
 	if (m_PathFollowingComp == nullptr)
 	{
 		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
@@ -61,8 +67,11 @@ void UCoverComponent::BeginPlay()
 	SetIsFaceRight(true);
 
 	if (!Cast<AAIController>(owner->Controller)) {
-		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPoint);
+		
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SendPlayerUIData);
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::CheckCoverPath);
 		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPath);
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPoint);
 		m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 	}
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::RotateSet);
@@ -81,20 +90,18 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//SettingCoverPoint(DeltaTime);
-	//CalculCoverPath(DeltaTime);
 	PlayerCharacterTick.Broadcast(DeltaTime);
+
 	if (!m_IsCover) return;
 	CoverCharacterTick.Broadcast(DeltaTime);
-	//RotateSet(DeltaTime);
-	//AimSetting(DeltaTime);
-	//CornenringCheck(DeltaTime);
-	//BeCrouch(DeltaTime);
-	//CalculateCoverShoot(DeltaTime);
 }
 
 void UCoverComponent::PlayCover()
 {
+
+	if (!m_PakurComp->GetClass() || IPakurable::Execute_IsRolling(m_PakurComp)) return;
+	if (m_Movement->MovementMode == MOVE_Falling) return;
+
 	//플레이어가 이동중에 눌렷다면 엄폐를 중지합니다
 	if (EPathFollowingStatus::Type::Moving == m_PathFollowingComp->GetStatus()) {
 		StopCover();
@@ -119,11 +126,11 @@ void UCoverComponent::PlayCover()
 	}
 	//없다면 엄폐를 시작합니다
 	else {
+		if (m_IsCover) {
+			StopCover();
+			return;
+		}
 		StartCover();
-	}
-	if (m_IsCover) {
-		StopCover();
-		return;
 	}
 	
 }
@@ -193,14 +200,14 @@ bool UCoverComponent::StartAICover()
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
 		m_CanCoverPointNormal = result.Normal;
 	}
-
+	m_CanCoverPointNormal.Z = 0.0;
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
 	SetIsFaceRight(true);
 
 	PlayMontageStartCover.Broadcast();
-	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
+	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
 	RotateSet(0.0f);
 	return m_IsCover;
 }
@@ -263,11 +270,21 @@ TArray<FNavPathPoint> UCoverComponent::CalculCoverPath()
 
 void UCoverComponent::SettingCoverPath(float DeltaTime)
 {
-	if (!(IsCover() || m_IsNextCover)) {
-		OnCoverPointsSetDelegate.Broadcast({});
-	}
-	else {
-		OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+	m_CoverPath = CalculCoverPath();
+
+
+}
+
+void UCoverComponent::CheckCoverPath(float DeltaTime)
+{
+	FVector lastPath = m_CoverPath.Num() > 0 ? m_CoverPath.Last() : FVector::ZeroVector;
+	FVector tempPoint = m_CanCoverPoint;
+	tempPoint.Z = 0.0;
+	lastPath.Z = 0.0;
+
+	if (!lastPath.Equals(tempPoint, 1.0)) {
+		m_CanCoverPoint = FVector::ZeroVector;
+		m_CoverPath.Empty();
 	}
 }
 
@@ -288,18 +305,20 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	else {
 		m_PeekingState = EPeekingState::None;
 	}
+	
 
-
-	if (IsPeeking()) return;
-	if (m_Inputdata->IsAiming || m_Inputdata->IsFire) {
-		
-		if (aimOffset.Yaw > 0) {
-			aimOffset.Yaw -= 180;
+	//if (IsPeeking()) return;
+	
+	if (aimOffset.Yaw > 0) {
+		aimOffset.Yaw -= 180;
+		if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
 			SetIsFaceRight(true);
 		}
-		else {
-			aimOffset.Yaw += 180;
-			aimOffset.Yaw *= -1.0f;
+	}
+	else {
+		aimOffset.Yaw += 180;
+		aimOffset.Yaw *= -1.0f;
+		if (m_Weapon->m_CanShooting && !m_Inputdata->IsReload) {
 			SetIsFaceRight(false);
 		}
 	}
@@ -365,7 +384,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	//로테이션 가져와서 보간설정
 	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal);
 	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 0.0f));
-
+	
 	//로테이션이 원하는수치에 비슷해지면 포즈세팅
 	if (owner->GetActorRotation().Vector().Dot(TargetRotation.Vector()) >= 0.999) {
 		m_IsWillPosSetting = true;
@@ -396,12 +415,12 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 {
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	//커버가능ui visible 델리게이트 실행
-	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
 
 }
 
 FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 {
+	m_CanCoverPointNormal = FVector::ZeroVector;
 	bool PeekingTraceDebug = false;
 	EDrawDebugTrace::Type debugtraceType;
 	if (PeekingTraceDebug) {
@@ -681,25 +700,31 @@ bool UCoverComponent::StartCover()
 			FVector start = owner->GetActorLocation();
 			FVector end = item->GetActorLocation();
 			FCollisionQueryParams params(NAME_None, true, owner);
-
 			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
 				break;
 			}
 		}
 
 	}
-	
+	if (result.Normal.Equals(FVector::ZeroVector, 0.1)) {
+		ensure(0);
+	}
+	if (OutActors.Num() == 0) return false;
 	if (result.GetActor() == nullptr) return false;
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
 		m_CanCoverPointNormal = result.Normal;
 	}
 
+	m_CanCoverPointNormal.Z = 0;
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
 	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
 
+	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
+
 	PlayMontageStartCover.Broadcast();
+	
 	return true;
 }
 
@@ -708,6 +733,11 @@ void UCoverComponent::StopCover()
 {
 	if (m_IsCover) {
 		PlayMontageEndCover.Broadcast();
+	}
+
+	for (auto& item : owner->GetComponentsByInterface(UPlayerMovable::StaticClass()))
+	{
+		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
 
 	m_Movement->SetMovementMode(MOVE_Walking);
@@ -721,6 +751,8 @@ void UCoverComponent::StopCover()
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	m_Input->m_CanUnCrouch = true;
 	m_Weapon->m_CanShooting = false;
+
+	OnVisibleCorneringWidget.ExecuteIfBound(false, true);
 }
 
 void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
@@ -837,6 +869,17 @@ bool UCoverComponent::isMustCrouch()
 	return !result.bBlockingHit;
 }
 
+void UCoverComponent::SendPlayerUIData(float DeltaTime)
+{
+	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
+	if (!(IsCover() || m_IsNextCover)) {
+		OnCoverPointsSetDelegate.Broadcast({});
+	}
+	else {
+		OnCoverPointsSetDelegate.Broadcast(m_CoverPath);
+	}
+}
+
 void UCoverComponent::StartPeeking()
 {
 	if (!m_IsCover) return; 
@@ -859,19 +902,19 @@ void UCoverComponent::StartPeeking()
 		start = temppos;
 		end = start + RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
 		if (result.GetActor()) return;
 
 		start = end;
 		end = start + -upVector * 1.05f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start;
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 
 		if (!result.GetActor() && Cast<APlayerController>(controller)) {
 			if (owner->bIsCrouched) {
@@ -940,6 +983,7 @@ void UCoverComponent::StartPeeking()
 void UCoverComponent::peekingCheck(FRotator& aimOffset)
 {
 	if (m_PeekingState == EPeekingState::None) StartPeeking();
+	if (FMath::Abs(aimOffset.Yaw) > 90.0f) StopPeeking();
 	if (!IsPeeking()) return;
 	switch (m_PeekingState)
 	{
@@ -950,13 +994,15 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 	case EPeekingState::FrontLeft:
 		break;
 	case EPeekingState::HighRight:
-		if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking()) {
+		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
+		if (isMustCrouch() && aimOffset.Yaw > 5.0f) {
 			m_PeekingState = EPeekingState::LowRight;
 			owner->Crouch();
 		}
 		break;
 	case EPeekingState::HighLeft:
-		if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking()) {
+		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
+		if (isMustCrouch() && aimOffset.Yaw < -5.0f) {
 			m_PeekingState = EPeekingState::LowLeft;
 			owner->Crouch();
 		}
@@ -1000,7 +1046,4 @@ void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 	if (IsCover()) return;
 	if (!Result.IsSuccess()) return;
 	if (!StartCover()) return;
-
-	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
-	RotateSet(0.0f);
 }

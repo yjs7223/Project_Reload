@@ -14,6 +14,7 @@
 #include "Sound/SoundCue.h"
 #include "Perception/AISense_Hearing.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Pakurable.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -39,6 +40,11 @@ void UWeaponComponent::BeginPlay()
 	owner = GetOwner<ABaseCharacter>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
 	
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() == 1) {
+		m_PakurComp = pakurArr[0];
+	}
+	m_CanShooting = false;
 	// ...
 	
 }
@@ -71,19 +77,24 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	holdAmmo = p_ammo;
 	switch (weapontype)
 	{
-	case EWeaponType::TE_Pistol:
+	case EWeaponType::Pistol:
 		curAmmo = 10;
 		break;
-	case EWeaponType::TE_Rifle:
+	case EWeaponType::Rifle:
 		curAmmo = 30;
 		break;
-	case EWeaponType::TE_Shotgun:
+	case EWeaponType::Shotgun:
 		curAmmo = 7;
 		break;
 	default:
 		curAmmo = 30;
 		break;
 	}
+}
+
+void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
+{
+
 }
 
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
@@ -98,24 +109,40 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
-
+	
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
-	if (m_Cover->IsPeeking()) {
-		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() * 0.75f;
-	}
-	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
 
-	end = start + owner->Controller->GetControlRotation().Vector() * 15000.0f;
+	start.Z += owner->GetDefaultHalfHeight() * 0.575f;
+	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
+		start += owner->GetMesh()->GetSocketRotation("pelvis").Quaternion().GetRightVector()
+			* 21.0f * m_Cover->FaceRight();
+
+		//start = owner->GetMesh()->GetSocketLocation(Arm_R_Name);
+	}
+
+	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
 	//end = start + (cameraRotation.Vector() * 15000.0);
-	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+	UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		start,
 		end,
+		2.0f,
+		2.0f,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForOneFrame,
 		result, false);
-	
+
+	//UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+	//	start,
+	//	end,
+	//	UEngineTypes::ConvertToTraceType(ECC_Visibility),
+	//	false,
+	//	{ owner },
+	//	EDrawDebugTrace::None,
+	//	result, false);
+
+
 	//DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
@@ -343,7 +370,23 @@ bool UWeaponComponent::IsAiming()
 	return bAiming && !IsWeaponBlocking();
 }
 
+bool UWeaponComponent::IsFireing()
+{
+	return bFire && !IsWeaponBlocking();
+}
+
 FVector UWeaponComponent::getWeaponHitLocation()
 {
 	return m_WeaponHitLocation;
+}
+
+bool UWeaponComponent::IsUsingWeapon()
+{
+	bool isPakuru = false;
+	
+	if (m_PakurComp && m_PakurComp->GetClass()) {
+		isPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
+	} 
+
+	return (IsAiming() || IsFireing()) && !isPakuru;
 }

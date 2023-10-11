@@ -244,6 +244,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 				{
 					SpawnWave();
 					spawn_Delay = 0;
+					count_Kill = 0;
 				}
 			}
 			break;
@@ -255,6 +256,7 @@ void AAISpawner::WaveControl(const float DeltaTime)
 				{
 					SpawnWave();
 					spawn_Delay = 0;
+					count_Kill = 0;
 				}
 			}
 		}

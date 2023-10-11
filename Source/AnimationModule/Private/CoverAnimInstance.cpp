@@ -94,8 +94,10 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	mIsPeeking = mLastPeekingState != EPeekingState::None;
 	mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
+	
+	//mSpinRotater = (!mIsPeeking && (mIsFire || mIsAiming || mIsReload)) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);
+	mSpinRotater = (mPeekingState == EPeekingState::None) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);
 
-	mSpinRotater = (m_IsWeaponUse || mIsReload) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);
 
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;
