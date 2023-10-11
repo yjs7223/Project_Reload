@@ -90,7 +90,12 @@ void AAICommander::BeginPlay()
 	UseBlackboard(BB_AICommander, BlackboardComp);
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
-
+	audiocomp->Stop();
+	background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
+	audiocomp->SetSound(background);
+	audiocomp->Play();
+	audiocomp->FadeIn(2.0f);
+	sound_Start = false;
 	SetCommanderDataTable("Commander");
 }
 
@@ -141,10 +146,19 @@ void AAICommander::ListSet()
 			MapList_Start = false;
 			CoverManager->ChangeEncounter();
 			audiocomp->Stop();
-			USoundCue* background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/S_Fire_Support_LOOP_150bpm_Cue.S_Fire_Support_LOOP_150bpm_Cue'"));
-			audiocomp->SetSound(background);
+			/*if (Now_en->AIArray.Num() <= 0)
+			{
+				USoundCue* background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
+				audiocomp->SetSound(background);
+			}*/
+			//else
+			//{
+				background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/S_Fire_Support_LOOP_150bpm_Cue.S_Fire_Support_LOOP_150bpm_Cue'"));
+				audiocomp->SetSound(background);
+			//}
 			audiocomp->Play();
 			audiocomp->FadeIn(2.0f);
+			sound_Start = true;
 			m_en = nullptr;
 		}
 		else
@@ -183,12 +197,35 @@ void AAICommander::ListSet()
 			{
 				if (Now_en->spawn->waveEnd)
 				{
+					if (sound_Start)
+					{
+						//사운드
+						audiocomp->Stop();
+						background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
+						audiocomp->SetSound(background);
+						audiocomp->Play();
+						audiocomp->FadeIn(2.0f);
+						sound_Start = false;
+					}
+					
 					ListVoidReset();
 				}
 			}
 			else
 			{
+				if (sound_Start)
+				{
+					//사운드
+					audiocomp->Stop();
+					background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
+					audiocomp->SetSound(background);
+					audiocomp->Play();
+					audiocomp->FadeIn(2.0f);
+					sound_Start = false;
+				}
 				ListVoidReset();
+				
+				
 			}
 		}
 	}
@@ -219,6 +256,8 @@ void AAICommander::ListVoidReset()
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
 	Blackboard->SetValueAsObject("Cmd_Target", NULL);
+
+	
 }
 
 void AAICommander::ListAdd(AActor* ac)
@@ -351,6 +390,14 @@ void AAICommander::TargetTickSet()
 			for (auto& ai : List_Division)
 			{
 				if (ai == en_Ai)
+				{
+					continue;
+				}
+				if (ai.Key == nullptr)
+				{
+					continue;
+				}
+				if (Cast<AAICharacter>(ai.Key)->GetController() == nullptr)
 				{
 					continue;
 				}
