@@ -279,7 +279,8 @@ void UCoverComponent::CheckCoverPath(float DeltaTime)
 {
 	FVector lastPath = m_CoverPath.Num() > 0 ? m_CoverPath.Last() : FVector::ZeroVector;
 	FVector tempPoint = m_CanCoverPoint;
-	tempPoint.Z -= owner->GetDefaultHalfHeight();
+	tempPoint.Z = 0.0;
+	lastPath.Z = 0.0;
 
 	if (!lastPath.Equals(tempPoint, 1.0)) {
 		m_CanCoverPoint = FVector::ZeroVector;
@@ -705,6 +706,9 @@ bool UCoverComponent::StartCover()
 		}
 
 	}
+	if (result.Normal.Equals(FVector::ZeroVector, 0.1)) {
+		ensure(0);
+	}
 	if (OutActors.Num() == 0) return false;
 	if (result.GetActor() == nullptr) return false;
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
@@ -898,19 +902,19 @@ void UCoverComponent::StartPeeking()
 		start = temppos;
 		end = start + RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
 		if (result.GetActor()) return;
 
 		start = end;
 		end = start + -upVector * 1.05f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start;
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 
 		if (!result.GetActor() && Cast<APlayerController>(controller)) {
 			if (owner->bIsCrouched) {

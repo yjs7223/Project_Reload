@@ -114,8 +114,13 @@ void UPlayerWeaponComponent::InitData()
 			break;
 		case EWeaponType::Rifle:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Rifle"), FString(""));
-			maxAmmo = 30;
+			maxAmmo = dataTable->MaxAmmo_num;
 			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_RifleAsset.DA_RifleAsset'"));
+			break;
+		case EWeaponType::Heavy:
+			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Heavy"), FString(""));
+			maxAmmo = dataTable->MaxAmmo_num;
+			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_HeavyAsset.DA_HeavyAsset'"));
 			break;
 		case EWeaponType::Shotgun:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Shotgun"), FString(""));
@@ -130,6 +135,14 @@ void UPlayerWeaponComponent::InitData()
 		{
 			//WeaponMesh.set
 			WeaponMeshSetting(PlayerWeaponDataAsset);
+			for (auto& item : PlayerWeaponDataAsset->Attachments)
+			{
+				UStaticMeshComponent* meshcomp = NewObject<UStaticMeshComponent>(owner);
+
+				meshcomp->SetupAttachment(WeaponMesh, item.Key);
+				meshcomp->SetStaticMesh(item.Value);
+				meshcomp->RegisterComponentWithWorld(owner->GetWorld());
+			}
 			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
 			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
 			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
@@ -376,7 +389,8 @@ void UPlayerWeaponComponent::StartFire()
 
 
 	startRot = owner->GetController()->GetControlRotation();
-	if (weapontype == EWeaponType::Rifle)
+
+	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 	{
 		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
 	}
@@ -386,7 +400,7 @@ void UPlayerWeaponComponent::StopFire()
 {
 	if (bFire)
 	{
-		if (weapontype == EWeaponType::Rifle)
+		if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
