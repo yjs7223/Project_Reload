@@ -92,10 +92,10 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	}
 }
 
-void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
-{
-
-}
+//void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
+//{
+//
+//}
 
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
