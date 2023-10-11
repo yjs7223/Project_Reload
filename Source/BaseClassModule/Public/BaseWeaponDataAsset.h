@@ -54,5 +54,7 @@ public:
 	//탄흔 데칼
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UMaterialInstance*> BulletHole_Decals;
-  
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, class UStaticMesh*> Attachments;
 };

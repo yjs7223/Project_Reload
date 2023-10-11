@@ -135,6 +135,14 @@ void UPlayerWeaponComponent::InitData()
 		{
 			//WeaponMesh.set
 			WeaponMeshSetting(PlayerWeaponDataAsset);
+			for (auto& item : PlayerWeaponDataAsset->Attachments)
+			{
+				UStaticMeshComponent* meshcomp = NewObject<UStaticMeshComponent>(owner);
+
+				meshcomp->SetupAttachment(WeaponMesh, item.Key);
+				meshcomp->SetStaticMesh(item.Value);
+				meshcomp->RegisterComponentWithWorld(owner->GetWorld());
+			}
 			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
 			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
 			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
@@ -381,7 +389,8 @@ void UPlayerWeaponComponent::StartFire()
 
 
 	startRot = owner->GetController()->GetControlRotation();
-	if (weapontype == EWeaponType::Rifle)
+
+	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 	{
 		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
 	}
@@ -391,7 +400,7 @@ void UPlayerWeaponComponent::StopFire()
 {
 	if (bFire)
 	{
-		if (weapontype == EWeaponType::Rifle)
+		if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
