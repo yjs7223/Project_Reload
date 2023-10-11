@@ -19,19 +19,19 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "GunIKVec"), Category = "HandIK")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "GunIKVec"), Category = "HandIK")
 	FVector m_GunIKVec;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "IsHandIK"), Category = "HandIK")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsHandIK"), Category = "HandIK")
 	bool m_IsHandIK;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "IsFaceRight"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsFaceRight"))
 	bool m_IsFaceRight;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "IsReloding"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsReloding"))
 	bool m_IsReloding;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "IsFire"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsFire"))
 	bool m_IsFire;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "IsAiming"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsAiming"))
 	bool m_IsAiming;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "IsPakuru"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsPakuru"))
 	bool m_IsPakuru;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "owner"))
@@ -49,8 +49,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Movement"))
 	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "HandGrip_R"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "HandGrip_R"))
 	FName m_HandGrip_R;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "HandGrip_L"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "HandGrip_L"))
 	FName m_HandGrip_L;
 };

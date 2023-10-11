@@ -56,4 +56,8 @@ private:
 	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
 	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
 	TObjectPtr<class UCoverComponent> m_Covercomponent;
+	TObjectPtr<class UPlayerMoveComponent> m_PlayerMove;
+	TObjectPtr<class UInputComponent> m_InputComponent;
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
+
 };
