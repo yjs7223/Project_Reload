@@ -109,12 +109,14 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
-
+	
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
 	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
 	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
-		start += owner->GetActorRightVector() * 21.0f * m_Cover->FaceRight();
+		start += owner->GetMesh()->GetSocketRotation("pelvis").Quaternion().GetRightVector()
+			* 21.0f * m_Cover->FaceRight();
+
 		//start = owner->GetMesh()->GetSocketLocation(Arm_R_Name);
 	}
 

@@ -126,11 +126,11 @@ void UCoverComponent::PlayCover()
 	}
 	//없다면 엄폐를 시작합니다
 	else {
+		if (m_IsCover) {
+			StopCover();
+			return;
+		}
 		StartCover();
-	}
-	if (m_IsCover) {
-		StopCover();
-		return;
 	}
 	
 }
@@ -200,14 +200,14 @@ bool UCoverComponent::StartAICover()
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
 		m_CanCoverPointNormal = result.Normal;
 	}
-
+	m_CanCoverPointNormal.Z = 0.0;
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
 	SetIsFaceRight(true);
 
 	PlayMontageStartCover.Broadcast();
-	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
+	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
 	RotateSet(0.0f);
 	return m_IsCover;
 }
@@ -306,7 +306,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	}
 	
 
-	if (IsPeeking()) return;
+	//if (IsPeeking()) return;
 	
 	if (aimOffset.Yaw > 0) {
 		aimOffset.Yaw -= 180;
@@ -383,7 +383,7 @@ void UCoverComponent::RotateSet(float DeltaTime)
 	//로테이션 가져와서 보간설정
 	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(FVector::ZeroVector, -FinalNormal);
 	owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), TargetRotation, DeltaTime, 0.0f));
-
+	
 	//로테이션이 원하는수치에 비슷해지면 포즈세팅
 	if (owner->GetActorRotation().Vector().Dot(TargetRotation.Vector()) >= 0.999) {
 		m_IsWillPosSetting = true;
@@ -419,6 +419,7 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 
 FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 {
+	m_CanCoverPointNormal = FVector::ZeroVector;
 	bool PeekingTraceDebug = false;
 	EDrawDebugTrace::Type debugtraceType;
 	if (PeekingTraceDebug) {
@@ -698,25 +699,28 @@ bool UCoverComponent::StartCover()
 			FVector start = owner->GetActorLocation();
 			FVector end = item->GetActorLocation();
 			FCollisionQueryParams params(NAME_None, true, owner);
-
 			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
 				break;
 			}
 		}
 
 	}
-	
+	if (OutActors.Num() == 0) return false;
 	if (result.GetActor() == nullptr) return false;
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
 		m_CanCoverPointNormal = result.Normal;
 	}
 
+	m_CanCoverPointNormal.Z = 0;
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
 	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
 
+	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
+
 	PlayMontageStartCover.Broadcast();
+	
 	return true;
 }
 
@@ -975,6 +979,7 @@ void UCoverComponent::StartPeeking()
 void UCoverComponent::peekingCheck(FRotator& aimOffset)
 {
 	if (m_PeekingState == EPeekingState::None) StartPeeking();
+	if (FMath::Abs(aimOffset.Yaw) > 90.0f) StopPeeking();
 	if (!IsPeeking()) return;
 	switch (m_PeekingState)
 	{
@@ -985,13 +990,15 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 	case EPeekingState::FrontLeft:
 		break;
 	case EPeekingState::HighRight:
-		if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking()) {
+		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
+		if (isMustCrouch() && aimOffset.Yaw > 5.0f) {
 			m_PeekingState = EPeekingState::LowRight;
 			owner->Crouch();
 		}
 		break;
 	case EPeekingState::HighLeft:
-		if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking()) {
+		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
+		if (isMustCrouch() && aimOffset.Yaw < -5.0f) {
 			m_PeekingState = EPeekingState::LowLeft;
 			owner->Crouch();
 		}
@@ -1035,7 +1042,4 @@ void UCoverComponent::AIMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 	if (IsCover()) return;
 	if (!Result.IsSuccess()) return;
 	if (!StartCover()) return;
-
-	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation());
-	RotateSet(0.0f);
 }

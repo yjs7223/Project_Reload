@@ -155,6 +155,7 @@ protected:
 	float InitFOV;
 
 	bool DebugMode = false;
+	float m_WallDistance;
 };
 
 UCLASS()

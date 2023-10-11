@@ -70,7 +70,7 @@ void UCameraControllComponent::SetCameraDebugMode(bool isEnable)
 void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	FString tempKey = TEXT("");
 	
 	FVector defaultPos = m_DefaultPos;
@@ -110,6 +110,17 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		m_CameraControllStructData->m_FaceRight.posEaseType);
 
 	m_CameraControllStructData->m_Crouch.Easing(m_PlayerCharacter->bIsCrouched ? -DeltaTime : DeltaTime);
+	
+	//m_WallDistance = UKismetMathLibrary::Ease(m_WallDistance,
+	//	(m_FollowSpringArm->GetSocketTransform(USpringArmComponent::SocketName).GetLocation() - m_FollowSpringArm->UnfixedCameraPosition).Size() * 0.5,
+	//	1.0, EEasingFunc::Linear
+	//);
+	//
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("CameraState (%s)"), 
+	//	*(m_FollowSpringArm->GetSocketTransform(USpringArmComponent::SocketName).GetLocation() - m_FollowSpringArm->UnfixedCameraPosition).ToString()
+	//), true, true, FColor::Green, DeltaTime);
+	//m_FollowCamera->SetRelativeLocation(FVector(0, 0, m_WallDistance));
+	//m_FollowSpringArm->SocketOffset.Z += m_WallDistance;
 	m_FollowSpringArm->TargetOffset.Z = UKismetMathLibrary::Ease(
 		m_PlayerCharacter->GetDefaultHalfHeight(),
 		m_PlayerCharacter->GetDefaultHalfHeight() * 2.0f,
