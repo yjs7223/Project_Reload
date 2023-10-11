@@ -26,7 +26,7 @@ void UBaseCharacterAnimInstance::NativeBeginPlay()
 	m_Movement = m_Owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 
 	TArray<UActorComponent*> pakurArr = m_Owner->GetComponentsByInterface(UPakurable::StaticClass());
-	if((pakurArr.Num() == 1)) {
+	if(pakurArr.Num() == 1) {
 		m_PakurComp = pakurArr[0];
 	}
 }
