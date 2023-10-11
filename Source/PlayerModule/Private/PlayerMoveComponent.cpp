@@ -43,13 +43,13 @@ void UPlayerMoveComponent::BeginPlay()
 			m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 		});
 	}
-
 	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
 	if (pakurArr.Num() > 0) {
 		m_PakurComp = pakurArr[0];
 	}
 
 	mCanMove = true;
+
 	//turningspped
 }
 
@@ -60,8 +60,11 @@ void UPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (!mCanMove) return;
 
-	if (m_PakurComp && 
-		m_PakurComp ->GetClass()->ImplementsInterface(UPakurable::StaticClass()) && 
+	//if (m_PakurComp && m_PakurComp->GetClass() &&
+	//	m_PakurComp ->GetClass()->ImplementsInterface(UPakurable::StaticClass()) && 
+	//	IPakurable::Execute_IsRolling(m_PakurComp)) return;
+
+	if (m_PakurComp->GetClass() &&
 		IPakurable::Execute_IsRolling(m_PakurComp)) return;
 	Moving(DeltaTime);
 	Turning(DeltaTime);

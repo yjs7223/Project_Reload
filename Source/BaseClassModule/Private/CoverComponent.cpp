@@ -288,18 +288,20 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	else {
 		m_PeekingState = EPeekingState::None;
 	}
-
+	
 
 	if (IsPeeking()) return;
-	if (m_Inputdata->IsAiming || m_Inputdata->IsFire) {
-		
-		if (aimOffset.Yaw > 0) {
-			aimOffset.Yaw -= 180;
+	
+	if (aimOffset.Yaw > 0) {
+		aimOffset.Yaw -= 180;
+		if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
 			SetIsFaceRight(true);
 		}
-		else {
-			aimOffset.Yaw += 180;
-			aimOffset.Yaw *= -1.0f;
+	}
+	else {
+		aimOffset.Yaw += 180;
+		aimOffset.Yaw *= -1.0f;
+		if (m_Weapon->m_CanShooting && !m_Inputdata->IsReload) {
 			SetIsFaceRight(false);
 		}
 	}
@@ -708,6 +710,11 @@ void UCoverComponent::StopCover()
 {
 	if (m_IsCover) {
 		PlayMontageEndCover.Broadcast();
+	}
+
+	for (auto& item : owner->GetComponentsByInterface(UPlayerMovable::StaticClass()))
+	{
+		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
 
 	m_Movement->SetMovementMode(MOVE_Walking);

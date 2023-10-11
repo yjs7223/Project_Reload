@@ -33,7 +33,7 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 	for (auto sup : aic->commander->List_Suppression)
 	{
-d		if (sup.Value >= support_default)
+		if (sup.Value >= support_default)
 		{
 			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
 			Dis_start = false;
