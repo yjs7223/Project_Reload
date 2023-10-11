@@ -27,7 +27,7 @@ UWeaponComponent::UWeaponComponent()
 	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
 	Arm_R_Name = TEXT("upperarm_r");
 	Arm_L_Name = TEXT("upperarm_l");
-
+	
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	// ...
 }
@@ -39,21 +39,21 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
-
+	
 	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
 	if (pakurArr.Num() == 1) {
 		m_PakurComp = pakurArr[0];
 	}
 	m_CanShooting = false;
 	// ...
-
+	
 }
 
 void UWeaponComponent::BeginDestroy()
 {
 	shootingAnimation.Clear();
 	Dele_SpawnTrigger.Unbind();
-
+	
 	Super::BeginDestroy();
 }
 
@@ -99,8 +99,8 @@ void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
 
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
-	if (!Cast<APlayerController>(owner->Controller)) return;
-
+	if(!Cast<APlayerController>(owner->Controller)) return;
+	
 	FVector ViewPoint;
 	FRotator cameraRotation;
 	FHitResult result;
@@ -109,7 +109,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
-
+	
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
 	start.Z += owner->GetDefaultHalfHeight() * 0.575f;
@@ -147,7 +147,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
-
+		
 
 		if (distance < m_WeaponDistance) {
 
@@ -189,7 +189,7 @@ float UWeaponComponent::getAimPitch()
 void UWeaponComponent::AimSetting()
 {
 	//if(GetOwner()->Tags.Num() == 0 || !GetOwner()->ActorHasTag(TEXT("Player"))) return;
-
+	
 	FRotator temprot;
 	ACharacter* Owner = GetOwner<ACharacter>();
 	temprot = Owner->GetControlRotation() - Owner->GetActorRotation();
@@ -318,8 +318,8 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 			if (mesh)
 			{
 				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
-
-				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.3f, .3f, .3f), EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+				
+				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.3f, .3f, .3f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
 
 			}
 		}
@@ -383,10 +383,10 @@ FVector UWeaponComponent::getWeaponHitLocation()
 bool UWeaponComponent::IsUsingWeapon()
 {
 	bool isPakuru = false;
-
+	
 	if (m_PakurComp && m_PakurComp->GetClass()) {
 		isPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
-	}
+	} 
 
 	return (IsAiming() || IsFireing()) && !isPakuru;
 }
