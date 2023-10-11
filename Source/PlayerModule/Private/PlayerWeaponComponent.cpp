@@ -114,8 +114,13 @@ void UPlayerWeaponComponent::InitData()
 			break;
 		case EWeaponType::Rifle:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Rifle"), FString(""));
-			maxAmmo = 30;
+			maxAmmo = dataTable->MaxAmmo_num;
 			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_RifleAsset.DA_RifleAsset'"));
+			break;
+		case EWeaponType::Heavy:
+			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Heavy"), FString(""));
+			maxAmmo = dataTable->MaxAmmo_num;
+			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_HeavyAsset.DA_HeavyAsset'"));
 			break;
 		case EWeaponType::Shotgun:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Shotgun"), FString(""));
