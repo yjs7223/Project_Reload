@@ -68,7 +68,7 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	mIsRuning = m_Movement->isRuning();
 
 
-	m_UseUnderBody = m_Cover->IsCover() || (m_IsUsingWeapon && m_Movement->Velocity.SizeSquared() > 100.0 && m_Owner->bIsCrouched);
+	m_UseUnderBody = m_Cover->IsCover() || (m_IsUsingWeapon && m_Movement->Velocity.SizeSquared() <= 100.0 && !m_Owner->bIsCrouched);
 }
 	
 void UWeaponAnimInstance::AnimationSetting()

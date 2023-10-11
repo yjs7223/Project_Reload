@@ -20,6 +20,7 @@
 #include "NavigationSystem.h"
 #include "AIController.h"
 #include "StatComponent.h"
+#include "Pakurable.h"
 #define LOCTEXT_NAMESPACE "CoverComponent"
 
 // Sets default values for this component's properties
@@ -48,6 +49,11 @@ void UCoverComponent::BeginPlay()
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (ensure(pakurArr.Num() == 1)) {
+		m_PakurComp = pakurArr[0];
+	}
+
 	if (m_PathFollowingComp == nullptr)
 	{
 		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
@@ -61,8 +67,11 @@ void UCoverComponent::BeginPlay()
 	SetIsFaceRight(true);
 
 	if (!Cast<AAIController>(owner->Controller)) {
-		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPoint);
+		
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SendPlayerUIData);
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::CheckCoverPath);
 		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPath);
+		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SettingCoverPoint);
 		m_PathFollowingComp->OnRequestFinished.AddUObject(this, &UCoverComponent::AIMoveCompleted);
 	}
 	CoverCharacterTick.AddUObject(this, &UCoverComponent::RotateSet);
@@ -81,20 +90,18 @@ void UCoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//SettingCoverPoint(DeltaTime);
-	//CalculCoverPath(DeltaTime);
 	PlayerCharacterTick.Broadcast(DeltaTime);
+
 	if (!m_IsCover) return;
 	CoverCharacterTick.Broadcast(DeltaTime);
-	//RotateSet(DeltaTime);
-	//AimSetting(DeltaTime);
-	//CornenringCheck(DeltaTime);
-	//BeCrouch(DeltaTime);
-	//CalculateCoverShoot(DeltaTime);
 }
 
 void UCoverComponent::PlayCover()
 {
+
+	if (!m_PakurComp->GetClass() || IPakurable::Execute_IsRolling(m_PakurComp)) return;
+	if (m_Movement->MovementMode == MOVE_Falling) return;
+
 	//플레이어가 이동중에 눌렷다면 엄폐를 중지합니다
 	if (EPathFollowingStatus::Type::Moving == m_PathFollowingComp->GetStatus()) {
 		StopCover();
@@ -263,11 +270,20 @@ TArray<FNavPathPoint> UCoverComponent::CalculCoverPath()
 
 void UCoverComponent::SettingCoverPath(float DeltaTime)
 {
-	if (!(IsCover() || m_IsNextCover)) {
-		OnCoverPointsSetDelegate.Broadcast({});
-	}
-	else {
-		OnCoverPointsSetDelegate.Broadcast(CalculCoverPath());
+	m_CoverPath = CalculCoverPath();
+
+
+}
+
+void UCoverComponent::CheckCoverPath(float DeltaTime)
+{
+	FVector lastPath = m_CoverPath.Num() > 0 ? m_CoverPath.Last() : FVector::ZeroVector;
+	FVector tempPoint = m_CanCoverPoint;
+	tempPoint.Z -= owner->GetDefaultHalfHeight();
+
+	if (!lastPath.Equals(tempPoint, 1.0)) {
+		m_CanCoverPoint = FVector::ZeroVector;
+		m_CoverPath.Empty();
 	}
 }
 
@@ -398,7 +414,6 @@ void UCoverComponent::SettingCoverPoint(float DeltaTime)
 {
 	m_CanCoverPoint = CalculateCoverPoint(DeltaTime);
 	//커버가능ui visible 델리게이트 실행
-	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
 
 }
 
@@ -728,6 +743,8 @@ void UCoverComponent::StopCover()
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	m_Input->m_CanUnCrouch = true;
 	m_Weapon->m_CanShooting = false;
+
+	OnVisibleCorneringWidget.ExecuteIfBound(false, true);
 }
 
 void UCoverComponent::CheckCoverCollision(OUT FHitResult& result)
@@ -842,6 +859,17 @@ bool UCoverComponent::isMustCrouch()
 	GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 
 	return !result.bBlockingHit;
+}
+
+void UCoverComponent::SendPlayerUIData(float DeltaTime)
+{
+	OnVisibleCoverWidget.ExecuteIfBound(m_CanCoverPoint);
+	if (!(IsCover() || m_IsNextCover)) {
+		OnCoverPointsSetDelegate.Broadcast({});
+	}
+	else {
+		OnCoverPointsSetDelegate.Broadcast(m_CoverPath);
+	}
 }
 
 void UCoverComponent::StartPeeking()

@@ -113,22 +113,34 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
 	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
-	if (m_Cover->IsPeeking()) {
+	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
 		start += owner->GetActorRightVector() * 21.0f * m_Cover->FaceRight();
 		//start = owner->GetMesh()->GetSocketLocation(Arm_R_Name);
 	}
 
 	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
 	//end = start + (cameraRotation.Vector() * 15000.0);
-	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+	UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		start,
 		end,
+		2.0f,
+		2.0f,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		result, false);
-	
+
+	//UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+	//	start,
+	//	end,
+	//	UEngineTypes::ConvertToTraceType(ECC_Visibility),
+	//	false,
+	//	{ owner },
+	//	EDrawDebugTrace::None,
+	//	result, false);
+
+
 	//DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
