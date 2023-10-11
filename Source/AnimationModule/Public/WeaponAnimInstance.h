@@ -21,26 +21,26 @@ public:
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming;
+	UAnimSequence* Aiming;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Aiming_Shooting;
+	UAnimSequence* Aiming_Shooting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Shooting_Base;
+	UAnimSequence* Shooting_Base;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimMontage* Shooting;
+	UAnimMontage* Shooting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimSequence* Reload;
+	UAnimSequence* Reload;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimMontage* EquipWeapon;
+	UAnimMontage* EquipWeapon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		UAnimMontage* UnEquipWeapon;
+	UAnimMontage* UnEquipWeapon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		class UAimOffsetBlendSpace* AimOffset;
+	class UAimOffsetBlendSpace* AimOffset;
 };
 
 /**
- *
+ * 
  */
 UCLASS(ClassGroup = (Custom))
 class ANIMATIONMODULE_API UWeaponAnimInstance : public UAnimInstance
@@ -55,48 +55,48 @@ public:
 	void AnimationSetting();
 
 	UFUNCTION(BlueprintCallable)
-		void PlayEquipMontage();
+	void PlayEquipMontage();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TObjectPtr<class ACharacter> m_Owner;
+	TObjectPtr<class ACharacter> m_Owner;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TObjectPtr<class UBaseInputComponent> m_Input;
+	TObjectPtr<class UBaseInputComponent> m_Input;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TObjectPtr<class UWeaponComponent> mWeapon;
+	TObjectPtr<class UWeaponComponent> mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TObjectPtr<class UCoverComponent> m_Cover;
+	TObjectPtr<class UCoverComponent> m_Cover;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		float mAimYaw;
+	float mAimYaw;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		float mAimPitch;
+	float mAimPitch;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		bool mIsAiming;
+	bool mIsAiming;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		bool mIsFire;
+	bool mIsFire;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		bool mIsFireing;
+	bool mIsFireing;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		bool mIsReload;
+	bool mIsReload;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		bool mIsRuning;
+	bool mIsRuning;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "CanShooting"))
-		bool m_CanShooting;
+	bool m_CanShooting;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsUsingWeapon"))
-		bool m_IsUsingWeapon;
+	bool m_IsUsingWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "UpperMirror"))
-		bool m_UpperMirror;
+	bool m_UpperMirror;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "UseUnderBody"))
-		bool m_UseUnderBody;
+	bool m_UseUnderBody;
 
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UDataTable* m_AnimationTable;
+	class UDataTable* m_AnimationTable;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		struct FWeaponAnimationTable m_CurrentAnimation;
+	struct FWeaponAnimationTable m_CurrentAnimation;
 
 
 

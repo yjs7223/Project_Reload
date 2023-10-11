@@ -62,7 +62,7 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	mAimPitch = mWeapon->getAimPitch();
 	m_CanShooting = mWeapon->m_CanShooting;
 	m_IsUsingWeapon = mWeapon->IsUsingWeapon();
-
+	
 	m_UpperMirror = !m_Cover->IsFaceRight();
 
 	mIsRuning = m_Movement->isRuning();
@@ -70,7 +70,7 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	m_UseUnderBody = m_Cover->IsCover() || (m_IsUsingWeapon && m_Movement->Velocity.SizeSquared() <= 100.0 && !m_Owner->bIsCrouched);
 }
-
+	
 void UWeaponAnimInstance::AnimationSetting()
 {
 	if (!m_AnimationTable) return;
