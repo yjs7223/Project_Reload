@@ -130,7 +130,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		result, false);
 
 	//UKismetSystemLibrary::LineTraceSingle(GetWorld(),

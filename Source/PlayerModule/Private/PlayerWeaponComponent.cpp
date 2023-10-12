@@ -236,7 +236,7 @@ void UPlayerWeaponComponent::Fire()
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetComponent()->GetName());
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
@@ -365,6 +365,11 @@ void UPlayerWeaponComponent::StartAiming()
 
 void UPlayerWeaponComponent::StopAiming()
 {
+	if (CheckActorTag(owner, TEXT("Vehicle")))
+	{
+		OnVisibleAmmoUIDelegate.Broadcast();
+		return;
+	}
 	bAiming = false;
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
 	owner->GetWorldTimerManager().ClearTimer(AimingTimer);
