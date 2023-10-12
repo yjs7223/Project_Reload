@@ -279,6 +279,7 @@ void UCoverComponent::SettingCoverPath(float DeltaTime)
 
 void UCoverComponent::CheckCoverPath(float DeltaTime)
 {
+	return;
 	FVector lastPath = m_CoverPath.Num() > 0 ? m_CoverPath.Last() : FVector::ZeroVector;
 	FVector tempPoint = m_CanCoverPoint;
 	tempPoint.Z = 0.0;
@@ -1004,10 +1005,10 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 		break;
 	case EPeekingState::HighLeft:
 		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
-		if (isMustCrouch() && aimOffset.Yaw < -10.0f) {
-			m_PeekingState = EPeekingState::LowLeft;
-			owner->Crouch();
-		}
+		//if (isMustCrouch() && aimOffset.Yaw < -25.0f) {
+		//	m_PeekingState = EPeekingState::LowLeft;
+		//	owner->Crouch();
+		//}
 		break;
 	case EPeekingState::LowRight:
 		if (m_Weapon->IsWeaponBlocking()) {
