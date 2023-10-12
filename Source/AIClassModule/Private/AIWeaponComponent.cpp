@@ -23,6 +23,7 @@
 #include "AIWeaponDataAsset.h"
 #include "Engine/EngineTypes.h"
 #include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
 #include "Components/SpotLightComponent.h"
@@ -277,6 +278,21 @@ void UAIWeaponComponent::InitData()
 
 		Decal = AIWeaponDataAsset->BulletHole_Decals[0];
 	}
+}
+
+void UAIWeaponComponent::PlayRandomShotSound()
+{
+	float pitch = FMath::RandRange(0.9f, 1.2f);
+	if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::HEAVY || owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
+	{
+		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/SC_AIRifleShotSound.SC_AIRifleShotSound'"));
+	}
+	else if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::SNIPER)
+	{
+		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/SniperFireSound_Cue.SniperFireSound_Cue'"));
+	}
+	
+	UGameplayStatics::PlaySoundAtLocation(this, AI_FireSound, owner->GetActorLocation(), 1.0f, pitch);
 }
 
 bool UAIWeaponComponent::AITypeSniperCheck()

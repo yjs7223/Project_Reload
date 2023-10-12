@@ -92,10 +92,10 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	}
 }
 
-void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
-{
-
-}
+//void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
+//{
+//
+//}
 
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
@@ -112,7 +112,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
-	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
+	start.Z += owner->GetDefaultHalfHeight() * 0.575f;
 	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
 		start += owner->GetMesh()->GetSocketRotation("pelvis").Quaternion().GetRightVector()
 			* 21.0f * m_Cover->FaceRight();
@@ -130,7 +130,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForOneFrame,
 		result, false);
 
 	//UKismetSystemLibrary::LineTraceSingle(GetWorld(),
