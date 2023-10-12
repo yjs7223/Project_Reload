@@ -215,7 +215,7 @@ void UAIStatComponent::SuppresionPoint()
 			PlayerAtt_ai = false;
 		}
 		sup_total += (sup_Input*0.5f) * sup_middlePoint;
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(AI_PlayerDis));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(AI_PlayerDis));
 		if (sup_total >= sup_MaxPoint)
 		{
 			sup_total = sup_MaxPoint;
