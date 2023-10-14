@@ -15,6 +15,7 @@
 #include "Perception/AISense_Hearing.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Pakurable.h"
+#include "BaseInputComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -39,7 +40,7 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
-	
+	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
 	if (pakurArr.Num() == 1) {
 		m_PakurComp = pakurArr[0];
@@ -130,7 +131,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		result, false);
 
 	//UKismetSystemLibrary::LineTraceSingle(GetWorld(),
@@ -367,12 +368,12 @@ bool UWeaponComponent::IsWeaponBlocking()
 
 bool UWeaponComponent::IsAiming()
 {
-	return bAiming && !IsWeaponBlocking();
+	return m_Input->getInput()->IsAiming && !IsWeaponBlocking();
 }
 
 bool UWeaponComponent::IsFireing()
 {
-	return bFire && !IsWeaponBlocking();
+	return m_Input->getInput()->IsFire && !IsWeaponBlocking();
 }
 
 FVector UWeaponComponent::getWeaponHitLocation()
