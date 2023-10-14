@@ -142,9 +142,9 @@ void AAICharacter::BeginPlay()
 void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateWidget();
-
-	;
+	UpdateWidget(); 
+	AIInputComponent->PrimaryComponentTick.bCanEverTick = true;
+	AIInputComponent->SetComponentTickEnabled(true);
 }
 
 
@@ -153,9 +153,9 @@ void AAICharacter::InitWidget()
 {
 	if (HPWidgetComponent)
 	{
-		HPWidgetComponent->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
-		HPWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-		HPWidgetComponent->SetDrawSize(FVector2D(600.0f, 100.0f));
+		//HPWidgetComponent->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
+		//HPWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+		//HPWidgetComponent->SetDrawSize(FVector2D(600.0f, 100.0f));
 
 		if (HP_Widget)
 		{
@@ -221,7 +221,7 @@ void AAICharacter::SetDataTable(const FName EnemyName)
 void AAICharacter::IdleAnim()
 {
 	//PlayAnimMontage(idle_Montage, 1.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Play")));
 }
 
 //void AAICharacter::FireInTheHole(const AActor* myai,const float Velocity)
@@ -277,11 +277,34 @@ void AAICharacter::Dead()
 	AIStat->SetComponentTickEnabled(false);
 	AIInputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
-	if (commander->Now_en->spawn != nullptr)
+	if (commander != nullptr)
 	{
-		commander->Now_en->spawn->count_Kill++;
+		if (commander->Now_en->spawn != nullptr)
+		{
+			commander->Now_en->spawn->count_Kill++;
+		}
 	}
 	
+}
+
+void AAICharacter::RemoveAI()
+{
+
+	SetActorTickEnabled(false);
+
+	AIPatrol->SetComponentTickEnabled(false);
+
+	AISensing->SetComponentTickEnabled(false);
+	AISensing->GetOwner()->GetWorldTimerManager().ClearTimer(AISensing->sensingTimer);
+
+	AIMovement->SetComponentTickEnabled(false);
+
+	AIWeapon->SetComponentTickEnabled(false);
+	AIWeapon->GetOwner()->GetWorldTimerManager().ClearTimer(AIWeapon->timer);
+
+	AIStat->SetComponentTickEnabled(false);
+	AIInputComponent->SetComponentTickEnabled(false);
+	m_CoverComponent->SetComponentTickEnabled(false);
 }
 
 

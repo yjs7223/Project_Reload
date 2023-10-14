@@ -8,7 +8,7 @@
 #include "PlayerMoveComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PLAYERMODULE_API UPlayerMoveComponent : public UActorComponent, public IPlayerMovable
 {
 	GENERATED_BODY()
@@ -27,24 +27,25 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	
-	
+	UFUNCTION(BlueprintCallable)
+	void Turning(float DeltaTime);
+	UFUNCTION(BlueprintCallable)
+	void Turn();
+	UFUNCTION(BlueprintCallable)
+	void Moving(float DeltaTime);
+	UFUNCTION(BlueprintCallable)
+	virtual	void SetCanMove(bool canmove) override;
+	UFUNCTION(BlueprintCallable)
+	void SetCanUnCrouch(bool canCrouch);
+	UFUNCTION(BlueprintCallable)
+	bool IsCanMove();
+	UFUNCTION(BlueprintCallable)
+	void SettingRotate(FRotator _rot);
 
 	UFUNCTION(BlueprintCallable)
-		void Turning(float DeltaTime);
-	UFUNCTION(BlueprintCallable)
-		void Turn();
-	UFUNCTION(BlueprintCallable)
-		void Moving(float DeltaTime);
-	UFUNCTION(BlueprintCallable)
-		virtual	void SetCanMove(bool canmove) override;
-	UFUNCTION(BlueprintCallable)
-		void SetCanUnCrouch(bool canCrouch);
-	UFUNCTION(BlueprintCallable)
-		bool IsCanMove();
-
-
-private:
+	bool IsControllerTurn();
+	void truning(float turn);
+protected:
 	ACharacter* owner;
 	FVector mMoveDirect;
 	class UCoverComponent* m_CoverComp;
@@ -52,19 +53,21 @@ private:
 	struct FInputData* m_Inputdata;
 	class UPathFollowingComponent* m_PathFollowingComp;
 	class UBaseCharacterMovementComponent* m_Movement;
+	UPROPERTY(EditAnywhere, Category = Gameplay)
+	FRotator mTargetRotate;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
-		FRotator mTargetRotate;
+	bool mCanMove;
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
-		bool mCanMove;
-	UPROPERTY(VisibleAnywhere, Category = Gameplay)
-		bool mCanUnCrouch;
+	bool mCanUnCrouch;
 
 	UPROPERTY(EditAnywhere, Category = Gameplay)
-		float turningspped;
+	float turningspped;
 	UPROPERTY(EditAnywhere, Category = Gameplay)
-		float movespeed;
+	float movespeed;
 	UPROPERTY(EditAnywhere, Category = Gameplay)
-		float m_MaxSpeed;
+	float m_MaxSpeed;
 	UPROPERTY(EditAnywhere, Category = Gameplay)
-		float m_RunSpeed;
+	float m_RunSpeed;
+	UPROPERTY(EditAnywhere, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	float TurnRate;
 };

@@ -46,16 +46,20 @@ void UAttackedSideBarWidget::SetAttackedAngle()
 				if (Estat->bDie)
 				{
 					TargetEnemy = nullptr;
-					if (AttackedSideBar_Anim)
+					/*if (AttackedSideBar_Anim)
 					{
 						if (IsAnimationPlaying(AttackedSideBar_Anim))
 						{
 							StopAnimation(AttackedSideBar_Anim);
 						}
-					}
+					}*/
 					Attacked_Overlay->SetRenderOpacity(0.0f);
 				}
 			}
+		}
+		else
+		{
+			Attacked_Overlay->SetRenderOpacity(0.0f);
 		}
 	}
 }
@@ -76,13 +80,10 @@ void UAttackedSideBarWidget::StartAttacked(ABaseCharacter* Target)
 
 		if (AttackedSideBar_Anim)
 		{
-			if (IsAnimationPlaying(AttackedSideBar_Anim))
-			{
-				StopAnimation(AttackedSideBar_Anim);
-			}
+			StopAnimation(AttackedSideBar_Anim);
 
 
-			PlayAnimationForward(AttackedSideBar_Anim);
+			PlayAnimation(AttackedSideBar_Anim,-.5f);
 		}
 	}
 }

@@ -14,6 +14,8 @@
 #include "Sound/SoundCue.h"
 #include "Perception/AISense_Hearing.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Pakurable.h"
+#include "BaseInputComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -21,31 +23,13 @@ UWeaponComponent::UWeaponComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	//m_CanShooting = true;
+	//m_CanShooting = true;	
 	Weapon_Handle_R_Name = TEXT("hand_r_Socket");
 	Weapon_Handle_L_Name = TEXT("hand_l_Socket");
 	Arm_R_Name = TEXT("upperarm_r");
 	Arm_L_Name = TEXT("upperarm_l");
 	
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_rifle(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Rifle/SKM_Rifle_01.SKM_Rifle_01'"));
-	if (sk_rifle.Succeeded())
-	{
-		RifleMesh = sk_rifle.Object;
-		WeaponMesh->SetSkeletalMesh(RifleMesh);
-	}
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_pistol(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/PIstolScifi/SKM_PistolSciFi.SKM_PistolSciFi'"));
-	if (sk_pistol.Succeeded())
-	{
-		PistolMesh = sk_pistol.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> sk_shotgun(TEXT("SkeletalMesh'/Game/ThirdPersonKit/Meshes/WeaponsTPSKitOrginals/Shotgun/SKM_Shotgun.SKM_Shotgun'"));
-	if (sk_shotgun.Succeeded())
-	{
-		ShotgunMesh = sk_shotgun.Object;
-	}*/
 	// ...
 }
 
@@ -56,7 +40,12 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
-	
+	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() == 1) {
+		m_PakurComp = pakurArr[0];
+	}
+	m_CanShooting = false;
 	// ...
 	
 }
@@ -84,23 +73,18 @@ void UWeaponComponent::InitData()
 
 }
 
-//void UWeaponComponent::bindInput(UInputComponent* PlayerInputComponent)
-//{
-//	return;
-//}
-
 void UWeaponComponent::SetAmmo(int p_ammo)
 {
 	holdAmmo = p_ammo;
 	switch (weapontype)
 	{
-	case EWeaponType::TE_Pistol:
+	case EWeaponType::Pistol:
 		curAmmo = 10;
 		break;
-	case EWeaponType::TE_Rifle:
+	case EWeaponType::Rifle:
 		curAmmo = 30;
 		break;
-	case EWeaponType::TE_Shotgun:
+	case EWeaponType::Shotgun:
 		curAmmo = 7;
 		break;
 	default:
@@ -109,17 +93,13 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	}
 }
 
+//void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
+//{
+//
+//}
+
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
-#if (UE_BUILD_DEBUG == 1)
-	EDrawDebugTrace::Type debugtype = EDrawDebugTrace::ForOneFrame;
-#define	DrawDebugSphere(...) DrawDebugSphere(__VA_ARGS__)
-#else
-	EDrawDebugTrace::Type debugtype = EDrawDebugTrace::None;
-#define	DrawDebugSphere(...)
-
-#endif // UE_BUILD_DEBUG
-
 	if(!Cast<APlayerController>(owner->Controller)) return;
 	
 	FVector ViewPoint;
@@ -130,27 +110,41 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 	owner->Controller->GetPlayerViewPoint(ViewPoint, cameraRotation);
 	FCollisionQueryParams param(NAME_None, true, owner);
-
-	start = owner->GetMesh()->GetSocketLocation("pelvis");
-	if (m_Cover->IsPeeking()) {
-		start += owner->GetActorRightVector() * owner->GetSimpleCollisionRadius() * m_Cover->FaceRight() *0.75f;
-	}
-	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
-
 	
+	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
-	//ArmPoint = FMath::Lerp(ArmPoint, start, testval);
+	start.Z += owner->GetDefaultHalfHeight() * 0.575f;
+	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
+		start += owner->GetMesh()->GetSocketRotation("pelvis").Quaternion().GetRightVector()
+			* 21.0f * m_Cover->FaceRight();
+
+		//start = owner->GetMesh()->GetSocketLocation(Arm_R_Name);
+	}
+
 	end = ViewPoint + cameraRotation.Vector() * 15000.0f;
-	UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+	//end = start + (cameraRotation.Vector() * 15000.0);
+	UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		start,
 		end,
+		2.0f,
+		2.0f,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		result, false);
-	
-	DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
+
+	//UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+	//	start,
+	//	end,
+	//	UEngineTypes::ConvertToTraceType(ECC_Visibility),
+	//	false,
+	//	{ owner },
+	//	EDrawDebugTrace::None,
+	//	result, false);
+
+
+	//DrawDebugSphere(GetWorld(), result.Location, 10, 32, FColor::Blue);
 	if (result.bBlockingHit) {
 		float distance = (owner->GetActorLocation() - result.Location).Length();
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("aaa : %f"), distance), true, false, FColor::Blue, p_deltatime);
@@ -161,6 +155,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 			m_IsWeaponBlocking = true;
 			return;
 		}
+		m_WeaponHitLocation = result.Location;
 	}
 	m_IsWeaponBlocking = false;
 }
@@ -265,9 +260,9 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 {
 	if (HitImpactDataAsset)
 	{
-		UNiagaraSystem* hitFXNiagara;
+		UNiagaraSystem* hitFXNiagara = HitImpactDataAsset->MetalHitFXNiagara;
 
-		if (CheckActorTag(result.GetActor(), TEXT("Enemy")))
+		if (CheckActorTag(result.GetActor(), TEXT("Enemy")) || CheckActorTag(result.GetActor(), TEXT("Player")))
 		{
 			if (CheckActorTag(result.GetActor(), TEXT("Robot")))
 			{
@@ -279,7 +274,7 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 			}
 			else
 			{
-				hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
+				//hitFXNiagara = HitImpactDataAsset->RobotHitFXNiagara;
 			}
 		}
 		else
@@ -324,7 +319,8 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 			if (mesh)
 			{
 				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
-				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, EAttachLocation::KeepWorldPosition, true);
+				
+				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.3f, .3f, .3f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
 
 			}
 		}
@@ -368,4 +364,30 @@ bool UWeaponComponent::CheckActorTag(AActor* actor, FName tag)
 bool UWeaponComponent::IsWeaponBlocking()
 {
 	return m_IsWeaponBlocking;
+}
+
+bool UWeaponComponent::IsAiming()
+{
+	return m_Input->getInput()->IsAiming && !IsWeaponBlocking();
+}
+
+bool UWeaponComponent::IsFireing()
+{
+	return m_Input->getInput()->IsFire && !IsWeaponBlocking();
+}
+
+FVector UWeaponComponent::getWeaponHitLocation()
+{
+	return m_WeaponHitLocation;
+}
+
+bool UWeaponComponent::IsUsingWeapon()
+{
+	bool isPakuru = false;
+	
+	if (m_PakurComp && m_PakurComp->GetClass()) {
+		isPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
+	} 
+
+	return (IsAiming() || IsFireing()) && !isPakuru;
 }

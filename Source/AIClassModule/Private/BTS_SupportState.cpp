@@ -16,6 +16,7 @@ UBTS_SupportState::UBTS_SupportState()
 
 	NodeName = TEXT("SupportState");
 	Dis_start = false;
+	DT_On = false;
 }
 
 void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -27,83 +28,98 @@ void UBTS_SupportState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	UWorld* World = ControllingPawn->GetWorld();
 	if (nullptr == World) return;
+	if (!DT_On)
+	{
+		SetDataTable("Rifle_E");
+		DT_On = true;
+	}
+
 	if (!aic)
 	{
 		aic = Cast<AAI_Controller>(OwnerComp.GetAIOwner());
 	}
-	for (auto sup : aic->commander->List_Suppression)
+	if (aic)
 	{
-		if (sup.Value >= support_default)
+		for (auto sup : aic->commander->List_Suppression)
 		{
-			Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
-			Dis_start = false;
-			for (auto Loc : aic->commander->List_Location)
+			if (sup.Value >= support_default)
 			{
-				if (Loc.Key != *aic->commander->List_Location.FindKey(Sup_Vec))
+				Sup_Vec = *aic->commander->List_Location.Find(sup.Key);
+				Dis_start = false;
+				for (auto Loc : aic->commander->List_Location)
 				{
-					if (!Dis_start)
+					if (Loc.Key != *aic->commander->List_Location.FindKey(Sup_Vec))
 					{
-						Min_Dis = FVector::Distance(Sup_Vec, Loc.Value);
-						Min_Dis_Key = Loc.Key;
-						Dis_start = true;
-					}
-					else
-					{
-						Dis = FVector::Distance(Sup_Vec, Loc.Value);
-						if (Dis <= Min_Dis)
+						if (!Dis_start)
 						{
-							Min_Dis = Dis;
+							Min_Dis = FVector::Distance(Sup_Vec, Loc.Value);
 							Min_Dis_Key = Loc.Key;
+							Dis_start = true;
+						}
+						else
+						{
+							Dis = FVector::Distance(Sup_Vec, Loc.Value);
+							if (Dis <= Min_Dis)
+							{
+								Min_Dis = Dis;
+								Min_Dis_Key = Loc.Key;
+							}
 						}
 					}
+
 				}
+				aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
 
 			}
-			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-		}
-		else
-		{
-			for (auto com : aic->commander->List_Division)
+			else
 			{
-				aic = Cast<AAI_Controller>(Cast<AAICharacter>(com.Key)->GetController());
-				if (aic)
+				for (auto com : aic->commander->List_Division)
 				{
-					if (aic->GetBlackboardComponent())
+					aic = Cast<AAI_Controller>(Cast<AAICharacter>(com.Key)->GetController());
+					if (aic)
 					{
-						if (aic->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::Move)
+						if (aic->GetBlackboardComponent())
 						{
-							Com_Vec = *aic->commander->List_Location.Find(com.Value);
-							Dis_start = false;
-							for (auto Loc : aic->commander->List_Location)
+							if (aic->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::Move)
 							{
-								if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
+								Com_Vec = *aic->commander->List_Location.Find(com.Value);
+								Dis_start = false;
+								for (auto Loc : aic->commander->List_Location)
 								{
-									if (!Dis_start)
+									if (Loc.Key != *aic->commander->List_Location.FindKey(Com_Vec))
 									{
-										Min_Dis = FVector::Distance(Com_Vec, Loc.Value);
-										Min_Dis_Key = Loc.Key;
-										Dis_start = true;
-									}
-									else
-									{
-										Dis = FVector::Distance(Com_Vec, Loc.Value);
-										if (Dis <= Min_Dis)
+										if (!Dis_start)
 										{
-											Min_Dis = Dis;
+											Min_Dis = FVector::Distance(Com_Vec, Loc.Value);
 											Min_Dis_Key = Loc.Key;
+											Dis_start = true;
+										}
+										else
+										{
+											Dis = FVector::Distance(Com_Vec, Loc.Value);
+											if (Dis <= Min_Dis)
+											{
+												Min_Dis = Dis;
+												Min_Dis_Key = Loc.Key;
+											}
 										}
 									}
 								}
 							}
 						}
 					}
+
+				}
+
+				if (aic->commander->GetBlackboardComponent())
+				{
+					aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
 				}
 				
 			}
-			aic->commander->GetBlackboardComponent()->SetValueAsBool("AI_Support", true);
-
 		}
 	}
+	
 }
 
 void UBTS_SupportState::SetDataTable(FName EnemyName)

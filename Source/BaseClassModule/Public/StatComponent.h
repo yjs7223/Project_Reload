@@ -27,7 +27,7 @@ public:
 	DECLARE_MULTICAST_DELEGATE_TwoParams(FKnockbackDelegate, FVector, bool);
 public:
 	FKnockbackDelegate Knockback;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintCallable, BlueprintReadWrite)
 	FDieDelegate diePlay;
 public:
 	// Sets default values for this component's properties

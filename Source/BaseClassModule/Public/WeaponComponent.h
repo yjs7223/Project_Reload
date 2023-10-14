@@ -12,10 +12,10 @@ UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
 	None = 0	UMETA(Hidden),
-	TE_Pistol	UMETA(DisplayName = "Pistol"),
-	TE_Rifle	UMETA(DisplayName = "Rifle"),
-	TE_Shotgun	UMETA(DisplayName = "Shotgun"),
-	TE_Heavy	UMETA(DisplayName = "Heavy"),
+	Pistol	UMETA(DisplayName = "Pistol"),
+	Rifle	UMETA(DisplayName = "Rifle"),
+	Shotgun	UMETA(DisplayName = "Shotgun"),
+	Heavy	UMETA(DisplayName = "Heavy"),
 	MAX			UMETA(Hidden)
 };
 
@@ -74,41 +74,35 @@ public:
 
 	static bool CheckActorTag(AActor* actor, FName tag);
 	bool IsWeaponBlocking();
-
+	UFUNCTION(BlueprintCallable)
+	bool IsAiming();
+	UFUNCTION(BlueprintCallable)
+	bool IsFireing();
+	UFUNCTION(BlueprintCallable)
+	FVector getWeaponHitLocation();
+	UFUNCTION(BlueprintCallable)
+	bool IsUsingWeapon();
 public:
-	//����ĳ����
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	class ABaseCharacter* owner;
-
-	//�ܿ�ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	int holdAmmo;
-
-	//����ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	int curAmmo;
-
-	//�ִ� ��ź��
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	int maxAmmo;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bFire;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bReload;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bHit;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bAiming;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Weapon)
 	bool m_CanShooting;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	FVector2D damage;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float m_firerate;
 
@@ -152,11 +146,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Editor)
 	FName Arm_L_Name;
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Pakur"))
+	TObjectPtr<class UActorComponent> m_PakurComp;
+
 	bool m_IsWeaponBlocking;
 	float m_WeaponDistance;
 	TObjectPtr<class UCoverComponent> m_Cover;
+	TObjectPtr<class UBaseInputComponent> m_Input;
+	FVector m_WeaponHitLocation;
 
-	FVector ArmPoint;
-	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = true))
-	float testval;
  };

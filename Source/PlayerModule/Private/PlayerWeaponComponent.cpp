@@ -71,8 +71,8 @@ void UPlayerWeaponComponent::BeginDestroy()
 	OnChangedCrossHairHitDelegate.Unbind();
 	OnChangedCrossHairDieDelegate.Unbind();
 	OnVisibleCrossHairUIDelegate.Unbind();
-	OnVisibleAmmoUIDelegate.Unbind();
-	OnChangedAmmoUIDelegate.Unbind();
+	OnVisibleAmmoUIDelegate.Clear();
+	OnChangedAmmoUIDelegate.Clear();
 	OnPlayReloadUIDelegate.Unbind();
 	OnSpawnDamageUIDelegate.Unbind();
 
@@ -107,17 +107,22 @@ void UPlayerWeaponComponent::InitData()
 		FPlayerWeaponStruct* dataTable;
 		switch (weapontype)
 		{
-		case EWeaponType::TE_Pistol:
+		case EWeaponType::Pistol:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Pistol"), FString(""));
 			maxAmmo = dataTable->MaxAmmo_num;
 			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_PistolAsset.DA_PistolAsset'"));
 			break;
-		case EWeaponType::TE_Rifle:
+		case EWeaponType::Rifle:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Rifle"), FString(""));
-			maxAmmo = 30;
+			maxAmmo = dataTable->MaxAmmo_num;
 			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_RifleAsset.DA_RifleAsset'"));
 			break;
-		case EWeaponType::TE_Shotgun:
+		case EWeaponType::Heavy:
+			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Heavy"), FString(""));
+			maxAmmo = dataTable->MaxAmmo_num;
+			PlayerWeaponDataAsset = LoadObject<UPlayerWeaponDataAsset>(NULL, TEXT("PlayerWeaponDataAsset'/Game/yjs/DA_HeavyAsset.DA_HeavyAsset'"));
+			break;
+		case EWeaponType::Shotgun:
 			dataTable = PlayerWeaponDataTable->FindRow<FPlayerWeaponStruct>(FName("Shotgun"), FString(""));
 			break;
 		default:
@@ -130,6 +135,14 @@ void UPlayerWeaponComponent::InitData()
 		{
 			//WeaponMesh.set
 			WeaponMeshSetting(PlayerWeaponDataAsset);
+			for (auto& item : PlayerWeaponDataAsset->Attachments)
+			{
+				UStaticMeshComponent* meshcomp = NewObject<UStaticMeshComponent>(owner);
+
+				meshcomp->SetupAttachment(WeaponMesh, item.Key);
+				meshcomp->SetStaticMesh(item.Value);
+				meshcomp->RegisterComponentWithWorld(owner->GetWorld());
+			}
 			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
 			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
 			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
@@ -165,7 +178,12 @@ void UPlayerWeaponComponent::InitData()
 		reloadvalue = 0;
 		ammoinfinite = false;
 		m_WeaponDistance = dataTable->WeaponDistance;
+
+
+		//OnChangedAmmoUIDelegate.ExecuteIfBound();
 	}
+
+
 	// ...
 }
 
@@ -224,20 +242,19 @@ void UPlayerWeaponComponent::Fire()
 
 		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		FVector dis = start - m_result.Location;
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(dis.Length()));
 		end = m_rot.Vector() * 1000000.0f;
 
 		//WeaponHit
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
-		if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+		/*if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
 			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
 
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
 			end = m_rot.Vector() * 99999;
-		}
+
+		}*/
 	}
 	else
 	{
@@ -316,7 +333,7 @@ void UPlayerWeaponComponent::Fire()
 
 
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
-	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.Broadcast();
 	StartRecoil();
 	UAnimInstance* animinstatce = WeaponMesh->GetAnimInstance();
 	if (animinstatce->GetClass()->ImplementsInterface(UEmptyShellSpawnable::StaticClass())) {
@@ -338,11 +355,11 @@ void UPlayerWeaponComponent::StartAiming()
 	bAiming = true;
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
-	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3, true, 0.0f);
+	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3f, true, 0.0f);
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
-	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.Broadcast();
 
 }
 
@@ -354,7 +371,7 @@ void UPlayerWeaponComponent::StopAiming()
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
-	OnVisibleAmmoUIDelegate.ExecuteIfBound();
+	OnVisibleAmmoUIDelegate.Broadcast();
 }
 
 void UPlayerWeaponComponent::StartFire()
@@ -372,7 +389,8 @@ void UPlayerWeaponComponent::StartFire()
 
 
 	startRot = owner->GetController()->GetControlRotation();
-	if (weapontype == EWeaponType::TE_Rifle)
+
+	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 	{
 		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
 	}
@@ -382,7 +400,7 @@ void UPlayerWeaponComponent::StopFire()
 {
 	if (bFire)
 	{
-		if (weapontype == EWeaponType::TE_Rifle)
+		if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
@@ -432,7 +450,7 @@ void UPlayerWeaponComponent::FinshReload()
 {
 	curAmmo = maxAmmo;
 	OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
-	OnChangedAmmoUIDelegate.ExecuteIfBound();
+	OnChangedAmmoUIDelegate.Broadcast();
 	StopReload();
 }
 
@@ -445,9 +463,8 @@ void UPlayerWeaponComponent::WeaponMeshSetting(UPlayerWeaponDataAsset* Weapondat
 {
 	if (WeapondataAsset)
 	{
-		if (!WeapondataAsset->WeaponSkeletalMesh || !WeapondataAsset->WeaponAnim) {
-			ensure(0 && "DA에 총 스켈레탈메쉬, 애니메이션 미할당");
-		}
+		ensureMsgf(WeapondataAsset->WeaponSkeletalMesh && WeapondataAsset->WeaponAnim, 
+			TEXT("DA에 총 스켈레탈메쉬, 애니메이션 미할당"));
 
 		WeaponMesh->SetSkeletalMesh(WeapondataAsset->WeaponSkeletalMesh);
 		WeaponMesh->SetAnimInstanceClass(WeapondataAsset->WeaponAnim);
@@ -461,10 +478,10 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 	{
 		switch (weapontype)
 		{
-		case EWeaponType::TE_Pistol:
+		case EWeaponType::Pistol:
 			reloadCount += Deltatime * 6;
 			break;
-		case EWeaponType::TE_Rifle:
+		case EWeaponType::Rifle:
 			reloadCount += Deltatime * 20;
 			break;
 
@@ -482,18 +499,18 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 				UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagInSound, owner->GetActorLocation());
 			}
 			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
-			OnChangedAmmoUIDelegate.ExecuteIfBound();
+			OnChangedAmmoUIDelegate.Broadcast();
 		}
 
 		switch (weapontype)
 		{
-		case EWeaponType::TE_Pistol:
+		case EWeaponType::Pistol:
 			if (curAmmo == 10)
 			{
 				StopReload();
 			}
 			break;
-		case EWeaponType::TE_Rifle:
+		case EWeaponType::Rifle:
 			if (holdAmmo == 0)
 			{
 				if (curAmmo == reloadvalue)
@@ -507,7 +524,7 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 				StopReload();
 			}
 			break;
-		case EWeaponType::TE_Shotgun:
+		case EWeaponType::Shotgun:
 			break;
 		default:
 			if (holdAmmo == 0)
@@ -727,26 +744,18 @@ void UPlayerWeaponComponent::Threaten()
 	end = start + (cameraRotation.Vector() * 99999);
 	FCollisionQueryParams param(NAME_None, true, owner);
 	FHitResult result;
-	//GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(50.0f))
-	//DrawDebugSphere(GetWorld(), start, 50.0f, 50.0f, FColor::Red, true);
+
 	if (GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_GameTraceChannel3, FCollisionShape::MakeSphere(50.0f)))
 	{
-		//DrawDebugSphere(GetWorld(), result.Location, 50.0f, 50.0f, FColor::Red, true);
-		if (result.GetActor())
-		{
-			if (result.GetActor()->Tags.Num() > 0)
-			{
-				if (result.GetActor()->ActorHasTag("Enemy"))
-				{
-					UStatComponent* stat = result.GetActor()->FindComponentByClass<UStatComponent>();
-					if (stat)
-					{
-						stat->bThreat = true;
-					}
-				}
+		AActor* actor = result.GetActor();
+		if (actor && actor->Tags.Num() > 0 && actor->ActorHasTag("Enemy")) {
+			if (UStatComponent* stat = actor->FindComponentByClass<UStatComponent>()) {
+				stat->bThreat = true;
 			}
 		}
 	}
+
+
 }
 
 

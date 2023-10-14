@@ -16,7 +16,7 @@ public class VehicleModule : ModuleRules
             "AIModule", 
             "InputCore", 
             "UMG",
-            "UMGEditor",
+            //"UMGEditor",
 
         });
 

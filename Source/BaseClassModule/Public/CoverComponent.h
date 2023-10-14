@@ -24,6 +24,7 @@ public:
 	DECLARE_DELEGATE_TwoParams(FOnVisibleCorneringWidget, bool /*bvisible*/, bool /*bright*/);
 	DECLARE_DELEGATE_OneParam(FOnSetPercentCorneringWidget, float /*percent*/);
 	DECLARE_DELEGATE_OneParam(FOnVisibleCoverWidget, FVector);
+	DECLARE_DELEGATE_OneParam(FOnFaceRightCoverWidget, bool);
 
 public:
 	/** 엄폐시작 몽타주재생 델리게이트입니다 */
@@ -42,6 +43,8 @@ public:
 	FOnSetPercentCorneringWidget OnSetPercentCorneringWidget;
 
 	FOnVisibleCoverWidget OnVisibleCoverWidget;
+
+	FOnFaceRightCoverWidget OnFaceRightCoverWidget;
 public:
 	UCoverComponent();
 
@@ -99,6 +102,7 @@ public:
 	/** 엄폐사격상태를 반환합니다 */
 	ECoverShootingState getCoverSootingState();
 	/** 피킹상태를 반환합니다 */
+	UFUNCTION(BlueprintCallable)
 	EPeekingState getPeekingState();
 	/** 엄폐가능 위치를 반환합니다 */
 	FVector getCanCoverPoint();
@@ -124,12 +128,15 @@ public:
 	/** 엄폐시 수그려야하는지 반환합니다 */
 	bool isMustCrouch();
 protected:
+	void SendPlayerUIData(float DeltaTime);
 	/** 코너링을 체크합니다 */
 	void CornenringCheck(float DeltaTime);
 	/** 엄폐경로를 계산합니다 */
 	TArray<FNavPathPoint> CalculCoverPath();
 	/** 엄폐경로를 UI에 세팅합니다 */
 	void SettingCoverPath(float DeltaTime);
+	/** 엄폐경로를 체크합니다 */
+	void CheckCoverPath(float DeltaTime);
 	/** 엄폐를 시작합니다 */
 	bool StartCover();
 	/** 앞에 엄폐벽이있는지 체크합니다 */
@@ -153,13 +160,14 @@ protected:
 
 private:
 
-	class UBaseCharacterMovementComponent* m_Movement;
-	class UBaseInputComponent* m_Input;
-	struct FInputData* m_Inputdata;
-	class UWeaponComponent* m_Weapon;
-	class UCapsuleComponent* capsule;
-	class AActor* m_CoverWall;
-	class UPathFollowingComponent* m_PathFollowingComp;
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
+	TObjectPtr<class UBaseInputComponent> m_Input;
+	TObjectPtr<struct FInputData> m_Inputdata;
+	TObjectPtr<class UWeaponComponent> m_Weapon;
+	TObjectPtr<class UCapsuleComponent> capsule;
+	TObjectPtr<class AActor> m_CoverWall;
+	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
+	TObjectPtr<class UActorComponent> m_PakurComp;
 	enum class ECoverShootingState mCoverShootingState;
 	UPROPERTY(VisibleInstanceOnly, meta = (AllowPrivateAccess = true))
 	EPeekingState m_PeekingState;
@@ -176,6 +184,8 @@ private:
 	bool m_IsNextCover;
 	float m_FaceRight;
 	float m_CurrentCorneringWaitTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true, DisplayName = "CorneringWaitTime"))
 	float m_CorneringWaitTime;
 	FVector m_Turnlookpoint;
 	FVector m_CanCoverPoint;
@@ -183,5 +193,5 @@ private:
 	class ACharacter* owner;
 
 	bool m_IsWillPosSetting;
-
+	TArray<FNavPathPoint> m_CoverPath;
 };
