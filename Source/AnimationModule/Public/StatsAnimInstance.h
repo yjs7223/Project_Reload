@@ -50,11 +50,15 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void UWeaponAnimInstance();
+
+	void KnockBackEnd(UAnimMontage* Montage, bool bInterrupted);
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	ACharacter* owner;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	class UStatComponent* mStats;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "PakurComp"))
+	TObjectPtr<class UActorComponent> m_PakurComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	bool mIsDie;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)

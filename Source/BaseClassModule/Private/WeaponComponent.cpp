@@ -113,7 +113,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
-	start.Z += owner->GetDefaultHalfHeight() * 0.5f;
+	start.Z += owner->GetDefaultHalfHeight() * 0.55f;
 	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
 		start += owner->GetMesh()->GetSocketRotation("pelvis").Quaternion().GetRightVector()
 			* 21.0f;
@@ -127,11 +127,11 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		start,
 		end,
 		2.0f,
-		6.0f,
+		5.0f,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		result, false);
 
 	//UKismetSystemLibrary::LineTraceSingle(GetWorld(),

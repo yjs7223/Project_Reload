@@ -20,6 +20,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "CharacterSoundDataAsset.h"
+#include "Kismet/KismetMaterialLibrary.h"
 
 //#include "Kismet/GameplayStatics.h"
 //#include "Engine.h"
@@ -81,7 +82,11 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	for (auto& item : GetMesh()->GetMaterials())
+	{
 
+
+	}
 	
 	InitWidget(nullptr, 0);
 	GEngine->GameViewport->Viewport->ViewportResizedEvent.AddUObject(this, &APlayerCharacter::InitWidget);

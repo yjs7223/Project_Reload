@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "WeaponComponent.h"
 #include "StatComponent.h"
+#include "Pakurable.h"
 
 
 bool FStatAnimationTable::IsVaild()
@@ -40,8 +41,23 @@ void UStatsAnimInstance::NativeBeginPlay()
 		else {
 			currmontage = bDie ? m_CurrentAnimation.KnockBack_Back_Die : m_CurrentAnimation.KnockBack_Back;
 		}
+		FOnMontageEnded temp = FOnMontageEnded::CreateUObject(this, &UStatsAnimInstance::KnockBackEnd);
 		owner->GetMesh()->GetAnimInstance()->Montage_Play(currmontage);
+		if (m_PakurComp) {
+			owner->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(temp, currmontage);
+			if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
+				IPakurable::Execute_SetCanRolling(m_PakurComp, false);
+			}
+		}
 		});
+
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() == 1) {
+		m_PakurComp = pakurArr[0];
+	}
+
+	owner->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UStatsAnimInstance::KnockBackEnd);
+
 }
 
 void UStatsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -68,5 +84,14 @@ void UStatsAnimInstance::UWeaponAnimInstance()
 	FStatAnimationTable* findanimation = m_AnimationTable->FindRow<FStatAnimationTable>(FName((WeaponTypeEnum->GetDisplayNameTextByValue((int)mWeapon->weapontype).ToString())), TEXT(""));
 	if (findanimation && findanimation->IsVaild()) {
 		m_CurrentAnimation = *findanimation;
+	}
+}
+
+void UStatsAnimInstance::KnockBackEnd(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage->IsValidSlot("AdditiveHitReact")) {
+		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
+			IPakurable::Execute_SetCanRolling(m_PakurComp, true);
+		}
 	}
 }

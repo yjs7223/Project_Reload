@@ -209,7 +209,10 @@ bool UCoverComponent::StartAICover()
 	SetIsFaceRight(true);
 
 	PlayMontageStartCover.Broadcast();
+
+	owner->SetActorEnableCollision(false);
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
+	owner->SetActorEnableCollision(true);
 	RotateSet(0.0f);
 	return m_IsCover;
 }
@@ -720,9 +723,12 @@ bool UCoverComponent::StartCover()
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
+	
 	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
 
+	owner->SetActorEnableCollision(false);
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
+	owner->SetActorEnableCollision(true);
 
 	PlayMontageStartCover.Broadcast();
 	
