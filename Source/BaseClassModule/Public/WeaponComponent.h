@@ -153,6 +153,7 @@ protected:
 	bool m_IsWeaponBlocking;
 	float m_WeaponDistance;
 	TObjectPtr<class UCoverComponent> m_Cover;
+	TObjectPtr<class UBaseInputComponent> m_Input;
 	FVector m_WeaponHitLocation;
 
  };

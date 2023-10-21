@@ -8,6 +8,7 @@
 #include "AICharacterMoveComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include "AIWeaponComponent.h"
+#include "AIStatComponent.h"
 
 void UAIInputComponent::BeginPlay()
 {
@@ -31,6 +32,13 @@ void UAIInputComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	AI_Running = movement->isRuning();
 	AI_Crouch = owner->bIsCrouched;
 	AI_Cover = covercomp->IsCover();
+
+
+
+
+	if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::SNIPER) {
+		m_inputData.IsAiming = true;
+	}
 }
 
 void UAIInputComponent::AIMoveForward(float Value)
