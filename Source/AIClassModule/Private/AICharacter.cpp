@@ -142,9 +142,9 @@ void AAICharacter::BeginPlay()
 void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateWidget();
-
-	;
+	UpdateWidget(); 
+	AIInputComponent->PrimaryComponentTick.bCanEverTick = true;
+	AIInputComponent->SetComponentTickEnabled(true);
 }
 
 
@@ -277,9 +277,12 @@ void AAICharacter::Dead()
 	AIStat->SetComponentTickEnabled(false);
 	AIInputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
-	if (commander->Now_en->spawn != nullptr)
+	if (commander != nullptr)
 	{
-		commander->Now_en->spawn->count_Kill++;
+		if (commander->Now_en->spawn != nullptr)
+		{
+			commander->Now_en->spawn->count_Kill++;
+		}
 	}
 	
 }

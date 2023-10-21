@@ -57,6 +57,10 @@ void UAttackedSideBarWidget::SetAttackedAngle()
 				}
 			}
 		}
+		else
+		{
+			Attacked_Overlay->SetRenderOpacity(0.0f);
+		}
 	}
 }
 
