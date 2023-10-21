@@ -297,7 +297,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 	if (!m_IsCover) return;
 
-	if (m_Inputdata->IsAiming) {
+	if (m_Inputdata->IsAiming || m_Inputdata->IsFire) {
 		peekingCheck(aimOffset);
 		if (m_PeekingState != EPeekingState::None) {
 
@@ -321,7 +321,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	else {
 		aimOffset.Yaw += 180;
 		aimOffset.Yaw *= -1.0f;
-		if (m_Weapon->m_CanShooting && !m_Inputdata->IsReload) {
+		if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
 			SetIsFaceRight(false);
 		}
 	}
@@ -709,9 +709,7 @@ bool UCoverComponent::StartCover()
 		}
 
 	}
-	if (result.Normal.Equals(FVector::ZeroVector, 0.1)) {
-		ensure(0);
-	}
+
 	if (OutActors.Num() == 0) return false;
 	if (result.GetActor() == nullptr) return false;
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
@@ -1005,10 +1003,10 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 		break;
 	case EPeekingState::HighLeft:
 		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
-		//if (isMustCrouch() && aimOffset.Yaw < -25.0f) {
-		//	m_PeekingState = EPeekingState::LowLeft;
-		//	owner->Crouch();
-		//}
+		if (isMustCrouch() && aimOffset.Yaw < -5.0f) {
+			m_PeekingState = EPeekingState::LowLeft;
+			owner->Crouch();
+		}
 		break;
 	case EPeekingState::LowRight:
 		if (m_Weapon->IsWeaponBlocking()) {

@@ -87,6 +87,7 @@ void UPlayerInputComponent::InputMove()
 void UPlayerInputComponent::Runing()
 {
 	if (m_Covercomponent->IsCover()) return;
+	if (m_inputData.IsReload) return;
 
 	if (m_Movement->isRuning()) {
 		m_Movement->SetMovementMode(MOVE_Walking);
