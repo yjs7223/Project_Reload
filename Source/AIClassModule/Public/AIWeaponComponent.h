@@ -126,7 +126,7 @@ public :
 		class UParticleSystem* BulletTracerParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class USoundCue* FireSound;
+		class USoundCue* AI_FireSound;
 	//������ �븮�� �Ҹ�
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
 		class USoundCue* ReloadCliplockedSound;
@@ -147,7 +147,8 @@ public :
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class ACharacter* player; //cast
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = sound)
+		class USoundCue* FireSound;
 	AActor* blackboardTarget;
 
 	FTimerHandle timer;
@@ -184,6 +185,8 @@ public:
 	// AI Type Setting
 	UFUNCTION(BlueprintCallable, Category = "Attack")
 		void InitData() override;
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+		void PlayRandomShotSound() override;
 
 	// AI Sniper Check
 	UFUNCTION(BlueprintCallable, Category = "Attack")

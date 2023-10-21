@@ -49,11 +49,13 @@ void UCoverComponent::BeginPlay()
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
-	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
-	if (ensure(pakurArr.Num() == 1)) {
-		m_PakurComp = pakurArr[0];
+	if (UWeaponComponent::CheckActorTag(owner, TEXT("Player")))
+	{
+		TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+		if (ensure(pakurArr.Num() == 1)) {
+			m_PakurComp = pakurArr[0];
+		}
 	}
-
 	if (m_PathFollowingComp == nullptr)
 	{
 		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
@@ -277,6 +279,7 @@ void UCoverComponent::SettingCoverPath(float DeltaTime)
 
 void UCoverComponent::CheckCoverPath(float DeltaTime)
 {
+	return;
 	FVector lastPath = m_CoverPath.Num() > 0 ? m_CoverPath.Last() : FVector::ZeroVector;
 	FVector tempPoint = m_CanCoverPoint;
 	tempPoint.Z = 0.0;
@@ -1002,10 +1005,10 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 		break;
 	case EPeekingState::HighLeft:
 		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
-		if (isMustCrouch() && aimOffset.Yaw < -5.0f) {
-			m_PeekingState = EPeekingState::LowLeft;
-			owner->Crouch();
-		}
+		//if (isMustCrouch() && aimOffset.Yaw < -25.0f) {
+		//	m_PeekingState = EPeekingState::LowLeft;
+		//	owner->Crouch();
+		//}
 		break;
 	case EPeekingState::LowRight:
 		if (m_Weapon->IsWeaponBlocking()) {
