@@ -23,12 +23,12 @@ public:
 	float time;
 	float InvblendIn;
 	float InvblendOut;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "BlendIn"))
 	float blendIn;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "BlendOut"))
 	float blendOut;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EEasingFunc::Type> posEaseType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "EaseType"))
+	TEnumAsByte<EEasingFunc::Type> m_EaseType;
 
 
 };
@@ -162,7 +162,7 @@ UCLASS()
 class UCameraControllPakageDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-
+		
 public:
 	void foreach(TFunction<void(FString, UCameraControllPakage*)> fn);
 
@@ -175,7 +175,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data", meta = (DisplayName = "Crouch"))
 	FCameraControllDataElement m_Crouch;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DataBackUp", meta = (DisplayName = "Crouch"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DataBackUp")
 	FVector m_DefaultPos;
 	FRotator m_DefaultRot;
 	float m_DefaultArmLength;
