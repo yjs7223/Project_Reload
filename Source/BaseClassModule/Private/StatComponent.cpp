@@ -57,7 +57,7 @@ void UStatComponent::RecoverHP(float p_HP)
 	{
 		curHP = maxHP;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(curHP));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(curHP));
 	
 }
 

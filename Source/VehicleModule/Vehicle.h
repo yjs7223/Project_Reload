@@ -16,7 +16,6 @@ class VEHICLEMODULE_API AVehicle : public AWheeledVehiclePawn
 public:
 	AVehicle(const FObjectInitializer& ObjectInitializer);
 
-	bool deadCar;
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,7 +25,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void FindPath(class USplineComponent spline);
 public:
-	class UChaosVehicleMovementComponent* vehicleMovementComp;
+
 };
