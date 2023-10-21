@@ -539,7 +539,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 			GetWorld()->LineTraceSingleByChannel(result_Result, start, end, traceChanel, params);
 			if (PeekingTraceDebug) DrawDebugLine(GetWorld(), start, end, FColor::Emerald, false, DeltaTime);
 			if (PeekingTraceDebug) DrawDebugSphere(GetWorld(), result_Result.Location, 10.0f, 32, FColor::Red);
-			if (/*result_Result.ImpactNormal.Dot(impactNormal) < 0.99999 ||*/ result_Result.GetActor() != item.GetActor()) continue;
+			//if (/*result_Result.ImpactNormal.Dot(impactNormal) < 0.99999 ||*/ result_Result.GetActor() != item.GetActor()) continue;
 		}
 
 		temptargetVector = result_Result.Location +

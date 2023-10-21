@@ -107,7 +107,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		defaultPos.Y,
 		-defaultPos.Y, 
 		m_CameraControllStructData->m_FaceRight.time,
-		m_CameraControllStructData->m_FaceRight.posEaseType);
+		m_CameraControllStructData->m_FaceRight.m_EaseType);
 
 	m_CameraControllStructData->m_Crouch.Easing(m_PlayerCharacter->bIsCrouched ? -DeltaTime : DeltaTime);
 	
@@ -125,7 +125,7 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		m_PlayerCharacter->GetDefaultHalfHeight(),
 		m_PlayerCharacter->GetDefaultHalfHeight() * 2.0f,
 		m_CameraControllStructData->m_Crouch.time,
-		m_CameraControllStructData->m_Crouch.posEaseType);
+		m_CameraControllStructData->m_Crouch.m_EaseType);
 }
 
 void UCameraControllPakage::NativeInitalize(ACharacter* _m_PlayerCharacter)
@@ -174,19 +174,19 @@ void FCameraControllDataElement::Easing(float DeltaTime)
 void FCameraControllDataElementReal::Easing(float DeltaTime)
 {
 	Super::Easing(DeltaTime);
-	CurrentValue = UKismetMathLibrary::Ease(0, TargetValue, time, posEaseType);
+	CurrentValue = UKismetMathLibrary::Ease(0, TargetValue, time, m_EaseType);
 }
 
 void FCameraControllDataElementVector::Easing(float DeltaTime)
 {
 	Super::Easing(DeltaTime);
-	CurrentValue = UKismetMathLibrary::VEase(FVector::ZeroVector, TargetValue, time, posEaseType);
+	CurrentValue = UKismetMathLibrary::VEase(FVector::ZeroVector, TargetValue, time, m_EaseType);
 }
 
 void FCameraControllDataElementRotater::Easing(float DeltaTime)
 {
 	Super::Easing(DeltaTime);
-	CurrentValue = UKismetMathLibrary::REase(FRotator::ZeroRotator, TargetValue, time, true, posEaseType);
+	CurrentValue = UKismetMathLibrary::REase(FRotator::ZeroRotator, TargetValue, time, true, m_EaseType);
 }
 
 FCameraControllData::FCameraControllData()
