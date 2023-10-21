@@ -13,20 +13,10 @@ AVehicle::AVehicle(const FObjectInitializer& ObjectInitializer)
 void AVehicle::BeginPlay()
 {
 	Super::BeginPlay();
-	vehicleMovementComp = FindComponentByClass<UChaosVehicleMovementComponent>();
-	vehicleMovementComp->SetThrottleInput(1.0f);
 }
 
 void AVehicle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (deadCar)
-	{
-
-	}
-}
-
-void AVehicle::FindPath(USplineComponent spline)
-{
 }
