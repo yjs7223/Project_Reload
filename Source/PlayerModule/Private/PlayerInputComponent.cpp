@@ -111,6 +111,9 @@ void UPlayerInputComponent::Crouching()
 
 void UPlayerInputComponent::StartFire()
 {
+	if (m_Movement->isRuning()) {
+		m_Movement->SetMovementMode(MOVE_Walking);
+	}
 	OnCombatWidgetVisible.Broadcast(false);
 	if (!m_inputData.IsReload)
 	{

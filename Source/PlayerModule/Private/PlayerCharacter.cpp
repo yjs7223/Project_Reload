@@ -82,11 +82,6 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	for (auto& item : GetMesh()->GetMaterials())
-	{
-
-
-	}
 	
 	InitWidget(nullptr, 0);
 	GEngine->GameViewport->Viewport->ViewportResizedEvent.AddUObject(this, &APlayerCharacter::InitWidget);
@@ -98,7 +93,26 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	auto temp = [this](UMeshComponent* mesh) {
+		for (int32 i = 0; i < mesh->GetNumMaterials(); ++i)
+		{
+			UMaterialInterface* MaterialInterface = mesh->GetMaterial(i);
+			if (!MaterialInterface) continue;
 
+			UMaterialInstanceDynamic* DynamicMaterial = Cast<UMaterialInstanceDynamic>(MaterialInterface);
+			if (!DynamicMaterial) {
+				DynamicMaterial = UMaterialInstanceDynamic::Create(MaterialInterface, this);
+				mesh->SetMaterial(i, DynamicMaterial);
+			}
+
+			if (DynamicMaterial) {
+				DynamicMaterial->SetScalarParameterValue("OpacityMaskValue", 0.0f);
+			}
+		}
+
+		};
+	//temp(GetMesh());
+	//temp(weapon->WeaponMesh);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const

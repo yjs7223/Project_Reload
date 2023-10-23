@@ -49,9 +49,11 @@ public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void UWeaponAnimInstance();
+	void AnimationSetting();
 
 	void KnockBackEnd(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+	void PlayDIeMontage();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	ACharacter* owner;
@@ -76,6 +78,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	float m_HitReactionScale;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* DieMontage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UDataTable* m_AnimationTable;
 

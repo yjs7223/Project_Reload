@@ -895,7 +895,8 @@ void UCoverComponent::StartPeeking()
 	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(controller)) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
-	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
+	FVector upVector = owner->GetActorUpVector() * owner->GetDefaultHalfHeight() * 
+		(owner->bIsCrouched ? 1.0f : 0.5f);
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
 	FVector temppos = owner->GetActorLocation();
@@ -913,7 +914,7 @@ void UCoverComponent::StartPeeking()
 		if (result.GetActor()) return;
 
 		start = end;
-		end = start + -upVector * 1.05f;
+		end = start + -upVector * 2.0f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
@@ -952,7 +953,7 @@ void UCoverComponent::StartPeeking()
 		if (result.GetActor()) return;
 
 		start = end;
-		end = start + -upVector * 1.05f;
+		end = start + -upVector * 2.0f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;

@@ -73,6 +73,7 @@ public:
 	float CalcDamage(FHitResult result, FVector2D p_damage);
 
 	static bool CheckActorTag(AActor* actor, FName tag);
+	UFUNCTION(BlueprintCallable)
 	bool IsWeaponBlocking();
 	UFUNCTION(BlueprintCallable)
 	FVector getWeaponHitLocation();
