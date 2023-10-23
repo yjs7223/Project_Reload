@@ -85,7 +85,9 @@ void UAIStatComponent::IndirectAttacked(float p_Value)
 
 void UAIStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
-	bAttacked = true;
+	if (type != Enemy_Name::SNIPER) {
+		bAttacked = true;
+	}
 	DI_SupRange = 1 / sup_MaxRange;
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("itkikik"));
@@ -213,7 +215,7 @@ void UAIStatComponent::SuppresionPoint()
 			PlayerAtt_ai = false;
 		}
 		sup_total += (sup_Input*0.5f) * sup_middlePoint;
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(AI_PlayerDis));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::SanitizeFloat(AI_PlayerDis));
 		if (sup_total >= sup_MaxPoint)
 		{
 			sup_total = sup_MaxPoint;

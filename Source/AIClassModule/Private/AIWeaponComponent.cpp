@@ -23,6 +23,7 @@
 #include "AIWeaponDataAsset.h"
 #include "Engine/EngineTypes.h"
 #include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
 #include "Components/SpotLightComponent.h"
@@ -42,7 +43,6 @@ void UAIWeaponComponent::BeginPlay()
 
 	use_Shot_State = true;
 	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
-
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
@@ -124,6 +124,7 @@ void UAIWeaponComponent::Fire()
 	// 사격 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, traceParams))
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
 			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
@@ -137,6 +138,8 @@ void UAIWeaponComponent::Fire()
 		SpawnImpactEffect(m_result);
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 	}
+	// 사운드 재생
+	PlayRandomShotSound();
 	Super::Fire();
 	UAnimInstance* animinstatce = WeaponMesh->GetAnimInstance();
 	if (animinstatce && animinstatce->GetClass()->ImplementsInterface(UEmptyShellSpawnable::StaticClass())) {
@@ -168,8 +171,7 @@ void UAIWeaponComponent::Fire()
 	// 총구 불꽃 생성
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFireParticle, WeaponMesh, FName("MuzzleFlashSocket"));
 
-	// 사운드 재생
-	PlayRandomShotSound();
+	
 
 }
 
@@ -277,6 +279,23 @@ void UAIWeaponComponent::InitData()
 
 		Decal = AIWeaponDataAsset->BulletHole_Decals[0];
 	}
+}
+
+void UAIWeaponComponent::PlayRandomShotSound()
+{
+	float pitch = FMath::RandRange(0.9f, 1.2f);
+	if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::HEAVY || owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
+	{
+		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/assault_rifle-001_Cue.assault_rifle-001_Cue'"));
+		UGameplayStatics::PlaySoundAtLocation(this, AI_FireSound, owner->GetActorLocation(), 0.2f, pitch);
+	}
+	else if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::SNIPER)
+	{
+		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/SniperNew_Cue.SniperNew_Cue'"));
+		UGameplayStatics::PlaySoundAtLocation(this, AI_FireSound, owner->GetActorLocation(), 0.4f, pitch);
+	}
+	
+	
 }
 
 bool UAIWeaponComponent::AITypeSniperCheck()

@@ -49,11 +49,13 @@ void UCoverComponent::BeginPlay()
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
-	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
-	if (ensure(pakurArr.Num() == 1)) {
-		m_PakurComp = pakurArr[0];
+	if (UWeaponComponent::CheckActorTag(owner, TEXT("Player")))
+	{
+		TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+		if (ensure(pakurArr.Num() == 1)) {
+			m_PakurComp = pakurArr[0];
+		}
 	}
-
 	if (m_PathFollowingComp == nullptr)
 	{
 		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
@@ -277,9 +279,11 @@ void UCoverComponent::SettingCoverPath(float DeltaTime)
 
 void UCoverComponent::CheckCoverPath(float DeltaTime)
 {
+	return;
 	FVector lastPath = m_CoverPath.Num() > 0 ? m_CoverPath.Last() : FVector::ZeroVector;
 	FVector tempPoint = m_CanCoverPoint;
-	tempPoint.Z -= owner->GetDefaultHalfHeight();
+	tempPoint.Z = 0.0;
+	lastPath.Z = 0.0;
 
 	if (!lastPath.Equals(tempPoint, 1.0)) {
 		m_CanCoverPoint = FVector::ZeroVector;
@@ -538,7 +542,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 			GetWorld()->LineTraceSingleByChannel(result_Result, start, end, traceChanel, params);
 			if (PeekingTraceDebug) DrawDebugLine(GetWorld(), start, end, FColor::Emerald, false, DeltaTime);
 			if (PeekingTraceDebug) DrawDebugSphere(GetWorld(), result_Result.Location, 10.0f, 32, FColor::Red);
-			if (/*result_Result.ImpactNormal.Dot(impactNormal) < 0.99999 ||*/ result_Result.GetActor() != item.GetActor()) continue;
+			//if (/*result_Result.ImpactNormal.Dot(impactNormal) < 0.99999 ||*/ result_Result.GetActor() != item.GetActor()) continue;
 		}
 
 		temptargetVector = result_Result.Location +
@@ -704,6 +708,9 @@ bool UCoverComponent::StartCover()
 			}
 		}
 
+	}
+	if (result.Normal.Equals(FVector::ZeroVector, 0.1)) {
+		ensure(0);
 	}
 	if (OutActors.Num() == 0) return false;
 	if (result.GetActor() == nullptr) return false;
@@ -898,19 +905,19 @@ void UCoverComponent::StartPeeking()
 		start = temppos;
 		end = start + RightVector;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 15.0f);
 		if (result.GetActor()) return;
 
 		start = end;
 		end = start + -upVector * 1.05f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start;
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
 
 		if (!result.GetActor() && Cast<APlayerController>(controller)) {
 			if (owner->bIsCrouched) {
@@ -998,10 +1005,10 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 		break;
 	case EPeekingState::HighLeft:
 		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
-		if (isMustCrouch() && aimOffset.Yaw < -5.0f) {
-			m_PeekingState = EPeekingState::LowLeft;
-			owner->Crouch();
-		}
+		//if (isMustCrouch() && aimOffset.Yaw < -25.0f) {
+		//	m_PeekingState = EPeekingState::LowLeft;
+		//	owner->Crouch();
+		//}
 		break;
 	case EPeekingState::LowRight:
 		if (m_Weapon->IsWeaponBlocking()) {

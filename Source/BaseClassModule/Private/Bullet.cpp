@@ -26,9 +26,9 @@ ABullet::ABullet()
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
-	ProjectileMovementComponent->InitialSpeed = 10000.0f;
-	ProjectileMovementComponent->MaxSpeed = 10000.0f;
-	ProjectileMovementComponent->bRotationFollowsVelocity = true;
+	ProjectileMovementComponent->InitialSpeed = 30000.0f;
+	ProjectileMovementComponent->MaxSpeed = 30000.0f;
+	ProjectileMovementComponent->bRotationFollowsVelocity = true; 
 	ProjectileMovementComponent->bShouldBounce = false;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
 	InitialLifeSpan = 3.0f;
@@ -84,6 +84,22 @@ void ABullet::HitCheck()
 	{
 		if (result.GetActor() != owner)
 		{
+			
+			if (UWeaponComponent::CheckActorTag(result.GetActor(), TEXT("Vehicle")))
+			{
+				if (result.GetComponent()->ComponentTags.Num() > 0)
+				{
+					if (result.GetComponent()->ComponentHasTag(TEXT("Plate")))
+					{
+						int rand = FMath::RandRange(0, 100);
+						if (rand <= 20)
+						{
+							Cast<UStaticMeshComponent>(result.GetComponent())->SetSimulatePhysics(true);
+						}
+					}
+				}
+			}
+
 			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, result.GetActor()->GetName());
 			OnBulletHitDelegate.Broadcast(result);
 			Destroy();

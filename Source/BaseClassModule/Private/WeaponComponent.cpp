@@ -15,6 +15,7 @@
 #include "Perception/AISense_Hearing.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Pakurable.h"
+#include "BaseInputComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -39,7 +40,7 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
 	m_Cover = owner->FindComponentByClass<UCoverComponent>();
-	
+	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
 	if (pakurArr.Num() == 1) {
 		m_PakurComp = pakurArr[0];
@@ -92,10 +93,10 @@ void UWeaponComponent::SetAmmo(int p_ammo)
 	}
 }
 
-void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
-{
-
-}
+//void UWeaponComponent::CalculateWeaponHitLocation(float p_deltatime)
+//{
+//
+//}
 
 void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 {
@@ -112,7 +113,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
-	start.Z += owner->GetDefaultHalfHeight() * 0.625f;
+	start.Z += owner->GetDefaultHalfHeight() * 0.575f;
 	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
 		start += owner->GetMesh()->GetSocketRotation("pelvis").Quaternion().GetRightVector()
 			* 21.0f * m_Cover->FaceRight();
@@ -367,12 +368,12 @@ bool UWeaponComponent::IsWeaponBlocking()
 
 bool UWeaponComponent::IsAiming()
 {
-	return bAiming && !IsWeaponBlocking();
+	return m_Input->getInput()->IsAiming && !IsWeaponBlocking();
 }
 
 bool UWeaponComponent::IsFireing()
 {
-	return bFire && !IsWeaponBlocking();
+	return m_Input->getInput()->IsFire && !IsWeaponBlocking();
 }
 
 FVector UWeaponComponent::getWeaponHitLocation()
