@@ -124,6 +124,7 @@ void UAIWeaponComponent::Fire()
 	// 사격 방향 체크
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, traceParams))
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
 			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();

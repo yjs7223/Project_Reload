@@ -57,7 +57,6 @@ void UCameraControllComponent::BeginPlay()
 	}
 	m_CameraControllStructData->m_FaceRight.Initalize();
 	m_CameraControllStructData->m_Crouch.Initalize();
-
 }
 
 
@@ -102,30 +101,26 @@ void UCameraControllComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	m_FollowSpringArm->TargetArmLength = defaultArmLength;
 	m_FollowCamera->FieldOfView = InitFOV - (InitFOV * (defaultMagnification - 1));
 
+	//defaultPos.Z += (m_FollowSpringArm->UnfixedCameraPosition -
+	//	m_FollowSpringArm->GetSocketLocation(USpringArmComponent::SocketName)).Size();
+
 	m_CameraControllStructData->m_FaceRight.Easing(m_Cover->IsFaceRight() ? -DeltaTime : DeltaTime);
 	m_FollowSpringArm->SocketOffset.Y = UKismetMathLibrary::Ease(
 		defaultPos.Y,
 		-defaultPos.Y, 
 		m_CameraControllStructData->m_FaceRight.time,
-		m_CameraControllStructData->m_FaceRight.posEaseType);
+		m_CameraControllStructData->m_FaceRight.m_EaseType);
 
 	m_CameraControllStructData->m_Crouch.Easing(m_PlayerCharacter->bIsCrouched ? -DeltaTime : DeltaTime);
 	
-	//m_WallDistance = UKismetMathLibrary::Ease(m_WallDistance,
-	//	(m_FollowSpringArm->GetSocketTransform(USpringArmComponent::SocketName).GetLocation() - m_FollowSpringArm->UnfixedCameraPosition).Size() * 0.5,
-	//	1.0, EEasingFunc::Linear
-	//);
-	//
-	//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("CameraState (%s)"), 
-	//	*(m_FollowSpringArm->GetSocketTransform(USpringArmComponent::SocketName).GetLocation() - m_FollowSpringArm->UnfixedCameraPosition).ToString()
-	//), true, true, FColor::Green, DeltaTime);
 	//m_FollowCamera->SetRelativeLocation(FVector(0, 0, m_WallDistance));
 	//m_FollowSpringArm->SocketOffset.Z += m_WallDistance;
-	m_FollowSpringArm->TargetOffset.Z = UKismetMathLibrary::Ease(
-		m_PlayerCharacter->GetDefaultHalfHeight(),
-		m_PlayerCharacter->GetDefaultHalfHeight() * 2.0f,
-		m_CameraControllStructData->m_Crouch.time,
-		m_CameraControllStructData->m_Crouch.posEaseType);
+
+	//m_FollowSpringArm->TargetOffset.Z = UKismetMathLibrary::Ease(
+	//	m_PlayerCharacter->GetDefaultHalfHeight(),
+	//	m_PlayerCharacter->GetDefaultHalfHeight() * 2.0f,
+	//	m_CameraControllStructData->m_Crouch.time,
+	//	m_CameraControllStructData->m_Crouch.m_EaseType);
 }
 
 void UCameraControllPakage::NativeInitalize(ACharacter* _m_PlayerCharacter)
@@ -174,19 +169,19 @@ void FCameraControllDataElement::Easing(float DeltaTime)
 void FCameraControllDataElementReal::Easing(float DeltaTime)
 {
 	Super::Easing(DeltaTime);
-	CurrentValue = UKismetMathLibrary::Ease(0, TargetValue, time, posEaseType);
+	CurrentValue = UKismetMathLibrary::Ease(0, TargetValue, time, m_EaseType);
 }
 
 void FCameraControllDataElementVector::Easing(float DeltaTime)
 {
 	Super::Easing(DeltaTime);
-	CurrentValue = UKismetMathLibrary::VEase(FVector::ZeroVector, TargetValue, time, posEaseType);
+	CurrentValue = UKismetMathLibrary::VEase(FVector::ZeroVector, TargetValue, time, m_EaseType);
 }
 
 void FCameraControllDataElementRotater::Easing(float DeltaTime)
 {
 	Super::Easing(DeltaTime);
-	CurrentValue = UKismetMathLibrary::REase(FRotator::ZeroRotator, TargetValue, time, true, posEaseType);
+	CurrentValue = UKismetMathLibrary::REase(FRotator::ZeroRotator, TargetValue, time, true, m_EaseType);
 }
 
 FCameraControllData::FCameraControllData()

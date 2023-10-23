@@ -55,7 +55,7 @@ void UCrosshair_Widget::NativeConstruct()
 
 	if (APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
 	{
-		if (UPlayerWeaponComponent* MyWeaponComp = Cast<UPlayerWeaponComponent>(MyCharacter->weapon))
+		if (UPlayerWeaponComponent* MyWeaponComp = MyCharacter->FindComponentByClass<UPlayerWeaponComponent>())
 		{
 			weapon = MyCharacter->weapon;
 			MyWeaponComp->OnChangedCrossHairAmmoDelegate.BindUObject(this, &UCrosshair_Widget::SetAmmoImage);
