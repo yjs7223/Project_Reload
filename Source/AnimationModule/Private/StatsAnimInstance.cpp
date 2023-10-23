@@ -22,7 +22,7 @@ void UStatsAnimInstance::NativeBeginPlay()
 {
 	owner = Cast<ACharacter>(TryGetPawnOwner());
 	mStats = owner->FindComponentByClass<UStatComponent>();
-	UWeaponAnimInstance();
+	AnimationSetting();
 	mStats->Knockback.AddLambda([this](FVector directinal, bool bDie) {
 		FVector vector = owner->GetActorLocation() - directinal;
 		float dotvlaue = vector.Dot(owner->GetActorForwardVector());
@@ -41,10 +41,11 @@ void UStatsAnimInstance::NativeBeginPlay()
 		else {
 			currmontage = bDie ? m_CurrentAnimation.KnockBack_Back_Die : m_CurrentAnimation.KnockBack_Back;
 		}
-		FOnMontageEnded temp = FOnMontageEnded::CreateUObject(this, &UStatsAnimInstance::KnockBackEnd);
-		owner->GetMesh()->GetAnimInstance()->Montage_Play(currmontage);
+		FOnMontageEnded MontageEndDelegate = FOnMontageEnded::CreateUObject(this, &UStatsAnimInstance::KnockBackEnd);
+		UAnimInstance* animinstance = owner->GetMesh()->GetAnimInstance();
+		animinstance->Montage_Play(currmontage);
 		if (m_PakurComp) {
-			owner->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(temp, currmontage);
+			animinstance->Montage_SetEndDelegate(MontageEndDelegate, currmontage);
 			if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
 				IPakurable::Execute_SetCanRolling(m_PakurComp, false);
 			}
@@ -56,7 +57,8 @@ void UStatsAnimInstance::NativeBeginPlay()
 		m_PakurComp = pakurArr[0];
 	}
 
-	owner->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UStatsAnimInstance::KnockBackEnd);
+	mStats->diePlay.AddDynamic(this, &UStatsAnimInstance::PlayDIeMontage);
+	//owner->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UStatsAnimInstance::KnockBackEnd);
 
 }
 
@@ -73,7 +75,7 @@ void UStatsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	m_IsStun = mStats->IsStun();
 }
 
-void UStatsAnimInstance::UWeaponAnimInstance()
+void UStatsAnimInstance::AnimationSetting()
 {
 	UWeaponComponent* mWeapon = owner->FindComponentByClass<UWeaponComponent>();
 	if (!m_AnimationTable) return;
@@ -94,4 +96,9 @@ void UStatsAnimInstance::KnockBackEnd(UAnimMontage* Montage, bool bInterrupted)
 			IPakurable::Execute_SetCanRolling(m_PakurComp, true);
 		}
 	}
+}
+
+void UStatsAnimInstance::PlayDIeMontage()
+{
+	owner->GetMesh()->GetAnimInstance()->Montage_Play(DieMontage);
 }
