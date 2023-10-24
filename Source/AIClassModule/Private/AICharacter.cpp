@@ -42,7 +42,7 @@ AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	AIPatrol = CreateDefaultSubobject<UAIPatrolComponent>(TEXT("AIPatrol"));
 	AISensing = CreateDefaultSubobject<UAISensingComponent>(TEXT("AISensing"));
 	AIStat = CreateDefaultSubobject<UAIStatComponent>(TEXT("AIStat"));
-	AIInputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
+	InputComponent = CreateDefaultSubobject<UAIInputComponent>(TEXT("InputComponent"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
 	AIControllerClass = AAI_Controller::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -134,7 +134,7 @@ void AAICharacter::BeginPlay()
 	AIMovement->SetComponentTickEnabled(false);
 	AIWeapon->SetComponentTickEnabled(false);
 	AIStat->SetComponentTickEnabled(false);
-	AIInputComponent->SetComponentTickEnabled(false);
+	InputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
 	//
 }
@@ -143,8 +143,8 @@ void AAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateWidget(); 
-	AIInputComponent->PrimaryComponentTick.bCanEverTick = true;
-	AIInputComponent->SetComponentTickEnabled(true);
+	InputComponent->PrimaryComponentTick.bCanEverTick = true;
+	InputComponent->SetComponentTickEnabled(true);
 }
 
 
@@ -256,7 +256,7 @@ void AAICharacter::Init()
 	AIMovement->SetComponentTickEnabled(true);
 	AIWeapon->SetComponentTickEnabled(true);
 	AIStat->SetComponentTickEnabled(true);
-	AIInputComponent->SetComponentTickEnabled(true);
+	InputComponent->SetComponentTickEnabled(true);
 	m_CoverComponent->SetComponentTickEnabled(true);
 }
 
@@ -275,7 +275,7 @@ void AAICharacter::Dead()
 	AIWeapon->GetOwner()->GetWorldTimerManager().ClearTimer(AIWeapon->timer);
 
 	AIStat->SetComponentTickEnabled(false);
-	AIInputComponent->SetComponentTickEnabled(false);
+	InputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
 	if (commander != nullptr)
 	{
@@ -303,7 +303,7 @@ void AAICharacter::RemoveAI()
 	AIWeapon->GetOwner()->GetWorldTimerManager().ClearTimer(AIWeapon->timer);
 
 	AIStat->SetComponentTickEnabled(false);
-	AIInputComponent->SetComponentTickEnabled(false);
+	InputComponent->SetComponentTickEnabled(false);
 	m_CoverComponent->SetComponentTickEnabled(false);
 }
 

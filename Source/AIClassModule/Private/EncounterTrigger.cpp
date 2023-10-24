@@ -8,6 +8,7 @@
 #include "Engine/Engine.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "AICommander.h"
+#include "AIStatComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
@@ -54,7 +55,13 @@ void AEncounterTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 			{
 				commander->m_en = en;
 			}
-			
+
+			UStatComponent* myStat = OtherActor->FindComponentByClass<UStatComponent>();
+			if (myStat)
+			{
+				myStat->revivePos = GetActorLocation();
+			}
+
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("encounter"));
 		}
 		

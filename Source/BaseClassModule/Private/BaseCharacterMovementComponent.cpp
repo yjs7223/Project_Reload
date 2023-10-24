@@ -9,7 +9,6 @@
 bool UBaseCharacterMovementComponent::isRuning() const
 {
 	return CustomMovementMode == CMOVE_Runing;
-	this->IsFalling
 }
 
 bool UBaseCharacterMovementComponent::CheckFall(const FFindFloorResult& OldFloor, const FHitResult& Hit, const FVector& Delta, const FVector& OldLocation, float remainingTime, float timeTick, int32 Iterations, bool bMustJump)

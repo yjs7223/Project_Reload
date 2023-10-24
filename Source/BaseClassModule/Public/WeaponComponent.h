@@ -53,11 +53,12 @@ public:
 	void CalculateBlockingTick(float p_deltatime);
 
 	virtual void StartFire();
-
 	virtual void StopFire();
-
 	virtual void Fire();
+	virtual void StartAiming();
+	virtual void StopAiming();
 
+	bool CanReload();
 	float getAimYaw();
 	float getAimPitch();
 
