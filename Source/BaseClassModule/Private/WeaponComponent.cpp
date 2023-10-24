@@ -173,8 +173,28 @@ void UWeaponComponent::StopFire()
 void UWeaponComponent::Fire()
 {
 	shootingAnimation.Broadcast();
-	//fire
-	return;
+}
+
+void UWeaponComponent::StartAiming()
+{
+	bAiming = true;
+}
+
+void UWeaponComponent::StopAiming()
+{
+	bAiming = false;
+}
+
+bool UWeaponComponent::CanReload()
+{
+	if (curAmmo >= maxAmmo)
+	{
+		return false;
+	}
+	else if (holdAmmo == 0) {
+		return false;
+	}
+	return true;
 }
 
 float UWeaponComponent::getAimYaw()
