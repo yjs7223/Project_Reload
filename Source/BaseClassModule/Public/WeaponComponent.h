@@ -73,15 +73,10 @@ public:
 	float CalcDamage(FHitResult result, FVector2D p_damage);
 
 	static bool CheckActorTag(AActor* actor, FName tag);
+	UFUNCTION(BlueprintCallable)
 	bool IsWeaponBlocking();
 	UFUNCTION(BlueprintCallable)
-	bool IsAiming();
-	UFUNCTION(BlueprintCallable)
-	bool IsFireing();
-	UFUNCTION(BlueprintCallable)
 	FVector getWeaponHitLocation();
-	UFUNCTION(BlueprintCallable)
-	bool IsUsingWeapon();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	class ABaseCharacter* owner;

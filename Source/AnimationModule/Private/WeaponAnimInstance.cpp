@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "BaseInputComponent.h"
 #include "CoverComponent.h"
+#include "Pakurable.h"
 
 
 bool FWeaponAnimationTable::IsVaild()
@@ -42,7 +43,10 @@ void UWeaponAnimInstance::NativeBeginPlay()
 			Montage_Play(m_CurrentAnimation.UnEquipWeapon);
 			});
 	}
-
+	TArray<UActorComponent*> pakurArr = m_Owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() == 1) {
+		m_PakurComp = pakurArr[0];
+	}
 
 	AnimationSetting();
 }
@@ -61,12 +65,17 @@ void UWeaponAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	mAimYaw = mWeapon->getAimYaw();
 	mAimPitch = mWeapon->getAimPitch();
 	m_CanShooting = mWeapon->m_CanShooting;
-	m_IsUsingWeapon = mWeapon->IsUsingWeapon();
 	
 	m_UpperMirror = !m_Cover->IsFaceRight();
 
 	mIsRuning = m_Movement->isRuning();
 
+	m_IsPakuru = false;
+
+	if (m_PakurComp && m_PakurComp->GetClass()) {
+		m_IsPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
+	}
+	m_IsUsingWeapon = (mIsAiming || mIsFire) && !m_IsPakuru && !mIsRuning;
 
 	m_UseUnderBody = m_Cover->IsCover() || (m_IsUsingWeapon && m_Movement->Velocity.SizeSquared() <= 100.0 && !m_Owner->bIsCrouched);
 }
