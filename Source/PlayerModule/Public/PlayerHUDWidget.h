@@ -35,6 +35,9 @@ public:
 
 	void SetFaceRightWidget(bool p_bFaceright);
 
+	UFUNCTION()
+	void DeactiveWidget();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* Right_Overlay;

@@ -26,11 +26,13 @@ public:
 	FOnAllWidgetVisible OnAllWidgetVisible;
 	FOnCreatePauseWidget OnCreatePauseWidget;
 
-protected:
-	virtual void BeginPlay() override;
 
 public:
+	virtual void BeginPlay() override;
 	void StartReload();
+
+	UFUNCTION()
+	void InputDie();
 
 private:
 	void MoveForward(float Value);
@@ -50,7 +52,6 @@ private:
 	void HPreduce();
 	void HPregen();
 	void GamePause();
-
 
 private:
 	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;

@@ -42,6 +42,8 @@ public:
 
 	void PlayReloadAnim();
 
+	void StopReloadAnim();
+
 	virtual void SetCombatWidgetVisible() override;
 
 public:

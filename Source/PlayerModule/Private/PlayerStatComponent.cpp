@@ -16,6 +16,11 @@ UPlayerStatComponent::UPlayerStatComponent()
 void UPlayerStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	diePlay.__Internal_AddDynamic(this, &UPlayerStatComponent::Revive, FName("Revive"));
+
+	revivePos = GetOwner()->GetActorLocation();
+
 }
 
 void UPlayerStatComponent::BeginDestroy()
@@ -56,6 +61,7 @@ void UPlayerStatComponent::RecoverHP(float p_HP)
 	}
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
+
 }
 
 void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
@@ -72,7 +78,11 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 
 	}
 
-	owner->FindComponentByClass<UPlayerInputComponent>()->OnCombatWidgetVisible.Broadcast(true);
+	if (!bDie)
+	{
+		owner->FindComponentByClass<UPlayerInputComponent>()->OnCombatWidgetVisible.Broadcast(true);
+	}
+
 	//OnVisibleHPUIDelegate.Broadcast();
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
@@ -150,6 +160,29 @@ void UPlayerStatComponent::Interacting()
 			}
 		}
 	}
+}
+
+void UPlayerStatComponent::Revive()
+{
+	FTimerHandle dieTimer;
+	UPlayerInputComponent* inputComp = GetOwner()->FindComponentByClass<UPlayerInputComponent>();
+	if (inputComp)
+	{
+		inputComp->InputDie();
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			bDie = false;
+			RecoverHP(10000);
+			UPlayerInputComponent* inputComp = GetOwner()->FindComponentByClass<UPlayerInputComponent>();
+			if (inputComp)
+			{
+				inputComp->BeginPlay();
+			}
+			GetOwner()->SetActorLocation(revivePos);
+
+		}), 2.f, false);
 }
 
 
