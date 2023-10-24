@@ -349,10 +349,12 @@ void UPlayerWeaponComponent::Fire()
 
 void UPlayerWeaponComponent::StartAiming()
 {
+	Super::StartAiming();
+
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
-	bAiming = true;
+
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
 	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3f, true, 0.0f);
@@ -370,7 +372,8 @@ void UPlayerWeaponComponent::StopAiming()
 		OnVisibleAmmoUIDelegate.Broadcast();
 		return;
 	}
-	bAiming = false;
+	Super::StopAiming();
+	
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
 	owner->GetWorldTimerManager().ClearTimer(AimingTimer);
 
@@ -390,7 +393,7 @@ void UPlayerWeaponComponent::StartFire()
 
 	StopRcovery();
 	Fire();
-	bFire = true;
+	Super::StartFire();
 
 
 	startRot = owner->GetController()->GetControlRotation();
@@ -405,12 +408,12 @@ void UPlayerWeaponComponent::StopFire()
 {
 	if (bFire)
 	{
+		Super::StopFire();
 		if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
-		bFire = false;
 		TotalPitchRecoilValue = 0.0f;
 		StartRecovery();
 	}
@@ -428,18 +431,6 @@ void UPlayerWeaponComponent::StartReload()
 	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
 	OnPlayReloadUIDelegate.ExecuteIfBound();
 	bReload = CanReload();
-}
-
-bool UPlayerWeaponComponent::CanReload()
-{
-	if (curAmmo >= maxAmmo)
-	{
-		return false;
-	}
-	else if (holdAmmo == 0) {
-		return false;
-	}
-	return true;
 }
 
 void UPlayerWeaponComponent::StopReload()

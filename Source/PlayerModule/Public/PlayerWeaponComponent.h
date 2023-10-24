@@ -57,9 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Fire() override;
 	UFUNCTION(BlueprintCallable)
-	void StartAiming();
+	void StartAiming() override;
 	UFUNCTION(BlueprintCallable)
-	void StopAiming();
+	void StopAiming() override;
 	UFUNCTION(BlueprintCallable)
 	void StartFire() override;
 	UFUNCTION(BlueprintCallable)
@@ -68,7 +68,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
-	bool CanReload();
 	UFUNCTION(BlueprintCallable)
 	void StopReload();
 	UFUNCTION(BlueprintCallable)
