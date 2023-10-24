@@ -21,6 +21,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "CharacterSoundDataAsset.h"
 #include "Kismet/KismetMaterialLibrary.h"
+#include "GameFramework/InputSettings.h"
+#include "Engine/InputDelegateBinding.h"
 
 //#include "Kismet/GameplayStatics.h"
 //#include "Engine.h"
@@ -53,7 +55,7 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	//m_FollowSpringArm->SetupAttachment(RootComponent);
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("root"));
-	
+
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
@@ -64,9 +66,15 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
-	InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
+	InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 
+	SetupPlayerInputComponent(InputComponent);
+	if (UInputDelegateBinding::SupportsInputDelegate(GetClass()))
+	{
+		InputComponent->bBlockInput = bBlockInput;
+		UInputDelegateBinding::BindInputDelegatesWithSubojects(this, InputComponent);
+	}
 	/*HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
 

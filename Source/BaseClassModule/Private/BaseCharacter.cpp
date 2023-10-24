@@ -38,9 +38,16 @@
 //	FName WeaponSocket(TEXT("hand_rSocket"));
 //	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
 //}
+namespace ABaseCharacterHelper {
+	const FObjectInitializer& Init(const FObjectInitializer& ObjectInitializer) 
+	{
+		ObjectInitializer.SetDefaultSubobjectClass<UBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName);
+		return ObjectInitializer;
+	}
+}
 
 ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : 
-	Super(ObjectInitializer.SetDefaultSubobjectClass<UBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+	Super(ABaseCharacterHelper::Init(ObjectInitializer))
 {
 	PrimaryActorTick.bCanEverTick = true;
 

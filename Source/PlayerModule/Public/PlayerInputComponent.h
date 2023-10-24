@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), hidecategories = (Activation, "Components|Activation"))
 class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 {
 	GENERATED_BODY()
@@ -28,14 +28,16 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void BindInput() override;
+	virtual void UnBindInput() override;
 
 public:
 	void InputMove();
 	virtual void StartFire() override;
-	virtual void StopFire();
-	virtual void StartAiming();
-	virtual void StopAiming();
-	virtual void StartReload();
+	virtual void StopFire() override;
+	virtual void StartAiming() override;
+	virtual void StopAiming() override;
+	virtual void StartReload() override;
 
 	void ChangeMainWeapon();
 	void ChangeSubWeapon();

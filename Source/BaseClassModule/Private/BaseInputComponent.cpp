@@ -21,6 +21,21 @@ void UBaseInputComponent::BeginPlay()
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
 
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
+
+	SetInputEnable(true);
+}
+
+void UBaseInputComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	SetInputEnable(false);
+}
+
+void UBaseInputComponent::BindInput()
+{
+}
+
+void UBaseInputComponent::UnBindInput()
+{
 }
 
 FInputData* UBaseInputComponent::getInput()
@@ -57,7 +72,7 @@ void UBaseInputComponent::Runing()
 	if (m_Movement->isRuning()) {
 		m_Movement->SetMovementMode(MOVE_Walking);
 	}
-	else {
+	else if(m_Movement->MovementMode != MOVE_Falling) {
 		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		m_inputData.IsAiming = false;
 	}
@@ -103,5 +118,17 @@ void UBaseInputComponent::StartReload()
 {
 	if (!m_Weapon->CanReload()) return;
 	m_inputData.IsReload = true;
+}
+
+void UBaseInputComponent::SetInputEnable(bool IsEnable)
+{
+	if (IsEnable && !m_IsInputEnabled) {
+		BindInput();
+	}
+	else if (!IsEnable) {
+		UnBindInput();
+	}
+
+	m_IsInputEnabled = IsEnable;
 }
 

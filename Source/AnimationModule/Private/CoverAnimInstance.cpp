@@ -80,7 +80,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	
 	mAimYaw = mWeapon->getAimYaw();
 	mAimPitch = mWeapon->getAimPitch();
-	m_IsWeaponUse = mWeapon->m_CanShooting;
+	m_CanShooting= mWeapon->m_CanShooting;
 
 	mIsCover = mCover->IsCover();
 	mIsFaceRight = mCover->FaceRight() >= 0;
@@ -94,8 +94,10 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	mIsPeeking = mLastPeekingState != EPeekingState::None;
 	mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
-	
-	//mSpinRotater = (!mIsPeeking && (mIsFire || mIsAiming || mIsReload)) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);
+
+
+	m_IsUsingWeapon = mIsAiming || mIsFire;
+
 	mSpinRotater = (mPeekingState == EPeekingState::None) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);
 
 

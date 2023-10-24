@@ -19,10 +19,13 @@
 
 void UPlayerInputComponent::BeginPlay()
 {
+	m_PlayerMove = GetOwner()->FindComponentByClass<UPlayerMoveComponent>();
+
 	Super::BeginPlay();
+}
 
-	m_PlayerMove = owner->FindComponentByClass<UPlayerMoveComponent>();
-
+void UPlayerInputComponent::BindInput()
+{
 	BindAxis("Move Forward / Backward", this, &UPlayerInputComponent::MoveForward);
 	BindAxis("Move Right / Left", this, &UPlayerInputComponent::MoveRight);
 	BindAction("Move", IE_Pressed, this, &UPlayerInputComponent::InputMove);
@@ -58,6 +61,17 @@ void UPlayerInputComponent::BeginPlay()
 
 	BindAction("HP_reduce", IE_Pressed, this, &UPlayerInputComponent::HPreduce);
 	BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
+}
+
+void UPlayerInputComponent::UnBindInput()
+{
+	ClearActionBindings();
+	//KeyBindings.Reset();
+	TouchBindings.Reset();
+	AxisBindings.Reset();
+	AxisKeyBindings.Reset();
+	VectorAxisBindings.Reset();
+	GestureBindings.Reset();
 }
 
 void UPlayerInputComponent::InputMove()
