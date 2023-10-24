@@ -67,6 +67,8 @@ protected:
 	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UCoverComponent> m_Cover;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "PakurComp"))
+	TObjectPtr<class UActorComponent> m_PakurComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float mAimYaw;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -89,6 +91,8 @@ protected:
 	bool m_UpperMirror;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "UseUnderBody"))
 	bool m_UseUnderBody;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "IsPakuru"))
+	bool m_IsPakuru;
 
 
 

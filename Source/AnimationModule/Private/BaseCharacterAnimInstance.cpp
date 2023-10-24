@@ -54,7 +54,7 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		(m_GunIKVec != FVector::ZeroVector) &&
 		!m_IsReloding &&
 		!m_Movement->isRuning() &&
-		m_Stats->bAttacked;
+		!m_Stats->bAttacked;
 
 
 }

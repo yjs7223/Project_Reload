@@ -37,13 +37,14 @@ public:
 private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
 	void InputMove();
-	void Crouching();
-	void Runing();
-	void StartFire();
-	void StopFire();
-	void StartAiming();
-	void StopAiming();
+	virtual void StartFire() override;
+	virtual void StopFire();
+	virtual void StartAiming();
+	virtual void StopAiming();
+	virtual void StartReload();
+
 	void ChangeMainWeapon();
 	void ChangeSubWeapon();
 	void StopCover();
@@ -57,8 +58,7 @@ private:
 	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
 	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
 	TObjectPtr<class UCoverComponent> m_Covercomponent;
-	TObjectPtr<class UPlayerMoveComponent> m_PlayerMove;
-	TObjectPtr<class UInputComponent> m_InputComponent;
-	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
 
+protected:
+	TObjectPtr<class UPlayerMoveComponent> m_PlayerMove;
 };

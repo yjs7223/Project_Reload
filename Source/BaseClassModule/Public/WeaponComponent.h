@@ -53,11 +53,12 @@ public:
 	void CalculateBlockingTick(float p_deltatime);
 
 	virtual void StartFire();
-
 	virtual void StopFire();
-
 	virtual void Fire();
+	virtual void StartAiming();
+	virtual void StopAiming();
 
+	bool CanReload();
 	float getAimYaw();
 	float getAimPitch();
 
@@ -73,15 +74,10 @@ public:
 	float CalcDamage(FHitResult result, FVector2D p_damage);
 
 	static bool CheckActorTag(AActor* actor, FName tag);
+	UFUNCTION(BlueprintCallable)
 	bool IsWeaponBlocking();
 	UFUNCTION(BlueprintCallable)
-	bool IsAiming();
-	UFUNCTION(BlueprintCallable)
-	bool IsFireing();
-	UFUNCTION(BlueprintCallable)
 	FVector getWeaponHitLocation();
-	UFUNCTION(BlueprintCallable)
-	bool IsUsingWeapon();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	class ABaseCharacter* owner;
