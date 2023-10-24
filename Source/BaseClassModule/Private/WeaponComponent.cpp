@@ -113,10 +113,10 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	
 	start = owner->GetMesh()->GetSocketLocation("pelvis");
 
-	start.Z += owner->GetDefaultHalfHeight() * 0.575f;
+	start.Z += owner->GetDefaultHalfHeight() * 0.55f;
 	if (m_Cover->IsPeeking() || !m_Cover->IsCover()) {
 		start += owner->GetMesh()->GetSocketRotation("pelvis").Quaternion().GetRightVector()
-			* 21.0f * m_Cover->FaceRight();
+			* 21.0f;
 
 		//start = owner->GetMesh()->GetSocketLocation(Arm_R_Name);
 	}
@@ -127,7 +127,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		start,
 		end,
 		2.0f,
-		2.0f,
+		5.0f,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
@@ -366,28 +366,8 @@ bool UWeaponComponent::IsWeaponBlocking()
 	return m_IsWeaponBlocking;
 }
 
-bool UWeaponComponent::IsAiming()
-{
-	return m_Input->getInput()->IsAiming && !IsWeaponBlocking();
-}
-
-bool UWeaponComponent::IsFireing()
-{
-	return m_Input->getInput()->IsFire && !IsWeaponBlocking();
-}
-
 FVector UWeaponComponent::getWeaponHitLocation()
 {
 	return m_WeaponHitLocation;
 }
 
-bool UWeaponComponent::IsUsingWeapon()
-{
-	bool isPakuru = false;
-	
-	if (m_PakurComp && m_PakurComp->GetClass()) {
-		isPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
-	} 
-
-	return (IsAiming() || IsFireing()) && !isPakuru;
-}
