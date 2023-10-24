@@ -14,6 +14,8 @@ DECLARE_MULTICAST_DELEGATE(FOnChangedAmmoUIDelegate);
 DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
 DECLARE_DELEGATE(FOnStopReloadUIDelegate);
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCombatWidgetVisible, bool);
+
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnVisibleAmmoUIDelegate);
 
@@ -41,6 +43,8 @@ public:
 
 	FOnPlayReloadUIDelegate OnPlayReloadUIDelegate;
 	FOnStopReloadUIDelegate OnStopReloadUIDelegate;
+
+	FOnCombatWidgetVisible OnCombatWidgetVisible;
 
 protected:
 	// Called when the game starts

@@ -5,7 +5,7 @@
 #include "BaseCharacter.h"
 #include "MatineeCameraShake.h"
 #include "InteractiveComponent.h"
-#include "PlayerInputComponent.h"
+#include "PlayerWeaponComponent.h"
 
 
 UPlayerStatComponent::UPlayerStatComponent()
@@ -80,7 +80,7 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 
 	if (!bDie)
 	{
-		owner->FindComponentByClass<UPlayerInputComponent>()->OnCombatWidgetVisible.Broadcast(true);
+	owner->FindComponentByClass<UPlayerWeaponComponent>()->OnCombatWidgetVisible.Broadcast(true);
 	}
 
 	//OnVisibleHPUIDelegate.Broadcast();

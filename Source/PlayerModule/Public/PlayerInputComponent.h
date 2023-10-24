@@ -9,26 +9,26 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), hidecategories = (Activation, "Components|Activation"))
 class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 {
 	GENERATED_BODY()
 
 public:
 	DECLARE_MULTICAST_DELEGATE(FChangedWeapon);
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnCombatWidgetVisible, bool);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnAllWidgetVisible, bool);
 	DECLARE_DELEGATE(FOnCreatePauseWidget);
 
 public:
 	FChangedWeapon OnChangedWeapon;
-	FOnCombatWidgetVisible OnCombatWidgetVisible;
 	FOnAllWidgetVisible OnAllWidgetVisible;
 	FOnCreatePauseWidget OnCreatePauseWidget;
 
-
-public:
+protected:
 	virtual void BeginPlay() override;
+	virtual void BindInput() override;
+
+public
 	void StartReload();
 
 	UFUNCTION()
@@ -39,11 +39,7 @@ private:
 	void MoveRight(float Value);
 
 	void InputMove();
-	virtual void StartFire() override;
-	virtual void StopFire();
-	virtual void StartAiming();
-	virtual void StopAiming();
-	virtual void StartReload();
+	virtual void StartReload() override;
 
 	void ChangeMainWeapon();
 	void ChangeSubWeapon();

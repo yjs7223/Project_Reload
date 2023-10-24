@@ -32,7 +32,7 @@ void UPlayerMoveComponent::BeginPlay()
 	owner = dynamic_cast<ACharacter*>(GetOwner());
 	ensure(owner);
 
-	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
+	owner->FindComponentByClass<UBaseInputComponent>()->SetCanUnCrouch(true);
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();

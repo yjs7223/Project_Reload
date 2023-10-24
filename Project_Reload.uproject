@@ -93,7 +93,8 @@
 				"CoreUObject",
 				"AICoverSystem",
 				"UMG",
-				"ChaosVehicles"
+				"ChaosVehicles",
+				"PlayerModule"
 			]
 		}
 	],
