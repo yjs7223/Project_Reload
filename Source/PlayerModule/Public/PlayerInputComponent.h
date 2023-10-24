@@ -26,10 +26,18 @@ public:
 	FOnAllWidgetVisible OnAllWidgetVisible;
 	FOnCreatePauseWidget OnCreatePauseWidget;
 
-protected:
-	virtual void BeginPlay() override;
 
 public:
+	virtual void BeginPlay() override;
+	void StartReload();
+
+	UFUNCTION()
+	void InputDie();
+
+private:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
 	void InputMove();
 	virtual void StartFire() override;
 	virtual void StopFire();
@@ -45,6 +53,11 @@ public:
 	void HPreduce();
 	void HPregen();
 	void GamePause();
+
+private:
+	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
+	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
+	TObjectPtr<class UCoverComponent> m_Covercomponent;
 
 protected:
 	TObjectPtr<class UPlayerMoveComponent> m_PlayerMove;
