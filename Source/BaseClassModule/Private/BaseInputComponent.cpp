@@ -7,6 +7,7 @@
 #include "CoverComponent.h"
 #include "WeaponComponent.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Engine/InputDelegateBinding.h"
 
 // Called when the game starts
 void UBaseInputComponent::BeginPlay()
@@ -32,10 +33,23 @@ void UBaseInputComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UBaseInputComponent::BindInput()
 {
+	owner->SetupPlayerInputComponent(this);
+	if (UInputDelegateBinding::SupportsInputDelegate(owner->GetClass()))
+	{
+		bBlockInput = bBlockInput;
+		UInputDelegateBinding::BindInputDelegatesWithSubojects(owner, this);
+	}
 }
 
 void UBaseInputComponent::UnBindInput()
 {
+	ClearActionBindings();
+	KeyBindings.Reset();
+	TouchBindings.Reset();
+	AxisBindings.Reset();
+	AxisKeyBindings.Reset();
+	VectorAxisBindings.Reset();
+	GestureBindings.Reset();
 }
 
 FInputData* UBaseInputComponent::getInput()

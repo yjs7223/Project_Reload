@@ -28,7 +28,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-
+	static FName InputComponentName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UCoverComponent* m_CoverComponent;

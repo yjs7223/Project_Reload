@@ -8,7 +8,6 @@
 #include "CoverComponent.h"
 #include "BaseCharacterMovementComponent.h"
 
-
 // Sets default values
 //ABaseCharacter::ABaseCharacter()
 //{
@@ -38,6 +37,7 @@
 //	FName WeaponSocket(TEXT("hand_rSocket"));
 //	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
 //}
+
 namespace ABaseCharacterHelper {
 	const FObjectInitializer& Init(const FObjectInitializer& ObjectInitializer) 
 	{
@@ -45,6 +45,8 @@ namespace ABaseCharacterHelper {
 		return ObjectInitializer;
 	}
 }
+FName ABaseCharacter::InputComponentName = "InputComponent";
+
 
 ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : 
 	Super(ABaseCharacterHelper::Init(ObjectInitializer))

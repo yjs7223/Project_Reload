@@ -26,6 +26,8 @@ void UPlayerInputComponent::BeginPlay()
 
 void UPlayerInputComponent::BindInput()
 {
+	Super::BindInput();
+
 	BindAxis("Move Forward / Backward", this, &UPlayerInputComponent::MoveForward);
 	BindAxis("Move Right / Left", this, &UPlayerInputComponent::MoveRight);
 	BindAction("Move", IE_Pressed, this, &UPlayerInputComponent::InputMove);
@@ -63,50 +65,11 @@ void UPlayerInputComponent::BindInput()
 	BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
 }
 
-void UPlayerInputComponent::UnBindInput()
-{
-	ClearActionBindings();
-	//KeyBindings.Reset();
-	TouchBindings.Reset();
-	AxisBindings.Reset();
-	AxisKeyBindings.Reset();
-	VectorAxisBindings.Reset();
-	GestureBindings.Reset();
-}
-
 void UPlayerInputComponent::InputMove()
 {
 	if (!m_Covercomponent->IsCover() && m_PathFollowingComp->GetStatus() == EPathFollowingStatus::Moving) {
 		m_Covercomponent->StopCover();
 	}
-}
-
-void UPlayerInputComponent::StartFire()
-{
-	Super::StartFire();
-
-	OnCombatWidgetVisible.Broadcast(false);
-}
-
-void UPlayerInputComponent::StopFire()
-{
-	Super::StopFire();
-
-	OnCombatWidgetVisible.Broadcast(true);
-}
-
-void UPlayerInputComponent::StartAiming()
-{
-	Super::StartAiming();
-	
-	OnCombatWidgetVisible.Broadcast(false);
-}
-
-void UPlayerInputComponent::StopAiming()
-{
-	Super::StopAiming();
-
-	OnCombatWidgetVisible.Broadcast(true);
 }
 
 void UPlayerInputComponent::ChangeMainWeapon()
@@ -133,7 +96,6 @@ void UPlayerInputComponent::StopCover()
 void UPlayerInputComponent::StartReload()
 {
 	Super::StartReload();
-	OnCombatWidgetVisible.Broadcast(true);
 }
 
 void UPlayerInputComponent::VisibleHud()

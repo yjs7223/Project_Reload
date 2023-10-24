@@ -21,8 +21,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "CharacterSoundDataAsset.h"
 #include "Kismet/KismetMaterialLibrary.h"
-#include "GameFramework/InputSettings.h"
-#include "Engine/InputDelegateBinding.h"
 
 //#include "Kismet/GameplayStatics.h"
 //#include "Engine.h"
@@ -67,14 +65,9 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
-	InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
+	InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(InputComponentName);
 
-	SetupPlayerInputComponent(InputComponent);
-	if (UInputDelegateBinding::SupportsInputDelegate(GetClass()))
-	{
-		InputComponent->bBlockInput = bBlockInput;
-		UInputDelegateBinding::BindInputDelegatesWithSubojects(this, InputComponent);
-	}
+
 	/*HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
 
