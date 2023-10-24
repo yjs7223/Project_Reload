@@ -379,6 +379,7 @@ void UPlayerWeaponComponent::StartAiming()
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(false);
 	OnChangedAmmoUIDelegate.Broadcast();
 
 }
@@ -397,6 +398,7 @@ void UPlayerWeaponComponent::StopAiming()
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(true);
 	OnVisibleAmmoUIDelegate.Broadcast();
 }
 
@@ -412,6 +414,7 @@ void UPlayerWeaponComponent::StartFire()
 	StopRcovery();
 	Fire();
 	Super::StartFire();
+	OnCombatWidgetVisible.Broadcast(false);
 
 
 	startRot = owner->GetController()->GetControlRotation();
@@ -431,6 +434,7 @@ void UPlayerWeaponComponent::StopFire()
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
+		OnCombatWidgetVisible.Broadcast(true);
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		TotalPitchRecoilValue = 0.0f;
 		StartRecovery();
@@ -445,8 +449,8 @@ void UPlayerWeaponComponent::StartReload()
 	{
 		return;
 	}
-	
 	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
+	OnCombatWidgetVisible.Broadcast(true);
 	OnPlayReloadUIDelegate.ExecuteIfBound();
 	bReload = CanReload();
 }

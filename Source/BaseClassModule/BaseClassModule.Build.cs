@@ -12,7 +12,9 @@ public class BaseClassModule : ModuleRules
             "Engine", 
             "AIModule", 
             "Niagara", 
-            "PhysicsCore", 
-            "NavigationSystem" });
+            "PhysicsCore",
+			"InputCore",
+			"Slate",
+			"NavigationSystem" });
     }
 }
