@@ -28,7 +28,16 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void BindInput() override;
 
-public:
+public
+	void StartReload();
+
+	UFUNCTION()
+	void InputDie();
+
+private:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
 	void InputMove();
 	virtual void StartReload() override;
 
@@ -40,6 +49,11 @@ public:
 	void HPreduce();
 	void HPregen();
 	void GamePause();
+
+private:
+	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
+	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
+	TObjectPtr<class UCoverComponent> m_Covercomponent;
 
 protected:
 	TObjectPtr<class UPlayerMoveComponent> m_PlayerMove;

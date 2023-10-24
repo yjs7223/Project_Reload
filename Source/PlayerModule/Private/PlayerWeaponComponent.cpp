@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
+#include "Camera/CameraComponent.h"
 #include "BaseInputComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -59,6 +60,12 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (UStatComponent* statComp = GetOwner()->FindComponentByClass<UStatComponent>())
+	{
+		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerWeaponComponent::InitData, FName("InitData"));
+	}
+
 	InitData();
 	
 	// ...
@@ -180,7 +187,7 @@ void UPlayerWeaponComponent::InitData()
 		m_WeaponDistance = dataTable->WeaponDistance;
 
 
-		//OnChangedAmmoUIDelegate.ExecuteIfBound();
+		OnChangedAmmoUIDelegate.Broadcast();
 	}
 
 
@@ -240,21 +247,32 @@ void UPlayerWeaponComponent::Fire()
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
 		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
 
-		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		end = m_rot.Vector() * 1000000.0f;
+		UCameraComponent* camera = GetOwner()->FindComponentByClass<UCameraComponent>();
 
-		//WeaponHit
-		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
-		/*if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+		FVector mindis = m_result.Location - camera->GetComponentLocation();
+
+		float dis = (camera->GetComponentLocation() - GetOwner()->GetActorLocation()).Length(); //200 100
+
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(mindis.Length()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::SanitizeFloat(dis));
+		if (mindis.Length() <= dis)
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
-			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
+			param.AddIgnoredActor(m_result.GetActor());
+			if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+			{
+				DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 5.f, 0);
+				start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+				m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+				end = m_rot.Vector() * 1000000.0f;
+			}
+		}
+		else
+		{
+			start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+			end = m_rot.Vector() * 1000000.0f;
+		}
 
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
-			end = m_rot.Vector() * 99999;
-
-		}*/
 	}
 	else
 	{
