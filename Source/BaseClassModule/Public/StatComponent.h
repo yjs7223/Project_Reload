@@ -85,9 +85,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	FVector hitNormal;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-	FVector revivePos;
-
 protected:
 	class ABaseCharacter* owner;
 

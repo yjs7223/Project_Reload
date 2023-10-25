@@ -122,14 +122,3 @@ void UPlayerInputComponent::GamePause()
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 	}
 }
-
-void UPlayerInputComponent::InputDie()
-{
-	m_InputComponent->ClearActionBindings();
-	//m_InputComponent->ClearBindingValues();
-	m_InputComponent->AxisBindings.Empty();
-	m_InputComponent->AxisKeyBindings.Empty();
-	m_InputComponent->VectorAxisBindings.Empty();
-	m_InputComponent->KeyBindings.Empty();
-
-}
