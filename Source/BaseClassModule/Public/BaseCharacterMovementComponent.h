@@ -6,6 +6,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BaseCharacterMovementComponent.generated.h"
 
+UCLASS()
+class UWidgetTestclass : public UObject 
+{
+	GENERATED_BODY()
+};
 
 
 UENUM(BlueprintType)
@@ -13,6 +18,8 @@ enum ECustomMovementMode
 {
 	CMOVE_None			UMETA(Hidden),
 	CMOVE_Runing		UMETA(DisplayName = "Run"),
+	CMOVE_Cover			UMETA(DisplayName = "Cover"),
+
 	CMOVE_MAX			UMETA(Hidden)
 };
 
