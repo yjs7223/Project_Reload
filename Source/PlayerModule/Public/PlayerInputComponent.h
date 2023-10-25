@@ -9,39 +9,29 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), hidecategories = (Activation, "Components|Activation"))
 class PLAYERMODULE_API UPlayerInputComponent : public UBaseInputComponent
 {
 	GENERATED_BODY()
 
 public:
 	DECLARE_MULTICAST_DELEGATE(FChangedWeapon);
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnCombatWidgetVisible, bool);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnAllWidgetVisible, bool);
 	DECLARE_DELEGATE(FOnCreatePauseWidget);
 
 public:
 	FChangedWeapon OnChangedWeapon;
-	FOnCombatWidgetVisible OnCombatWidgetVisible;
 	FOnAllWidgetVisible OnAllWidgetVisible;
 	FOnCreatePauseWidget OnCreatePauseWidget;
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void BindInput() override;
 
 public:
-	void StartReload();
-
-private:
-	void MoveForward(float Value);
-	void MoveRight(float Value);
 	void InputMove();
-	void Crouching();
-	void Runing();
-	void StartFire();
-	void StopFire();
-	void StartAiming();
-	void StopAiming();
+	virtual void StartReload() override;
+
 	void ChangeMainWeapon();
 	void ChangeSubWeapon();
 	void StopCover();
@@ -51,13 +41,6 @@ private:
 	void HPregen();
 	void GamePause();
 
-
-private:
-	TObjectPtr<class UPlayerWeaponComponent> m_PlayerWeapon;
-	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
-	TObjectPtr<class UCoverComponent> m_Covercomponent;
+protected:
 	TObjectPtr<class UPlayerMoveComponent> m_PlayerMove;
-	TObjectPtr<class UInputComponent> m_InputComponent;
-	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
-
 };

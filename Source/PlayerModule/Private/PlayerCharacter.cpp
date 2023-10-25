@@ -53,19 +53,20 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	//m_FollowSpringArm->SetupAttachment(RootComponent);
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("root"));
-	
+
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
-	
+
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
-	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
+	InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(InputComponentName);
+
 
 	/*HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));

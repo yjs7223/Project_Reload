@@ -37,11 +37,11 @@ void UPlayerHUDWidget::NativeConstruct()
 	if (UPlayerWeaponComponent* weaponComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerWeaponComponent>())
 	{
 		weaponComp->OnSpawnDamageUIDelegate.BindUObject(this, &UPlayerHUDWidget::CreateDamageWidget);
+		weaponComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
 	}
 
 	if (UPlayerInputComponent* inputComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerInputComponent>())
 	{
-		inputComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
 		inputComp->OnAllWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetAllWidgetVisible);
 		inputComp->OnCreatePauseWidget.BindUObject(this, &UPlayerHUDWidget::CreatePauseWidget);
 	}

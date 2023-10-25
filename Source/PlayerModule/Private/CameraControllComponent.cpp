@@ -57,6 +57,8 @@ void UCameraControllComponent::BeginPlay()
 	}
 	m_CameraControllStructData->m_FaceRight.Initalize();
 	m_CameraControllStructData->m_Crouch.Initalize();
+
+
 }
 
 

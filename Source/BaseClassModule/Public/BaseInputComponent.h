@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/InputComponent.h"
 #include "BaseInputComponent.generated.h"
 
 
@@ -22,26 +22,54 @@ struct FInputData
 	uint8 IsReload : 1;
 };
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class BASECLASSMODULE_API UBaseInputComponent : public UActorComponent
+UCLASS(NonTransient, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent), hidecategories = (Activation, "Components|Activation"))
+class BASECLASSMODULE_API UBaseInputComponent : public UInputComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	UBaseInputComponent();
-
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
+	virtual void BindInput();
+	virtual void UnBindInput();
+
 	FInputData* getInput();
 
-	bool m_CanUnCrouch;
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
-	ACharacter* owner;
 
-  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
+	virtual void MoveForward(float Value);
+	virtual void MoveRight(float Value);
+	virtual void Crouching();
+	virtual void Runing();
+	virtual void StartFire();
+	virtual void StopFire();
+	virtual void StartAiming();
+	virtual void StopAiming();
+	virtual void StartReload();
+
+
+public:
+	bool getCanUnCrouch() { return m_CanUnCrouch;}
+	bool getInputEnable() { return m_IsInputEnabled;}
+
+	void SetCanUnCrouch(bool CanUnCrouch) { m_CanUnCrouch = CanUnCrouch;}
+	void SetInputEnable(bool IsEnable);
+
+protected:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	ACharacter* owner;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FInputData m_inputData;
+
+	bool m_CanUnCrouch;
+	bool m_IsInputEnabled;
+
+
+protected:
+	TObjectPtr<class UWeaponComponent> m_Weapon;
+	TObjectPtr<class UPathFollowingComponent> m_PathFollowingComp;
+	TObjectPtr<class UCoverComponent> m_Covercomponent;
+	TObjectPtr<class UInputComponent> m_InputComponent;
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
 };

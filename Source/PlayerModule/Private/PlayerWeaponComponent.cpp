@@ -349,16 +349,19 @@ void UPlayerWeaponComponent::Fire()
 
 void UPlayerWeaponComponent::StartAiming()
 {
+	Super::StartAiming();
+
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
-	bAiming = true;
+
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
 	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3f, true, 0.0f);
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(false);
 	OnChangedAmmoUIDelegate.Broadcast();
 
 }
@@ -370,12 +373,14 @@ void UPlayerWeaponComponent::StopAiming()
 		OnVisibleAmmoUIDelegate.Broadcast();
 		return;
 	}
-	bAiming = false;
+	Super::StopAiming();
+	
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
 	owner->GetWorldTimerManager().ClearTimer(AimingTimer);
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(true);
 	OnVisibleAmmoUIDelegate.Broadcast();
 }
 
@@ -390,7 +395,8 @@ void UPlayerWeaponComponent::StartFire()
 
 	StopRcovery();
 	Fire();
-	bFire = true;
+	Super::StartFire();
+	OnCombatWidgetVisible.Broadcast(false);
 
 
 	startRot = owner->GetController()->GetControlRotation();
@@ -405,12 +411,13 @@ void UPlayerWeaponComponent::StopFire()
 {
 	if (bFire)
 	{
+		Super::StopFire();
 		if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
+		OnCombatWidgetVisible.Broadcast(true);
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
-		bFire = false;
 		TotalPitchRecoilValue = 0.0f;
 		StartRecovery();
 	}
@@ -424,22 +431,10 @@ void UPlayerWeaponComponent::StartReload()
 	{
 		return;
 	}
-	
 	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
+	OnCombatWidgetVisible.Broadcast(true);
 	OnPlayReloadUIDelegate.ExecuteIfBound();
 	bReload = CanReload();
-}
-
-bool UPlayerWeaponComponent::CanReload()
-{
-	if (curAmmo >= maxAmmo)
-	{
-		return false;
-	}
-	else if (holdAmmo == 0) {
-		return false;
-	}
-	return true;
 }
 
 void UPlayerWeaponComponent::StopReload()

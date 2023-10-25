@@ -49,13 +49,13 @@ void UCoverComponent::BeginPlay()
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
-	if (UWeaponComponent::CheckActorTag(owner, TEXT("Player")))
-	{
+	if (!Cast<AAIController>(owner->Controller)) {
 		TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
-		if (ensure(pakurArr.Num() == 1)) {
+		if (pakurArr.Num() == 1) {
 			m_PakurComp = pakurArr[0];
 		}
 	}
+
 	if (m_PathFollowingComp == nullptr)
 	{
 		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
@@ -68,7 +68,7 @@ void UCoverComponent::BeginPlay()
 
 	SetIsFaceRight(true);
 
-	if (!Cast<AAIController>(owner->Controller)) {
+	if (Cast<APlayerController>(owner->Controller)) {
 		
 		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SendPlayerUIData);
 		PlayerCharacterTick.AddUObject(this, &UCoverComponent::CheckCoverPath);
@@ -756,7 +756,7 @@ void UCoverComponent::StopCover()
 	m_CanCoverPointNormal = FVector::ZeroVector;
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
-	m_Input->m_CanUnCrouch = true;
+	m_Input->SetCanUnCrouch(true);
 	m_Weapon->m_CanShooting = false;
 
 	OnVisibleCorneringWidget.ExecuteIfBound(false, true);
@@ -826,14 +826,14 @@ void UCoverComponent::BeCrouch(float deltaTime)
 	if (m_PeekingState != EPeekingState::None) return;
 	
 	if (isMustCrouch()) {
-		m_Input->m_CanUnCrouch = false;
+		m_Input->SetCanUnCrouch(false);
 		if (!owner->bIsCrouched) {
 			owner->Crouch();
 			//if (owner->GetCharacterMovement()->bWantsToCrouch);
 		}
 	}
 	else {
-		m_Input->m_CanUnCrouch = true;
+		m_Input->SetCanUnCrouch(true);
 	}
 }
 

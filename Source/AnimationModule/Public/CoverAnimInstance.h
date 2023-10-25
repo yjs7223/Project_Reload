@@ -102,8 +102,11 @@ protected:
 	bool mIsCoverShooting;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 	bool mIsConerWait;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation , meta = (DisplayName = "IsWeaponUse"))
-	bool m_IsWeaponUse;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation, meta = (DisplayName = "CanShooting"))
+	bool m_CanShooting;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation, meta = (DisplayName = "IsUsingWeapon"))
+	bool m_IsUsingWeapon;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 	EPeekingState  mPeekingState;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
