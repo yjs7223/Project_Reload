@@ -22,18 +22,21 @@ struct FInputData
 	uint8 IsReload : 1;
 };
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(NonTransient, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent), hidecategories = (Activation, "Components|Activation"))
 class BASECLASSMODULE_API UBaseInputComponent : public UInputComponent
 {
 	GENERATED_BODY()
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
+	virtual void BindInput();
+	virtual void UnBindInput();
+
 	FInputData* getInput();
 
-	bool m_CanUnCrouch;
 
 	virtual void MoveForward(float Value);
 	virtual void MoveRight(float Value);
@@ -46,12 +49,22 @@ public:
 	virtual void StartReload();
 
 
-protected:
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = Editor)
-	ACharacter* owner;
+public:
+	bool getCanUnCrouch() { return m_CanUnCrouch;}
+	bool getInputEnable() { return m_IsInputEnabled;}
 
-  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
+	void SetCanUnCrouch(bool CanUnCrouch) { m_CanUnCrouch = CanUnCrouch;}
+	void SetInputEnable(bool IsEnable);
+
+protected:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	ACharacter* owner;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FInputData m_inputData;
+
+	bool m_CanUnCrouch;
+	bool m_IsInputEnabled;
+
 
 protected:
 	TObjectPtr<class UWeaponComponent> m_Weapon;

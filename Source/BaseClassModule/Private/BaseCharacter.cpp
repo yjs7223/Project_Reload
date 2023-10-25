@@ -8,7 +8,6 @@
 #include "CoverComponent.h"
 #include "BaseCharacterMovementComponent.h"
 
-
 // Sets default values
 //ABaseCharacter::ABaseCharacter()
 //{
@@ -39,8 +38,18 @@
 //	Weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);*/
 //}
 
+namespace ABaseCharacterHelper {
+	const FObjectInitializer& Init(const FObjectInitializer& ObjectInitializer) 
+	{
+		ObjectInitializer.SetDefaultSubobjectClass<UBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName);
+		return ObjectInitializer;
+	}
+}
+FName ABaseCharacter::InputComponentName = "InputComponent";
+
+
 ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : 
-	Super(ObjectInitializer.SetDefaultSubobjectClass<UBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+	Super(ABaseCharacterHelper::Init(ObjectInitializer))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
