@@ -46,10 +46,7 @@ public:
 		void CheckInteractiveObj();
 	
 	UFUNCTION(BlueprintCallable)
-	void Interacting();
-
-	UFUNCTION(BlueprintCallable)
-	void Revive();
+		void Interacting();
 
 
 public:

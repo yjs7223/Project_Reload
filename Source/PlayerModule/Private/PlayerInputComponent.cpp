@@ -19,9 +19,14 @@
 
 void UPlayerInputComponent::BeginPlay()
 {
-	Super::BeginPlay();
+	m_PlayerMove = GetOwner()->FindComponentByClass<UPlayerMoveComponent>();
 
-	m_PlayerMove = owner->FindComponentByClass<UPlayerMoveComponent>();
+	Super::BeginPlay();
+}
+
+void UPlayerInputComponent::BindInput()
+{
+	Super::BindInput();
 
 	BindAxis("Move Forward / Backward", this, &UPlayerInputComponent::MoveForward);
 	BindAxis("Move Right / Left", this, &UPlayerInputComponent::MoveRight);
@@ -67,34 +72,6 @@ void UPlayerInputComponent::InputMove()
 	}
 }
 
-void UPlayerInputComponent::StartFire()
-{
-	Super::StartFire();
-
-	OnCombatWidgetVisible.Broadcast(false);
-}
-
-void UPlayerInputComponent::StopFire()
-{
-	Super::StopFire();
-
-	OnCombatWidgetVisible.Broadcast(true);
-}
-
-void UPlayerInputComponent::StartAiming()
-{
-	Super::StartAiming();
-	
-	OnCombatWidgetVisible.Broadcast(false);
-}
-
-void UPlayerInputComponent::StopAiming()
-{
-	Super::StopAiming();
-
-	OnCombatWidgetVisible.Broadcast(true);
-}
-
 void UPlayerInputComponent::ChangeMainWeapon()
 {
 	if (m_Weapon->weapontype == EWeaponType::Rifle) return;
@@ -119,7 +96,6 @@ void UPlayerInputComponent::StopCover()
 void UPlayerInputComponent::StartReload()
 {
 	Super::StartReload();
-	OnCombatWidgetVisible.Broadcast(true);
 }
 
 void UPlayerInputComponent::VisibleHud()
@@ -145,15 +121,4 @@ void UPlayerInputComponent::GamePause()
 		OnCreatePauseWidget.ExecuteIfBound();
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 	}
-}
-
-void UPlayerInputComponent::InputDie()
-{
-	m_InputComponent->ClearActionBindings();
-	//m_InputComponent->ClearBindingValues();
-	m_InputComponent->AxisBindings.Empty();
-	m_InputComponent->AxisKeyBindings.Empty();
-	m_InputComponent->VectorAxisBindings.Empty();
-	m_InputComponent->KeyBindings.Empty();
-
 }

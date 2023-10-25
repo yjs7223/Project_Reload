@@ -100,5 +100,8 @@ void UStatsAnimInstance::KnockBackEnd(UAnimMontage* Montage, bool bInterrupted)
 
 void UStatsAnimInstance::PlayDIeMontage()
 {
-	owner->GetMesh()->GetAnimInstance()->Montage_Play(DieMontage);
+	UAnimInstance* animinstance = owner->GetMesh()->GetAnimInstance();
+	if (!animinstance->Montage_IsPlaying(DieMontage)) {
+		animinstance->Montage_Play(DieMontage);
+	}
 }

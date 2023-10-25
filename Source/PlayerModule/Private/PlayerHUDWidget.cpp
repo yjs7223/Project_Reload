@@ -16,7 +16,6 @@
 #include "Player_Cover_Widget.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerInputComponent.h"
-#include "PlayerStatComponent.h"
 #include "CoverComponent.h"
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
@@ -38,18 +37,13 @@ void UPlayerHUDWidget::NativeConstruct()
 	if (UPlayerWeaponComponent* weaponComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerWeaponComponent>())
 	{
 		weaponComp->OnSpawnDamageUIDelegate.BindUObject(this, &UPlayerHUDWidget::CreateDamageWidget);
+		weaponComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
 	}
 
 	if (UPlayerInputComponent* inputComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerInputComponent>())
 	{
-		inputComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
 		inputComp->OnAllWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetAllWidgetVisible);
 		inputComp->OnCreatePauseWidget.BindUObject(this, &UPlayerHUDWidget::CreatePauseWidget);
-	}
-
-	if (UPlayerStatComponent* statComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>())
-	{
-		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerHUDWidget::DeactiveWidget, FName("DeactiveWidget"));
 	}
 
 	if (UCoverComponent* coverComp = GetOwningPlayerPawn()->FindComponentByClass<UCoverComponent>())
@@ -177,12 +171,4 @@ void UPlayerHUDWidget::SetFaceRightWidget(bool p_bFaceright)
 		Right_Overlay->SetRenderOpacity(0.0f);
 		Left_Overlay->SetRenderOpacity(1.0f);
 	}
-}
-
-void UPlayerHUDWidget::DeactiveWidget()
-{
-	Player_HP_Widget->SetRenderOpacity(0.0f);
-	Player_Ammo_Widget->SetRenderOpacity(0.0f);
-	Player_HP_Widget_L->SetRenderOpacity(0.0f);
-	Player_Ammo_Widget_L->SetRenderOpacity(0.0f);
 }

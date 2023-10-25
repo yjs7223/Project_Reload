@@ -8,7 +8,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
-#include "Camera/CameraComponent.h"
 #include "BaseInputComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -29,6 +28,7 @@
 #include "CoverComponent.h"
 #include "CharacterSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "Camera/CameraComponent.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
 #include "PlayerWeaponDataAsset.h"
@@ -60,12 +60,6 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (UStatComponent* statComp = GetOwner()->FindComponentByClass<UStatComponent>())
-	{
-		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerWeaponComponent::InitData, FName("InitData"));
-	}
-
 	InitData();
 	
 	// ...
@@ -187,7 +181,7 @@ void UPlayerWeaponComponent::InitData()
 		m_WeaponDistance = dataTable->WeaponDistance;
 
 
-		OnChangedAmmoUIDelegate.Broadcast();
+		//OnChangedAmmoUIDelegate.ExecuteIfBound();
 	}
 
 
@@ -243,10 +237,6 @@ void UPlayerWeaponComponent::Fire()
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetComponent()->GetName());
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
-		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
-
 		UCameraComponent* camera = GetOwner()->FindComponentByClass<UCameraComponent>();
 
 		FVector mindis = m_result.Location - camera->GetComponentLocation();
@@ -260,7 +250,7 @@ void UPlayerWeaponComponent::Fire()
 			param.AddIgnoredActor(m_result.GetActor());
 			if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 			{
-				DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 5.f, 0);
+				//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 5.f, 0);
 				start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 				m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 				end = m_rot.Vector() * 1000000.0f;
@@ -272,7 +262,6 @@ void UPlayerWeaponComponent::Fire()
 			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 			end = m_rot.Vector() * 1000000.0f;
 		}
-
 	}
 	else
 	{
@@ -379,6 +368,7 @@ void UPlayerWeaponComponent::StartAiming()
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(false);
 	OnChangedAmmoUIDelegate.Broadcast();
 
 }
@@ -397,6 +387,7 @@ void UPlayerWeaponComponent::StopAiming()
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(true);
 	OnVisibleAmmoUIDelegate.Broadcast();
 }
 
@@ -412,6 +403,7 @@ void UPlayerWeaponComponent::StartFire()
 	StopRcovery();
 	Fire();
 	Super::StartFire();
+	OnCombatWidgetVisible.Broadcast(false);
 
 
 	startRot = owner->GetController()->GetControlRotation();
@@ -431,6 +423,14 @@ void UPlayerWeaponComponent::StopFire()
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
+		if (bAiming)
+		{
+			OnCombatWidgetVisible.Broadcast(false);
+		}
+		else
+		{
+			OnCombatWidgetVisible.Broadcast(true);
+		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		TotalPitchRecoilValue = 0.0f;
 		StartRecovery();
@@ -445,8 +445,8 @@ void UPlayerWeaponComponent::StartReload()
 	{
 		return;
 	}
-	
 	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
+	OnCombatWidgetVisible.Broadcast(true);
 	OnPlayReloadUIDelegate.ExecuteIfBound();
 	bReload = CanReload();
 }
