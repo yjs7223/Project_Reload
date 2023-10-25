@@ -28,6 +28,7 @@
 #include "CoverComponent.h"
 #include "CharacterSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "Camera/CameraComponent.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
 #include "PlayerWeaponDataAsset.h"
@@ -236,25 +237,31 @@ void UPlayerWeaponComponent::Fire()
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetComponent()->GetName());
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
-		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
+		UCameraComponent* camera = GetOwner()->FindComponentByClass<UCameraComponent>();
 
-		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		end = m_rot.Vector() * 1000000.0f;
+		FVector mindis = m_result.Location - camera->GetComponentLocation();
 
-		//WeaponHit
-		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
-		/*if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+		float dis = (camera->GetComponentLocation() - GetOwner()->GetActorLocation()).Length(); //200 100
+
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(mindis.Length()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::SanitizeFloat(dis));
+		if (mindis.Length() <= dis)
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
-			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
-
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
-			end = m_rot.Vector() * 99999;
-
-		}*/
+			param.AddIgnoredActor(m_result.GetActor());
+			if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+			{
+				//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 5.f, 0);
+				start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+				m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+				end = m_rot.Vector() * 1000000.0f;
+			}
+		}
+		else
+		{
+			start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+			end = m_rot.Vector() * 1000000.0f;
+		}
 	}
 	else
 	{
@@ -416,7 +423,14 @@ void UPlayerWeaponComponent::StopFire()
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
-		OnCombatWidgetVisible.Broadcast(true);
+		if (bAiming)
+		{
+			OnCombatWidgetVisible.Broadcast(false);
+		}
+		else
+		{
+			OnCombatWidgetVisible.Broadcast(true);
+		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
 		TotalPitchRecoilValue = 0.0f;
 		StartRecovery();
