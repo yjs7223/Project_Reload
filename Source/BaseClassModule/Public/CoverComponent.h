@@ -60,7 +60,7 @@ public:
 	* 이동방향을 세팅해줍니다
 	* @param vector 세팅될 이동벡터 입니다
 	*/
-	void SettingMoveVector(OUT FVector& vector);
+	bool SettingMoveVector(OUT FVector& vector);
 	/** 엄폐용으로 에임오프셋을 세팅해줍니다 */
 	void AimSetting(float DeltaTime);
 	/** 엄폐중에 로테이트를 세팅해줍니다*/
