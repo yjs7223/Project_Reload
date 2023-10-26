@@ -747,7 +747,7 @@ void UCoverComponent::StopCover()
 		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
 
-	m_Movement->SetMovementMode(MOVE_Walking);
+	//m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;
 	mCoverShootingState = ECoverShootingState::None;

@@ -190,13 +190,13 @@ void UPlayerWeaponComponent::InitData()
 
 void UPlayerWeaponComponent::Fire()
 {
+	Super::Fire();
 	if (!m_CanShooting) return;
 	if (curAmmo <= 0)
 	{
 		StopFire();
 		return;
 	}
-	Super::Fire();
 
 	if (bReload)
 	{
