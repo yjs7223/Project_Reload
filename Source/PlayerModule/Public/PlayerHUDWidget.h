@@ -23,7 +23,7 @@ public:
 
 	void InitWidgets();
 
-	void CreateDamageWidget(float value, FHitResult result);
+	void CreateDamageWidget(float value, FHitResult result, bool p_bHead);
 
 	void SetCombatWidgetVisible(bool p_visible);
 
@@ -95,4 +95,8 @@ public:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
 		class UWidgetAnimation* DesFadeOutAnimation;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int damageTextSize;
 };

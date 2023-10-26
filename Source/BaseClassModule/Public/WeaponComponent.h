@@ -27,10 +27,11 @@ class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
 
 public:
 	DECLARE_MULTICAST_DELEGATE(FPlayShottingAinmationDelegate);
-
+	DECLARE_DELEGATE_OneParam(FOnBlockingUIDelegate, bool);
 public:
 	FPlayShottingAinmationDelegate shootingAnimation;
 	FDele_SpawnTrigger Dele_SpawnTrigger;
+	FOnBlockingUIDelegate OnBlockingUIDelegate;
 public:
 	// Sets default values for this component's properties
 	UWeaponComponent();

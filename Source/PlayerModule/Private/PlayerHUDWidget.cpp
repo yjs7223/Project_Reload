@@ -31,7 +31,7 @@ void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-
+	//damageTextSize = 16;
 	InitWidgets();
 
 	if (UPlayerWeaponComponent* weaponComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerWeaponComponent>())
@@ -69,14 +69,18 @@ void UPlayerHUDWidget::InitWidgets()
 	}
 }
 
-void UPlayerHUDWidget::CreateDamageWidget(float value, FHitResult result)
+void UPlayerHUDWidget::CreateDamageWidget(float value, FHitResult result, bool p_bHead)
 {
 	if (Damage_WidgetClass)
 	{
 		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(GetOwningPlayer(), Damage_WidgetClass);
 		if (dwidget)
 		{
-			dwidget->SetDamageText(value, result);
+			if (damageTextSize <= 0)
+			{
+				damageTextSize = 16;
+			}
+			dwidget->SetDamageText(value, result, p_bHead, damageTextSize);
 			dwidget->AddToViewport();
 		}
 	}

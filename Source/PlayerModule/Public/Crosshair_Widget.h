@@ -42,6 +42,11 @@ public:
 
 	void PlayReloadAnim();
 
+	UFUNCTION(BlueprintCallable)
+	void StopReloadAnim();
+
+	void Blocking(bool bBlock);
+
 	virtual void SetCombatWidgetVisible() override;
 
 public:
@@ -59,6 +64,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* Kill_Overlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* NotFire_Overlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Up_Cross_image;
