@@ -291,11 +291,12 @@ void UPlayerWeaponComponent::Fire()
 				{
 					damageVlaue = CalcDamage(m_result, damage);
 					MyStat->Attacked(damageVlaue, owner);
+					headhit = false;
 				}
 
 				if (bHit)
 				{
-					OnSpawnDamageUIDelegate.ExecuteIfBound(damageVlaue, m_result);
+					OnSpawnDamageUIDelegate.ExecuteIfBound(damageVlaue, m_result, headhit);
 					MyStat->hitNormal = m_result.TraceEnd - m_result.TraceStart;
 					OnChangedCrossHairDieDelegate.ExecuteIfBound();
 				}
@@ -508,10 +509,10 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 		{
 			curAmmo++;
 			reloadCount = 0;
-			if (curAmmo == maxAmmo / 2)
+			/*if (curAmmo == maxAmmo / 2)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagInSound, owner->GetActorLocation());
-			}
+			}*/
 			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 			OnChangedAmmoUIDelegate.Broadcast();
 		}
@@ -607,7 +608,7 @@ void UPlayerWeaponComponent::StartRecoil()
 		}
 		else
 		{
-			pitchRecoilValue = 0.0f;
+			pitchRecoilValue = FMath::RandRange(-.1f, .1f);
 		}
 
 		if (bAiming && AimingRecoilValue > 0.0f)
@@ -636,11 +637,13 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 	{
 		RecoveryTime += p_deltatime * 2.0f;
 		TickCount += 2;
-		if (FMath::Abs(yawRecoveryValue) > 5.0f)
+		if (FMath::Abs(yawRecoveryValue) > 3.0f)
 		{
-			TickCount += 1000;
+			TickCount += 30;
 		}
-		if (pitchRecoveryValue < -20.0f)
+
+		//아래로 당긴거 확인
+		if (FMath::Abs(pitchRecoveryValue) > 5.0f)
 		{
 			TickCount += 10;
 		}

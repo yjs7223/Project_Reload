@@ -63,6 +63,8 @@ void UCrosshair_Widget::NativeConstruct()
 			MyWeaponComp->OnChangedCrossHairDieDelegate.BindUObject(this, &UCrosshair_Widget::CheckDie);
 			//MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 			MyWeaponComp->OnPlayReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::PlayReloadAnim);
+			MyWeaponComp->OnStopReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::StopReloadAnim);
+			MyWeaponComp->OnBlockingUIDelegate.BindUObject(this, &UCrosshair_Widget::Blocking);
 			//MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 		}
 	}
@@ -328,6 +330,35 @@ void UCrosshair_Widget::PlayReloadAnim()
 						PlayAnimationForward(ReloadAnim);
 					}
 				}), 0.01f, false);
+		}
+	}
+}
+
+void UCrosshair_Widget::StopReloadAnim()
+{
+	if (IsAnimationPlaying(FadeOutAnim))
+	{
+		StopAnimation(FadeOutAnim);
+	}
+	Reload_Overlay->SetRenderOpacity(0.0f);
+	Crosshair_Overlay->SetRenderOpacity(1.0f);
+}
+
+void UCrosshair_Widget::Blocking(bool bBlock)
+{
+	if (NotFire_Overlay)
+	{
+		if (bBlock)
+		{
+			Crosshair_Overlay->SetRenderOpacity(.0f);
+			Reload_Overlay->SetRenderOpacity(.0f);
+			NotFire_Overlay->SetRenderOpacity(1.f);
+		}
+		else
+		{
+			Crosshair_Overlay->SetRenderOpacity(1.0f);
+			Reload_Overlay->SetRenderOpacity(1.0f);
+			NotFire_Overlay->SetRenderOpacity(.0f);
 		}
 	}
 }

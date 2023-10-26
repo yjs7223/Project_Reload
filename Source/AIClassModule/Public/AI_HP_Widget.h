@@ -19,12 +19,18 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void SetDelegate(class AAICharacter* character);
+	void SetDelegate(class APawn* character);
 
+	UFUNCTION(BlueprintCallable)
 	void SwitchVisibleWidget();
 
+	UFUNCTION(BlueprintCallable)
 	void SetPercent();
+
 	void SetBackPercent(float deltatime);
+
+	UFUNCTION(BlueprintCallable)
+	void startWarning();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -55,6 +61,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UProgressBar* HP_BackBar;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UOverlay* Warning_Overlay;
 
 public:
 	FTimerHandle switchTimer;
