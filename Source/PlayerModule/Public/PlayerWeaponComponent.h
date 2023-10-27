@@ -19,7 +19,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnCombatWidgetVisible, bool);
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnVisibleAmmoUIDelegate);
 
-DECLARE_DELEGATE_TwoParams(FOnSpawnDamageUIDelegate, float, FHitResult);
+DECLARE_DELEGATE_ThreeParams(FOnSpawnDamageUIDelegate, float, FHitResult, bool);
 
 /**
  * 
