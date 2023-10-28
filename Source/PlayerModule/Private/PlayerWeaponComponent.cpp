@@ -91,7 +91,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoveryTick(DeltaTime);
 	CalculateBlockingTick(DeltaTime);
 
-	if (bAiming)
+	if (bAiming || bFire)
 	{
 		if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 		{
@@ -190,13 +190,13 @@ void UPlayerWeaponComponent::InitData()
 
 void UPlayerWeaponComponent::Fire()
 {
+	Super::Fire();
 	if (!m_CanShooting) return;
 	if (curAmmo <= 0)
 	{
 		StopFire();
 		return;
 	}
-	Super::Fire();
 
 	if (bReload)
 	{
@@ -349,10 +349,7 @@ void UPlayerWeaponComponent::Fire()
 	}
 	//Cast<UWeaponAnimInstance>(owner->GetMesh()->GetAnimInstance()).
 	//PlayShootingAnimation
-	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
-	{
-		owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
-	}
+
 }
 
 void UPlayerWeaponComponent::StartAiming()

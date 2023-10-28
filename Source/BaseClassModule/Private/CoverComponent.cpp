@@ -136,13 +136,12 @@ void UCoverComponent::PlayCover()
 	}
 	
 }
-
-void UCoverComponent::SettingMoveVector(OUT FVector& vector)
+	
+bool UCoverComponent::SettingMoveVector(OUT FVector& vector)
 {
-	if (!m_IsCover) return;
+	if (!m_IsCover) return false;
 	if (m_PeekingState != EPeekingState::None) {
-		vector = FVector::ZeroVector;
-		return;
+		return false;
 	}
 
 	if (owner->GetActorForwardVector().Dot(vector.GetSafeNormal2D()) < -0.9) {
@@ -157,9 +156,10 @@ void UCoverComponent::SettingMoveVector(OUT FVector& vector)
 		vector = FaceRight() *owner->GetActorRightVector();
 	}
 	else {
-		vector = FVector::ZeroVector;
 		m_IsCorneringWait = true;
+		return false;
 	}
+	return true;
 }
 
 bool UCoverComponent::StartAICover()
@@ -747,7 +747,7 @@ void UCoverComponent::StopCover()
 		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
 
-	m_Movement->SetMovementMode(MOVE_Walking);
+	//m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;
 	mCoverShootingState = ECoverShootingState::None;
