@@ -593,6 +593,9 @@ void UPlayerWeaponComponent::StartRecoil()
 	{
 		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
 		pitchRecoilValue = FMath::RandRange(pitchRange.X * 2.0f, pitchRange.Y * 1.5f);
+
+		TotalPitchRecoilValue += pitchRecoilValue;
+
 		if (bAiming && AimingRecoilValue > 0.0f)
 		{
 			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
@@ -608,9 +611,10 @@ void UPlayerWeaponComponent::StartRecoil()
 		}
 		else
 		{
-			pitchRecoilValue = FMath::RandRange(-.1f, .1f);
+			pitchRecoilValue = FMath::RandRange(-.2f, .2f);
 		}
 
+		TotalPitchRecoilValue += pitchRecoilValue;
 		if (bAiming && AimingRecoilValue > 0.0f)
 		{
 			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
@@ -618,7 +622,6 @@ void UPlayerWeaponComponent::StartRecoil()
 		}
 	}
 
-	TotalPitchRecoilValue += pitchRecoilValue;
 	//yawRecoveryValue += yawRecoilValue;
 	//pitchRecoveryValue += pitchRecoilValue;
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("recoil start"));
