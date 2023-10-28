@@ -132,6 +132,8 @@ public:
 
 	float m_hitTime;
 
+	bool bBlocking;
+
 	bool bWidgetVisible;
 	float widgetVisibleTime;
 	FTimerHandle VisibleTimer;
