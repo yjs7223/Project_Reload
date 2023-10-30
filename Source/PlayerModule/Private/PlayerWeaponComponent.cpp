@@ -91,7 +91,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoveryTick(DeltaTime);
 	CalculateBlockingTick(DeltaTime);
 
-	if (bAiming)
+	if (bAiming || bFire)
 	{
 		if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 		{
@@ -190,13 +190,13 @@ void UPlayerWeaponComponent::InitData()
 
 void UPlayerWeaponComponent::Fire()
 {
+	Super::Fire();
 	if (!m_CanShooting) return;
 	if (curAmmo <= 0)
 	{
 		StopFire();
 		return;
 	}
-	Super::Fire();
 
 	if (bReload)
 	{
@@ -291,11 +291,12 @@ void UPlayerWeaponComponent::Fire()
 				{
 					damageVlaue = CalcDamage(m_result, damage);
 					MyStat->Attacked(damageVlaue, owner);
+					headhit = false;
 				}
 
 				if (bHit)
 				{
-					OnSpawnDamageUIDelegate.ExecuteIfBound(damageVlaue, m_result);
+					OnSpawnDamageUIDelegate.ExecuteIfBound(damageVlaue, m_result, headhit);
 					MyStat->hitNormal = m_result.TraceEnd - m_result.TraceStart;
 					OnChangedCrossHairDieDelegate.ExecuteIfBound();
 				}
@@ -348,10 +349,7 @@ void UPlayerWeaponComponent::Fire()
 	}
 	//Cast<UWeaponAnimInstance>(owner->GetMesh()->GetAnimInstance()).
 	//PlayShootingAnimation
-	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
-	{
-		owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
-	}
+
 }
 
 void UPlayerWeaponComponent::StartAiming()
@@ -508,10 +506,10 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 		{
 			curAmmo++;
 			reloadCount = 0;
-			if (curAmmo == maxAmmo / 2)
+			/*if (curAmmo == maxAmmo / 2)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagInSound, owner->GetActorLocation());
-			}
+			}*/
 			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 			OnChangedAmmoUIDelegate.Broadcast();
 		}
@@ -592,6 +590,9 @@ void UPlayerWeaponComponent::StartRecoil()
 	{
 		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
 		pitchRecoilValue = FMath::RandRange(pitchRange.X * 2.0f, pitchRange.Y * 1.5f);
+
+		TotalPitchRecoilValue += pitchRecoilValue;
+
 		if (bAiming && AimingRecoilValue > 0.0f)
 		{
 			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
@@ -607,9 +608,10 @@ void UPlayerWeaponComponent::StartRecoil()
 		}
 		else
 		{
-			pitchRecoilValue = 0.0f;
+			pitchRecoilValue = FMath::RandRange(-.2f, .2f);
 		}
 
+		TotalPitchRecoilValue += pitchRecoilValue;
 		if (bAiming && AimingRecoilValue > 0.0f)
 		{
 			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
@@ -617,7 +619,6 @@ void UPlayerWeaponComponent::StartRecoil()
 		}
 	}
 
-	TotalPitchRecoilValue += pitchRecoilValue;
 	//yawRecoveryValue += yawRecoilValue;
 	//pitchRecoveryValue += pitchRecoilValue;
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("recoil start"));
@@ -636,11 +637,13 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 	{
 		RecoveryTime += p_deltatime * 2.0f;
 		TickCount += 2;
-		if (FMath::Abs(yawRecoveryValue) > 5.0f)
+		if (FMath::Abs(yawRecoveryValue) > 3.0f)
 		{
-			TickCount += 1000;
+			TickCount += 30;
 		}
-		if (pitchRecoveryValue < -20.0f)
+
+		//아래로 당긴거 확인
+		if (FMath::Abs(pitchRecoveryValue) > 5.0f)
 		{
 			TickCount += 10;
 		}

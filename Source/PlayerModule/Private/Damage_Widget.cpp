@@ -58,6 +58,19 @@ void UDamage_Widget::SetDamageText(float value, FHitResult result)
 	}
 }
 
+void UDamage_Widget::SetDamageText(float value, FHitResult result, bool p_bHead, int p_size)
+{
+	SetDamageText(value, result);
+
+	if (p_bHead)
+	{
+		FSlateColor c = FSlateColor(FColor::Red);
+		Damage_Text->SetColorAndOpacity(c);
+		Damage_Text->Font.Size = p_size;
+		Cast<UCanvasPanelSlot>(Damage_Overlay->Slot)->SetSize(FVector2D(50.f, p_size * 1.5f));
+	}
+}
+
 void UDamage_Widget::SetWidgetLocation(float InDeltaTime)
 {
 	UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), hitLocation, damageLocation);
