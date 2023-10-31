@@ -152,11 +152,17 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 		if (distance < m_WeaponDistance) {
 
+			if (!m_IsWeaponBlocking)
+				OnBlockingUIDelegate.ExecuteIfBound(true);
 			m_IsWeaponBlocking = true;
+			
 			return;
 		}
 		m_WeaponHitLocation = result.Location;
 	}
+
+	if (m_IsWeaponBlocking)
+		OnBlockingUIDelegate.ExecuteIfBound(false);
 	m_IsWeaponBlocking = false;
 }
 

@@ -86,7 +86,7 @@ void UBaseInputComponent::Runing()
 	if (m_Movement->isRuning()) {
 		m_Movement->SetMovementMode(MOVE_Walking);
 	}
-	else if(m_Movement->MovementMode != MOVE_Falling) {
+	else if(m_Movement->MovementMode != MOVE_Falling && m_Movement->MovementMode != MOVE_Flying) {
 		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		m_inputData.IsAiming = false;
 	}
@@ -131,7 +131,15 @@ void UBaseInputComponent::StopAiming()
 void UBaseInputComponent::StartReload()
 {
 	if (!m_Weapon->CanReload()) return;
+	if (m_Movement->isRuning()) {
+		m_Movement->SetMovementMode(MOVE_Walking);
+	}
 	m_inputData.IsReload = true;
+}
+
+void UBaseInputComponent::StopReload()
+{
+	m_inputData.IsReload = false;
 }
 
 void UBaseInputComponent::SetInputEnable(bool IsEnable)

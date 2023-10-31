@@ -4,6 +4,7 @@
 #include "AI_HP_Widget.h"
 #include "Animation/WidgetAnimation.h"
 #include "AICharacter.h"
+#include "AIDog.h"
 #include "AIStatComponent.h"
 #include "UMG.h"
 
@@ -23,20 +24,33 @@ void UAI_HP_Widget::NativeConstruct()
 	}
 	HP_Overlay_s->SetRenderOpacity(1.0f);
 	HP_Overlay_l->SetRenderOpacity(0.0f);
+
+	//Spider
+	//if (GetOwningPlayerPawn()->Tags.Num() > 0)
+	//{
+	//	if (GetOwningPlayerPawn()->ActorHasTag(FName("Spider")))
+	//	{
+	//		//SetDelegate
+	//		AAIDog* dog = Cast<AAIDog>(GetOwningPlayerPawn());
+	//		dog->OnWarningUIDelegate.BindUObject(this, &UAI_HP_Widget::startWarning);
+	//		SetDelegate(dog);
+	//	}
+	//}
+
 }
 
 void UAI_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (stat->bThreat)
+	if (stat && stat->bThreat)
 	{
 		SwitchVisibleWidget();
 	}
 	SetBackPercent(InDeltaTime);
 }
 
-void UAI_HP_Widget::SetDelegate(AAICharacter* character)
+void UAI_HP_Widget::SetDelegate(APawn* character)
 {
 	if (character)
 	{
@@ -92,4 +106,12 @@ void UAI_HP_Widget::SetBackPercent(float deltatime)
 		}
 	}
 
+}
+
+void UAI_HP_Widget::startWarning()
+{
+	if (Warning_Overlay)
+	{
+		Warning_Overlay->SetRenderOpacity(1.0f);
+	}
 }

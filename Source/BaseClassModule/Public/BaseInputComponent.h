@@ -47,6 +47,7 @@ public:
 	virtual void StartAiming();
 	virtual void StopAiming();
 	virtual void StartReload();
+	virtual void StopReload();
 
 
 public:

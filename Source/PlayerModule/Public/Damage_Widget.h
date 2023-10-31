@@ -21,6 +21,7 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	void SetDamageText(float value, FHitResult result);
+	void SetDamageText(float value, FHitResult result, bool p_bHead, int p_size);
 	void SetWidgetLocation(float InDeltaTime);
 
 
