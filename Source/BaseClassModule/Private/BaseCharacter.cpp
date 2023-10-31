@@ -63,7 +63,11 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) :
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	SetActorTickInterval(0.1f);
+  
+  
+	if (!Cast<APlayerController>(Controller)) {
+		SetActorTickInterval(0.1f);
+	}
 }
 
 

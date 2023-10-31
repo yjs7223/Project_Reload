@@ -46,6 +46,7 @@ void UPlayerInputComponent::BindInput()
 	BindAction("Aim", IE_Released, this, &UPlayerInputComponent::StopAiming);
 
 	BindAction("Reload", IE_Pressed, this, &UPlayerInputComponent::StartReload);
+	BindAction("Reload", IE_Released, this, &UPlayerInputComponent::StopReload);
 
 	BindAction("ChangeMainWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeMainWeapon);
 	BindAction("ChangeSubWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeSubWeapon);
