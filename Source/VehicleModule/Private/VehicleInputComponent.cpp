@@ -17,7 +17,6 @@ void UVehicleInputComponent::BindInput()
 	BindAction("Aim", IE_Pressed, this, &UPlayerInputComponent::StartAiming);
 	BindAction("Aim", IE_Released, this, &UPlayerInputComponent::StopAiming);
 
-	UBaseInputComponent::StartAiming();
 }
 
 void UVehicleInputComponent::StartAiming()
