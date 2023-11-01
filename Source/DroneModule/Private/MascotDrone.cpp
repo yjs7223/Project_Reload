@@ -23,17 +23,43 @@ AMascotDrone::AMascotDrone()
 
 
 	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body")));
+
 	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Face")));
-	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Face-1")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Face-2")));
+
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Torus")));
+
 	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret-box")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret-box2")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret-cy")));
+	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret-cy2")));
+
 	m_StaticMeshCmp.Add(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wing")));
 
 	//GetMeshComponent
-	m_StaticMeshCmp[0]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Body.Drone_Body'")));
-	m_StaticMeshCmp[1]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Face.Drone_Face'")));
-	m_StaticMeshCmp[2]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Ring.Drone_Ring'")));
-	m_StaticMeshCmp[3]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Turret.Drone_Turret'")));
-	m_StaticMeshCmp[4]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/Drone_Wing.Drone_Wing'")));
+	m_StaticMeshCmp[0]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Body.MasCot_Body'")));
+
+	//Face
+	m_StaticMeshCmp[1]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Sphere_1.MasCot_Sphere_1'")));
+	m_StaticMeshCmp[2]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Cylinder_1.MasCot_Cylinder_1'")));
+	m_StaticMeshCmp[3]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Cylinder_split_1.MasCot_Cylinder_split_1'")));
+
+	m_StaticMeshCmp[4]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Torus.MasCot_Torus'")));
+
+	//turret
+	m_StaticMeshCmp[5]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Cylinder.MasCot_Cylinder'")));
+	m_StaticMeshCmp[6]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Box.MasCot_Box'")));
+	m_StaticMeshCmp[7]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Box_001.MasCot_Box_001'")));
+	m_StaticMeshCmp[8]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Cylinder_001.MasCot_Cylinder_001'")));
+	m_StaticMeshCmp[9]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Cylinder_002.MasCot_Cylinder_002'")));
+
+
+
+
+
+	m_StaticMeshCmp[10]->SetStaticMesh(LoadObject<UStaticMesh>(NULL, TEXT("StaticMesh'/Game/_sjs/Drone/DroneModel/MasCot_Wing.MasCot_Wing'")));
 
 
 	m_StaticMeshCmp[0]->SetRelativeScale3D(FVector(.3f, .3f, .3f));

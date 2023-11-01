@@ -34,8 +34,4 @@ void AInteractiveActor::Tick(float DeltaTime)
 
 }
 
-void AInteractiveActor::Interact()
-{
-
-}
 

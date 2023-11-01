@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "InteractiveActor.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class BASECLASSMODULE_API AInteractiveActor : public AActor
 {
 	GENERATED_BODY()
@@ -23,7 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual	void Interact();
+	UFUNCTION(BlueprintImplementableEvent)
+	void Interact();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
