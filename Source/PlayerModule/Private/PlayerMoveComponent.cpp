@@ -103,7 +103,7 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	}
 
 	FVector MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
-	if (m_CoverComp) {
+	if (m_CoverComp && m_CoverComp->IsCover()) {
 		if(!m_CoverComp->SettingMoveVector(MoveDirect)) return;
 	}
 
