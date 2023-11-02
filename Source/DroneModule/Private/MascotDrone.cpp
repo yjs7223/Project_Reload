@@ -12,6 +12,7 @@
 #include "Components/SphereComponent.h"
 #include "DroneAIController.h"
 #include "Engine/EngineTypes.h"
+#include <Kismet/KismetMathLibrary.h>
 
 // Sets default values
 AMascotDrone::AMascotDrone()
@@ -110,6 +111,8 @@ void AMascotDrone::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetActorHiddenInGame(true);
+
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AMascotDrone::OverlapBegin);
 	CollisionMesh->OnComponentEndOverlap.AddDynamic(this, &AMascotDrone::OverlapEnd);
@@ -157,6 +160,23 @@ void AMascotDrone::OverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* 
 				if(m_NearAI.Find(OtherActor))
 					m_NearAI.Remove(OtherActor);
 	}
+}
+
+void AMascotDrone::LaserOn()
+{
+	FVector start = GetActorLocation();
+
+	FRotator rot;
+	FVector end;
+
+	GetController()->GetPlayerViewPoint(end, rot);
+	end = UKismetMathLibrary::Conv_RotatorToVector(rot) * 9999;
+	FHitResult m_result;
+
+	GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, {});
+	end = m_result.Location;
+	
+
 }
 
 TArray<AActor*> AMascotDrone::EMP()

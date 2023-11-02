@@ -68,6 +68,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MascotDrone")
 		TArray<AActor*> EMP();
 
+		UFUNCTION(BlueprintCallable, Category = "MascotDrone")
+		void LaserOn();
+
 	bool EmpDelay = false;
 
 };
