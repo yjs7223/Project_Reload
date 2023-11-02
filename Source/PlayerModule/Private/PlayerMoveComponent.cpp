@@ -32,7 +32,7 @@ void UPlayerMoveComponent::BeginPlay()
 	owner = dynamic_cast<ACharacter*>(GetOwner());
 	ensure(owner);
 
-	owner->FindComponentByClass<UBaseInputComponent>()->m_CanUnCrouch = true;
+	owner->FindComponentByClass<UBaseInputComponent>()->SetCanUnCrouch(true);
 	m_CoverComp = owner->FindComponentByClass<UCoverComponent>();
 	m_Inputdata = owner->FindComponentByClass<UBaseInputComponent>()->getInput();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
@@ -84,6 +84,7 @@ void UPlayerMoveComponent::Turning(float DeltaTime)
 void UPlayerMoveComponent::Turn()
 {
 	mTargetRotate.Yaw = owner->Controller->GetControlRotation().Yaw;
+	owner->SetActorRelativeRotation(mTargetRotate, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
 void UPlayerMoveComponent::Moving(float DeltaTime)
@@ -102,8 +103,8 @@ void UPlayerMoveComponent::Moving(float DeltaTime)
 	}
 
 	FVector MoveDirect = owner->Controller->GetControlRotation().RotateVector(m_Inputdata->movevec);
-	if (m_CoverComp) {
-		m_CoverComp->SettingMoveVector(MoveDirect);
+	if (m_CoverComp && m_CoverComp->IsCover()) {
+		if(!m_CoverComp->SettingMoveVector(MoveDirect)) return;
 	}
 
 	MoveDirect.Z = 0;

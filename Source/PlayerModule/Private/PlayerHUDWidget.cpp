@@ -31,17 +31,17 @@ void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-
+	//damageTextSize = 16;
 	InitWidgets();
 
 	if (UPlayerWeaponComponent* weaponComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerWeaponComponent>())
 	{
 		weaponComp->OnSpawnDamageUIDelegate.BindUObject(this, &UPlayerHUDWidget::CreateDamageWidget);
+		weaponComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
 	}
 
 	if (UPlayerInputComponent* inputComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerInputComponent>())
 	{
-		inputComp->OnCombatWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetCombatWidgetVisible);
 		inputComp->OnAllWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetAllWidgetVisible);
 		inputComp->OnCreatePauseWidget.BindUObject(this, &UPlayerHUDWidget::CreatePauseWidget);
 	}
@@ -69,14 +69,18 @@ void UPlayerHUDWidget::InitWidgets()
 	}
 }
 
-void UPlayerHUDWidget::CreateDamageWidget(float value, FHitResult result)
+void UPlayerHUDWidget::CreateDamageWidget(float value, FHitResult result, bool p_bHead)
 {
 	if (Damage_WidgetClass)
 	{
 		UDamage_Widget* dwidget = CreateWidget<UDamage_Widget>(GetOwningPlayer(), Damage_WidgetClass);
 		if (dwidget)
 		{
-			dwidget->SetDamageText(value, result);
+			if (damageTextSize <= 0)
+			{
+				damageTextSize = 16;
+			}
+			dwidget->SetDamageText(value, result, p_bHead, damageTextSize);
 			dwidget->AddToViewport();
 		}
 	}

@@ -49,13 +49,13 @@ void UCoverComponent::BeginPlay()
 	capsule = owner->GetCapsuleComponent();
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
-	if (UWeaponComponent::CheckActorTag(owner, TEXT("Player")))
-	{
+	if (!Cast<AAIController>(owner->Controller)) {
 		TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
-		if (ensure(pakurArr.Num() == 1)) {
+		if (pakurArr.Num() == 1) {
 			m_PakurComp = pakurArr[0];
 		}
 	}
+
 	if (m_PathFollowingComp == nullptr)
 	{
 		ensure(0 && "GameMode의 플레이어컨트롤러를 APlayerCharactorController로 변경하세요");
@@ -68,7 +68,7 @@ void UCoverComponent::BeginPlay()
 
 	SetIsFaceRight(true);
 
-	if (!Cast<AAIController>(owner->Controller)) {
+	if (Cast<APlayerController>(owner->Controller)) {
 		
 		PlayerCharacterTick.AddUObject(this, &UCoverComponent::SendPlayerUIData);
 		PlayerCharacterTick.AddUObject(this, &UCoverComponent::CheckCoverPath);
@@ -136,13 +136,12 @@ void UCoverComponent::PlayCover()
 	}
 	
 }
-
-void UCoverComponent::SettingMoveVector(OUT FVector& vector)
+	
+bool UCoverComponent::SettingMoveVector(OUT FVector& vector)
 {
-	if (!m_IsCover) return;
+	if (!m_IsCover) return false;
 	if (m_PeekingState != EPeekingState::None) {
-		vector = FVector::ZeroVector;
-		return;
+		return false;
 	}
 
 	if (owner->GetActorForwardVector().Dot(vector.GetSafeNormal2D()) < -0.9) {
@@ -157,9 +156,10 @@ void UCoverComponent::SettingMoveVector(OUT FVector& vector)
 		vector = FaceRight() *owner->GetActorRightVector();
 	}
 	else {
-		vector = FVector::ZeroVector;
 		m_IsCorneringWait = true;
+		return false;
 	}
+	return true;
 }
 
 bool UCoverComponent::StartAICover()
@@ -209,7 +209,10 @@ bool UCoverComponent::StartAICover()
 	SetIsFaceRight(true);
 
 	PlayMontageStartCover.Broadcast();
+
+	owner->SetActorEnableCollision(false);
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
+	owner->SetActorEnableCollision(true);
 	RotateSet(0.0f);
 	return m_IsCover;
 }
@@ -297,7 +300,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 
 	if (!m_IsCover) return;
 
-	if (m_Inputdata->IsAiming) {
+	if (m_Inputdata->IsAiming || m_Inputdata->IsFire) {
 		peekingCheck(aimOffset);
 		if (m_PeekingState != EPeekingState::None) {
 
@@ -321,7 +324,7 @@ void UCoverComponent::AimSetting(float DeltaTime)
 	else {
 		aimOffset.Yaw += 180;
 		aimOffset.Yaw *= -1.0f;
-		if (m_Weapon->m_CanShooting && !m_Inputdata->IsReload) {
+		if ((m_Inputdata->IsAiming || m_Inputdata->IsFire)) {
 			SetIsFaceRight(false);
 		}
 	}
@@ -542,7 +545,7 @@ FVector UCoverComponent::CalculateCoverPoint(float DeltaTime)
 			GetWorld()->LineTraceSingleByChannel(result_Result, start, end, traceChanel, params);
 			if (PeekingTraceDebug) DrawDebugLine(GetWorld(), start, end, FColor::Emerald, false, DeltaTime);
 			if (PeekingTraceDebug) DrawDebugSphere(GetWorld(), result_Result.Location, 10.0f, 32, FColor::Red);
-			if (/*result_Result.ImpactNormal.Dot(impactNormal) < 0.99999 ||*/ result_Result.GetActor() != item.GetActor()) continue;
+			//if (/*result_Result.ImpactNormal.Dot(impactNormal) < 0.99999 ||*/ result_Result.GetActor() != item.GetActor()) continue;
 		}
 
 		temptargetVector = result_Result.Location +
@@ -709,9 +712,7 @@ bool UCoverComponent::StartCover()
 		}
 
 	}
-	if (result.Normal.Equals(FVector::ZeroVector, 0.1)) {
-		ensure(0);
-	}
+
 	if (OutActors.Num() == 0) return false;
 	if (result.GetActor() == nullptr) return false;
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
@@ -722,9 +723,12 @@ bool UCoverComponent::StartCover()
 	m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = result.GetActor();
 	m_IsCover = true;
+	
 	SetIsFaceRight(m_CanCoverPointNormal.Cross(owner->GetActorForwardVector()).Z < 0);
 
+	owner->SetActorEnableCollision(false);
 	owner->SetActorRotation((-m_CanCoverPointNormal).Rotation(), ETeleportType::TeleportPhysics);
+	owner->SetActorEnableCollision(true);
 
 	PlayMontageStartCover.Broadcast();
 	
@@ -743,7 +747,7 @@ void UCoverComponent::StopCover()
 		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
 
-	m_Movement->SetMovementMode(MOVE_Walking);
+	//m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;
 	mCoverShootingState = ECoverShootingState::None;
@@ -752,7 +756,7 @@ void UCoverComponent::StopCover()
 	m_CanCoverPointNormal = FVector::ZeroVector;
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
-	m_Input->m_CanUnCrouch = true;
+	m_Input->SetCanUnCrouch(true);
 	m_Weapon->m_CanShooting = false;
 
 	OnVisibleCorneringWidget.ExecuteIfBound(false, true);
@@ -822,14 +826,14 @@ void UCoverComponent::BeCrouch(float deltaTime)
 	if (m_PeekingState != EPeekingState::None) return;
 	
 	if (isMustCrouch()) {
-		m_Input->m_CanUnCrouch = false;
+		m_Input->SetCanUnCrouch(false);
 		if (!owner->bIsCrouched) {
 			owner->Crouch();
 			//if (owner->GetCharacterMovement()->bWantsToCrouch);
 		}
 	}
 	else {
-		m_Input->m_CanUnCrouch = true;
+		m_Input->SetCanUnCrouch(true);
 	}
 }
 
@@ -891,7 +895,8 @@ void UCoverComponent::StartPeeking()
 	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(controller)) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
-	FVector upVector = owner->GetActorUpVector() * capsule->GetScaledCapsuleHalfHeight() * 2.01f;
+	FVector upVector = owner->GetActorUpVector() * owner->GetDefaultHalfHeight() * 
+		(owner->bIsCrouched ? 1.0f : 0.5f);
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
 	FVector temppos = owner->GetActorLocation();
@@ -909,7 +914,7 @@ void UCoverComponent::StartPeeking()
 		if (result.GetActor()) return;
 
 		start = end;
-		end = start + -upVector * 1.05f;
+		end = start + -upVector * 2.0f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
@@ -948,7 +953,7 @@ void UCoverComponent::StartPeeking()
 		if (result.GetActor()) return;
 
 		start = end;
-		end = start + -upVector * 1.05f;
+		end = start + -upVector * 2.0f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
@@ -1005,10 +1010,10 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 		break;
 	case EPeekingState::HighLeft:
 		//if (owner->bIsCrouched && !m_Weapon->IsWeaponBlocking())
-		//if (isMustCrouch() && aimOffset.Yaw < -25.0f) {
-		//	m_PeekingState = EPeekingState::LowLeft;
-		//	owner->Crouch();
-		//}
+		if (isMustCrouch() && aimOffset.Yaw < -5.0f) {
+			m_PeekingState = EPeekingState::LowLeft;
+			owner->Crouch();
+		}
 		break;
 	case EPeekingState::LowRight:
 		if (m_Weapon->IsWeaponBlocking()) {

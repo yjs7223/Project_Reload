@@ -32,6 +32,7 @@ void UCrosshair_Widget::NativeConstruct()
 	m_alpha = 0;
 	m_offset = 0;
 	m_hitTime = 0;
+	bBlocking = false;
 
 	Crosshair_Overlay->SetRenderOpacity(1.0f);
 	Reload_Overlay->SetRenderOpacity(1.0f);
@@ -55,14 +56,16 @@ void UCrosshair_Widget::NativeConstruct()
 
 	if (APlayerCharacter* MyCharacter = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
 	{
-		if (UPlayerWeaponComponent* MyWeaponComp = Cast<UPlayerWeaponComponent>(MyCharacter->weapon))
+		if (UPlayerWeaponComponent* MyWeaponComp = MyCharacter->FindComponentByClass<UPlayerWeaponComponent>())
 		{
-			weapon = MyCharacter->weapon;
+			weapon = MyWeaponComp;
 			MyWeaponComp->OnChangedCrossHairAmmoDelegate.BindUObject(this, &UCrosshair_Widget::SetAmmoImage);
 			MyWeaponComp->OnChangedCrossHairHitDelegate.BindUObject(this, &UCrosshair_Widget::MoveDot);
 			MyWeaponComp->OnChangedCrossHairDieDelegate.BindUObject(this, &UCrosshair_Widget::CheckDie);
 			//MyWeaponComp->OnVisibleCrossHairUIDelegate.BindUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 			MyWeaponComp->OnPlayReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::PlayReloadAnim);
+			MyWeaponComp->OnStopReloadUIDelegate.BindUObject(this, &UCrosshair_Widget::StopReloadAnim);
+			MyWeaponComp->OnBlockingUIDelegate.BindUObject(this, &UCrosshair_Widget::Blocking);
 			//MyCharacter->OnVisibleAllUIDelegate.AddUObject(this, &UCrosshair_Widget::SetWidgetVisible);
 		}
 	}
@@ -125,7 +128,7 @@ void UCrosshair_Widget::SetCrosshairTranslation()
 	FVector2D right = FVector2D(m_offset, 0);
 	Right_Cross_image->SetRenderTranslation(right);
 
-	FVector2D ammo = FVector2D(m_offset * 0.3f + 8.0f, m_offset * 0.3f + 8.0f);
+	FVector2D ammo = FVector2D(m_offset * .5f + 12.f, m_offset * .5f + 12.f);
 	Cross_Ammo_Image->SetRenderTranslation(ammo);
 
 
@@ -286,8 +289,8 @@ void UCrosshair_Widget::CheckDie()
 
 void UCrosshair_Widget::SetAmmoImage()
 {
-	float ammovalue = weapon->curAmmo / weapon->maxAmmo;
-
+	float ammovalue = float(weapon->curAmmo) / float(weapon->maxAmmo);
+	Cross_Ammo_Image->SetRenderOpacity(1.f);
 	/*switch (weapon->weapontype)
 	{
 	case EWeaponType::TE_Pistol:
@@ -318,7 +321,9 @@ void UCrosshair_Widget::PlayReloadAnim()
 			StopAnimation(FadeOutAnim);
 		}
 		Reload_Overlay->SetRenderOpacity(1.0f);
-
+		NotFire_Overlay->SetRenderOpacity(0.0f);
+		Crosshair_Overlay->SetRenderOpacity(0.0f);
+		Cross_Ammo_Image->SetRenderOpacity(1.0f);
 		if (ReloadAnim)
 		{
 			GetWorld()->GetTimerManager().SetTimer(ReloadTimer, FTimerDelegate::CreateLambda([&]()
@@ -328,6 +333,52 @@ void UCrosshair_Widget::PlayReloadAnim()
 						PlayAnimationForward(ReloadAnim);
 					}
 				}), 0.01f, false);
+		}
+	}
+}
+
+void UCrosshair_Widget::StopReloadAnim()
+{
+	if (IsAnimationPlaying(FadeOutAnim))
+	{
+		StopAnimation(FadeOutAnim);
+	}
+	Reload_Overlay->SetRenderOpacity(0.0f);
+	Cross_Ammo_Image->SetRenderOpacity(1.0f);
+	if (bBlocking)
+	{
+		Blocking(true);
+	}
+	else
+	{
+		Crosshair_Overlay->SetRenderOpacity(1.0f);
+	}
+}
+
+void UCrosshair_Widget::Blocking(bool bBlock)
+{
+	if (NotFire_Overlay)
+	{
+		if (IsAnimationPlaying(ReloadAnim))
+		{
+			return;
+		}
+
+		if (bBlock)
+		{
+			bBlocking = true;
+			Crosshair_Overlay->SetRenderOpacity(.0f);
+			Reload_Overlay->SetRenderOpacity(.0f);
+			Cross_Ammo_Image->SetRenderOpacity(.0f);
+			NotFire_Overlay->SetRenderOpacity(1.f);
+		}
+		else
+		{
+			bBlocking = false;
+			Crosshair_Overlay->SetRenderOpacity(1.0f);
+			Reload_Overlay->SetRenderOpacity(1.0f);
+			Cross_Ammo_Image->SetRenderOpacity(1.0f);
+			NotFire_Overlay->SetRenderOpacity(.0f);
 		}
 	}
 }

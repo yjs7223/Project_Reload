@@ -1,4 +1,4 @@
-Main_Version : v1.5
+Main_Version : v1.6
 Branch_Number
   -Player   : 1
   -AI       : 2
@@ -6,3 +6,4 @@ Branch_Number
   -drone    : 4
   -vehicle  : 5
   -Boss     : 6
+

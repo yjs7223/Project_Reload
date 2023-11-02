@@ -91,11 +91,9 @@ void ABullet::HitCheck()
 				{
 					if (result.GetComponent()->ComponentHasTag(TEXT("Plate")))
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, TEXT("Plate"));
 						int rand = FMath::RandRange(0, 100);
-						if (rand <= 75)
+						if (rand <= 20)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, TEXT("15"));
 							Cast<UStaticMeshComponent>(result.GetComponent())->SetSimulatePhysics(true);
 						}
 					}
