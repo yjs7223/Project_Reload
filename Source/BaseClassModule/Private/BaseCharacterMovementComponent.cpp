@@ -49,12 +49,12 @@ void UBaseCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (PawnOwner && !PawnOwner->FindComponentByClass<UCameraComponent>()) return;
-	//if (MovementMode != MOVE_Custom) {
-	//	UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("EMovementMode"), true)->GetNameStringByValue(MovementMode), true, true, FColor::Red, DeltaTime);
-	//}
-	//else{
-	//	UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("ECustomMovementMode"), true)->GetNameStringByValue(CustomMovementMode), true, true, FColor::Red, DeltaTime);
-	//}
+	if (MovementMode != MOVE_Custom) {
+		UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("EMovementMode"), true)->GetNameStringByValue(MovementMode), true, true, FColor::Red, DeltaTime);
+	}
+	else{
+		UKismetSystemLibrary::PrintString(GetWorld(), FindObject<UEnum>(ANY_PACKAGE, TEXT("ECustomMovementMode"), true)->GetNameStringByValue(CustomMovementMode), true, true, FColor::Red, DeltaTime);
+	}
 
 
 }
@@ -62,6 +62,7 @@ void UBaseCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick 
 void UBaseCharacterMovementComponent::SetMovementMode(EMovementMode NewMovementMode, uint8 NewCustomMode)
 {
 	Super::SetMovementMode(NewMovementMode, NewCustomMode);
+
 	if (NewMovementMode == MOVE_Custom && NewCustomMode == CMOVE_Runing) {
 		UnCrouch();
 		bWantsToCrouch = false;

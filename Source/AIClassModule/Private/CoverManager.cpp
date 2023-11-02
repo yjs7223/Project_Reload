@@ -51,9 +51,6 @@ bool ACoverManager::ChangeEncounter()
 
 void ACoverManager::CoverPointArray()
 {
-
-	//CoverSystem->GenerateCovers(true, false);
-	//CoverSystem->custom_GenerateCovers(true, false, true,2500);
 	TArray<FCoverHandle> CoverManagerArray;
 	CoverSystem->GetCoversWithinBounds(FBoxSphereBounds(FVector3d(CoverSystem->GetActorLocation()), FVector3d(20000.0f, 20000.0f, 20000.0f), 20000.0f), CoverManagerArray);
 	if (!CoverManagerArray.IsEmpty())

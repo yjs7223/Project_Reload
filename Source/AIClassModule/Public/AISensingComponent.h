@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
 		float AimSide_Angle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sensing")
+		class AAI_Controller* AIController;
+
 	FTimerHandle sensingTimer;
 
 protected:

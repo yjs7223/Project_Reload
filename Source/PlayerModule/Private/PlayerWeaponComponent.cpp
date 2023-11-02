@@ -28,6 +28,7 @@
 #include "CoverComponent.h"
 #include "CharacterSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "Camera/CameraComponent.h"
 #include "Bullet.h"
 #include "EmptyShellSpawnable.h"
 #include "PlayerWeaponDataAsset.h"
@@ -90,7 +91,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoveryTick(DeltaTime);
 	CalculateBlockingTick(DeltaTime);
 
-	if (bAiming)
+	if (bAiming || bFire)
 	{
 		if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 		{
@@ -189,13 +190,13 @@ void UPlayerWeaponComponent::InitData()
 
 void UPlayerWeaponComponent::Fire()
 {
+	Super::Fire();
 	if (!m_CanShooting) return;
 	if (curAmmo <= 0)
 	{
 		StopFire();
 		return;
 	}
-	Super::Fire();
 
 	if (bReload)
 	{
@@ -236,25 +237,31 @@ void UPlayerWeaponComponent::Fire()
 	//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 112.0f);
 	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetComponent()->GetName());
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("camera_hit"));
-		//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 2.f, 0);
+		UCameraComponent* camera = GetOwner()->FindComponentByClass<UCameraComponent>();
 
-		start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
-		m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
-		end = m_rot.Vector() * 1000000.0f;
+		FVector mindis = m_result.Location - camera->GetComponentLocation();
 
-		//WeaponHit
-		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 112.0f);
-		/*if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+		float dis = (camera->GetComponentLocation() - GetOwner()->GetActorLocation()).Length(); //200 100
+
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(mindis.Length()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::SanitizeFloat(dis));
+		if (mindis.Length() <= dis)
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("muzzle_hit"));
-			//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Blue, false, 2.f, 0);
-
-			m_rot = UKismetMathLibrary::FindLookAtRotation(start, end);
-			end = m_rot.Vector() * 99999;
-
-		}*/
+			param.AddIgnoredActor(m_result.GetActor());
+			if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_GameTraceChannel6, param))
+			{
+				//DrawDebugPoint(GetWorld(), m_result.Location, 10, FColor::Red, false, 5.f, 0);
+				start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+				m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+				end = m_rot.Vector() * 1000000.0f;
+			}
+		}
+		else
+		{
+			start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
+			m_rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
+			end = m_rot.Vector() * 1000000.0f;
+		}
 	}
 	else
 	{
@@ -284,11 +291,12 @@ void UPlayerWeaponComponent::Fire()
 				{
 					damageVlaue = CalcDamage(m_result, damage);
 					MyStat->Attacked(damageVlaue, owner);
+					headhit = false;
 				}
 
 				if (bHit)
 				{
-					OnSpawnDamageUIDelegate.ExecuteIfBound(damageVlaue, m_result);
+					OnSpawnDamageUIDelegate.ExecuteIfBound(damageVlaue, m_result, headhit);
 					MyStat->hitNormal = m_result.TraceEnd - m_result.TraceStart;
 					OnChangedCrossHairDieDelegate.ExecuteIfBound();
 				}
@@ -341,24 +349,24 @@ void UPlayerWeaponComponent::Fire()
 	}
 	//Cast<UWeaponAnimInstance>(owner->GetMesh()->GetAnimInstance()).
 	//PlayShootingAnimation
-	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
-	{
-		owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
-	}
+
 }
 
 void UPlayerWeaponComponent::StartAiming()
 {
+	Super::StartAiming();
+
 	FVector start;
 	FRotator cameraRotation;
 	FVector end;
-	bAiming = true;
+
 	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Aiming_HP_Socket"));
 	owner->GetWorldTimerManager().SetTimer(AimingTimer, this, &UPlayerWeaponComponent::Threaten, 0.3f, true, 0.0f);
 	//owner->HPWidgetComponent
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_start_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(false);
 	OnChangedAmmoUIDelegate.Broadcast();
 
 }
@@ -370,12 +378,14 @@ void UPlayerWeaponComponent::StopAiming()
 		OnVisibleAmmoUIDelegate.Broadcast();
 		return;
 	}
-	bAiming = false;
+	Super::StopAiming();
+	
 	//owner->HPWidgetComponent->AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HP_Widget_Socket"));
 	owner->GetWorldTimerManager().ClearTimer(AimingTimer);
 
 	//UGameplayStatics::PlaySoundAtLocation(this, owner->CharacterSound->aiming_stop_Cue, GetOwner()->GetActorLocation());
 
+	OnCombatWidgetVisible.Broadcast(true);
 	OnVisibleAmmoUIDelegate.Broadcast();
 }
 
@@ -390,7 +400,8 @@ void UPlayerWeaponComponent::StartFire()
 
 	StopRcovery();
 	Fire();
-	bFire = true;
+	Super::StartFire();
+	OnCombatWidgetVisible.Broadcast(false);
 
 
 	startRot = owner->GetController()->GetControlRotation();
@@ -405,12 +416,20 @@ void UPlayerWeaponComponent::StopFire()
 {
 	if (bFire)
 	{
+		Super::StopFire();
 		if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 		{
 			owner->GetWorldTimerManager().ClearTimer(fHandle);
 		}
+		if (bAiming)
+		{
+			OnCombatWidgetVisible.Broadcast(false);
+		}
+		else
+		{
+			OnCombatWidgetVisible.Broadcast(true);
+		}
 		owner->FindComponentByClass<UPlayerInputComponent>()->getInput()->IsFire = false;
-		bFire = false;
 		TotalPitchRecoilValue = 0.0f;
 		StartRecovery();
 	}
@@ -424,22 +443,10 @@ void UPlayerWeaponComponent::StartReload()
 	{
 		return;
 	}
-	
 	//UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagOutSound, owner->GetActorLocation());
+	OnCombatWidgetVisible.Broadcast(true);
 	OnPlayReloadUIDelegate.ExecuteIfBound();
 	bReload = CanReload();
-}
-
-bool UPlayerWeaponComponent::CanReload()
-{
-	if (curAmmo >= maxAmmo)
-	{
-		return false;
-	}
-	else if (holdAmmo == 0) {
-		return false;
-	}
-	return true;
 }
 
 void UPlayerWeaponComponent::StopReload()
@@ -499,10 +506,10 @@ void UPlayerWeaponComponent::ReloadTick(float Deltatime)
 		{
 			curAmmo++;
 			reloadCount = 0;
-			if (curAmmo == maxAmmo / 2)
+			/*if (curAmmo == maxAmmo / 2)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, PlayerWeaponDataAsset->ReloadMagInSound, owner->GetActorLocation());
-			}
+			}*/
 			OnChangedCrossHairAmmoDelegate.ExecuteIfBound();
 			OnChangedAmmoUIDelegate.Broadcast();
 		}
@@ -583,6 +590,9 @@ void UPlayerWeaponComponent::StartRecoil()
 	{
 		yawRecoilValue = FMath::RandRange(yawRange.X, yawRange.Y);
 		pitchRecoilValue = FMath::RandRange(pitchRange.X * 2.0f, pitchRange.Y * 1.5f);
+
+		TotalPitchRecoilValue += pitchRecoilValue;
+
 		if (bAiming && AimingRecoilValue > 0.0f)
 		{
 			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
@@ -598,9 +608,10 @@ void UPlayerWeaponComponent::StartRecoil()
 		}
 		else
 		{
-			pitchRecoilValue = 0.0f;
+			pitchRecoilValue = FMath::RandRange(-.2f, .2f);
 		}
 
+		TotalPitchRecoilValue += pitchRecoilValue;
 		if (bAiming && AimingRecoilValue > 0.0f)
 		{
 			yawRecoilValue = yawRecoilValue * AimingRecoilValue;
@@ -608,7 +619,6 @@ void UPlayerWeaponComponent::StartRecoil()
 		}
 	}
 
-	TotalPitchRecoilValue += pitchRecoilValue;
 	//yawRecoveryValue += yawRecoilValue;
 	//pitchRecoveryValue += pitchRecoilValue;
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("recoil start"));
@@ -627,11 +637,13 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 	{
 		RecoveryTime += p_deltatime * 2.0f;
 		TickCount += 2;
-		if (FMath::Abs(yawRecoveryValue) > 5.0f)
+		if (FMath::Abs(yawRecoveryValue) > 3.0f)
 		{
-			TickCount += 1000;
+			TickCount += 30;
 		}
-		if (pitchRecoveryValue < -20.0f)
+
+		//아래로 당긴거 확인
+		if (FMath::Abs(pitchRecoveryValue) > 5.0f)
 		{
 			TickCount += 10;
 		}

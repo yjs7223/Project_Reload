@@ -20,6 +20,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "CharacterSoundDataAsset.h"
+#include "Kismet/KismetMaterialLibrary.h"
 
 //#include "Kismet/GameplayStatics.h"
 //#include "Engine.h"
@@ -52,19 +53,20 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	//m_FollowSpringArm->SetupAttachment(RootComponent);
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("root"));
-	
+
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
 
 	stat = CreateDefaultSubobject<UPlayerStatComponent>(TEXT("PlayerStat"));
 	weapon = CreateDefaultSubobject<UPlayerWeaponComponent>(TEXT("PlayerWeapon"));
-	
+
 	FName WeaponSocket(TEXT("hand_r_Socket"));
 	weapon->WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
   
 	m_PlayerMove = CreateDefaultSubobject<UPlayerMoveComponent>(TEXT("PlayerMove"));
-	m_InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("InputComponent"));
 	m_CoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CoverComp"));
+	InputComponent = CreateDefaultSubobject<UPlayerInputComponent>(InputComponentName);
+
 
 	/*HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerHP_Widget"));
 	HPWidgetComponent->SetupAttachment(GetMesh(), TEXT("HP_Widget_Socket"));
@@ -81,7 +83,6 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
 	InitWidget(nullptr, 0);
 	GEngine->GameViewport->Viewport->ViewportResizedEvent.AddUObject(this, &APlayerCharacter::InitWidget);
@@ -93,7 +94,26 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	auto temp = [this](UMeshComponent* mesh) {
+		for (int32 i = 0; i < mesh->GetNumMaterials(); ++i)
+		{
+			UMaterialInterface* MaterialInterface = mesh->GetMaterial(i);
+			if (!MaterialInterface) continue;
 
+			UMaterialInstanceDynamic* DynamicMaterial = Cast<UMaterialInstanceDynamic>(MaterialInterface);
+			if (!DynamicMaterial) {
+				DynamicMaterial = UMaterialInstanceDynamic::Create(MaterialInterface, this);
+				mesh->SetMaterial(i, DynamicMaterial);
+			}
+
+			if (DynamicMaterial) {
+				DynamicMaterial->SetScalarParameterValue("OpacityMaskValue", 0.0f);
+			}
+		}
+
+		};
+	//temp(GetMesh());
+	//temp(weapon->WeaponMesh);
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const

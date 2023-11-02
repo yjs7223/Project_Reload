@@ -28,15 +28,13 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
-	class UBaseInputComponent* m_InputComponent;
+	static FName InputComponentName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UCoverComponent* m_CoverComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UCharacterSoundDataAsset* CharacterSound;
+	class UCharacterSoundDataAsset* CharacterSound;
 
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UStatComponent* Stat;

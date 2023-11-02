@@ -14,10 +14,12 @@ DECLARE_MULTICAST_DELEGATE(FOnChangedAmmoUIDelegate);
 DECLARE_DELEGATE(FOnPlayReloadUIDelegate);
 DECLARE_DELEGATE(FOnStopReloadUIDelegate);
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCombatWidgetVisible, bool);
+
 DECLARE_DELEGATE(FOnVisibleCrossHairUIDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnVisibleAmmoUIDelegate);
 
-DECLARE_DELEGATE_TwoParams(FOnSpawnDamageUIDelegate, float, FHitResult);
+DECLARE_DELEGATE_ThreeParams(FOnSpawnDamageUIDelegate, float, FHitResult, bool);
 
 /**
  * 
@@ -42,6 +44,8 @@ public:
 	FOnPlayReloadUIDelegate OnPlayReloadUIDelegate;
 	FOnStopReloadUIDelegate OnStopReloadUIDelegate;
 
+	FOnCombatWidgetVisible OnCombatWidgetVisible;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -57,9 +61,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Fire() override;
 	UFUNCTION(BlueprintCallable)
-	void StartAiming();
+	void StartAiming() override;
 	UFUNCTION(BlueprintCallable)
-	void StopAiming();
+	void StopAiming() override;
 	UFUNCTION(BlueprintCallable)
 	void StartFire() override;
 	UFUNCTION(BlueprintCallable)
@@ -68,7 +72,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StartReload();
-	bool CanReload();
+	UFUNCTION(BlueprintCallable)
 	void StopReload();
 	UFUNCTION(BlueprintCallable)
 	void FinshReload();

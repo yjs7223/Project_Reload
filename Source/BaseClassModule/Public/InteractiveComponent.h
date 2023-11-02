@@ -35,11 +35,11 @@ public:
 
 public:
 	//상호작용 작동
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive)
 		bool bInteractive;
 
 	//상호작용 활성화
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactive)
 		bool bActive;
 
 

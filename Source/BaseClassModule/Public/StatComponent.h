@@ -81,6 +81,8 @@ public:
 	bool bThreat;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	float HitReactionScale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+		float Attacked_t;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	FVector hitNormal;

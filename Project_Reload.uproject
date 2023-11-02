@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{CBAA50F7-49C9-332C-DB93-69BF2DF9D828}",
+	"EngineAssociation": "5.0",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -93,7 +93,8 @@
 				"CoreUObject",
 				"AICoverSystem",
 				"UMG",
-				"ChaosVehicles"
+				"ChaosVehicles",
+				"PlayerModule"
 			]
 		}
 	],

@@ -27,10 +27,11 @@ class BASECLASSMODULE_API UWeaponComponent : public UActorComponent
 
 public:
 	DECLARE_MULTICAST_DELEGATE(FPlayShottingAinmationDelegate);
-
+	DECLARE_DELEGATE_OneParam(FOnBlockingUIDelegate, bool);
 public:
 	FPlayShottingAinmationDelegate shootingAnimation;
 	FDele_SpawnTrigger Dele_SpawnTrigger;
+	FOnBlockingUIDelegate OnBlockingUIDelegate;
 public:
 	// Sets default values for this component's properties
 	UWeaponComponent();
@@ -53,11 +54,12 @@ public:
 	void CalculateBlockingTick(float p_deltatime);
 
 	virtual void StartFire();
-
 	virtual void StopFire();
-
 	virtual void Fire();
+	virtual void StartAiming();
+	virtual void StopAiming();
 
+	bool CanReload();
 	float getAimYaw();
 	float getAimPitch();
 
@@ -73,15 +75,10 @@ public:
 	float CalcDamage(FHitResult result, FVector2D p_damage);
 
 	static bool CheckActorTag(AActor* actor, FName tag);
+	UFUNCTION(BlueprintCallable)
 	bool IsWeaponBlocking();
 	UFUNCTION(BlueprintCallable)
-	bool IsAiming();
-	UFUNCTION(BlueprintCallable)
-	bool IsFireing();
-	UFUNCTION(BlueprintCallable)
 	FVector getWeaponHitLocation();
-	UFUNCTION(BlueprintCallable)
-	bool IsUsingWeapon();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	class ABaseCharacter* owner;
