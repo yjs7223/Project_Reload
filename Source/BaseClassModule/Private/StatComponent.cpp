@@ -34,8 +34,17 @@ void UStatComponent::BeginDestroy()
 void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	bAttacked = false;
+	if (bAttacked)
+	{
+		Attacked_t += DeltaTime;
+		if (Attacked_t >= 1.0f)
+		{
+			bAttacked = false;
+			Attacked_t = 0;
+		}
+		
+	}
+	
 	// ...
 }
 

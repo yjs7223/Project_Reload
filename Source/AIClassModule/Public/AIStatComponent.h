@@ -11,9 +11,7 @@
 
 DECLARE_DELEGATE(FOnVisibleEnemyHPUIDelegate);
 DECLARE_DELEGATE(FOnChangeEnemyHPUIDelegate);
-/**
- * 
- */
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class AICLASSMODULE_API UAIStatComponent : public UStatComponent
 {

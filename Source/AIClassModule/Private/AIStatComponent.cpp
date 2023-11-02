@@ -33,7 +33,10 @@ void UAIStatComponent::BeginPlay()
 	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (!GetOwner()->ActorHasTag("Zombie"))
 	{
-		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+		if (Cast<AAICharacter>(GetOwner())->GetController() != nullptr)
+		{
+			AIController = Cast<AAI_Controller>(Cast<AAICharacter>(GetOwner())->GetController());
+		}
 	}
 	if (AIController != nullptr)
 	{
@@ -55,6 +58,12 @@ void UAIStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Time += DeltaTime;
 
+	if (AIController && AIController->GetBlackboardComponent())
+	{
+		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Attacked", bAttacked);
+	}
+	
+	
 	if (Time >= sup_DecTime)
 	{
 		if (AIController && AIController->GetBlackboardComponent())
