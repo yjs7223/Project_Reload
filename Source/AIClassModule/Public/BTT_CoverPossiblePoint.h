@@ -32,4 +32,5 @@ public:
 		FVector beforelocation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_CoverPossiblePoint)
 		class AAICommander* commander;
+
 };

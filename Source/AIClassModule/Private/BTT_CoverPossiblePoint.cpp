@@ -47,7 +47,7 @@ EBTNodeResult::Type UBTT_CoverPossiblePoint::ExecuteTask(UBehaviorTreeComponent&
 			blackbordComponent->SetValueAsBool("OrderWait", false);
 			return EBTNodeResult::Succeeded;
 		}
-
+		
 		beforelocation = mindislocation;
 		if (*commander->List_CoverPoint.Find(enemy.Value) == FVector::ZeroVector)
 		{

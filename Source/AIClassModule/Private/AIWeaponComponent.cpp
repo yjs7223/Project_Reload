@@ -32,7 +32,7 @@
 UAIWeaponComponent::UAIWeaponComponent()
 {
 	// 데이터 테이블 삽입
-	DT_AIWeaponData = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
+	DT_AIWeaponData = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIWeapon.DT_AIWeapon'"));
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -99,7 +99,6 @@ void UAIWeaponComponent::Fire()
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_05"));
-
 	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
 
 	if (blackboardTarget != nullptr)
