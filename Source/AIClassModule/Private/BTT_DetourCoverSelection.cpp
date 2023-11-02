@@ -42,7 +42,10 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 		{
 			for (auto ai : commander->List_Division)
 			{
-				Cast<AAICharacter>(ai.Key)->Detour = false;
+				if (Cast<AAICharacter>(ai.Key)->Detour == true)
+				{
+					return EBTNodeResult::Succeeded;
+				}
 			}
 			for (auto cover : commander->DetourCoverArray)
 			{
@@ -116,7 +119,7 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 														select_ai = ai.Key;
 													}
 												}
-												//if (AIController->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::InCover)
+												//if (commander->GetBlackboardComponent()->GetValueAsEnum("Combat") == (uint8)ECombat::InCover)
 												//{
 
 													

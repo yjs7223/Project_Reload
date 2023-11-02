@@ -4,6 +4,7 @@
 #include "AISpawner.h"
 #include "AICharacter.h"
 #include "AI_Controller.h"
+#include "AIStatComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include "AICommander.h"
@@ -75,24 +76,25 @@ void AAISpawner::Tick(float DeltaTime)
 
 void AAISpawner::SpawnWave()
 {
+	AAICharacter* ai = nullptr;
 	// 라이플
 	if (rifleCount < spawn_Wave[Enemy_Name::RIFLE])
 	{
 		// 스폰 위치 검사 후 변경
 		spawn_Spot = SetSpawnSpot(spawn_Spot);
-
+		
 		// 생성
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Rifle, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
 
-		AAICharacter* ai = Cast<AAICharacter>(temp);
+		ai = Cast<AAICharacter>(temp);
+		
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		if (ai != nullptr)
 		{
 			ai->mySpawner = this;
 			ai->Init();
 
-			commander->ListAdd(Cast<AActor>(temp));
+			commander->ListAdd(Cast<AActor>(ai));
 			rifleCount++;
 			if (ai->GetController() != nullptr)
 			{
@@ -121,7 +123,7 @@ void AAISpawner::SpawnWave()
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Sniper, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
 
-		AAICharacter* ai = Cast<AAICharacter>(temp);
+		ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		if (ai != nullptr)
 		{
@@ -148,7 +150,7 @@ void AAISpawner::SpawnWave()
 		// 생성
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Spawn!"));
 		APawn* temp = UAIBlueprintHelperLibrary::SpawnAIFromClass(GetWorld(), enemy_Heavy, BT_Enemy, spawn_Spots[spawn_Spot]->GetActorLocation());
-		AAICharacter* ai = Cast<AAICharacter>(temp);
+		ai = Cast<AAICharacter>(temp);
 		// 생성되면서 자신을 생성한 스포너를 저장하도록 함
 		if (ai != nullptr)
 		{
@@ -355,7 +357,7 @@ void AAISpawner::SpawnLastPoint(const float DeltaTime)
 							}
 							else
 							{
-								//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> AIController is nullptr"));
+								//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("error : SpawnLastPoint() suben->AIArray -> commander is nullptr"));
 							}
 						}
 					}
