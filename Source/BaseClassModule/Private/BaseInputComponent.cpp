@@ -20,7 +20,7 @@ void UBaseInputComponent::BeginPlay()
 
 	m_Covercomponent = owner->FindComponentByClass<UCoverComponent>();
 	m_Movement = owner->FindComponentByClass<UBaseCharacterMovementComponent>();
-
+	
 	m_PathFollowingComp = owner->GetController()->FindComponentByClass<UPathFollowingComponent>();
 
 	SetInputEnable(true);
@@ -57,18 +57,26 @@ FInputData* UBaseInputComponent::getInput()
 	return &m_inputData;
 }
 
+void UBaseInputComponent::ClearInput()
+{
+	m_inputData = FInputData();
+}
+
 void UBaseInputComponent::MoveForward(float Value)
 {
+	if(bIsbCrowdControl) return;
 	m_inputData.movevec.X = Value;
 }
 
 void UBaseInputComponent::MoveRight(float Value)
 {
+	if (bIsbCrowdControl) return;
 	m_inputData.movevec.Y = Value;
 }
 
 void UBaseInputComponent::Crouching()
 {
+	if (bIsbCrowdControl) return;
 	if (owner->CanCrouch()) {
 		owner->Crouch();
 	}
@@ -80,13 +88,14 @@ void UBaseInputComponent::Crouching()
 
 void UBaseInputComponent::Runing()
 {
+	if (bIsbCrowdControl) return;
 	if (m_Covercomponent->IsCover()) return;
 	if (m_inputData.IsReload) return;
 
 	if (m_Movement->isRuning()) {
 		m_Movement->SetMovementMode(MOVE_Walking);
 	}
-	else if(m_Movement->MovementMode != MOVE_Falling) {
+	else if(m_Movement->MovementMode != MOVE_Falling && m_Movement->MovementMode != MOVE_Flying) {
 		m_Movement->SetMovementMode(MOVE_Custom, CMOVE_Runing);
 		m_inputData.IsAiming = false;
 	}
@@ -94,16 +103,14 @@ void UBaseInputComponent::Runing()
 
 void UBaseInputComponent::StartFire()
 {
+	if (bIsbCrowdControl) return;
 	if (m_Movement->isRuning()) {
 		m_Movement->SetMovementMode(MOVE_Walking);
 	}
 	if (!m_inputData.IsReload)
 	{
+		m_inputData.IsFire = true;
 		m_Weapon->StartFire();
-		if (m_Weapon->bFire)
-		{
-			m_inputData.IsFire = true;
-		}
 	}
 }
 
@@ -115,6 +122,7 @@ void UBaseInputComponent::StopFire()
 
 void UBaseInputComponent::StartAiming()
 {
+	if (bIsbCrowdControl) return;
 	m_inputData.IsAiming = true;
 	if (m_Movement->isRuning()) {
 		m_Movement->SetMovementMode(MOVE_Walking);
@@ -130,8 +138,17 @@ void UBaseInputComponent::StopAiming()
 
 void UBaseInputComponent::StartReload()
 {
+	if (bIsbCrowdControl) return;
 	if (!m_Weapon->CanReload()) return;
+	if (m_Movement->isRuning()) {
+		m_Movement->SetMovementMode(MOVE_Walking);
+	}
 	m_inputData.IsReload = true;
+}
+
+void UBaseInputComponent::StopReload()
+{
+	m_inputData.IsReload = false;
 }
 
 void UBaseInputComponent::SetInputEnable(bool IsEnable)
@@ -144,5 +161,10 @@ void UBaseInputComponent::SetInputEnable(bool IsEnable)
 	}
 
 	m_IsInputEnabled = IsEnable;
+}
+
+void UBaseInputComponent::SetCrowdControl(bool IsControl)
+{
+	bIsbCrowdControl = IsControl;
 }
 

@@ -11,6 +11,9 @@ USTRUCT(BlueprintType)
 struct FInputData
 {
 	GENERATED_USTRUCT_BODY()
+public:
+	FInputData() : movevec(FVector::ZeroVector), IsFire(0), IsAiming(0), IsReload(0) {}
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Editor)
 	FVector movevec;
@@ -36,6 +39,7 @@ public:
 	virtual void UnBindInput();
 
 	FInputData* getInput();
+	void ClearInput();
 
 
 	virtual void MoveForward(float Value);
@@ -47,6 +51,7 @@ public:
 	virtual void StartAiming();
 	virtual void StopAiming();
 	virtual void StartReload();
+	virtual void StopReload();
 
 
 public:
@@ -55,7 +60,7 @@ public:
 
 	void SetCanUnCrouch(bool CanUnCrouch) { m_CanUnCrouch = CanUnCrouch;}
 	void SetInputEnable(bool IsEnable);
-
+	virtual void SetCrowdControl(bool IsControl);
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
 	ACharacter* owner;
@@ -64,7 +69,8 @@ protected:
 
 	bool m_CanUnCrouch;
 	bool m_IsInputEnabled;
-
+	UPROPERTY(VisibleInstanceOnly, meta = (AllowPrivateAccess = true))
+	bool bIsbCrowdControl;
 
 protected:
 	TObjectPtr<class UWeaponComponent> m_Weapon;
@@ -72,4 +78,5 @@ protected:
 	TObjectPtr<class UCoverComponent> m_Covercomponent;
 	TObjectPtr<class UInputComponent> m_InputComponent;
 	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
+	TObjectPtr<class UStatComponent> m_Stat;
 };

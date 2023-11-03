@@ -4,6 +4,7 @@
 #include "WeaponComponent.h"
 #include "StatComponent.h"
 #include "Pakurable.h"
+#include "BaseInputComponent.h"
 
 
 bool FStatAnimationTable::IsVaild()
@@ -22,7 +23,10 @@ void UStatsAnimInstance::NativeBeginPlay()
 {
 	owner = Cast<ACharacter>(TryGetPawnOwner());
 	mStats = owner->FindComponentByClass<UStatComponent>();
+	m_Input = owner->FindComponentByClass<UBaseInputComponent>();
 	AnimationSetting();
+
+
 	mStats->Knockback.AddLambda([this](FVector directinal, bool bDie) {
 		FVector vector = owner->GetActorLocation() - directinal;
 		float dotvlaue = vector.Dot(owner->GetActorForwardVector());
@@ -32,10 +36,10 @@ void UStatsAnimInstance::NativeBeginPlay()
 		}
 		else if (dotvlaue > -0.5f) {
 			if (vector.Dot(owner->GetActorRightVector())) {
-				currmontage = bDie ? m_CurrentAnimation.KnockBack_Left_Die : m_CurrentAnimation.KnockBack_Left;
+				currmontage = bDie ? m_CurrentAnimation.KnockBack_Right_Die : m_CurrentAnimation.KnockBack_Right;
 			}
 			else {
-				currmontage = bDie ? m_CurrentAnimation.KnockBack_Right_Die : m_CurrentAnimation.KnockBack_Right;
+				currmontage = bDie ? m_CurrentAnimation.KnockBack_Left_Die : m_CurrentAnimation.KnockBack_Left;
 			}
 		}
 		else {
@@ -44,6 +48,7 @@ void UStatsAnimInstance::NativeBeginPlay()
 		FOnMontageEnded MontageEndDelegate = FOnMontageEnded::CreateUObject(this, &UStatsAnimInstance::KnockBackEnd);
 		UAnimInstance* animinstance = owner->GetMesh()->GetAnimInstance();
 		animinstance->Montage_Play(currmontage);
+		mStats->SetKnockback(true);
 		if (m_PakurComp) {
 			animinstance->Montage_SetEndDelegate(MontageEndDelegate, currmontage);
 			if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
@@ -91,6 +96,7 @@ void UStatsAnimInstance::AnimationSetting()
 
 void UStatsAnimInstance::KnockBackEnd(UAnimMontage* Montage, bool bInterrupted)
 {
+	mStats->SetKnockback(false);
 	if (Montage->IsValidSlot("AdditiveHitReact")) {
 		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
 			IPakurable::Execute_SetCanRolling(m_PakurComp, true);

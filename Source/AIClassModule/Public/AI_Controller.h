@@ -38,9 +38,9 @@ public:
 		class UBehaviorTree* btree;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class UBehaviorTreeComponent* behavior_tree_component;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = commander)
 	//	class UAISenseConfig_Sight* SightConfig;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = commander)
 	//	class UAISenseConfig_Hearing* HearingConfig;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		bool bIsPlayerDetected = false;
@@ -48,7 +48,7 @@ public:
 		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class AAI_Controller* AIController;
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = commander)
 		float DistanceToPlayer;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
 		class ACharacter* player; //cast
@@ -67,7 +67,7 @@ public:
 	//���������ƮŸ��ä�� �Դϴ�
 	static const ECollisionChannel coverWallType = ECC_GameTraceChannel2;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AIController)
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = commander)
 	//	TArray<class USoundCue*> FireSound;
 public:
 	//UFUNCTION()//BlueprintCallable

@@ -84,7 +84,7 @@ void AAIDog::AIMove(const FVector Destination)
 void AAIDog::BeginPlay()
 {
 	Super::BeginPlay();
-	impactRadius = 250;
+	impactRadius = 150;
 	// 자기 라이트 넣기
 	light = FindComponentByClass<UPointLightComponent>();
 }
@@ -118,7 +118,7 @@ void AAIDog::Explosion()
 
 	// 충돌확인
 	FCollisionShape SphereCol = FCollisionShape::MakeSphere(impactRadius);
-	bool bSweepHit = GetWorld()->SweepMultiByChannel(hitActors, this->GetActorLocation(), this->GetActorLocation() + FVector(0.01f, 0.01f, 0.01f)
+	bool bSweepHit = GetWorld()->SweepMultiByChannel(hitActors, this->GetActorLocation(), this->GetActorLocation() 
 		, FQuat::Identity, ECC_WorldStatic, SphereCol);
 
 	// 디버그 범위

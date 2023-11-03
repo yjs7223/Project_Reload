@@ -211,7 +211,7 @@ void AAI_Controller::SetUseCover()
 			}
 			else
 			{
-				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 250.0f)
+				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 100.0f)
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);

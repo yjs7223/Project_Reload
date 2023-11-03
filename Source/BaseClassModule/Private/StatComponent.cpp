@@ -4,6 +4,7 @@
 #include "StatComponent.h"
 #include "BaseCharacter.h"
 #include "Components/InputComponent.h"
+#include "BaseInputComponent.h"
 
 // Sets default values for this component's properties
 UStatComponent::UStatComponent()
@@ -21,6 +22,7 @@ void UStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	owner = GetOwner<ABaseCharacter>();
+	m_Input = owner ? owner->FindComponentByClass<UBaseInputComponent>() : nullptr;
 	// ...
 }
 
@@ -34,8 +36,17 @@ void UStatComponent::BeginDestroy()
 void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	bAttacked = false;
+	if (bAttacked)
+	{
+		Attacked_t += DeltaTime;
+		if (Attacked_t >= 1.0f)
+		{
+			bAttacked = false;
+			Attacked_t = 0;
+		}
+		
+	}
+	
 	// ...
 }
 
@@ -86,7 +97,7 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType
 		break;
 	case EHitType::Knockback:
 		Knockback.Broadcast(attackPoint, bDie);
-
+		bIsKnockback = true;
 		break;
 	case EHitType::Stun:
 		bIsStun = true;
@@ -108,6 +119,12 @@ void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType
 void UStatComponent::IndirectAttacked(float p_Value)
 {
 
+}
+
+void UStatComponent::SetKnockback(bool p_Knockback)
+{
+	bIsKnockback = p_Knockback;
+	if (m_Input) m_Input->SetCrowdControl(p_Knockback);
 }
 
 

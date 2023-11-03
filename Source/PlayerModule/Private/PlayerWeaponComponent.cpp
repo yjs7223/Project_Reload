@@ -91,7 +91,7 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	RecoveryTick(DeltaTime);
 	CalculateBlockingTick(DeltaTime);
 
-	if (bAiming)
+	if (bAiming || bFire)
 	{
 		if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
 		{
@@ -190,13 +190,14 @@ void UPlayerWeaponComponent::InitData()
 
 void UPlayerWeaponComponent::Fire()
 {
+	Super::Fire();
 	if (!m_CanShooting) return;
 	if (curAmmo <= 0)
 	{
 		StopFire();
+		m_Input->StartReload();
 		return;
 	}
-	Super::Fire();
 
 	if (bReload)
 	{
@@ -349,10 +350,7 @@ void UPlayerWeaponComponent::Fire()
 	}
 	//Cast<UWeaponAnimInstance>(owner->GetMesh()->GetAnimInstance()).
 	//PlayShootingAnimation
-	if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
-	{
-		owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
-	}
+
 }
 
 void UPlayerWeaponComponent::StartAiming()
@@ -402,17 +400,18 @@ void UPlayerWeaponComponent::StartFire()
 	}
 
 	StopRcovery();
-	Fire();
 	Super::StartFire();
+	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
+	{
+		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
+	}
+	Fire();
 	OnCombatWidgetVisible.Broadcast(false);
 
 
 	startRot = owner->GetController()->GetControlRotation();
 
-	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
-	{
-		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
-	}
+
 }
 
 void UPlayerWeaponComponent::StopFire()

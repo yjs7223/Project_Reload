@@ -28,12 +28,13 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void BindInput() override;
 
+	virtual void SetCrowdControl(bool IsControl) override;
 public:
 	void InputMove();
-	virtual void StartReload() override;
 
 	void ChangeMainWeapon();
 	void ChangeSubWeapon();
+	void StartCover();
 	void StopCover();
 
 	void VisibleHud();

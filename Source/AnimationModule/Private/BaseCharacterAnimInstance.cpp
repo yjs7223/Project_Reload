@@ -42,7 +42,7 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 
 	m_IsFaceRight = m_Cover->IsFaceRight();
-	m_IsReloding = m_Input->getInput()->IsReload;
+	m_IsReloding = m_Weapon->bReload;
 	m_IsFire = m_Input->getInput()->IsFire;
 	m_IsAiming = m_Input->getInput()->IsAiming;
 
@@ -53,7 +53,6 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	m_IsHandIK = 
 		(m_GunIKVec != FVector::ZeroVector) &&
 		!m_IsReloding &&
-		!m_Movement->isRuning() &&
 		!m_Stats->bAttacked;
 
 
