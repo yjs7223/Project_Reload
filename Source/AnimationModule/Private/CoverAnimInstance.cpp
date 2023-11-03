@@ -95,7 +95,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	mIsPeeking = mLastPeekingState != EPeekingState::None;
 	mIsCoverShooting = mCoverSootingState != ECoverShootingState::None;
 
-
+	m_IsWeaponReload = mWeapon->bReload;	
 	m_IsUsingWeapon = mIsAiming || mIsFire;
 
 	mSpinRotater = (mPeekingState == EPeekingState::None) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);

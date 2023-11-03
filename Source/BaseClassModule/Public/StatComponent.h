@@ -58,9 +58,13 @@ public:
 	virtual void IndirectAttacked(float p_Value);
 
 	bool IsStun() { return bIsStun; }
+	bool IsKnockback() { return bIsKnockback; }
+	void SetKnockback(bool p_Knockback);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	class ABaseCharacter* TargetEnemy;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Input"))
+	TObjectPtr<class UBaseInputComponent> m_Input;
 	//maximum hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	float maxHP;
@@ -91,4 +95,5 @@ protected:
 	class ABaseCharacter* owner;
 
 	bool bIsStun;
+	bool bIsKnockback;
 };
