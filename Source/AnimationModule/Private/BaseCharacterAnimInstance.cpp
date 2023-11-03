@@ -53,7 +53,6 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	m_IsHandIK = 
 		(m_GunIKVec != FVector::ZeroVector) &&
 		!m_IsReloding &&
-		!m_Movement->isRuning() &&
 		!m_Stats->bAttacked;
 
 

@@ -98,6 +98,8 @@ protected:
 	float mAimPitch;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 	bool mIsReload;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation, meta = (DisplayName = "IsWeaponReload"))
+	bool m_IsWeaponReload;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 	bool mIsCoverShooting;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
