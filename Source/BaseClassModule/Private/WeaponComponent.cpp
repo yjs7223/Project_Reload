@@ -169,6 +169,7 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 void UWeaponComponent::StartFire()
 {
 	bFire = true;
+	UE_LOG(LogTemp, Warning, TEXT("StartFire"));
 }
 
 void UWeaponComponent::StopFire()

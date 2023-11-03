@@ -51,7 +51,7 @@ void UPlayerInputComponent::BindInput()
 	BindAction("ChangeMainWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeMainWeapon);
 	BindAction("ChangeSubWeapon", IE_Pressed, this, &UPlayerInputComponent::ChangeSubWeapon);
 
-	BindAction("Cover", IE_Pressed, m_Covercomponent.Get(), &UCoverComponent::PlayCover);
+	BindAction("Cover", IE_Pressed, this, &UPlayerInputComponent::StartCover);
 	BindAction("Cover", IE_Released, this, &UPlayerInputComponent::StopCover);
 	BindAction("Aim", IE_Pressed, m_Covercomponent.Get(), &UCoverComponent::StartPeeking);
 	BindAction("Aim", IE_Released, m_Covercomponent.Get(), &UCoverComponent::StopPeeking);
@@ -64,6 +64,20 @@ void UPlayerInputComponent::BindInput()
 
 	BindAction("HP_reduce", IE_Pressed, this, &UPlayerInputComponent::HPreduce);
 	BindAction("HP_regen", IE_Pressed, this, &UPlayerInputComponent::HPregen);
+}
+
+void UPlayerInputComponent::SetCrowdControl(bool IsControl)
+{
+	Super::SetCrowdControl(IsControl);
+
+	if (IsControl) {
+		StopFire();
+		StopAiming();
+		StopReload();
+		StopFire();
+		m_inputData.movevec = FVector::ZeroVector;
+
+	}
 }
 
 void UPlayerInputComponent::InputMove()
@@ -87,16 +101,17 @@ void UPlayerInputComponent::ChangeSubWeapon()
 	OnChangedWeapon.Broadcast();
 }
 
+void UPlayerInputComponent::StartCover()
+{
+	if (bIsbCrowdControl) return;
+	m_Covercomponent->PlayCover();
+}
+
 void UPlayerInputComponent::StopCover()
 {
 	if (!m_Covercomponent->IsNextCover()) return;
 
 	m_Covercomponent->StopCover();
-}
-
-void UPlayerInputComponent::StartReload()
-{
-	Super::StartReload();
 }
 
 void UPlayerInputComponent::VisibleHud()

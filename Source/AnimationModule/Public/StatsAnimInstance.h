@@ -61,6 +61,8 @@ protected:
 	class UStatComponent* mStats;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "PakurComp"))
 	TObjectPtr<class UActorComponent> m_PakurComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "Input"))
+	TObjectPtr<class UBaseInputComponent> m_Input;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	bool mIsDie;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
