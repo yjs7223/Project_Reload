@@ -190,7 +190,7 @@ void AAICommander::ListSet()
 	{
 		ListTickSet();
 		TargetTickSet();
-		CoverPointEnemy();
+		//CoverPointEnemy();
 		if (List_Division.Num() <= 0)
 		{
 			if (Now_en->spawn != nullptr)
@@ -370,6 +370,10 @@ void AAICommander::TargetTickSet()
 	}
 	for (auto& en_Ai : List_Division)
 	{
+		if (en_Ai.Key == nullptr)
+		{
+			continue;
+		}
 		AIController = Cast<AAI_Controller>(Cast<AAICharacter>(en_Ai.Key)->GetController());
 		if (AIController == nullptr)
 		{
@@ -466,19 +470,22 @@ void AAICommander::CoverPointEn(const AEncounterSpace* en)
 	}
 	for (auto cover : CoverArray)
 	{
-		if ((en->GetActorLocation().X - en->CollisionMesh->GetScaledBoxExtent().X) <= cover.X
-			&& (en->GetActorLocation().X + en->CollisionMesh->GetScaledBoxExtent().X) >= cover.X)
+		if ((en->GetActorLocation().X - en->CollisionMesh->GetScaledBoxExtent().X) > cover.X
+			|| (en->GetActorLocation().X + en->CollisionMesh->GetScaledBoxExtent().X) < cover.X)
 		{
-			if ((en->GetActorLocation().Y - en->CollisionMesh->GetScaledBoxExtent().Y) <= cover.Y
-				&& (en->GetActorLocation().Y + en->CollisionMesh->GetScaledBoxExtent().Y) >= cover.Y)
-			{
-				if ((en->GetActorLocation().Z - en->CollisionMesh->GetScaledBoxExtent().Z) <= cover.Z
-					&& (en->GetActorLocation().Z + en->CollisionMesh->GetScaledBoxExtent().Z) >= cover.Z)
-				{
-					CoverEnArray.Add(cover);
-				}
-			}
+			continue;
 		}
+		if ((en->GetActorLocation().Y - en->CollisionMesh->GetScaledBoxExtent().Y) > cover.Y
+			|| (en->GetActorLocation().Y + en->CollisionMesh->GetScaledBoxExtent().Y) < cover.Y)
+		{
+			continue;
+		}
+		if ((en->GetActorLocation().Z - en->CollisionMesh->GetScaledBoxExtent().Z) > cover.Z
+			|| (en->GetActorLocation().Z + en->CollisionMesh->GetScaledBoxExtent().Z) < cover.Z)
+		{
+			continue;
+		}
+		CoverEnArray.Add(cover);
 	}
 }
 
@@ -499,26 +506,28 @@ void AAICommander::CoverPointEnemy()
 		collisionParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(result, subencover, player->GetActorLocation(), ECC_Visibility, collisionParams))
 		{
-			if (result.GetActor()->ActorHasTag("Cover"))
+			if (!result.GetActor()->ActorHasTag("Cover"))
 			{
-				if (FVector::Distance(subencover, result.ImpactPoint) < 100.0f)
-				{
-					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, subencover.ToString());
-					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, result.ImpactPoint.ToString());
-					if (FVector::Distance(subencover, player->GetActorLocation()) >= 300.0f)
-					{
-						CoverEnemyArray.Add(subencover);
-					}
-				}
+				continue;
 			}
+
+			if (FVector::Distance(subencover, result.ImpactPoint) > 100.0f)
+			{
+				continue;
+			}
+			if (FVector::Distance(subencover, player->GetActorLocation()) < 300.0f)
+			{
+				continue;
+			}
+			CoverEnemyArray.Add(subencover);
 		}
 	}
 }
 
 void AAICommander::SiegeCoverPoint()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, "SiegeCoverPoint");
 	SiegeCoverArray.Reset();
+	CoverPointEnemy();
 	if (CoverArray.IsEmpty())
 	{
 		return;
@@ -533,18 +542,19 @@ void AAICommander::SiegeCoverPoint()
 	}
 	for (auto enemy_cover : CoverEnemyArray)
 	{
-		if (FVector::Distance(player->GetActorLocation(), enemy_cover) < siege_range)
+		if (FVector::Distance(player->GetActorLocation(), enemy_cover) > siege_range)
 		{
-			SiegeCoverArray.Add(enemy_cover);
+			continue;
 		}
+		SiegeCoverArray.Add(enemy_cover);
 	}
 
 }
 
 void AAICommander::DetourCoverPoint()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, player->GetCapsuleComponent()->GetForwardVector().ToString());//GetSocketLocation("pelvis"));
 	DetourCoverArray.Reset();
+	CoverPointEnemy();
 	if (CoverArray.IsEmpty())
 	{
 		return;
@@ -563,13 +573,15 @@ void AAICommander::DetourCoverPoint()
 		Find_rot.Normalize();
 		float Dot_Cover = FVector::DotProduct(player->GetCapsuleComponent()->GetForwardVector(), Find_rot);
 		float angle = FMath::RadiansToDegrees(FMath::Acos(Dot_Cover));
-		if (angle < detour_angle && angle > ndetour_angle)
+		if (angle > detour_angle || angle < ndetour_angle)
 		{
-			if (FVector::Distance(player->GetActorLocation(), enemy_cover) < detour_range)
-			{
-				DetourCoverArray.Add(enemy_cover);
-			}
+			continue;
 		}
+		if (FVector::Distance(player->GetActorLocation(), enemy_cover) > detour_range)
+		{
+			continue;
+		}
+		DetourCoverArray.Add(enemy_cover);
 	}	
 }
 

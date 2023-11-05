@@ -51,7 +51,6 @@ public:
 	// 딜레이용
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		float spawn_Timer;
-
 	// 스폰할 적
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSetting")
 		TSubclassOf<APawn> enemy_Rifle;

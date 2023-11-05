@@ -15,17 +15,17 @@ UBTT_NomalCoverRequest::UBTT_NomalCoverRequest()
 EBTNodeResult::Type UBTT_NomalCoverRequest::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, OwnerComp.GetAIOwner()->GetName());
-	
 	if (Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander)
 	{
-		AIController = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander;
+		commander = Cast<AAI_Controller>(OwnerComp.GetAIOwner())->commander;
 	}
-	if (AIController)
+	if (commander)
 	{
-		if (AIController->GetBlackboardComponent())
+		if (commander->GetBlackboardComponent())
 		{
+			commander->CoverPointEnemy();
 			OwnerComp.GetAIOwner()->GetBlackboardComponent()->SetValueAsBool("OrderWait", true);
-			AIController->GetBlackboardComponent()->SetValueAsBool("CmdAI_OrderWait", true);
+			commander->GetBlackboardComponent()->SetValueAsBool("CmdAI_OrderWait", true);
 		}
 	}
 	
