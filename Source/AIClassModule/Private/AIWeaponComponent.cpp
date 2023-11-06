@@ -113,7 +113,7 @@ void UAIWeaponComponent::Fire()
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
 	{
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		// AI가 앞을 막고 있을 때 사격 불가능
