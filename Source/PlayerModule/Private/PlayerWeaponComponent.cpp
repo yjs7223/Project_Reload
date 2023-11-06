@@ -195,6 +195,7 @@ void UPlayerWeaponComponent::Fire()
 	if (curAmmo <= 0)
 	{
 		StopFire();
+		m_Input->StartReload();
 		return;
 	}
 
@@ -399,17 +400,18 @@ void UPlayerWeaponComponent::StartFire()
 	}
 
 	StopRcovery();
-	Fire();
 	Super::StartFire();
+	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
+	{
+		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
+	}
+	Fire();
 	OnCombatWidgetVisible.Broadcast(false);
 
 
 	startRot = owner->GetController()->GetControlRotation();
 
-	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
-	{
-		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
-	}
+
 }
 
 void UPlayerWeaponComponent::StopFire()
