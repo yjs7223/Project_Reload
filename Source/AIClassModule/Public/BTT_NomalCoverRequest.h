@@ -20,7 +20,7 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_NomalCoverRequest)
-		class AAICommander* AIController;
+		class AAICommander* commander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BTT_NomalCoverRequest)
 		class AAICharacter* ACharacter;
 };

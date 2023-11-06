@@ -32,7 +32,7 @@
 UAIWeaponComponent::UAIWeaponComponent()
 {
 	// 데이터 테이블 삽입
-	DT_AIWeaponData = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIShot.DT_AIShot'"));
+	DT_AIWeaponData = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/AI_Project/DT/DT_AIWeapon.DT_AIWeapon'"));
 }
 
 void UAIWeaponComponent::BeginPlay()
@@ -43,7 +43,10 @@ void UAIWeaponComponent::BeginPlay()
 
 	use_Shot_State = true;
 	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
-	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) != nullptr)
+	{
+		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	}
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
 
@@ -74,7 +77,7 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
 	/*if (shot_State)
 	{
 		ShotAITimer(DeltaTime);
@@ -96,7 +99,6 @@ void UAIWeaponComponent::Fire()
 
 	FVector start = WeaponMesh->GetSocketLocation(TEXT("MuzzleFlashSocket"));
 	FVector playerLocation = playerMesh->GetSocketLocation(TEXT("spine_05"));
-
 	FVector end = start + ((playerLocation - start).Rotation() + FRotator(x, y, 0)).Vector() * shot_MaxRange;
 
 	if (blackboardTarget != nullptr)

@@ -23,12 +23,13 @@
 #include "SubEncounterSpace.h"
 #include "AISpawner.h"
 #include "AICharacterMoveComponent.h"
+#include "AIStatComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/EngineTypes.h"
 #include "DrawDebugHelpers.h"
 #include "Sound/SoundCue.h"
 #include "Navigation/CrowdFollowingComponent.h"
-
+#include "CoverComponent.h"
 
 AAI_Controller::AAI_Controller(const FObjectInitializer& ObjectInitializer) 
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
@@ -211,7 +212,7 @@ void AAI_Controller::SetUseCover()
 			}
 			else
 			{
-				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 250.0f)
+				if (FVector::Distance(GetPawn()->GetActorLocation(), result.ImpactPoint) < 150.0f)
 				{
 					GetBlackboardComponent()->SetValueAsBool("AI_UseCover", true);
 					//DrawDebugLine(GetWorld(), start, playerLocation, FColor::Red, false, 0.1f);
@@ -261,7 +262,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 	{
 		Blackboard->SetValueAsObject("Target", nullptr);
 		bIsPlayerDetected = false;
-	}*/\
+	}*/
 	if (!sensing)
 	{
 		if (GetPawn())
@@ -309,10 +310,15 @@ void AAI_Controller::Tick(float DeltaSeconds)
 		}
 		
 	}
-	if (Blackboard->GetValueAsBool("Sight_In"))
+	if (GetPawn()->FindComponentByClass<UAIStatComponent>()->bAttacked == false)
 	{
 		SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
 	}
+	if (GetPawn()->FindComponentByClass<UCoverComponent>()->IsPeeking())
+	{
+		SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));
+	}
+	
 	Blackboard->SetValueAsBool("Target_MinRange", sensing->MinRangeCheck());
 	Blackboard->SetValueAsVector("Target_Location", player->GetActorLocation());
 	//Blackboard->SetValueAsBool("Sight_In", bIsPlayerDetected);

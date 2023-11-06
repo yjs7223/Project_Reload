@@ -81,9 +81,11 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 	FVector centerLocation = GetOwner()->GetActorLocation();
 	FVector locationToPlayer = playerLocation - centerLocation;
 
+
+
 	float AngleToPlayer = FMath::Acos(FVector::DotProduct(FanDirection, locationToPlayer.GetSafeNormal()));
 
-	if (AngleToPlayer <= FMath::DegreesToRadians(FanAngle) / 2.0f && locationToPlayer.Size2D() <= LocationRadius)
+	if (AngleToPlayer <= FMath::DegreesToRadians(FanAngle) / 2.0f /*&& locationToPlayer.Size2D() <= LocationRadius*/)
 	{
 		return true;
 	}
