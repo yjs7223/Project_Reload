@@ -74,7 +74,7 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
 	/*if (shot_State)
 	{
 		ShotAITimer(DeltaTime);
