@@ -28,6 +28,7 @@
 #include "EmptyShellSpawnable.h"
 #include "Components/SpotLightComponent.h"
 #include "NiagaraComponent.h"
+#include "AIInputComponent.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -91,7 +92,7 @@ void UAIWeaponComponent::Fire()
 	FVector loc;
 	FRotator rot;
 	owner->GetController()->GetPlayerViewPoint(loc, rot);
-
+	owner->FindComponentByClass<UAIInputComponent>()->AIStopRuning();
 	float x = 0, y = 0;
 
 	x = FMath::RandRange(-recoil_Radius, recoil_Radius);
