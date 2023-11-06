@@ -282,7 +282,6 @@ void UCoverComponent::SettingCoverPath(float DeltaTime)
 
 void UCoverComponent::CheckCoverPath(float DeltaTime)
 {
-	return;
 	FVector lastPath = m_CoverPath.Num() > 0 ? m_CoverPath.Last() : FVector::ZeroVector;
 	FVector tempPoint = m_CanCoverPoint;
 	tempPoint.Z = 0.0;
@@ -891,12 +890,13 @@ void UCoverComponent::StartPeeking()
 {
 	if (!m_IsCover) return; 
 	if (m_PeekingState != EPeekingState::None) return;
+	if (IsCornering()) return;
 	AController* controller = owner->GetController();
 	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(controller)) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * owner->GetDefaultHalfHeight() * 
-		(owner->bIsCrouched ? 1.0f : 0.5f);
+		(owner->bIsCrouched ? 1.1f : 0.6f);
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
 	FVector temppos = owner->GetActorLocation();
@@ -990,7 +990,7 @@ void UCoverComponent::StartPeeking()
 
 void UCoverComponent::peekingCheck(FRotator& aimOffset)
 {
-	if (m_PeekingState == EPeekingState::None) StartPeeking();
+	if (m_PeekingState == EPeekingState::None && aimOffset.Pitch > -40.0) StartPeeking();
 	if (FMath::Abs(aimOffset.Yaw) > 90.0f) StopPeeking();
 	if (!IsPeeking()) return;
 	switch (m_PeekingState)
@@ -1040,6 +1040,7 @@ void UCoverComponent::peekingCheck(FRotator& aimOffset)
 void UCoverComponent::StopPeeking()
 {
 	if (!m_IsCover) return;
+	if (m_Input->getInput()->IsFire || m_Input->getInput()->IsAiming) return;
 	m_PeekingState = EPeekingState::None;
 }
 
