@@ -43,7 +43,10 @@ void UAIWeaponComponent::BeginPlay()
 
 	use_Shot_State = true;
 	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
-	player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) != nullptr)
+	{
+		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	}
 	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
 	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
 
