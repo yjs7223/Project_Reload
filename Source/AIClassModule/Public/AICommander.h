@@ -100,6 +100,9 @@ public:
 		bool sound_Start;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool sound_Perception;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float env_range;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float siege_range;
