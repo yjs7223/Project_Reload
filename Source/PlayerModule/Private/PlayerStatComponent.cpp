@@ -6,6 +6,7 @@
 #include "MatineeCameraShake.h"
 #include "InteractiveComponent.h"
 #include "PlayerWeaponComponent.h"
+#include "PlayerInputComponent.h"
 
 
 UPlayerStatComponent::UPlayerStatComponent()
@@ -16,6 +17,10 @@ UPlayerStatComponent::UPlayerStatComponent()
 void UPlayerStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	diePlay.__Internal_AddDynamic(this, &UPlayerStatComponent::Revive, FName("Revive"));
+
+	revivePos = GetOwner()->GetActorLocation();
 }
 
 void UPlayerStatComponent::BeginDestroy()
@@ -72,7 +77,10 @@ void UPlayerStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EH
 
 	}
 
-	owner->FindComponentByClass<UPlayerWeaponComponent>()->OnCombatWidgetVisible.Broadcast(true);
+	if (!bDie)
+	{
+		owner->FindComponentByClass<UPlayerWeaponComponent>()->OnCombatWidgetVisible.Broadcast(true);
+	}
 	//OnVisibleHPUIDelegate.Broadcast();
 	OnChangedHealthDelegate.Broadcast(curHP / maxHP);
 	OnVisibleAttackedUIDelegate.ExecuteIfBound();
@@ -150,6 +158,29 @@ void UPlayerStatComponent::Interacting()
 			}
 		}
 	}
+}
+
+void UPlayerStatComponent::Revive()
+{
+	FTimerHandle dieTimer;
+	UPlayerInputComponent* inputComp = GetOwner()->FindComponentByClass<UPlayerInputComponent>();
+	if (inputComp)
+	{
+		inputComp->SetInputEnable(false);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			bDie = false;
+			RecoverHP(10000);
+			UPlayerInputComponent* inputComp = GetOwner()->FindComponentByClass<UPlayerInputComponent>();
+			if (inputComp)
+			{
+				inputComp->SetInputEnable(true);
+			}
+			GetOwner()->SetActorLocation(revivePos);
+
+		}), 2.f, false);
 }
 
 
