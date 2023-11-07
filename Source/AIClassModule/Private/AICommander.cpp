@@ -52,6 +52,8 @@ AAICommander::AAICommander()
 	enemycover = false;
 	SightIn_CHK = false;
 	Cmd_SightOut = false;
+	sound_Perception = false;
+
 	//Patrol_CHK = false;
 	static ConstructorHelpers::FObjectFinder<UBlueprint> RedBallData(TEXT("Blueprint'/Game/JHB/RedBall.RedBall'"));
 	if (RedBallData.Succeeded())
@@ -178,6 +180,7 @@ void AAICommander::ListSet()
 	
 	Blackboard->SetValueAsObject("Cmd_Space", Now_en);
 
+
 	if (Now_en->spawn)
 	{
 		Now_en->spawn->check_Overlap = true;
@@ -199,7 +202,7 @@ void AAICommander::ListSet()
 				{
 					if (sound_Start)
 					{
-						//»ç¿îµå
+						//ï¿½ï¿½ï¿½ï¿½
 						audiocomp->Stop();
 						background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
 						audiocomp->SetSound(background);
@@ -215,7 +218,7 @@ void AAICommander::ListSet()
 			{
 				if (sound_Start)
 				{
-					//»ç¿îµå
+					//ï¿½ï¿½ï¿½ï¿½
 					audiocomp->Stop();
 					background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
 					audiocomp->SetSound(background);
@@ -256,6 +259,7 @@ void AAICommander::ListVoidReset()
 	MapList_Start = false;
 	Blackboard->SetValueAsBool("CmdAI_Active", false);
 	Blackboard->SetValueAsObject("Cmd_Target", NULL);
+	sound_Perception = false;
 
 	
 }
