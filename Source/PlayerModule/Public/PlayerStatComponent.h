@@ -40,14 +40,16 @@ public:
 	void RecoverHP(float p_HP) override;
 
 	UFUNCTION(BlueprintCallable)
-		void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector) override;
+	void Attacked(float p_damage = 0, class ABaseCharacter* attacker = nullptr, EHitType hittype = EHitType::Normal, FVector attackPoint = FVector::ZeroVector) override;
 
 	UFUNCTION(BlueprintCallable)
-		void CheckInteractiveObj();
+	void CheckInteractiveObj();
 	
 	UFUNCTION(BlueprintCallable)
-		void Interacting();
+	void Interacting();
 
+	UFUNCTION(BlueprintCallable)
+	void Revive();
 
 public:
 	FOnChangedHeathDelegate OnChangedHealthDelegate;

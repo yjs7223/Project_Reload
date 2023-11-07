@@ -79,6 +79,9 @@ void UStatComponent::Attacked_BP(float p_damage, ABaseCharacter* attacker, EHitT
 
 void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
+	if (bDie) return;
+
+
 	curHP -= p_damage;
 	bAttacked = true;
 	if (curHP < 0.0f)
