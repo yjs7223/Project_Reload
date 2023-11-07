@@ -35,10 +35,15 @@ void UDialogueWidget::SetDialogueText(FName rowName)
 	UDataTable* DialogueScripts = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/yjs/TextLog/DT_DialogueScripts.DT_DialogueScripts'"));
 	if (DialogueScripts)
 	{
+		FDialogueRowStruct* dialogue = DialogueScripts->FindRow<FDialogueRowStruct>(rowName, FString("Row isn't exist"));
+		if (!dialogue)
+		{
+			return;
+		}
+
 		Dialogue_Overlay->SetRenderOpacity(1.0f);
 		GetOwningPlayer()->GetWorldTimerManager().ClearTimer(WritingTimer);
 
-		FDialogueRowStruct* dialogue = DialogueScripts->FindRow<FDialogueRowStruct>(rowName, FString("Row isn't exist"));
 		Dialogue_Name->SetText(FText::FromString(dialogue->dialogue_Name));
 
 		fullLine = dialogue->dialogue_Line;
