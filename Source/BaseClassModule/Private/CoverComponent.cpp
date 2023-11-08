@@ -927,7 +927,7 @@ void UCoverComponent::StartPeeking()
 		start = end;
 		end = start + -upVector * 2.0f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start + upVector;
@@ -966,7 +966,7 @@ void UCoverComponent::StartPeeking()
 		start = end;
 		end = start + -upVector * 2.0f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start + upVector;
