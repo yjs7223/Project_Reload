@@ -44,7 +44,7 @@ public:
 	void PlayMissoinEvent(APlayerCharacter* player,int p_selectNum);
 
 	UFUNCTION(BlueprintCallable)
-	void OpenLevelEvent(int p_selectNum);
+	void OpenLevelEvent(APlayerCharacter* player, int p_selectNum);
 
 	UFUNCTION(BlueprintCallable)
 	void PlayTimeOutEvent(APlayerCharacter* player,float p_timeOutCount);

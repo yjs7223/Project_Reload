@@ -184,6 +184,10 @@ void UPlayerHUDWidget::SetFaceRightWidget(bool p_bFaceright)
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="p_bFadeIn">: fadeIn => true, FadeOut => false </param>
 void UPlayerHUDWidget::PlayFadeInOutAnim(bool p_bFadeIn)
 {
 	if (FullFadeInAnimation && FullFadeOutAnimation)
