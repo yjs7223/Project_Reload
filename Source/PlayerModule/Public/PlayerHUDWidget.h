@@ -86,6 +86,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UPlayer_Cover_Widget* CoverWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UTimeOutWidget* TimeOutWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineNaviWidget* LineNaviWidget;
 	
