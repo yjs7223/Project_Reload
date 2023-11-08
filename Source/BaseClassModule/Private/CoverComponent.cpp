@@ -704,9 +704,18 @@ bool UCoverComponent::StartCover()
 		{
 			FVector start = owner->GetActorLocation();
 			FVector end = item->GetActorLocation();
+			
 			FCollisionQueryParams params(NAME_None, true, owner);
-			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
-				break;
+			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, true);
+			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) 
+			{
+				end = start + (end - start).GetSafeNormal()
+					+ result.ImpactNormal * capsule->GetScaledCapsuleRadius() * -1.5;
+				//DrawDebugLine(GetWorld(), start, end, FColor::Blue, true);
+				if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) 
+				{
+						break;
+				}
 			}
 		}
 
@@ -717,6 +726,8 @@ bool UCoverComponent::StartCover()
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
 		m_CanCoverPointNormal = result.Normal;
 	}
+	//DrawDebugLine(GetWorld(), owner->GetActorLocation(), owner->GetActorLocation() + m_CanCoverPointNormal * 100, FColor::Red, true);
+
 
 	m_CanCoverPointNormal.Z = 0;
 	m_Movement->SetMovementMode(MOVE_Walking);
@@ -896,7 +907,7 @@ void UCoverComponent::StartPeeking()
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 	FVector upVector = owner->GetActorUpVector() * owner->GetDefaultHalfHeight() * 
-		(owner->bIsCrouched ? 1.1f : 0.6f);
+		(owner->bIsCrouched ? 0.3f : 0.6f);
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
 	FVector temppos = owner->GetActorLocation();
@@ -919,7 +930,7 @@ void UCoverComponent::StartPeeking()
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
-		start = start;
+		start = start + upVector;
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
@@ -934,7 +945,7 @@ void UCoverComponent::StartPeeking()
 			return;
 		}
 		else {
-			start = temppos + upVector;
+			start = temppos + upVector * 2.2f;
 			end = start + forwardVector * 1.5f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
@@ -958,7 +969,7 @@ void UCoverComponent::StartPeeking()
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
-		start = start;
+		start = start + upVector;
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
@@ -972,7 +983,7 @@ void UCoverComponent::StartPeeking()
 			return;
 		}
 		else {
-			start = temppos + upVector;
+			start = temppos + upVector * 2.2f;
 			end = start + forwardVector * 1.5f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
