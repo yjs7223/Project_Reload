@@ -51,7 +51,7 @@ void UDialogueWidget::SetDialogueText(FName rowName)
 		nowLen = 1;
 
 		FString line = UKismetStringLibrary::GetSubstring(fullLine, 0, nowLen);
-		nowLen++;
+		//nowLen++;
 		Dialogue_RichText->SetText(FText::FromString(line));
 
 		GetOwningPlayer()->GetWorldTimerManager().SetTimer(WritingTimer, this, &UDialogueWidget::WriteDialogueText, writingSpeed, true);

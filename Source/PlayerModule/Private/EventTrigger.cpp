@@ -3,6 +3,14 @@
 
 #include "EventTrigger.h"
 #include "Components/BoxComponent.h"
+#include "DialogueWidget.h"
+#include "MissionWidget.h"
+#include "PlayerCharacter.h"
+#include "PlayerHUDWidget.h"
+#include "DialogueWidget.h"
+#include "TimeOutWidget.h"
+#include "Kismet/GameplayStatics.h"
+//#include ""
 
 // Sets default values
 AEventTrigger::AEventTrigger()
@@ -22,6 +30,7 @@ void AEventTrigger::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AEventTrigger::OnBoxBeginOverlap);
 }
 
 // Called every frame
@@ -39,6 +48,7 @@ void AEventTrigger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 		{
 			if (OtherActor->ActorHasTag("Player"))
 			{
+				APlayerCharacter* pc = Cast<APlayerCharacter>(OtherActor);
 				switch (TriggerEventEnum)
 				{
 				case ETriggerEventEnum::TE_NoneEvent:
@@ -46,11 +56,11 @@ void AEventTrigger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 					break;
 				case ETriggerEventEnum::TE_DialogueEvent:
 					//대사 출력
-					PlayDialogueEvent(selectNum);
+					PlayDialogueEvent(pc, selectNum);
 					break;
 				case ETriggerEventEnum::TE_MissionEvent:
 					//미션 출력
-					PlayMissoinEvent(selectNum);
+					PlayMissoinEvent(pc, selectNum);
 					break;
 				case ETriggerEventEnum::TE_OpenlevelEvent:
 					//페이드 아웃 후 레벨 오픈
@@ -58,7 +68,7 @@ void AEventTrigger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 					break;
 				case ETriggerEventEnum::TE_TimeOutEvent:
 					//제한시간 시작
-					PlayTimeOutEvent();
+					PlayTimeOutEvent(pc, timeOutCount);
 					break;
 				default:
 					break;
@@ -66,26 +76,53 @@ void AEventTrigger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 			}
 		}
 	}
+
+	Destroy();
 }
 
-void AEventTrigger::PlayDialogueEvent(int p_selectNum)
+void AEventTrigger::PlayDialogueEvent(APlayerCharacter* player, int p_selectNum)
 {
-
-
+	if (UDialogueWidget* DialogueWidget = player->PlayerHUDWidget->DialogueWidget)
+	{
+		DialogueWidget->SetDialogueText(FName(FString::FromInt(p_selectNum)));
+	}
 }
 
-void AEventTrigger::PlayMissoinEvent(int p_selectNum)
+void AEventTrigger::PlayMissoinEvent(APlayerCharacter* player, int p_selectNum)
 {
-
+	if (UMissionWidget* MissionWidget = player->PlayerHUDWidget->MissionWidget)
+	{
+		MissionWidget->SetMissionText(FName(FString::FromInt(p_selectNum)));
+	}
 }
 
 void AEventTrigger::OpenLevelEvent(int p_selectNum)
 {
-
+	switch (p_selectNum)
+	{
+	case 0:
+		UGameplayStatics::OpenLevel(GetWorld(), FName("Target_level"));
+		break;
+	case 1:
+		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+		break;
+	case 2:
+		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+		break;
+	case 3:
+		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+		break;
+	default:
+		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+		break;
+	}
 }
 
-void AEventTrigger::PlayTimeOutEvent()
+void AEventTrigger::PlayTimeOutEvent(APlayerCharacter* player, float p_timeOutCount)
 {
-
+	if (UTimeOutWidget* TimeOutWidget = player->PlayerHUDWidget->TimeOutWidget)
+	{
+		TimeOutWidget->StartCount(p_timeOutCount);
+	}
 }
 
