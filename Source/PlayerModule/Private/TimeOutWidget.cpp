@@ -2,6 +2,7 @@
 
 
 #include "TimeOutWidget.h"
+#include "PlayerStatComponent.h"
 #include "UMG.h"
 
 void UTimeOutWidget::NativeConstruct()
@@ -31,11 +32,6 @@ void UTimeOutWidget::StartCount(int p_timeCount)
 
 void UTimeOutWidget::CountTime()
 {
-	if (leftCount == 0)
-	{
-		//사망처리
-	}
-
 	leftCount--;
 
 	int m = leftCount / 60;
@@ -51,4 +47,13 @@ void UTimeOutWidget::CountTime()
 	}
 	
 	TimeOut_Text->SetText(t);
+
+	if (leftCount == 0)
+	{
+		if (UPlayerStatComponent* mySyat = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>())
+		{
+			mySyat->diePlay.Broadcast();
+			GetOwningPlayer()->GetWorldTimerManager().ClearTimer(timeOutHandle);
+		}
+	}
 }

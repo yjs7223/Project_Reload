@@ -64,7 +64,7 @@ void AEventTrigger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 					break;
 				case ETriggerEventEnum::TE_OpenlevelEvent:
 					//페이드 아웃 후 레벨 오픈
-					OpenLevelEvent(selectNum);
+					OpenLevelEvent(pc, selectNum);
 					break;
 				case ETriggerEventEnum::TE_TimeOutEvent:
 					//제한시간 시작
@@ -96,26 +96,36 @@ void AEventTrigger::PlayMissoinEvent(APlayerCharacter* player, int p_selectNum)
 	}
 }
 
-void AEventTrigger::OpenLevelEvent(int p_selectNum)
+void AEventTrigger::OpenLevelEvent(APlayerCharacter* player, int p_selectNum)
 {
-	switch (p_selectNum)
-	{
-	case 0:
-		UGameplayStatics::OpenLevel(GetWorld(), FName("Target_level"));
-		break;
-	case 1:
-		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
-		break;
-	case 2:
-		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
-		break;
-	case 3:
-		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
-		break;
-	default:
-		UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
-		break;
-	}
+	player->PlayerHUDWidget->PlayFadeInOutAnim(false);
+
+	FTimerHandle openLevelHandle;
+
+	GetWorld()->GetTimerManager().SetTimer(openLevelHandle,
+		FTimerDelegate::CreateLambda([&]()
+			{
+				switch (p_selectNum)
+				{
+				case 0:
+					UGameplayStatics::OpenLevel(GetWorld(), FName("Target_level"));
+					break;
+				case 1:
+					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+					break;
+				case 2:
+					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+					break;
+				case 3:
+					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+					break;
+				default:
+					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+					break;
+				}
+			}
+	), 2.0f, false);
+	
 }
 
 void AEventTrigger::PlayTimeOutEvent(APlayerCharacter* player, float p_timeOutCount)
