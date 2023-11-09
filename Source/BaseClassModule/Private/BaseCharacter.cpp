@@ -76,7 +76,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + GetActorRotation().Vector() * 1000, FColor::Blue, false, 1, 1, 10);
-	DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + GetControlRotation().Vector() * 1000, FColor::Red, false, 1, 1, 10);
+	//DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + GetControlRotation().Vector() * 1000, FColor::Red, false, 1, 1, 10);
 }
 
 // Called to bind functionality to input
