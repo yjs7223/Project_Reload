@@ -38,16 +38,16 @@ public:
 	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION(BlueprintCallable)
-	void PlayDialogueEvent(int p_selectNum);
+	void PlayDialogueEvent(APlayerCharacter* player,int p_selectNum);
 
 	UFUNCTION(BlueprintCallable)
-	void PlayMissoinEvent(int p_selectNum);
+	void PlayMissoinEvent(APlayerCharacter* player,int p_selectNum);
 
 	UFUNCTION(BlueprintCallable)
-	void OpenLevelEvent(int p_selectNum);
+	void OpenLevelEvent(APlayerCharacter* player, int p_selectNum);
 
 	UFUNCTION(BlueprintCallable)
-	void PlayTimeOutEvent();
+	void PlayTimeOutEvent(APlayerCharacter* player,float p_timeOutCount);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -60,7 +60,7 @@ public:
 	int selectNum;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float timeOutCount;
+	int timeOutCount;
 };
 
 

@@ -26,20 +26,26 @@ void UMissionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UMissionWidget::SetMissionText(FName rowName)
 {
-	UDataTable* DialogueScripts = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/yjs/TextLog/DT_MissionScripts.DT_MissionScripts'"));
-	if (DialogueScripts)
+	UDataTable* MissionScripts = LoadObject<UDataTable>(NULL, TEXT("DataTable'/Game/yjs/TextLog/DT_MissionScripts.DT_MissionScripts'"));
+	if (MissionScripts)
 	{
+		FMissionRowStruct* mission = MissionScripts->FindRow<FMissionRowStruct>(rowName, FString("Row isn't exist"));
+		if (!mission)
+		{
+			return;
+		}
+
+		Mission_Overlay->SetRenderOpacity(1.0f);
 		GetOwningPlayer()->GetWorldTimerManager().ClearTimer(WritingTimer);
 
-		FMissionRowStruct* mission = DialogueScripts->FindRow<FMissionRowStruct>(rowName, FString("Row isn't exist"));
 		Mission_Name->SetText(FText::FromString(mission->mission_Name));
 
 		fullLine = mission->mission_Desc;
 		lineLen = mission->mission_Desc.Len();
-		nowLen = 1;
+		nowLen = 0;
 
 		FString line = UKismetStringLibrary::GetSubstring(fullLine, 0, nowLen);
-		nowLen++;
+
 		Mission_RichText->SetText(FText::FromString(line));
 
 		GetOwningPlayer()->GetWorldTimerManager().SetTimer(WritingTimer, this, &UMissionWidget::WriteMissionText, writingSpeed, true);
