@@ -36,7 +36,7 @@ void UBaseInputComponent::BindInput()
 	owner->SetupPlayerInputComponent(this);
 	if (UInputDelegateBinding::SupportsInputDelegate(owner->GetClass()))
 	{
-		bBlockInput = bBlockInput;
+		//bBlockInput = bBlockInput;
 		UInputDelegateBinding::BindInputDelegatesWithSubojects(owner, this);
 	}
 }
