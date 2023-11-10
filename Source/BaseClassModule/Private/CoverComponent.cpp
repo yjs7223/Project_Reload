@@ -762,7 +762,7 @@ void UCoverComponent::StopCover()
 	m_IsCover = false;
 	mCoverShootingState = ECoverShootingState::None;
 	m_PeekingState = EPeekingState::None;
-	SetIsFaceRight(true);
+	//SetIsFaceRight(true);
 	m_CanCoverPointNormal = FVector::ZeroVector;
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
