@@ -63,12 +63,12 @@ void UDestinationWidget::SetTranslation()
 		FVector2D loc;
 		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), nowDes->GetActorLocation(), loc, true))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("In screen"));
+			//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("In screen"));
 			Des_Overlay->SetRenderTranslation(loc);
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("Out screen"));
+			//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("Out screen"));
 		}
 	}
 }
