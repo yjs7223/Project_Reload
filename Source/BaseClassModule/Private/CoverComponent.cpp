@@ -286,7 +286,9 @@ void UCoverComponent::CheckCoverPath(float DeltaTime)
 	FVector tempPoint = m_CanCoverPoint;
 	tempPoint.Z = 0.0;
 	lastPath.Z = 0.0;
-
+	UKismetSystemLibrary::PrintString(GetWorld(), 
+		FString::Printf(TEXT("distance : %s"), *(lastPath - tempPoint).ToString())
+		, true, true, FColor::Red, DeltaTime);
 	if (!lastPath.Equals(tempPoint, 1.0)) {
 		m_CanCoverPoint = FVector::ZeroVector;
 		m_CoverPath.Empty();
@@ -585,7 +587,7 @@ float UCoverComponent::FaceRight()
 
 bool UCoverComponent::IsFaceRight()
 {
-	return IsCover() ? FaceRight() > 0.0f : true;
+	return FaceRight() > 0.0f;
 }
 
 void UCoverComponent::SetIsFaceRight(bool faceRight)
@@ -929,7 +931,7 @@ void UCoverComponent::StartPeeking()
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
-		start = start;
+		start = start + upVector * (owner->bIsCrouched ? 0.25f : 0.5f);
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
@@ -968,7 +970,7 @@ void UCoverComponent::StartPeeking()
 		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
-		start = start;
+		start = start + upVector * (owner->bIsCrouched ? 0.25f : 0.5f);
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
