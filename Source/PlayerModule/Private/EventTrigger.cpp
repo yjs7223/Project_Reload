@@ -73,11 +73,12 @@ void AEventTrigger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 				default:
 					break;
 				}
+
+				Destroy();
 			}
 		}
 	}
 
-	Destroy();
 }
 
 void AEventTrigger::PlayDialogueEvent(APlayerCharacter* player, int p_selectNum)
