@@ -16,6 +16,7 @@ class AICLASSMODULE_API UAIWeaponDataAsset : public UBaseWeaponDataAsset
 	GENERATED_BODY()
 
 public:
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundCue*> Arr_AIShotSound;
 
 };
