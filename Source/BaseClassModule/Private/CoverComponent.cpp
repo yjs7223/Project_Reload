@@ -758,7 +758,9 @@ void UCoverComponent::StopCover()
 	{
 		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
-
+	if (IsCover()) {
+		m_Weapon->m_CanShooting = false;
+	}
 	//m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;
@@ -769,7 +771,7 @@ void UCoverComponent::StopCover()
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	m_Input->SetCanUnCrouch(true);
-	m_Weapon->m_CanShooting = false;
+
 
 	OnVisibleCorneringWidget.ExecuteIfBound(false, true);
 }

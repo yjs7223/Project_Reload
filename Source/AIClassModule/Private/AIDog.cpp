@@ -113,49 +113,45 @@ void AAIDog::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AAIDog::Explosion()
 {
-	//
-	TArray<FHitResult> hitActors;
-
+	TArray<AActor*> hitActors;
 	// 충돌확인
 	FCollisionShape SphereCol = FCollisionShape::MakeSphere(impactRadius);
-	bool bSweepHit = GetWorld()->SweepMultiByChannel(hitActors, this->GetActorLocation(), this->GetActorLocation() 
-		, FQuat::Identity, ECC_WorldStatic, SphereCol);
+
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(),
+		this->GetActorLocation(),
+		impactRadius,
+		{  },
+		nullptr,
+		{ Owner },
+		hitActors);
+
 
 	// 디버그 범위
 	//DrawDebugSphere(GetWorld(), this->GetActorLocation(), impactRadius, 50, FColor::Red, false, 1.0f);
 
-	// 충돌체들 확인용
-	if (bSweepHit)
+	if (hitActors.Num() > 0)
 	{
 		bool hitCheck = false;
-		for (auto& Hit : hitActors)
+		for (auto& Actor : hitActors)
 		{
-			UStaticMeshComponent* meshComp = Cast<UStaticMeshComponent>(Hit.GetActor()->GetRootComponent());
-			if (meshComp)
-			{
-				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, meshComp->GetName());
-				meshComp->AddRadialImpulse(this->GetActorLocation(), impactRadius, impulseForce, ERadialImpulseFalloff::RIF_Constant, true);
+			//UStaticMeshComponent* meshComp = Cast<UStaticMeshComponent>(Hit.GetActor()->GetRootComponent());
+			//if (meshComp)
+			//{
+			//	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, meshComp->GetName());
+			//	meshComp->AddRadialImpulse(this->GetActorLocation(), impactRadius, impulseForce, ERadialImpulseFalloff::RIF_Constant, true);
+			//}
+
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, Hit.GetActor()->GetName());
+
+			auto temp = Actor->FindComponentByClass<UStatComponent>();
+			if (temp) {
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
+				temp->Attacked(explosionDamage, nullptr, EHitType::Knockback, GetActorLocation() + FVector(0, 0, 50));
 			}
 
-			if (!Hit.GetActor())
-			{
-				return;
-			}
-
-
-			if (Hit.GetActor()->ActorHasTag("Player") || Hit.GetActor()->ActorHasTag("Enemy"))
-			{
-				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, Hit.GetActor()->GetName());
-
-				auto temp = Hit.GetActor()->FindComponentByClass<UStatComponent>();
-				if (temp) {
-					//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
-					temp->Attacked(explosionDamage, nullptr,EHitType::Knockback,GetActorLocation() + FVector(0, 0, 50));
-				}
-
-				hitCheck = true;
-			}
+			hitCheck = true;
 		}
+
 	}
 
 
