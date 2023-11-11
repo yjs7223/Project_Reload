@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+
+DECLARE_DELEGATE_OneParam(FOnSetDroneVisible, bool)
+
 UCLASS()
 class BASECLASSMODULE_API ABaseCharacter : public ACharacter
 {
@@ -15,6 +18,8 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter(const FObjectInitializer& ObjectInitializer);
 	//ABaseCharacter();
+
+	FOnSetDroneVisible OnSetDroneVisible;
 
 protected:
 	// Called when the game starts or when spawned

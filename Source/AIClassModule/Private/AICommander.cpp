@@ -99,6 +99,9 @@ void AAICommander::BeginPlay()
 	audiocomp->FadeIn(2.0f);
 	sound_Start = false;
 	SetCommanderDataTable("Commander");
+
+
+	
 }
 
 
@@ -157,6 +160,7 @@ void AAICommander::ListSet()
 			//{
 				background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/S_Fire_Support_LOOP_150bpm_Cue.S_Fire_Support_LOOP_150bpm_Cue'"));
 				audiocomp->SetSound(background);
+				Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(true);
 			//}
 			audiocomp->Play();
 			audiocomp->FadeIn(2.0f);
@@ -209,6 +213,7 @@ void AAICommander::ListSet()
 						audiocomp->Play();
 						audiocomp->FadeIn(2.0f);
 						sound_Start = false;
+						Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(false);
 					}
 					
 					ListVoidReset();
@@ -225,6 +230,7 @@ void AAICommander::ListSet()
 					audiocomp->Play();
 					audiocomp->FadeIn(2.0f);
 					sound_Start = false;
+					Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(false);
 				}
 				ListVoidReset();
 				

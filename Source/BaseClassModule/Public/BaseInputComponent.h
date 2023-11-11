@@ -65,11 +65,11 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
 	ACharacter* owner;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FInputData m_inputData;
+	FInputData m_inputData; 
 
 	bool m_CanUnCrouch;
 	bool m_IsInputEnabled;
-	UPROPERTY(VisibleInstanceOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool bIsbCrowdControl;
 
 protected:
