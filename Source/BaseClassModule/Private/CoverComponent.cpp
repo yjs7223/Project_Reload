@@ -930,7 +930,7 @@ void UCoverComponent::StartPeeking()
 		start = end;
 		end = start + -upVector * (owner->bIsCrouched ? 1.0f : 1.5f);
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start + upVector * (owner->bIsCrouched ? 0.25f : 0.5f);
@@ -969,7 +969,7 @@ void UCoverComponent::StartPeeking()
 		start = end;
 		end = start + -upVector * (owner->bIsCrouched ? 1.0f : 1.5f);
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
 		start = start + upVector * (owner->bIsCrouched ? 0.25f : 0.5f);

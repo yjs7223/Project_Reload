@@ -13,6 +13,10 @@ UCLASS()
 class BOSSMODULE_API AMyBossCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
 	
 public:
 

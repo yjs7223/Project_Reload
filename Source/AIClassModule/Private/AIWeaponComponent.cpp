@@ -28,6 +28,7 @@
 #include "EmptyShellSpawnable.h"
 #include "Components/SpotLightComponent.h"
 #include "NiagaraComponent.h"
+#include "AIInputComponent.h"
 
 UAIWeaponComponent::UAIWeaponComponent()
 {
@@ -91,7 +92,7 @@ void UAIWeaponComponent::Fire()
 	FVector loc;
 	FRotator rot;
 	owner->GetController()->GetPlayerViewPoint(loc, rot);
-
+	owner->FindComponentByClass<UAIInputComponent>()->AIStopRuning();
 	float x = 0, y = 0;
 
 	x = FMath::RandRange(-recoil_Radius, recoil_Radius);
@@ -113,7 +114,7 @@ void UAIWeaponComponent::Fire()
 	FCollisionQueryParams traceParams;
 
 	// 조준 방향 체크
-	if (GetWorld()->LineTraceSingleByChannel(m_result, start, playerLocation, ECC_Visibility, traceParams))
+	if (GetWorld()->LineTraceSingleByChannel(m_result, start, end, ECC_Visibility, traceParams))
 	{
 		rot = UKismetMathLibrary::FindLookAtRotation(start, m_result.Location);
 		// AI가 앞을 막고 있을 때 사격 불가능
@@ -288,13 +289,11 @@ void UAIWeaponComponent::PlayRandomShotSound()
 	float pitch = FMath::RandRange(0.9f, 1.2f);
 	if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::HEAVY || owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 	{
-		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/assault_rifle-001_Cue.assault_rifle-001_Cue'"));
-		UGameplayStatics::PlaySoundAtLocation(this, AI_FireSound, owner->GetActorLocation(), 0.2f, pitch);
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, owner->GetActorLocation(), 0.5f, pitch);
 	}
 	else if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::SNIPER)
 	{
-		AI_FireSound = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/SniperNew_Cue.SniperNew_Cue'"));
-		UGameplayStatics::PlaySoundAtLocation(this, AI_FireSound, owner->GetActorLocation(), 0.4f, pitch);
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, owner->GetActorLocation(), 1.0f, pitch);
 	}
 	
 	

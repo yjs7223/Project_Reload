@@ -26,16 +26,14 @@ void UAI_HP_Widget::NativeConstruct()
 	HP_Overlay_l->SetRenderOpacity(0.0f);
 
 	//Spider
-	//if (GetOwningPlayerPawn()->Tags.Num() > 0)
-	//{
-	//	if (GetOwningPlayerPawn()->ActorHasTag(FName("Spider")))
-	//	{
-	//		//SetDelegate
-	//		AAIDog* dog = Cast<AAIDog>(GetOwningPlayerPawn());
-	//		dog->OnWarningUIDelegate.BindUObject(this, &UAI_HP_Widget::startWarning);
-	//		SetDelegate(dog);
-	//	}
-	//}
+	if (GetOwningPlayerPawn()->Tags.Num() > 0)
+	{
+		if (GetOwningPlayerPawn()->ActorHasTag(FName("Spider")))
+		{
+			//SetDelegate
+			SetDelegate(GetOwningPlayerPawn());
+		}
+	}
 
 }
 

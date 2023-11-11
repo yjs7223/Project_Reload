@@ -35,6 +35,11 @@ public:
 
 	void SetFaceRightWidget(bool p_bFaceright);
 
+	void PlayFadeInOutAnim(bool p_bFadeIn);
+
+	UFUNCTION()
+	void DeactiveWidget();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* Right_Overlay;
@@ -81,6 +86,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UPlayer_Cover_Widget* CoverWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UTimeOutWidget* TimeOutWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineNaviWidget* LineNaviWidget;
 	
@@ -95,6 +103,15 @@ public:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
 		class UWidgetAnimation* DesFadeOutAnimation;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
+		class UWidgetAnimation* FullFadeOutAnimation;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient, EditAnywhere, BlueprintReadWrite)
+		class UWidgetAnimation* FullFadeInAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UImage* fadeInOutImage;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

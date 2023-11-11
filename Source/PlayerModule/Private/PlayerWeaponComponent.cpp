@@ -62,10 +62,14 @@ void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	if (UStatComponent* statComp = GetOwner()->FindComponentByClass<UStatComponent>())
+	{
+		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerWeaponComponent::InitData, FName("InitData"));
+	}
+
 	InitData();
 	
-	// ...
-	//PlayerWeaponData.row
 }
 
 void UPlayerWeaponComponent::BeginDestroy()
@@ -187,7 +191,7 @@ void UPlayerWeaponComponent::InitData()
 		m_WeaponDistance = dataTable->WeaponDistance;
 
 
-		//OnChangedAmmoUIDelegate.ExecuteIfBound();
+		OnChangedAmmoUIDelegate.Broadcast();
 	}
 
 
