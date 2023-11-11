@@ -83,11 +83,11 @@ public:
 	/** 코너링대기중이면 참을 반환합니다 */
 	bool IsTurnWait();
 	/** m_FaceRight값을 반환 합니다 */
-	UFUNCTION(BlueprintCallable)
 	float FaceRight();
 	UFUNCTION(BlueprintCallable)
 	/** 오른손잡이면 참을 반환합니다 */
 	bool IsFaceRight();
+	UFUNCTION(BlueprintCallable)
 	/** 캐릭터의 좌우방향을 바꿉니다 */
 	void SetIsFaceRight(bool faceRight);
 	/** 코너링중이면 참을 반환합니다 */
