@@ -33,6 +33,7 @@
 #include "EmptyShellSpawnable.h"
 #include "PlayerWeaponDataAsset.h"
 #include "CharacterSoundDataAsset.h"
+#include "Pakurable.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -60,6 +61,7 @@ UPlayerWeaponComponent::UPlayerWeaponComponent()
 void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
 	InitData();
 	
 	// ...
@@ -93,7 +95,11 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	if (bAiming || bFire)
 	{
-		if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
+		bool bIsRolling = false;
+		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
+			bIsRolling = IPakurable::Execute_IsRolling(m_PakurComp);
+		}
+		if (!m_Cover->IsCover() && !bIsRolling)
 		{
 			owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
 		}
@@ -192,6 +198,7 @@ void UPlayerWeaponComponent::Fire()
 {
 	Super::Fire();
 	if (!m_CanShooting) return;
+	bIsWantShoot = false;
 	if (curAmmo <= 0)
 	{
 		StopFire();
@@ -401,6 +408,7 @@ void UPlayerWeaponComponent::StartFire()
 
 	StopRcovery();
 	Super::StartFire();
+	bIsWantShoot = true;
 	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 	{
 		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
