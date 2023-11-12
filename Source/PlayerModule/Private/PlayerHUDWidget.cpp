@@ -13,8 +13,10 @@
 #include "DestinationWidget.h"
 #include "PauseWidget.h"
 #include "CorneringWidget.h"
+#include "TimeOutWidget.h"
 #include "Player_Cover_Widget.h"
 #include "PlayerWeaponComponent.h"
+#include "PlayerStatComponent.h"
 #include "PlayerInputComponent.h"
 #include "CoverComponent.h"
 #include "Animation/WidgetAnimation.h"
@@ -24,7 +26,7 @@
 void UPlayerHUDWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-
+	
 }
 
 void UPlayerHUDWidget::NativeConstruct()
@@ -44,6 +46,11 @@ void UPlayerHUDWidget::NativeConstruct()
 	{
 		inputComp->OnAllWidgetVisible.AddUObject(this, &UPlayerHUDWidget::SetAllWidgetVisible);
 		inputComp->OnCreatePauseWidget.BindUObject(this, &UPlayerHUDWidget::CreatePauseWidget);
+	}
+
+	if (UPlayerStatComponent* statComp = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>())
+	{
+		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerHUDWidget::DeactiveWidget, FName("DeactiveWidget"));
 	}
 
 	if (UCoverComponent* coverComp = GetOwningPlayerPawn()->FindComponentByClass<UCoverComponent>())
@@ -175,4 +182,31 @@ void UPlayerHUDWidget::SetFaceRightWidget(bool p_bFaceright)
 		Right_Overlay->SetRenderOpacity(0.0f);
 		Left_Overlay->SetRenderOpacity(1.0f);
 	}
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="p_bFadeIn">: fadeIn => true, FadeOut => false </param>
+void UPlayerHUDWidget::PlayFadeInOutAnim(bool p_bFadeIn)
+{
+	if (FullFadeInAnimation && FullFadeOutAnimation)
+	{
+		if (p_bFadeIn)
+		{
+			PlayAnimation(FullFadeInAnimation);
+		}
+		else
+		{
+			PlayAnimation(FullFadeOutAnimation);
+		}
+	}
+}
+
+void UPlayerHUDWidget::DeactiveWidget()
+{
+	Player_HP_Widget->SetRenderOpacity(0.0f);
+	Player_Ammo_Widget->SetRenderOpacity(0.0f);
+	Player_HP_Widget_L->SetRenderOpacity(0.0f);
+	Player_Ammo_Widget_L->SetRenderOpacity(0.0f);
 }

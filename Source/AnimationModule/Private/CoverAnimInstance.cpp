@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CoverComponent.h"
 #include "BaseInputComponent.h"
+#include "Pakurable.h"
 #include <Kismet/KismetSystemLibrary.h>
 
 bool FCoverAnimationTable::IsVaild()
@@ -31,6 +32,11 @@ void UCoverAnimInstance::NativeBeginPlay()
 		mWeaponMesh = mWeapon->WeaponMesh;
 	}
 	AnimationSetting();
+	TArray<UActorComponent*> pakurArr = owner->GetComponentsByInterface(UPakurable::StaticClass());
+	if (pakurArr.Num() == 1) {
+		m_PakurComp = pakurArr[0];
+	}
+
 
 	mCover->PlayMontageStartCover.AddLambda([this]() {
 		if (!m_CurrentAnimation.IsVaild()) return;
@@ -62,6 +68,9 @@ void UCoverAnimInstance::NativeBeginPlay()
 		}
 		if (playMontage) {
 			Montage_Play(playMontage);
+
+			//FOnMontageEnded MontageEndDelegate = FOnMontageEnded::CreateUObject(this, &UCoverAnimInstance::OutCoverEnd);
+			//Montage_SetEndDelegate(MontageEndDelegate, playMontage);
 
 		}
 		});
@@ -99,7 +108,7 @@ void UCoverAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	m_IsUsingWeapon = mIsAiming || mIsFire;
 
 	mSpinRotater = (mPeekingState == EPeekingState::None) ? FRotator(0.0, 180.0, 0.0) : FRotator(0.0, 0.0, 0.0);
-
+	//mSpinRotater += (mIsPeeking && !mIsFaceRight && m_IsWeaponReload) ? FRotator(0.0, -25.0, 0.0) : FRotator(0.0, 0.0, 0.0);
 
 	if (ACharacter* charcter = dynamic_cast<ACharacter*>(TryGetPawnOwner())) {
 		mIsCrouching = charcter->bIsCrouched;
@@ -119,5 +128,13 @@ void UCoverAnimInstance::AnimationSetting()
 	if (findanimation && findanimation->IsVaild()) {
 		m_CurrentAnimation = *findanimation;
 	}
+}
+
+void UCoverAnimInstance::OutCoverEnd(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
+		if(IPakurable::Execute_IsRolling(m_PakurComp)) return;
+	}
+	mWeapon->m_CanShooting = true;
 }
 

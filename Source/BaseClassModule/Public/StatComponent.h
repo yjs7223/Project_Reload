@@ -78,7 +78,7 @@ public:
 	bool bAttacked;
 
 	//When Character's currentHP <= 0  isDie = true
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat)
 	bool bDie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
@@ -90,6 +90,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	FVector hitNormal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	FVector revivePos;
 
 protected:
 	class ABaseCharacter* owner;

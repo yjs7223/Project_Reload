@@ -65,6 +65,8 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	AimSetting();
 	CalculateBlockingTick(DeltaTime);
+	bool bCovering = (m_Cover->IsCover() && !bFire && !bAiming);
+	OnBlockingUIDelegate.ExecuteIfBound(!bCovering && m_IsWeaponBlocking);
 	// ...
 }
 
@@ -126,8 +128,8 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		start,
 		end,
-		2.0f,
-		5.0f,
+		2.0f * (m_IsWeaponBlocking ? 2.0f : 1.0f),
+		5.0f * (m_IsWeaponBlocking ? 2.0f : 1.0f),
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
@@ -152,8 +154,6 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 		if (distance < m_WeaponDistance) {
 
-			if (!m_IsWeaponBlocking)
-				OnBlockingUIDelegate.ExecuteIfBound(true);
 			m_IsWeaponBlocking = true;
 			
 			return;
@@ -161,15 +161,12 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		m_WeaponHitLocation = result.Location;
 	}
 
-	if (m_IsWeaponBlocking)
-		OnBlockingUIDelegate.ExecuteIfBound(false);
 	m_IsWeaponBlocking = false;
 }
 
 void UWeaponComponent::StartFire()
 {
 	bFire = true;
-	UE_LOG(LogTemp, Warning, TEXT("StartFire"));
 }
 
 void UWeaponComponent::StopFire()
@@ -225,6 +222,7 @@ void UWeaponComponent::AimSetting()
 	aimOffset.Pitch = FMath::ClampAngle(temprot.Pitch, -90, 90);
 	aimOffset.Yaw = temprot.Yaw;
 	if (aimOffset.Yaw > 180) aimOffset.Yaw -= 360;
+	if (aimOffset.Yaw < -180) aimOffset.Yaw += 360;
 
 	FRotator cameraRotation;
 	FVector start;
