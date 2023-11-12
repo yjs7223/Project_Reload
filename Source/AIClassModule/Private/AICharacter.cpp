@@ -110,7 +110,14 @@ void AAICharacter::BeginPlay()
 	if (AIStat)
 	{
 		AIStat->SetHP(ai_HP); ////
-		Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", AIStat->maxHP);
+		if (GetController() != nullptr)
+		{
+			if (Cast<AAI_Controller>(GetController())->GetBlackboardComponent() != nullptr)
+			{
+				Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", AIStat->maxHP);
+			}
+		}
+		
 	}
 	if (!player)
 	{

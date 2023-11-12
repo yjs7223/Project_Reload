@@ -43,13 +43,25 @@ void UAIWeaponComponent::BeginPlay()
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
 	use_Shot_State = true;
-	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
-	if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) != nullptr)
+	if (owner->GetController() != nullptr)
+	{
+		if(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent() != nullptr)
+		{
+			Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
+			blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+		}
+	}
+	
+	if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) != NULL)
 	{
 		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	}
-	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
-	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+	if (player != NULL)
+	{
+		playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
+	}
+	
+	
 
 	if (owner->FindComponentByClass<UNiagaraComponent>())
 	{
@@ -78,7 +90,14 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+	if (owner->GetController() != nullptr)
+	{
+		if (Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()))
+		{
+			blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+		}
+	}
+	
 	/*if (shot_State)
 	{
 		ShotAITimer(DeltaTime);
