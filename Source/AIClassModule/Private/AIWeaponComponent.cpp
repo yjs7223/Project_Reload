@@ -286,10 +286,11 @@ void UAIWeaponComponent::InitData()
 
 void UAIWeaponComponent::PlayRandomShotSound()
 {
-	float pitch = FMath::RandRange(0.9f, 1.2f);
+	float pitch = FMath::RandRange(1.3f, 1.5f);
+	int sound_Select = FMath::RandRange(0, AIWeaponDataAsset->Arr_AIShotSound.Num() - 1);
 	if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::HEAVY || owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, owner->GetActorLocation(), 0.5f, pitch);
+		UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->Arr_AIShotSound[sound_Select], owner->GetActorLocation(), 0.5f, pitch);
 	}
 	else if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::SNIPER)
 	{
