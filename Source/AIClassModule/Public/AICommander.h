@@ -32,9 +32,11 @@ class AICLASSMODULE_API AAICommander : public AAIController
 
 		//using KEY = int32;
 
+
 public:
 	// Sets default values for this actor's properties
 	AAICommander();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
