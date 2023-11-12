@@ -61,4 +61,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Skill_4)
 	class UNiagaraSystem* DroneTrailFXNiagara;
+
+	//Special Move
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Special_Move)
+	class USoundCue* FlyingBossSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Special_Move)
+	class USoundCue* BurnSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Special_Move)
+	class UParticleSystem* BurnParticle;
 };
