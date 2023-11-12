@@ -42,9 +42,12 @@ EBTNodeResult::Type UBTT_DetourCoverSelection::ExecuteTask(UBehaviorTreeComponen
 		{
 			for (auto ai : commander->List_Division)
 			{
-				if (Cast<AAICharacter>(ai.Key)->Detour == true)
+				if (ai.Key != nullptr)
 				{
-					return EBTNodeResult::Succeeded;
+					if (Cast<AAICharacter>(ai.Key)->Detour == true)
+					{
+						return EBTNodeResult::Succeeded;
+					}
 				}
 			}
 			for (auto cover : commander->DetourCoverArray)

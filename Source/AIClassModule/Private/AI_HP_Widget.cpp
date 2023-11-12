@@ -26,12 +26,15 @@ void UAI_HP_Widget::NativeConstruct()
 	HP_Overlay_l->SetRenderOpacity(0.0f);
 
 	//Spider
-	if (GetOwningPlayerPawn()->Tags.Num() > 0)
+	if (GetOwningPlayerPawn() != nullptr)
 	{
-		if (GetOwningPlayerPawn()->ActorHasTag(FName("Spider")))
+		if (GetOwningPlayerPawn()->Tags.Num() > 0)
 		{
-			//SetDelegate
-			SetDelegate(GetOwningPlayerPawn());
+			if (GetOwningPlayerPawn()->ActorHasTag(FName("Spider")))
+			{
+				//SetDelegate
+				SetDelegate(GetOwningPlayerPawn());
+			}
 		}
 	}
 

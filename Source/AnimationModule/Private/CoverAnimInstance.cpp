@@ -69,8 +69,8 @@ void UCoverAnimInstance::NativeBeginPlay()
 		if (playMontage) {
 			Montage_Play(playMontage);
 
-			//FOnMontageEnded MontageEndDelegate = FOnMontageEnded::CreateUObject(this, &UCoverAnimInstance::OutCoverEnd);
-			//Montage_SetEndDelegate(MontageEndDelegate, playMontage);
+			FOnMontageEnded MontageEndDelegate = FOnMontageEnded::CreateUObject(this, &UCoverAnimInstance::OutCoverEnd);
+			Montage_SetEndDelegate(MontageEndDelegate, playMontage);
 
 		}
 		});
