@@ -24,6 +24,7 @@ public:
 	FOnAllWidgetVisible OnAllWidgetVisible;
 	FOnCreatePauseWidget OnCreatePauseWidget;
 
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void BindInput() override;

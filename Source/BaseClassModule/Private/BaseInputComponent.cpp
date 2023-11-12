@@ -36,7 +36,7 @@ void UBaseInputComponent::BindInput()
 	owner->SetupPlayerInputComponent(this);
 	if (UInputDelegateBinding::SupportsInputDelegate(owner->GetClass()))
 	{
-		bBlockInput = bBlockInput;
+		//bBlockInput = bBlockInput;
 		UInputDelegateBinding::BindInputDelegatesWithSubojects(owner, this);
 	}
 }
@@ -79,6 +79,9 @@ void UBaseInputComponent::Crouching()
 	if (bIsbCrowdControl) return;
 	if (owner->CanCrouch()) {
 		owner->Crouch();
+		if (m_Movement->isRuning()) {
+			m_Movement->SetMovementMode(MOVE_Walking);
+		}
 	}
 	else {
 		if (!m_CanUnCrouch) return;

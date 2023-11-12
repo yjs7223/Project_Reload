@@ -286,7 +286,9 @@ void UCoverComponent::CheckCoverPath(float DeltaTime)
 	FVector tempPoint = m_CanCoverPoint;
 	tempPoint.Z = 0.0;
 	lastPath.Z = 0.0;
-
+	UKismetSystemLibrary::PrintString(GetWorld(), 
+		FString::Printf(TEXT("distance : %s"), *(lastPath - tempPoint).ToString())
+		, true, true, FColor::Red, DeltaTime);
 	if (!lastPath.Equals(tempPoint, 1.0)) {
 		m_CanCoverPoint = FVector::ZeroVector;
 		m_CoverPath.Empty();
@@ -585,7 +587,7 @@ float UCoverComponent::FaceRight()
 
 bool UCoverComponent::IsFaceRight()
 {
-	return IsCover() ? FaceRight() > 0.0f : true;
+	return FaceRight() > 0.0f;
 }
 
 void UCoverComponent::SetIsFaceRight(bool faceRight)
@@ -704,9 +706,18 @@ bool UCoverComponent::StartCover()
 		{
 			FVector start = owner->GetActorLocation();
 			FVector end = item->GetActorLocation();
+			
 			FCollisionQueryParams params(NAME_None, true, owner);
-			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) {
-				break;
+			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, true);
+			if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) 
+			{
+				end = start + (end - start).GetSafeNormal()
+					+ result.ImpactNormal * capsule->GetScaledCapsuleRadius() * -1.5;
+				//DrawDebugLine(GetWorld(), start, end, FColor::Blue, true);
+				if (GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, params)) 
+				{
+						break;
+				}
 			}
 		}
 
@@ -717,6 +728,8 @@ bool UCoverComponent::StartCover()
 	if (m_CanCoverPointNormal.Equals(FVector::ZeroVector, 0.1)) {
 		m_CanCoverPointNormal = result.Normal;
 	}
+	//DrawDebugLine(GetWorld(), owner->GetActorLocation(), owner->GetActorLocation() + m_CanCoverPointNormal * 100, FColor::Red, true);
+
 
 	m_CanCoverPointNormal.Z = 0;
 	m_Movement->SetMovementMode(MOVE_Walking);
@@ -745,18 +758,20 @@ void UCoverComponent::StopCover()
 	{
 		Cast<IPlayerMovable>(item)->SetCanMove(true);
 	}
-
+	if (IsCover()) {
+		m_Weapon->m_CanShooting = false;
+	}
 	//m_Movement->SetMovementMode(MOVE_Walking);
 	m_CoverWall = nullptr;
 	m_IsCover = false;
 	mCoverShootingState = ECoverShootingState::None;
 	m_PeekingState = EPeekingState::None;
-	SetIsFaceRight(true);
+	//SetIsFaceRight(true);
 	m_CanCoverPointNormal = FVector::ZeroVector;
 
 	m_PathFollowingComp->AbortMove(*this, FPathFollowingResultFlags::MovementStop);
 	m_Input->SetCanUnCrouch(true);
-	m_Weapon->m_CanShooting = false;
+
 
 	OnVisibleCorneringWidget.ExecuteIfBound(false, true);
 }
@@ -895,8 +910,7 @@ void UCoverComponent::StartPeeking()
 	if (!m_Weapon->IsWeaponBlocking() && Cast<APlayerController>(controller)) return;
 
 	FVector forwardVector = owner->GetActorForwardVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
-	FVector upVector = owner->GetActorUpVector() * owner->GetDefaultHalfHeight() * 
-		(owner->bIsCrouched ? 1.1f : 0.6f);
+	FVector upVector = owner->GetActorUpVector() * owner->GetDefaultHalfHeight();
 	FVector RightVector = owner->GetActorRightVector() * capsule->GetScaledCapsuleRadius() * 1.1f;
 
 	FVector temppos = owner->GetActorLocation();
@@ -914,12 +928,12 @@ void UCoverComponent::StartPeeking()
 		if (result.GetActor()) return;
 
 		start = end;
-		end = start + -upVector * 2.0f;
+		end = start + -upVector * (owner->bIsCrouched ? 1.0f : 1.5f);
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
-		start = start;
+		start = start + upVector * (owner->bIsCrouched ? 0.25f : 0.5f);
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
@@ -934,7 +948,7 @@ void UCoverComponent::StartPeeking()
 			return;
 		}
 		else {
-			start = temppos + upVector;
+			start = temppos + upVector * (owner->bIsCrouched ? 1.0f : 0.5f);
 			end = start + forwardVector * 1.5f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, traceChanel, param);
 			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);
@@ -953,12 +967,12 @@ void UCoverComponent::StartPeeking()
 		if (result.GetActor()) return;
 
 		start = end;
-		end = start + -upVector * 2.0f;
+		end = start + -upVector * (owner->bIsCrouched ? 1.0f : 1.5f);
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
-		//DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
+		DrawDebugLine(GetWorld(), start, end, FColor::Green, false, 15.0f);
 		if (!result.GetActor()) return;
 
-		start = start;
+		start = start + upVector * (owner->bIsCrouched ? 0.25f : 0.5f);
 		end = start + forwardVector * 1.5f;
 		GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 		//DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 15.0f);
@@ -972,7 +986,7 @@ void UCoverComponent::StartPeeking()
 			return;
 		}
 		else {
-			start = temppos + upVector;
+			start = temppos + upVector * (owner->bIsCrouched ? 1.0f : 0.5f);
 			end = start + forwardVector * 1.5f;
 			GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param);
 			//DrawDebugLine(GetWorld(), start, end, FColor::Magenta, false, 15.0f);

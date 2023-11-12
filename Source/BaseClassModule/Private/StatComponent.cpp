@@ -36,17 +36,7 @@ void UStatComponent::BeginDestroy()
 void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (bAttacked)
-	{
-		Attacked_t += DeltaTime;
-		if (Attacked_t >= 1.0f)
-		{
-			bAttacked = false;
-			Attacked_t = 0;
-		}
-		
-	}
-	
+
 	// ...
 }
 
@@ -79,6 +69,9 @@ void UStatComponent::Attacked_BP(float p_damage, ABaseCharacter* attacker, EHitT
 
 void UStatComponent::Attacked(float p_damage, ABaseCharacter* attacker, EHitType hittype, FVector attackPoint)
 {
+	if (bDie) return;
+
+
 	curHP -= p_damage;
 	bAttacked = true;
 	if (curHP < 0.0f)
