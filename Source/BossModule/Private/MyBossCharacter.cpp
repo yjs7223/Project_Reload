@@ -3,6 +3,13 @@
 
 #include "MyBossCharacter.h"
 
+void AMyBossCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    SetActorTickInterval(0.0f);
+}
+
 float AMyBossCharacter::GetActorDegree(FVector p_PlayerLocation, FVector p_SelfLocation)
 {
     FVector directionToPlayer = p_PlayerLocation - p_SelfLocation;
