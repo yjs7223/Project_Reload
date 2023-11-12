@@ -342,13 +342,29 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 		UNiagaraComponent* hitFXComponent;
 		if (!result.BoneName.IsNone())
 		{
-			USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
-			if (mesh)
+			if (CheckActorTag(result.GetActor(), TEXT("Vehicle")))
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
-				
-				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.3f, .3f, .3f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
+				USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+				if (mesh)
+				{
+					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
 
+					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+					hitFXComponent->AttachToComponent(result.GetActor()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+					hitFXComponent->RegisterComponent(); // 반드시 등록해야 컴포넌트가 활성화됩니다.
+					hitFXComponent->Activate(); // 시스템을 활성화합니다.
+				}
+			}
+			else
+			{
+				USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+				if (mesh)
+				{
+					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
+
+					hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, result.Location, m_rot, FVector(.3f, .3f, .3f), EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+
+				}
 			}
 		}
 		else
