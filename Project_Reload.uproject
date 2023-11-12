@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{B6462454-402C-59C0-A4F9-3685027B2E0C}",
+	"EngineAssociation": "5.0",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -66,7 +66,8 @@
 				"Slate",
 				"SlateCore",
 				"UMG",
-				"AIModule"
+				"AIModule",
+				"AIClassModule"
 			]
 		},
 		{
