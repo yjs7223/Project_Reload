@@ -124,7 +124,7 @@ void AMascotDrone::BeginPlay()
 		mychar->OnSetDroneVisible.BindUObject(this, &AMascotDrone::SetDroneVisable);
 	}
 	//BT실행
-	Cast<ADroneAIController>(GetController())->RunBTT();
+	//Cast<ADroneAIController>(GetController())->RunBTT();
 	
 }
 
@@ -146,10 +146,15 @@ void AMascotDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMascotDrone::SetDroneVisable(bool flag)
 {
+	if (ABaseCharacter* mychar = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()))
+	{
+		mychar->OnSetDroneVisible.BindUObject(this, &AMascotDrone::SetDroneVisable);
+	}
 
-	GetController()->GetPawn()->SetActorHiddenInGame(flag);
+	//캐릭터에 상속된 드론은 GetController와 GetOwner Owner를 사용못함으로 월드안에 GetActorOfClass 로 접근
+	AActor *drone = (UGameplayStatics::GetActorOfClass(GetWorld(), AMascotDrone::StaticClass()));
+	drone->SetActorHiddenInGame(flag);
 
-	//Owner->bHidden
 
 }
 

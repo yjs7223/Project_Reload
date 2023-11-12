@@ -42,7 +42,7 @@ void ADroneAIController::Tick(float DeltaSeconds)
 
 void ADroneAIController::RunBTT()
 {
-	RunBehaviorTree(btree);
+	//RunBehaviorTree(btree);
 }
 
 bool ADroneAIController::DroneMoveTo(FVector p_vec, float p_radius)
