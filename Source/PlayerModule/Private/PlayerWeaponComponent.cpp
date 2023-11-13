@@ -702,7 +702,7 @@ void UPlayerWeaponComponent::StartRecovery()
 	
 	yawRecoveryValue = (startRot.Yaw - 180) - (nowrot.Yaw - 180);
 	pitchRecoveryValue = startRot.Pitch - nowrot.Pitch;
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw - 180));
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw));
 	//StopRcovery();

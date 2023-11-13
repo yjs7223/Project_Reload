@@ -16,7 +16,7 @@ void UAFKWidget::NativeConstruct()
 	afkTime = 0;
 	afkMoviePlayer->PlayOnOpen = true;
 
-	movieMat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/Movies/M_VidioMat.M_VidioMat'"));
+	//movieMat = LoadObject<UMaterialInterface>(NULL, TEXT("Material'/Game/Movies/M_VidioMat.M_VidioMat'"));
 	if (movieMat)
 	{
 		movieMatinst = UMaterialInstanceDynamic::Create(movieMat, this);
@@ -47,7 +47,7 @@ void UAFKWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	afkTime += InDeltaTime;
 	
-	if (afkTime >= 5.f)
+	if (afkTime >= 60.f && !bAfk)
 	{
 		bAfk = true;
 		AFK_Overlay->SetRenderOpacity(1.f);
@@ -62,22 +62,6 @@ void UAFKWidget::PlayMovie()
 	UMediaSource* movie = afkMovies->GetRandom(num);
 
 	afkMoviePlayer->OpenSource(movie);
-	afkMovieTexture->SetMediaPlayer(afkMoviePlayer);
-	afkMovieTexture->UpdateResource();
-
-	//if (movieMat)
-	//{
-	//	movieMatinst = UMaterialInstanceDynamic::Create(movieMat, this);
-	//	if (movieMatinst)
-	//	{
-	//		//FSlateBrush imageBrush;
-	//		//imageBrush.ImageSize = FVector2D(30.0f, 30.0f);
-	//		movieMatinst->SetTextureParameterValue(FName(TEXT("MovieTexture")), afkMovieTexture);
-	//		//imageBrush.SetResourceObject(DynMaterial);
-	//		AFK_Image->SetBrushFromMaterial(movieMatinst);
-
-	//	}
-	//}
 
 	afkMoviePlayer->PlayAndSeek();
 
