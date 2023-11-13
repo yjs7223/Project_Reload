@@ -216,24 +216,36 @@ void UCrosshair_Widget::CheckDie()
 	{
 		if (weapon->bHit)
 		{
-			if (weapon->headhit)
+			if (UWeaponComponent::CheckActorTag(weapon->m_result.GetActor(), FName("Missile")))
 			{
 				weapon->bHit = false;
-				weapon->headhit = false;
-				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
-				Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
-				Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
-				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
-				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
-			}
-			else
-			{
-				weapon->bHit = false;
-				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->missile_Hit_cue, MyCharacter->GetActorLocation());
 				Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
 				Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
 				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
 				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
+			}
+			else
+			{
+				if (weapon->headhit)
+				{
+					weapon->bHit = false;
+					weapon->headhit = false;
+					UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
+					Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
+					Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
+					Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
+					Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
+				}
+				else
+				{
+					weapon->bHit = false;
+					UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
+					Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
+					Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
+					Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
+					Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
+				}
 			}
 
 			GetWorld()->GetTimerManager().ClearTimer(HitTimer);
@@ -268,7 +280,14 @@ void UCrosshair_Widget::CheckDie()
 	{
 		if (stat->bDie)
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
+			if (UWeaponComponent::CheckActorTag(weapon->m_result.GetActor(), FName("Missile")))
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->missile_Kill_cue, MyCharacter->GetActorLocation());
+			}
+			else
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
+			}
 			//stat->isDie = false;
 			Kill_Overlay->SetRenderOpacity(1.0f);
 			GetWorld()->GetTimerManager().ClearTimer(KillTimer);
