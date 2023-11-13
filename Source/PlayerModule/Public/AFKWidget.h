@@ -41,6 +41,15 @@ public:
 	class UMediaPlayer* afkMoviePlayer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UMediaTexture* afkMovieTexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UMediaPlaylist* afkMovies;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UMaterialInterface* movieMat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UMaterialInstanceDynamic* movieMatinst;
 	
 };
