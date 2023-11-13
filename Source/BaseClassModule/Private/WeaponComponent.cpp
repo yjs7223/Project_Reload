@@ -345,13 +345,13 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 			{
 				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
 				
-				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.3f, .3f, .3f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
+				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.1f, .1f, .1f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
 
 			}
 		}
 		else
 		{
-			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot, FVector(.5f,.5f,.5f));
 		}
 	}
 }
