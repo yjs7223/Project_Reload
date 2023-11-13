@@ -135,7 +135,7 @@ void AAICharacter::BeginPlay()
 	// Init
 	SetActorHiddenInGame(true);
 	SetActorTickEnabled(false);
-
+	Cast<AAI_Controller>(GetController())->SetActorTickEnabled(false);
 	AIPatrol->SetComponentTickEnabled(false);
 	AISensing->SetComponentTickEnabled(false);
 	AIMovement->SetComponentTickEnabled(false);
@@ -257,7 +257,7 @@ void AAICharacter::Init()
 {
 	SetActorHiddenInGame(false);
 	SetActorTickEnabled(true);
-
+	Cast<AAI_Controller>(GetController())->SetActorTickEnabled(true);
 	AIPatrol->SetComponentTickEnabled(true);
 	AISensing->SetComponentTickEnabled(true);
 	AIMovement->SetComponentTickEnabled(true);

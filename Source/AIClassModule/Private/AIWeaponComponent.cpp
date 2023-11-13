@@ -149,12 +149,16 @@ void UAIWeaponComponent::Fire()
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
-			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
-			if (temp) {
-				float dmg = CalcDamage(m_result, damage);
+			int ran = FMath::RandRange(0, 10);
+			if (ran <= 7)
+			{
+				auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+				if (temp) {
+					float dmg = CalcDamage(m_result, damage);
 
-				temp->Attacked(dmg, GetOwner<ABaseCharacter>());
-				temp->hitNormal = m_result.ImpactNormal;
+					temp->Attacked(dmg, GetOwner<ABaseCharacter>());
+					temp->hitNormal = m_result.ImpactNormal;
+				}
 			}
 		}
 		SpawnImpactEffect(m_result);
