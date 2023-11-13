@@ -121,7 +121,7 @@ bool UAI_HP_Widget::CheckDistance(float p_dis)
 	{
 		FVector ailoc = stat->GetOwner()->GetActorLocation();
 		FVector pcloc = GetOwningPlayerPawn()->GetActorLocation();
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat((ailoc - pcloc).Size()));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat((ailoc - pcloc).Size()));
 		if ((ailoc - pcloc).Size() > p_dis)
 		{
 			return true;
