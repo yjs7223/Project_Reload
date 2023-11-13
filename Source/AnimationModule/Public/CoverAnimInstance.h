@@ -62,6 +62,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void AnimationSetting();
 
+	void OutCoverEnd(UAnimMontage* Montage, bool bInterrupted);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = animation)
 	class UBaseInputComponent* m_Input;
@@ -71,6 +73,8 @@ protected:
 	class UWeaponComponent* mWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = animation)
 	class USkeletalMeshComponent* mWeaponMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (DisplayName = "PakurComp"))
+	TObjectPtr<class UActorComponent> m_PakurComp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = animation)
 	FName mRightHandName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = animation)

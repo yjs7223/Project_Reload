@@ -13,6 +13,10 @@ UCLASS()
 class BOSSMODULE_API AMyBossCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
 	
 public:
 
@@ -24,5 +28,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Boss")
 	FVector GetLocationInCircle(FVector Origin, float Radius, float Angle);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boss")
+	class AAISpawner* spawn;
 
 };
