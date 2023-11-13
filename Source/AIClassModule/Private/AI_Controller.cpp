@@ -318,6 +318,7 @@ void AAI_Controller::Tick(float DeltaSeconds)
 			}
 
 		}
+
 		if (GetPawn()->FindComponentByClass<UAIStatComponent>()->bAttacked == false)
 		{
 			SetFocus(Cast<AActor>(Blackboard->GetValueAsObject("Target")));

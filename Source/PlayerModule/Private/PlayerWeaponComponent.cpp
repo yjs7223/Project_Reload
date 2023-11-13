@@ -34,6 +34,7 @@
 #include "PlayerWeaponDataAsset.h"
 #include "CharacterSoundDataAsset.h"
 #include "Pakurable.h"
+#include "BaseCharacterMovementComponent.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -62,7 +63,7 @@ void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	m_Movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 	if (UStatComponent* statComp = GetOwner()->FindComponentByClass<UStatComponent>())
 	{
 		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerWeaponComponent::InitData, FName("InitData"));
@@ -100,11 +101,13 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if (bAiming || bFire)
 	{
 		bool bIsRolling = false;
-		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
+		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) 
+		{
 			bIsRolling = IPakurable::Execute_IsRolling(m_PakurComp);
 		}
-		if (!m_Cover->IsCover() && !bIsRolling)
+		if (!m_Cover->IsCover() && !bIsRolling && !m_Movement->isRuning())
 		{
+
 			owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
 		}
 	}
@@ -154,13 +157,6 @@ void UPlayerWeaponComponent::InitData()
 				meshcomp->SetStaticMesh(item.Value);
 				meshcomp->RegisterComponentWithWorld(owner->GetWorld());
 			}
-			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
-			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
-			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
-
-			//ShotSounds = WeaponDataAsset->ShotSounds;
-
-			//Decal = WeaponDataAsset->Decals[0];
 		}
 		
 		maxAmmo = dataTable->MaxAmmo_num;
@@ -651,13 +647,13 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 	{
 		RecoveryTime += p_deltatime * 2.0f;
 		TickCount += 2;
-		if (FMath::Abs(yawRecoveryValue) > 3.0f)
+		if (FMath::Abs(yawRecoveryValue) > 10.0f)
 		{
-			TickCount += 30;
+			yawRecoveryValue = 0;
 		}
 
 		//아래로 당긴거 확인
-		if (FMath::Abs(pitchRecoveryValue) > 5.0f)
+		if (FMath::Abs(pitchRecoveryValue) > 10.0f)
 		{
 			TickCount += 10;
 		}
@@ -680,27 +676,31 @@ void UPlayerWeaponComponent::StartRecovery()
 	bRecovery = true;
 	StopRecoil();
 	FRotator nowrot = owner->GetController()->GetControlRotation();
+	
 	//recoveryRot = nowrot - startRot;
-	if (startRot.Yaw <= 90)
+	/*if (startRot.Yaw <= 90)
 	{
 		startRot.Yaw += 360;
 	}
 	if (nowrot.Yaw <= 90)
 	{
 		nowrot.Yaw += 360;
-	}
-	if (startRot.Pitch <= 90)
+	}*/
+	if (startRot.Pitch <= 180)
 	{
 		startRot.Pitch += 360;
 	}
-	if (nowrot.Pitch <= 90)
+	if (nowrot.Pitch <= 180)
 	{
 		nowrot.Pitch += 360;
 	}
-	yawRecoveryValue = startRot.Yaw - nowrot.Yaw;
+
+	
+	yawRecoveryValue = (startRot.Yaw - 180) - (nowrot.Yaw - 180);
 	pitchRecoveryValue = startRot.Pitch - nowrot.Pitch;
-	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
-	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw - 180));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw));
 	//StopRcovery();
 
 }

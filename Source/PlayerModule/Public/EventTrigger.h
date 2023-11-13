@@ -61,6 +61,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int timeOutCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USoundCue* sound;
 };
 
 
