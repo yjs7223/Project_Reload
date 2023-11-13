@@ -32,9 +32,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void startWarning();
 
+	bool CheckDistance(float p_dis);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAIStatComponent* stat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCanvasPanel* HP_Canvas;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* HP_Overlay_s;

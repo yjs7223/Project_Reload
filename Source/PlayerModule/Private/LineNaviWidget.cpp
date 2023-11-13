@@ -102,7 +102,7 @@ int32 ULineNaviWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allo
 		const int32 LayerIdNew = LayerId + 1;
 		//FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, PointLocations, ESlateDrawEffect::None, FLinearColor::Yellow, true, 1.0f);
 
-		FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, CoverLocs, ESlateDrawEffect::None, FLinearColor::Blue, true, 3.0f);
+		FSlateDrawElement::MakeLines(OutDrawElements, LayerIdNew, PG, CoverLocs, ESlateDrawEffect::None, FLinearColor::White, true, 3.0f);
 	}
 
 

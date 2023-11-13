@@ -25,24 +25,22 @@ void UAI_HP_Widget::NativeConstruct()
 	HP_Overlay_s->SetRenderOpacity(1.0f);
 	HP_Overlay_l->SetRenderOpacity(0.0f);
 
-	//Spider
-	if (GetOwningPlayerPawn() != nullptr)
-	{
-		if (GetOwningPlayerPawn()->Tags.Num() > 0)
-		{
-			if (GetOwningPlayerPawn()->ActorHasTag(FName("Spider")))
-			{
-				//SetDelegate
-				SetDelegate(GetOwningPlayerPawn());
-			}
-		}
-	}
+
 
 }
 
 void UAI_HP_Widget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (CheckDistance(6000.0f))
+	{
+		HP_Canvas->SetRenderOpacity(.0f);
+	}
+	else
+	{
+		HP_Canvas->SetRenderOpacity(1.f);
+	}
 
 	if (stat && stat->bThreat)
 	{
@@ -115,4 +113,19 @@ void UAI_HP_Widget::startWarning()
 	{
 		Warning_Overlay->SetRenderOpacity(1.0f);
 	}
+}
+
+bool UAI_HP_Widget::CheckDistance(float p_dis)
+{
+	if (stat)
+	{
+		FVector ailoc = stat->GetOwner()->GetActorLocation();
+		FVector pcloc = GetOwningPlayerPawn()->GetActorLocation();
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat((ailoc - pcloc).Size()));
+		if ((ailoc - pcloc).Size() > p_dis)
+		{
+			return true;
+		}
+	}
+	return false;
 }

@@ -9,6 +9,7 @@
 #include "PlayerHUDWidget.h"
 #include "DialogueWidget.h"
 #include "TimeOutWidget.h"
+#include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 //#include ""
 
@@ -86,6 +87,10 @@ void AEventTrigger::PlayDialogueEvent(APlayerCharacter* player, int p_selectNum)
 	if (UDialogueWidget* DialogueWidget = player->PlayerHUDWidget->DialogueWidget)
 	{
 		DialogueWidget->SetDialogueText(FName(FString::FromInt(p_selectNum)));
+		if (sound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(player, sound, player->GetActorLocation());
+		}
 	}
 }
 
@@ -94,6 +99,10 @@ void AEventTrigger::PlayMissoinEvent(APlayerCharacter* player, int p_selectNum)
 	if (UMissionWidget* MissionWidget = player->PlayerHUDWidget->MissionWidget)
 	{
 		MissionWidget->SetMissionText(FName(FString::FromInt(p_selectNum)));
+		if (sound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(player, sound, player->GetActorLocation());
+		}
 	}
 }
 
@@ -134,6 +143,11 @@ void AEventTrigger::PlayTimeOutEvent(APlayerCharacter* player, float p_timeOutCo
 	if (UTimeOutWidget* TimeOutWidget = player->PlayerHUDWidget->TimeOutWidget)
 	{
 		TimeOutWidget->StartCount(p_timeOutCount);
+
+		if (sound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(player, sound, player->GetActorLocation());
+		}
 	}
 }
 
