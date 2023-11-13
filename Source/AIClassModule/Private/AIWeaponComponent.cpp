@@ -275,7 +275,14 @@ void UAIWeaponComponent::InitData()
 		{
 			WeaponMesh->SetAnimInstanceClass(AIWeaponDataAsset->WeaponAnim);
 		}
+		for (auto& item : AIWeaponDataAsset->Attachments)
+		{
+			UStaticMeshComponent* meshcomp = NewObject<UStaticMeshComponent>(owner);
 
+			meshcomp->SetupAttachment(WeaponMesh, item.Key);
+			meshcomp->SetStaticMesh(item.Value);
+			meshcomp->RegisterComponentWithWorld(owner->GetWorld());
+		}
 		MuzzleFireParticle = AIWeaponDataAsset->MuzzleFireParticle;
 
 		FireSound = AIWeaponDataAsset->FireSound;

@@ -176,5 +176,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBlueprint> fieldActor;
 
-
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
 };

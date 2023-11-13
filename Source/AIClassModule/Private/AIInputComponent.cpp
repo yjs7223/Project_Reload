@@ -137,17 +137,20 @@ void UAIInputComponent::AIStopAiming()
 void UAIInputComponent::AIStartReload()
 {
 	UAICharacterMoveComponent* moveoncmp = owner->FindComponentByClass<UAICharacterMoveComponent>();
+	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	if (moveoncmp->e_move != EMove::Hit && moveoncmp->e_move != EMove::Stun)
 	{
 		moveoncmp->e_move = EMove::Attack;
 	}
 	m_inputData.IsReload = true;
-
+	weaponcmp->bReload = true;
 }
 
 void UAIInputComponent::AIStopReload()
 {
+	UAIWeaponComponent* weaponcmp = owner->FindComponentByClass<UAIWeaponComponent>();
 	m_inputData.IsReload = false;
+	weaponcmp->bReload = false;
 }
 
 void UAIInputComponent::AIStartCover()
