@@ -110,7 +110,14 @@ void AAICharacter::BeginPlay()
 	if (AIStat)
 	{
 		AIStat->SetHP(ai_HP); ////
-		Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", AIStat->maxHP);
+		if (GetController() != nullptr)
+		{
+			if (Cast<AAI_Controller>(GetController())->GetBlackboardComponent() != nullptr)
+			{
+				Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", AIStat->maxHP);
+			}
+		}
+		
 	}
 	if (!player)
 	{
@@ -128,7 +135,7 @@ void AAICharacter::BeginPlay()
 	// Init
 	SetActorHiddenInGame(true);
 	SetActorTickEnabled(false);
-
+	Cast<AAI_Controller>(GetController())->SetActorTickEnabled(false);
 	AIPatrol->SetComponentTickEnabled(false);
 	AISensing->SetComponentTickEnabled(false);
 	AIMovement->SetComponentTickEnabled(false);
@@ -250,7 +257,7 @@ void AAICharacter::Init()
 {
 	SetActorHiddenInGame(false);
 	SetActorTickEnabled(true);
-
+	Cast<AAI_Controller>(GetController())->SetActorTickEnabled(true);
 	AIPatrol->SetComponentTickEnabled(true);
 	AISensing->SetComponentTickEnabled(true);
 	AIMovement->SetComponentTickEnabled(true);

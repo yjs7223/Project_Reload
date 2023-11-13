@@ -29,4 +29,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Boss")
 	FVector GetLocationInCircle(FVector Origin, float Radius, float Angle);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boss")
+	class AAISpawner* spawn;
+
 };
