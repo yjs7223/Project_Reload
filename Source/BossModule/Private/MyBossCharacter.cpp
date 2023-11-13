@@ -2,11 +2,14 @@
 
 
 #include "MyBossCharacter.h"
+//#include "AISpawner.h"
+//#include "ST_Spawn.h"
+//#include "AICharacter.h"
 
 void AMyBossCharacter::BeginPlay()
 {
     Super::BeginPlay();
-
+   // AAISpawner* aa;
     SetActorTickInterval(0.0f);
 }
 

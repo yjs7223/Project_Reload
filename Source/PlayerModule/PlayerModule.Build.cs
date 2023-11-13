@@ -16,7 +16,8 @@ public class PlayerModule : ModuleRules
             "AIModule", 
             "InputCore", 
             "UMG",
-            //"UMGEditor",
+            "UMGEditor",
+            "MediaAssets",
 
         });
 

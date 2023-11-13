@@ -43,13 +43,25 @@ void UAIWeaponComponent::BeginPlay()
 	commander = Cast<AAICommander>(UGameplayStatics::GetActorOfClass(GetWorld(), AAICommander::StaticClass()));
 
 	use_Shot_State = true;
-	Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
-	if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) != nullptr)
+	if (owner->GetController() != nullptr)
+	{
+		if(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent() != nullptr)
+		{
+			Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->SetValueAsBool("AI_UseShot", true);
+			blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+		}
+	}
+	
+	if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) != NULL)
 	{
 		player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	}
-	playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
-	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+	if (player != NULL)
+	{
+		playerMesh = player->FindComponentByClass<USkeletalMeshComponent>();
+	}
+	
+	
 
 	if (owner->FindComponentByClass<UNiagaraComponent>())
 	{
@@ -78,7 +90,14 @@ void UAIWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+	if (owner->GetController() != nullptr)
+	{
+		if (Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()))
+		{
+			blackboardTarget = Cast<AActor>(Cast<AAI_Controller>(owner->GetController())->GetBlackboardComponent()->GetValueAsObject("Target"));
+		}
+	}
+	
 	/*if (shot_State)
 	{
 		ShotAITimer(DeltaTime);
@@ -130,12 +149,16 @@ void UAIWeaponComponent::Fire()
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, m_result.GetActor()->GetName());
 		if (m_result.GetActor()->ActorHasTag("Player"))
 		{
-			auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
-			if (temp) {
-				float dmg = CalcDamage(m_result, damage);
+			int ran = FMath::RandRange(0, 10);
+			if (ran <= 7)
+			{
+				auto temp = m_result.GetActor()->FindComponentByClass<UStatComponent>();
+				if (temp) {
+					float dmg = CalcDamage(m_result, damage);
 
-				temp->Attacked(dmg, GetOwner<ABaseCharacter>());
-				temp->hitNormal = m_result.ImpactNormal;
+					temp->Attacked(dmg, GetOwner<ABaseCharacter>());
+					temp->hitNormal = m_result.ImpactNormal;
+				}
 			}
 		}
 		SpawnImpactEffect(m_result);
@@ -293,10 +316,11 @@ void UAIWeaponComponent::InitData()
 
 void UAIWeaponComponent::PlayRandomShotSound()
 {
-	float pitch = FMath::RandRange(0.9f, 1.2f);
+	float pitch = FMath::RandRange(1.3f, 1.5f);
+	int sound_Select = FMath::RandRange(0, AIWeaponDataAsset->Arr_AIShotSound.Num() - 1);
 	if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::HEAVY || owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::RIFLE)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, owner->GetActorLocation(), 0.5f, pitch);
+		UGameplayStatics::PlaySoundAtLocation(this, AIWeaponDataAsset->Arr_AIShotSound[sound_Select], owner->GetActorLocation(), 0.5f, pitch);
 	}
 	else if (owner->FindComponentByClass<UAIStatComponent>()->type == Enemy_Name::SNIPER)
 	{
