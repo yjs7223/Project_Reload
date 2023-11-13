@@ -8,6 +8,8 @@
 #include "WeaponComponent.h"
 //
 //#include "Components/SceneComponent.h"
+#include "BaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "DroneAIController.h"
@@ -117,8 +119,12 @@ void AMascotDrone::BeginPlay()
 	m_EmpEffect[0]->Activate();
 	m_EmpEffect[1]->Deactivate();
 
+	if (ABaseCharacter* mychar = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()))
+	{
+		mychar->OnSetDroneVisible.BindUObject(this, &AMascotDrone::SetDroneVisable);
+	}
 	//BT실행
-	Cast<ADroneAIController>(GetController())->RunBTT();
+	//Cast<ADroneAIController>(GetController())->RunBTT();
 	
 }
 
@@ -135,6 +141,20 @@ void AMascotDrone::Tick(float DeltaTime)
 void AMascotDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+}
+
+void AMascotDrone::SetDroneVisable(bool flag)
+{
+	if (ABaseCharacter* mychar = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()))
+	{
+		mychar->OnSetDroneVisible.BindUObject(this, &AMascotDrone::SetDroneVisable);
+	}
+
+	//캐릭터에 상속된 드론은 GetController와 GetOwner Owner를 사용못함으로 월드안에 GetActorOfClass 로 접근
+	AActor *drone = (UGameplayStatics::GetActorOfClass(GetWorld(), AMascotDrone::StaticClass()));
+	drone->SetActorHiddenInGame(flag);
+
 
 }
 

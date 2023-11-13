@@ -74,7 +74,7 @@ AAICommander::AAICommander()
 	
 	
 	audiocomp = CreateDefaultSubobject<UAudioComponent>(TEXT("audiocomp"));
-	
+
 }
 
 // Called when the game starts or when spawned
@@ -87,7 +87,6 @@ void AAICommander::BeginPlay()
 	CoverManager = Cast<ACoverManager>
 		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverManager::StaticClass()));
 
-	
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BB_AICommander, BlackboardComp);
 	RunBehaviorTree(btree);
@@ -99,6 +98,9 @@ void AAICommander::BeginPlay()
 	audiocomp->FadeIn(2.0f);
 	sound_Start = false;
 	SetCommanderDataTable("Commander");
+
+
+	
 }
 
 
@@ -124,6 +126,8 @@ void AAICommander::Tick(float DeltaTime)
 	
 	ListSet();
 }
+
+
 
 void AAICommander::ListSet()
 {
@@ -157,6 +161,7 @@ void AAICommander::ListSet()
 			//{
 				background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/S_Fire_Support_LOOP_150bpm_Cue.S_Fire_Support_LOOP_150bpm_Cue'"));
 				audiocomp->SetSound(background);
+				Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(true);
 			//}
 			audiocomp->Play();
 			audiocomp->FadeIn(2.0f);
@@ -209,6 +214,7 @@ void AAICommander::ListSet()
 						audiocomp->Play();
 						audiocomp->FadeIn(2.0f);
 						sound_Start = false;
+						Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(false);
 					}
 					
 					ListVoidReset();
@@ -225,6 +231,7 @@ void AAICommander::ListSet()
 					audiocomp->Play();
 					audiocomp->FadeIn(2.0f);
 					sound_Start = false;
+					Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(false);
 				}
 				ListVoidReset();
 				
@@ -247,6 +254,14 @@ void AAICommander::ListVoidReset()
 		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
+		}
+		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_MoveAttackChk") == true)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_MoveAttackChk", false);
+		}
+		if (AIController->GetBlackboardComponent()->GetValueAsObject("MoveAttackAI") != AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"))
+		{
+			AIController->GetBlackboardComponent()->SetValueAsObject("MoveAttackAI", AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"));
 		}
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
 	}
@@ -299,13 +314,21 @@ void AAICommander::ListStartSet(const AEncounterSpace* en)
 		{
 			continue;
 		}
+		if (AIController->btree)
+		{
+			AIController->RunBTT();
+		}
 		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
 		}
-		if (AIController->btree)
+		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_MoveAttackChk") == true)
 		{
-			AIController->RunBTT();
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_MoveAttackChk", false);
+		}
+		if (AIController->GetBlackboardComponent()->GetValueAsObject("MoveAttackAI") != AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"))
+		{
+			AIController->GetBlackboardComponent()->SetValueAsObject("MoveAttackAI", AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"));
 		}
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
@@ -420,10 +443,14 @@ void AAICommander::TargetTickSet()
 				}
 				if (AIController->GetBlackboardComponent()->GetValueAsBool("Simple_Run") == false)
 				{
-					if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
 					{
-						AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+						if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+						{
+							AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+						}
 					}
+					
 				}
 
 			}

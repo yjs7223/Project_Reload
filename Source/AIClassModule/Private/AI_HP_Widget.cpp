@@ -25,8 +25,7 @@ void UAI_HP_Widget::NativeConstruct()
 	HP_Overlay_s->SetRenderOpacity(1.0f);
 	HP_Overlay_l->SetRenderOpacity(0.0f);
 
-	//Spider
-	
+
 
 }
 
