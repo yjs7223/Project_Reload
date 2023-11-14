@@ -34,6 +34,7 @@
 #include "PlayerWeaponDataAsset.h"
 #include "CharacterSoundDataAsset.h"
 #include "Pakurable.h"
+#include "BaseCharacterMovementComponent.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -62,7 +63,7 @@ void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	m_Movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 	if (UStatComponent* statComp = GetOwner()->FindComponentByClass<UStatComponent>())
 	{
 		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerWeaponComponent::InitData, FName("InitData"));
@@ -100,11 +101,13 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if (bAiming || bFire)
 	{
 		bool bIsRolling = false;
-		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) {
+		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) 
+		{
 			bIsRolling = IPakurable::Execute_IsRolling(m_PakurComp);
 		}
-		if (!m_Cover->IsCover() && !bIsRolling)
+		if (!m_Cover->IsCover() && !bIsRolling && !m_Movement->isRuning())
 		{
+
 			owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
 		}
 	}
@@ -154,13 +157,6 @@ void UPlayerWeaponComponent::InitData()
 				meshcomp->SetStaticMesh(item.Value);
 				meshcomp->RegisterComponentWithWorld(owner->GetWorld());
 			}
-			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
-			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
-			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
-
-			//ShotSounds = WeaponDataAsset->ShotSounds;
-
-			//Decal = WeaponDataAsset->Decals[0];
 		}
 		
 		maxAmmo = dataTable->MaxAmmo_num;

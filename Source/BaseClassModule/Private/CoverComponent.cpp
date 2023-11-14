@@ -286,9 +286,9 @@ void UCoverComponent::CheckCoverPath(float DeltaTime)
 	FVector tempPoint = m_CanCoverPoint;
 	tempPoint.Z = 0.0;
 	lastPath.Z = 0.0;
-	UKismetSystemLibrary::PrintString(GetWorld(), 
-		FString::Printf(TEXT("distance : %s"), *(lastPath - tempPoint).ToString())
-		, true, true, FColor::Red, DeltaTime);
+	//UKismetSystemLibrary::PrintString(GetWorld(), 
+	//	FString::Printf(TEXT("distance : %s"), *(lastPath - tempPoint).ToString())
+	//	, true, true, FColor::Red, DeltaTime);
 	if (!lastPath.Equals(tempPoint, 1.0)) {
 		m_CanCoverPoint = FVector::ZeroVector;
 		m_CoverPath.Empty();

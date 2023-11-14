@@ -71,4 +71,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Special_Move)
 	class UParticleSystem* BurnParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Special_Move)
+	class USoundWave* BurnSoundWav;
 };
