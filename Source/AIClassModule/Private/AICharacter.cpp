@@ -291,7 +291,7 @@ void AAICharacter::Dead()
 	m_CoverComponent->SetComponentTickEnabled(false);
 	if (commander != nullptr)
 	{
-		if (commander->Now_en->spawn != nullptr)
+r		if (commander->Now_en->spawn != nullptr)
 		{
 			commander->Now_en->spawn->count_Kill++;
 		}
