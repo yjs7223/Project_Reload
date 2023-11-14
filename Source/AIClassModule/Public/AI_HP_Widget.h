@@ -19,6 +19,7 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
 	void SetDelegate(class APawn* character);
 
 	UFUNCTION(BlueprintCallable)
