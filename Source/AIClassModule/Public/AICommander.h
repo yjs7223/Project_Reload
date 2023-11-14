@@ -141,8 +141,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool SightIn_CHK;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
-		FString Level_Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		FVector nomalcover;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TSubclassOf<class AActor> RedBallBlueprint;
