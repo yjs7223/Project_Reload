@@ -21,7 +21,7 @@ public:
 
 	void ArraySorting();
 
-	
+	void SetDesText();
 
 	void SetTranslation();
 
@@ -33,6 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Des_image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UTextBlock* Des_Text;
 
 
 	TArray<AActor*> desActors;
