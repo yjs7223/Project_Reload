@@ -105,7 +105,7 @@ void UPlayerStatComponent::CheckInteractiveObj()
 {
 	FVector start;
 	FRotator cameraRotation;
-	owner->Controller->GetPlayerViewPoint(start, cameraRotation);
+	GetOwner<ACharacter>()->GetController()->GetPlayerViewPoint(start, cameraRotation);
 	FVector end = start + (cameraRotation.Vector() * 500.0f);
 	FHitResult result;
 	if (GetWorld()->SweepSingleByChannel(result, start, end, FQuat::Identity, ECC_GameTraceChannel8, FCollisionShape::MakeSphere(30.0f)))
