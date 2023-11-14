@@ -110,6 +110,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UImage* Cross_Ammo_Image;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UTextBlock* LowAmmoText;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UMaterialInstanceDynamic* AmmoMat;
 
@@ -124,6 +127,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* KillAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* LowAmmoAnim;
 
 public:
 	float m_alpha;
