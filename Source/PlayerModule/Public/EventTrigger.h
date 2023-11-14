@@ -14,6 +14,7 @@ enum class ETriggerEventEnum : uint8
 	TE_MissionEvent UMETA(DisplayName = "MissionEvent"),
 	TE_OpenlevelEvent UMETA(DisplayName = "OpenlevelEvent"),
 	TE_TimeOutEvent UMETA(DisplayName = "TimeOutEvent"),
+	TE_SubVidioEvent UMETA(DisplayName = "SubVidioEvent"),
 };
 
 
@@ -49,6 +50,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayTimeOutEvent(APlayerCharacter* player,float p_timeOutCount);
 
+	UFUNCTION(BlueprintCallable)
+	void PlaySubVidioEvent(APlayerCharacter* player, int p_selectNum);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* BoxCollision;
@@ -61,6 +65,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int timeOutCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USoundCue* sound;
 };
 
 

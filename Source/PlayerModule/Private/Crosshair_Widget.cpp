@@ -35,9 +35,10 @@ void UCrosshair_Widget::NativeConstruct()
 	bBlocking = false;
 
 	Crosshair_Overlay->SetRenderOpacity(1.0f);
-	Reload_Overlay->SetRenderOpacity(1.0f);
+	Reload_Overlay->SetRenderOpacity(0.0f);
 	Hit_Overlay->SetRenderOpacity(0.0f);
 	Kill_Overlay->SetRenderOpacity(0.0f);
+	LowAmmoText->SetRenderOpacity(0.0f);
 
 	UTexture2D* texture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/yjs/UI/Textures/CrossHair_Texture/T_CrossHair_NormalHit.T_CrossHair_NormalHit'"));
 	FSlateBrush brush;
@@ -216,24 +217,36 @@ void UCrosshair_Widget::CheckDie()
 	{
 		if (weapon->bHit)
 		{
-			if (weapon->headhit)
+			if (UWeaponComponent::CheckActorTag(weapon->m_result.GetActor(), FName("Missile")))
 			{
 				weapon->bHit = false;
-				weapon->headhit = false;
-				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
-				Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
-				Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
-				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
-				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
-			}
-			else
-			{
-				weapon->bHit = false;
-				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->missile_Hit_cue, MyCharacter->GetActorLocation());
 				Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
 				Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
 				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
 				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
+			}
+			else
+			{
+				if (weapon->headhit)
+				{
+					weapon->bHit = false;
+					weapon->headhit = false;
+					UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Head_Hit_cue, MyCharacter->GetActorLocation());
+					Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::Red));
+					Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::Red));
+					Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::Red));
+					Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::Red));
+				}
+				else
+				{
+					weapon->bHit = false;
+					UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Normal_Hit_cue, MyCharacter->GetActorLocation());
+					Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
+					Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
+					Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
+					Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
+				}
 			}
 
 			GetWorld()->GetTimerManager().ClearTimer(HitTimer);
@@ -268,7 +281,14 @@ void UCrosshair_Widget::CheckDie()
 	{
 		if (stat->bDie)
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
+			if (UWeaponComponent::CheckActorTag(weapon->m_result.GetActor(), FName("Missile")))
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->missile_Kill_cue, MyCharacter->GetActorLocation());
+			}
+			else
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
+			}
 			//stat->isDie = false;
 			Kill_Overlay->SetRenderOpacity(1.0f);
 			GetWorld()->GetTimerManager().ClearTimer(KillTimer);
@@ -291,6 +311,23 @@ void UCrosshair_Widget::SetAmmoImage()
 {
 	float ammovalue = float(weapon->curAmmo) / float(weapon->maxAmmo);
 	Cross_Ammo_Image->SetRenderOpacity(1.f);
+
+	if (weapon->curAmmo <= 10)
+	{
+		LowAmmoText->SetRenderOpacity(1.f);
+		if (!IsAnimationPlaying(LowAmmoAnim))
+		{
+			PlayAnimation(LowAmmoAnim, 0.f, 0);
+		}
+	}
+	else
+	{
+		if (IsAnimationPlaying(LowAmmoAnim))
+		{
+			StopAnimation(LowAmmoAnim);
+		}
+		LowAmmoText->SetRenderOpacity(0.0f);
+	}
 	/*switch (weapon->weapontype)
 	{
 	case EWeaponType::TE_Pistol:
@@ -320,10 +357,20 @@ void UCrosshair_Widget::PlayReloadAnim()
 		{
 			StopAnimation(FadeOutAnim);
 		}
-		Reload_Overlay->SetRenderOpacity(1.0f);
+
+		if (IsAnimationPlaying(LowAmmoAnim))
+		{
+			StopAnimation(LowAmmoAnim);
+			LowAmmoText->SetRenderOpacity(0.0f);
+		}
+
+		LowAmmoText->SetRenderOpacity(0.0f);
+		//Reload_Overlay->SetRenderOpacity(1.0f);
 		NotFire_Overlay->SetRenderOpacity(0.0f);
 		Crosshair_Overlay->SetRenderOpacity(0.0f);
 		Cross_Ammo_Image->SetRenderOpacity(1.0f);
+
+
 		if (ReloadAnim)
 		{
 			GetWorld()->GetTimerManager().SetTimer(ReloadTimer, FTimerDelegate::CreateLambda([&]()
@@ -343,15 +390,20 @@ void UCrosshair_Widget::StopReloadAnim()
 	{
 		StopAnimation(FadeOutAnim);
 	}
+
+	if (IsAnimationPlaying(ReloadAnim))
+	{
+		StopAnimation(ReloadAnim);
+	}
+
 	Reload_Overlay->SetRenderOpacity(0.0f);
+
 	Cross_Ammo_Image->SetRenderOpacity(1.0f);
+	Crosshair_Overlay->SetRenderOpacity(1.0f);
+
 	if (bBlocking)
 	{
 		Blocking(true);
-	}
-	else
-	{
-		Crosshair_Overlay->SetRenderOpacity(1.0f);
 	}
 }
 
@@ -367,6 +419,10 @@ void UCrosshair_Widget::Blocking(bool bBlock)
 		if (bBlock)
 		{
 			bBlocking = true;
+		
+			StopAnimation(LowAmmoAnim);
+			LowAmmoText->SetRenderOpacity(0.0f);
+
 			Crosshair_Overlay->SetRenderOpacity(.0f);
 			Reload_Overlay->SetRenderOpacity(.0f);
 			Cross_Ammo_Image->SetRenderOpacity(.0f);
@@ -375,8 +431,17 @@ void UCrosshair_Widget::Blocking(bool bBlock)
 		else
 		{
 			bBlocking = false;
+
+			if (weapon->curAmmo <= 10)
+			{
+				LowAmmoText->SetRenderOpacity(1.0f);
+				if (!IsAnimationPlaying(LowAmmoAnim))
+				{
+					PlayAnimation(LowAmmoAnim, 0.f, 0);
+				}
+			}
 			Crosshair_Overlay->SetRenderOpacity(1.0f);
-			Reload_Overlay->SetRenderOpacity(1.0f);
+			//Reload_Overlay->SetRenderOpacity(1.0f);
 			Cross_Ammo_Image->SetRenderOpacity(1.0f);
 			NotFire_Overlay->SetRenderOpacity(.0f);
 		}

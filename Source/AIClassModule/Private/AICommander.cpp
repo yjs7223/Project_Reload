@@ -443,10 +443,14 @@ void AAICommander::TargetTickSet()
 				}
 				if (AIController->GetBlackboardComponent()->GetValueAsBool("Simple_Run") == false)
 				{
-					if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
 					{
-						AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+						if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+						{
+							AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+						}
 					}
+					
 				}
 
 			}
