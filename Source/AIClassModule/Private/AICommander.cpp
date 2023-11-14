@@ -535,14 +535,20 @@ void AAICommander::CoverPointEnemy()
 	{
 		FCollisionQueryParams collisionParams;
 		collisionParams.AddIgnoredActor(this);
-		if (GetWorld()->LineTraceSingleByChannel(result, subencover, player->GetActorLocation(), ECC_Visibility, collisionParams))
+		FVector targertlocation = player->GetActorLocation();
+		if (subencover.Z > targertlocation.Z)
+		{
+			subencover.Z += 10.0f;
+			targertlocation.Z = subencover.Z;
+		}
+		if (GetWorld()->LineTraceSingleByChannel(result, subencover, targertlocation, ECC_Visibility, collisionParams))
 		{
 			if (!result.GetActor()->ActorHasTag("Cover"))
 			{
 				continue;
 			}
 
-			if (FVector::Distance(subencover, result.ImpactPoint) > 100.0f)
+			if (FVector::Distance(subencover, result.ImpactPoint) > 150.0f)
 			{
 				continue;
 			}
