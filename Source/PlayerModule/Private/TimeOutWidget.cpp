@@ -60,6 +60,12 @@ void UTimeOutWidget::CountTime()
 
 	if (leftCount == 0)
 	{
+		if (UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("Level_GstarB"))
+		{
+			GetOwningPlayer()->GetWorldTimerManager().ClearTimer(timeOutHandle);
+			return;
+		}
+
 		if (UPlayerStatComponent* mySyat = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>())
 		{
 			mySyat->diePlay.Broadcast();
