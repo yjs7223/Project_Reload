@@ -11,6 +11,7 @@
 #include "TimeOutWidget.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "AsyncLoadingScreenLibrary.h"
 //#include ""
 
 // Sets default values
@@ -71,6 +72,10 @@ void AEventTrigger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 					//제한시간 시작
 					PlayTimeOutEvent(pc, timeOutCount);
 					break;
+				case ETriggerEventEnum::TE_SubVidioEvent:
+					//서브비디오 출력
+					PlaySubVidioEvent(pc, selectNum);
+					break;
 				default:
 					break;
 				}
@@ -113,23 +118,32 @@ void AEventTrigger::OpenLevelEvent(APlayerCharacter* player, int p_selectNum)
 	FTimerHandle openLevelHandle;
 
 	GetWorld()->GetTimerManager().SetTimer(openLevelHandle,
-		FTimerDelegate::CreateLambda([&]()
+		FTimerDelegate::CreateLambda([=]()
 			{
 				switch (p_selectNum)
 				{
 				case 0:
-					UGameplayStatics::OpenLevel(GetWorld(), FName("Target_level"));
+					UAsyncLoadingScreenLibrary::SetDisplayMovieIndex(p_selectNum);
+					UGameplayStatics::OpenLevel(GetWorld(), FName("Starting_LevelMap"));
 					break;
 				case 1:
+					UAsyncLoadingScreenLibrary::SetDisplayMovieIndex(p_selectNum);
 					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
 					break;
 				case 2:
+					UAsyncLoadingScreenLibrary::SetDisplayMovieIndex(p_selectNum);
 					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
 					break;
 				case 3:
+					UAsyncLoadingScreenLibrary::SetDisplayMovieIndex(p_selectNum);
+					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
+					break;
+				case 4:
+					UAsyncLoadingScreenLibrary::SetDisplayMovieIndex(p_selectNum);
 					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
 					break;
 				default:
+					UAsyncLoadingScreenLibrary::SetDisplayMovieIndex(0);
 					UGameplayStatics::OpenLevel(GetWorld(), FName("AI_Test_Level"));
 					break;
 				}
@@ -149,5 +163,10 @@ void AEventTrigger::PlayTimeOutEvent(APlayerCharacter* player, float p_timeOutCo
 			UGameplayStatics::PlaySoundAtLocation(player, sound, player->GetActorLocation());
 		}
 	}
+}
+
+void AEventTrigger::PlaySubVidioEvent(APlayerCharacter* player, int p_selectNum)
+{
+
 }
 
