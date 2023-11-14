@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"AIClassModule",
-				"AICoverSystem"
+				"AICoverSystem",
+				"UMG"
 			]
 		},
 		{
