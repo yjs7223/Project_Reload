@@ -64,7 +64,7 @@ void UPlayer_Ammo_Widget::UpdateAmmo()
 {
 	if (weapon)
 	{
-		if (weapon->holdAmmo < 0)
+		/*if (weapon->holdAmmo < 0)
 		{
 			Ammo_Infinite_image->SetRenderOpacity(1.0f);
 			Max_Ammo_Text->SetRenderOpacity(0.0f);
@@ -74,7 +74,7 @@ void UPlayer_Ammo_Widget::UpdateAmmo()
 			Ammo_Infinite_image->SetRenderOpacity(0.0f);
 			Max_Ammo_Text->SetRenderOpacity(1.0f);
 		}
-		Max_Ammo_Text->SetText(FText::FromString(FString::FromInt(weapon->holdAmmo)));
+		Max_Ammo_Text->SetText(FText::FromString(FString::FromInt(weapon->holdAmmo)));*/
 		Cur_Ammo_Text->SetText(FText::FromString(FString::FromInt(weapon->curAmmo)));
 	}
 }

@@ -48,7 +48,7 @@ void UDialogueWidget::SetDialogueText(FName rowName)
 
 		fullLine = dialogue->dialogue_Line;
 		lineLen = dialogue->dialogue_Line.Len();
-		nowLen = 1;
+		nowLen = 0;
 
 		FString line = UKismetStringLibrary::GetSubstring(fullLine, 0, nowLen);
 		//nowLen++;
