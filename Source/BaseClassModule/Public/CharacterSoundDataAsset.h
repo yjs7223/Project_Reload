@@ -53,4 +53,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = hit)
 		class USoundCue* missile_Kill_cue;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = hit)
+		class USoundCue* Drone_Hit_cue;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = hit)
+		class USoundCue* Drone_Kill_cue;
 };
