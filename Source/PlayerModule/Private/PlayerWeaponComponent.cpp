@@ -664,7 +664,7 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
 		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
 
-		if (RecoveryTime >= 0.8f)
+		if (RecoveryTime >= 0.85f)
 		{
 			StopRcovery();
 		}
@@ -677,28 +677,30 @@ void UPlayerWeaponComponent::StartRecovery()
 	StopRecoil();
 	FRotator nowrot = owner->GetController()->GetControlRotation();
 	
-	//recoveryRot = nowrot - startRot;
-	/*if (startRot.Yaw <= 90)
-	{
-		startRot.Yaw += 360;
-	}
-	if (nowrot.Yaw <= 90)
-	{
-		nowrot.Yaw += 360;
-	}*/
-	if (startRot.Pitch <= 180)
+	if (startRot.Pitch <= 90)
 	{
 		startRot.Pitch += 360;
 	}
-	if (nowrot.Pitch <= 180)
+	if (nowrot.Pitch <= 90)
 	{
 		nowrot.Pitch += 360;
 	}
 
-	
-	yawRecoveryValue = (startRot.Yaw - 180) - (nowrot.Yaw - 180);
+	yawRecoveryValue = startRot.Yaw - nowrot.Yaw;
+	if (abs(yawRecoveryValue) >= 180.f)
+	{
+		if (yawRecoveryValue >= 0)
+		{
+			yawRecoveryValue = abs(yawRecoveryValue) - 360.f;
+		}
+		else
+		{
+			yawRecoveryValue = 360.f - abs(yawRecoveryValue);
+		}
+	}
+
 	pitchRecoveryValue = startRot.Pitch - nowrot.Pitch;
-	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw - 180));
 	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw));
 	//StopRcovery();
