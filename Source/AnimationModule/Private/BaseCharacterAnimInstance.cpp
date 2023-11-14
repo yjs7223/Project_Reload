@@ -37,8 +37,6 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!(m_Weapon)) return;
 	if (!(m_Input)) return;
 	if (!(m_Stats)) return;
-	if (!(m_PakurComp)) return;
-	if (!m_PakurComp->GetClass()) return;
 
 
 	m_IsFaceRight = m_Cover->IsFaceRight();
@@ -47,7 +45,10 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	m_IsAiming = m_Input->getInput()->IsAiming;
 
 	m_GunIKVec = m_Weapon->WeaponMesh->GetSocketLocation(m_IsFaceRight ? m_HandGrip_L : m_HandGrip_R);
-	m_IsPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
+	if (m_PakurComp && m_PakurComp->GetClass())
+	{
+		m_IsPakuru = IPakurable::Execute_IsRolling(m_PakurComp);
+	}
 
 
 	m_IsHandIK = 
