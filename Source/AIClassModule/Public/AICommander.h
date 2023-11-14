@@ -120,7 +120,8 @@ public:
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool MapList_Start;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		FString level_name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float s_time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)

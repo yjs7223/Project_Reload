@@ -33,6 +33,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool AI_ActiveFalse;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		bool Boss_Level;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		TArray<AActor*> AIArray;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		class ASubEncounterSpace* suben;
