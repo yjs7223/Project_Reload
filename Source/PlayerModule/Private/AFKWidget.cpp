@@ -13,6 +13,8 @@ void UAFKWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+
+	AFK_Overlay->SetRenderOpacity(0.f);
 	afkTime = 0;
 	afkMoviePlayer->PlayOnOpen = true;
 
