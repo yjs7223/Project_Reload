@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class PROJECT_RELOAD_API USubVidioWidget : public UUserWidget
+class PLAYERMODULE_API USubVidioWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
