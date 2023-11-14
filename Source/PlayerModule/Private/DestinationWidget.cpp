@@ -59,9 +59,12 @@ void UDestinationWidget::ArraySorting()
 
 void UDestinationWidget::SetDesText()
 {
-	FVector dis = GetOwningPlayerPawn()->GetActorLocation() - nowDes->GetActorLocation();
-	
-	Des_Text->SetText(FText::FromString(FString::FromInt((int)dis.Length()) + FString("m")));
+	if (nowDes)
+	{
+		FVector dis = GetOwningPlayerPawn()->GetActorLocation() - nowDes->GetActorLocation();
+
+		Des_Text->SetText(FText::FromString(FString::FromInt((int)dis.Length()) + FString("m")));
+	}
 }
 
 void UDestinationWidget::SetTranslation()
