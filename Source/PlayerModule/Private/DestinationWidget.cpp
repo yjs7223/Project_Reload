@@ -39,6 +39,7 @@ void UDestinationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	SetTranslation();
+	SetDesText();
 }
 
 void UDestinationWidget::ArraySorting()
@@ -53,6 +54,16 @@ void UDestinationWidget::ArraySorting()
 				desActors.Swap(i, dAct->desIndex);
 			}
 		}
+	}
+}
+
+void UDestinationWidget::SetDesText()
+{
+	if (nowDes)
+	{
+		FVector dis = GetOwningPlayerPawn()->GetActorLocation() - nowDes->GetActorLocation();
+
+		Des_Text->SetText(FText::FromString(FString::FromInt((int)dis.Length()) + FString("m")));
 	}
 }
 

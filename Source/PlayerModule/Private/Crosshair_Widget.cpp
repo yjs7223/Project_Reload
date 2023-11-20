@@ -226,6 +226,15 @@ void UCrosshair_Widget::CheckDie()
 				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
 				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
 			}
+			else if (UWeaponComponent::CheckActorTag(weapon->m_result.GetActor(), FName("Drone")))
+			{
+				weapon->bHit = false;
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->missile_Hit_cue, MyCharacter->GetActorLocation());
+				Hit_Image_NW->SetBrushTintColor(FSlateColor(FColor::White));
+				Hit_Image_NE->SetBrushTintColor(FSlateColor(FColor::White));
+				Hit_Image_SW->SetBrushTintColor(FSlateColor(FColor::White));
+				Hit_Image_SE->SetBrushTintColor(FSlateColor(FColor::White));
+			}
 			else
 			{
 				if (weapon->headhit)
@@ -285,6 +294,10 @@ void UCrosshair_Widget::CheckDie()
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->missile_Kill_cue, MyCharacter->GetActorLocation());
 			}
+			else if (UWeaponComponent::CheckActorTag(weapon->m_result.GetActor(), FName("Drone")))
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->missile_Kill_cue, MyCharacter->GetActorLocation());
+			}
 			else
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, MyCharacter->CharacterSound->Kill_cue, MyCharacter->GetActorLocation());
@@ -312,7 +325,7 @@ void UCrosshair_Widget::SetAmmoImage()
 	float ammovalue = float(weapon->curAmmo) / float(weapon->maxAmmo);
 	Cross_Ammo_Image->SetRenderOpacity(1.f);
 
-	if (weapon->curAmmo <= 10)
+	if (weapon->curAmmo <= 10 && weapon->curAmmo != -1)
 	{
 		LowAmmoText->SetRenderOpacity(1.f);
 		if (!IsAnimationPlaying(LowAmmoAnim))
@@ -432,7 +445,7 @@ void UCrosshair_Widget::Blocking(bool bBlock)
 		{
 			bBlocking = false;
 
-			if (weapon->curAmmo <= 10)
+			if (weapon->curAmmo <= 10 && weapon->curAmmo != -1)
 			{
 				LowAmmoText->SetRenderOpacity(1.0f);
 				if (!IsAnimationPlaying(LowAmmoAnim))
