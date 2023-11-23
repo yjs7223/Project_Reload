@@ -19,6 +19,7 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
 	void StartCount(int p_timeCount);
 
 	void CountTime();
@@ -32,6 +33,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 	class UTextBlock* TimeOut_Text;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+	class UWidgetAnimation* CountAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+	class UWidgetAnimation* FastCountAnim;
 
 	int maxCount;
 	int leftCount;

@@ -65,6 +65,8 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	AimSetting();
 	CalculateBlockingTick(DeltaTime);
+	bool bCovering = (m_Cover->IsCover() && !bFire && !bAiming);
+	OnBlockingUIDelegate.ExecuteIfBound(!bCovering && m_IsWeaponBlocking);
 	// ...
 }
 
@@ -126,8 +128,8 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 	UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		start,
 		end,
-		2.0f,
-		5.0f,
+		2.0f * (m_IsWeaponBlocking ? 2.0f : 1.0f),
+		5.0f * (m_IsWeaponBlocking ? 2.0f : 1.0f),
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		{ owner },
@@ -152,8 +154,6 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 
 		if (distance < m_WeaponDistance) {
 
-			if (!m_IsWeaponBlocking)
-				OnBlockingUIDelegate.ExecuteIfBound(true);
 			m_IsWeaponBlocking = true;
 			
 			return;
@@ -161,15 +161,12 @@ void UWeaponComponent::CalculateBlockingTick(float p_deltatime)
 		m_WeaponHitLocation = result.Location;
 	}
 
-	if (m_IsWeaponBlocking)
-		OnBlockingUIDelegate.ExecuteIfBound(false);
 	m_IsWeaponBlocking = false;
 }
 
 void UWeaponComponent::StartFire()
 {
 	bFire = true;
-	UE_LOG(LogTemp, Warning, TEXT("StartFire"));
 }
 
 void UWeaponComponent::StopFire()
@@ -343,18 +340,17 @@ void UWeaponComponent::SpawnImpactEffect(FHitResult result)
 		UNiagaraComponent* hitFXComponent;
 		if (!result.BoneName.IsNone())
 		{
-			USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
-			if (mesh)
-			{
-				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
+				USkeletalMeshComponent* mesh = result.GetActor()->FindComponentByClass<USkeletalMeshComponent>();
+				if (mesh)
+				{
+					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitFXComponent->GetAttachSocketName().ToString());
 				
-				hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.3f, .3f, .3f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
-
-			}
+				  hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(hitFXNiagara, mesh, result.BoneName, mesh->GetBoneLocation(result.BoneName), m_rot, FVector(.1f, .1f, .1f),EAttachLocation::KeepRelativeOffset, true,ENCPoolMethod::None);
+        }
 		}
 		else
 		{
-			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot);
+			hitFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), hitFXNiagara, result.Location, m_rot, FVector(.5f,.5f,.5f));
 		}
 	}
 }

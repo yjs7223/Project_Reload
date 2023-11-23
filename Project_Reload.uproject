@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"AIClassModule",
-				"AICoverSystem"
+				"AICoverSystem",
+				"UMG"
 			]
 		},
 		{
@@ -66,7 +67,8 @@
 				"Slate",
 				"SlateCore",
 				"UMG",
-				"AIModule"
+				"AIModule",
+				"AIClassModule"
 			]
 		},
 		{

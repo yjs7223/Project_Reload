@@ -3,6 +3,7 @@
 
 #include "TimeOutWidget.h"
 #include "PlayerStatComponent.h"
+#include "Animation/WidgetAnimation.h"
 #include "UMG.h"
 
 void UTimeOutWidget::NativeConstruct()
@@ -48,8 +49,23 @@ void UTimeOutWidget::CountTime()
 	
 	TimeOut_Text->SetText(t);
 
+	if (leftCount > 10)
+	{
+		PlayAnimationForward(CountAnim);
+	}
+	else
+	{
+		PlayAnimationForward(FastCountAnim);
+	}
+
 	if (leftCount == 0)
 	{
+		if (UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("Level_GstarB"))
+		{
+			GetOwningPlayer()->GetWorldTimerManager().ClearTimer(timeOutHandle);
+			return;
+		}
+
 		if (UPlayerStatComponent* mySyat = GetOwningPlayerPawn()->FindComponentByClass<UPlayerStatComponent>())
 		{
 			mySyat->diePlay.Broadcast();

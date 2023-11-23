@@ -74,7 +74,7 @@ AAICommander::AAICommander()
 	
 	
 	audiocomp = CreateDefaultSubobject<UAudioComponent>(TEXT("audiocomp"));
-	
+
 }
 
 // Called when the game starts or when spawned
@@ -87,18 +87,28 @@ void AAICommander::BeginPlay()
 	CoverManager = Cast<ACoverManager>
 		(UGameplayStatics::GetActorOfClass(GetWorld(), ACoverManager::StaticClass()));
 
-	
 	UBlackboardComponent* BlackboardComp = Blackboard;
 	UseBlackboard(BB_AICommander, BlackboardComp);
 	RunBehaviorTree(btree);
 	behavior_tree_component->StartTree(*btree);
+	level_name = UGameplayStatics::GetCurrentLevelName(GetWorld());
 	audiocomp->Stop();
-	background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
+	if (level_name == "level_GStarB")
+	{
+		background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/Boss/BossSound/BossMusic_Cue.BossMusic_Cue'"));
+	}
+	else
+	{
+		background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
+	}
 	audiocomp->SetSound(background);
 	audiocomp->Play();
 	audiocomp->FadeIn(2.0f);
 	sound_Start = false;
 	SetCommanderDataTable("Commander");
+
+
+	
 }
 
 
@@ -125,6 +135,8 @@ void AAICommander::Tick(float DeltaTime)
 	ListSet();
 }
 
+
+
 void AAICommander::ListSet()
 {
 	if (m_suben != nullptr)
@@ -147,7 +159,6 @@ void AAICommander::ListSet()
 			Now_en = m_en;
 			MapList_Start = false;
 			CoverManager->ChangeEncounter();
-			audiocomp->Stop();
 			/*if (Now_en->AIArray.Num() <= 0)
 			{
 				USoundCue* background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
@@ -155,8 +166,13 @@ void AAICommander::ListSet()
 			}*/
 			//else
 			//{
+			if (level_name != "level_GStarB")
+			{
+				audiocomp->Stop();
 				background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/yjs/Sounds/S_Fire_Support_LOOP_150bpm_Cue.S_Fire_Support_LOOP_150bpm_Cue'"));
 				audiocomp->SetSound(background);
+			}
+			Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(true);
 			//}
 			audiocomp->Play();
 			audiocomp->FadeIn(2.0f);
@@ -200,18 +216,21 @@ void AAICommander::ListSet()
 			{
 				if (Now_en->spawn->waveEnd)
 				{
-					if (sound_Start)
+					if (level_name != "level_GStarB")
 					{
-						//����
-						audiocomp->Stop();
-						background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
-						audiocomp->SetSound(background);
-						audiocomp->Play();
-						audiocomp->FadeIn(2.0f);
-						sound_Start = false;
+						if (sound_Start)
+						{
+							//����
+							audiocomp->Stop();
+							background = LoadObject<USoundCue>(NULL, TEXT("SoundCue'/Game/AI_Project/AI_Pakage/BaseAI/Sound/NonCombatting_Cue.NonCombatting_Cue'"));
+							audiocomp->SetSound(background);
+							audiocomp->Play();
+							audiocomp->FadeIn(2.0f);
+							sound_Start = false;
+							Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(false);
+						}
+						ListVoidReset();
 					}
-					
-					ListVoidReset();
 				}
 			}
 			else
@@ -225,6 +244,7 @@ void AAICommander::ListSet()
 					audiocomp->Play();
 					audiocomp->FadeIn(2.0f);
 					sound_Start = false;
+					Cast<ABaseCharacter>(player)->OnSetDroneVisible.ExecuteIfBound(false);
 				}
 				ListVoidReset();
 				
@@ -247,6 +267,14 @@ void AAICommander::ListVoidReset()
 		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
+		}
+		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_MoveAttackChk") == true)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_MoveAttackChk", false);
+		}
+		if (AIController->GetBlackboardComponent()->GetValueAsObject("MoveAttackAI") != AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"))
+		{
+			AIController->GetBlackboardComponent()->SetValueAsObject("MoveAttackAI", AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"));
 		}
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", false);
 	}
@@ -299,13 +327,21 @@ void AAICommander::ListStartSet(const AEncounterSpace* en)
 		{
 			continue;
 		}
+		if (AIController->btree)
+		{
+			AIController->RunBTT();
+		}
 		if (AIController->GetBlackboardComponent() == NULL)
 		{
 			continue;
 		}
-		if (AIController->btree)
+		if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_MoveAttackChk") == true)
 		{
-			AIController->RunBTT();
+			AIController->GetBlackboardComponent()->SetValueAsBool("AI_MoveAttackChk", false);
+		}
+		if (AIController->GetBlackboardComponent()->GetValueAsObject("MoveAttackAI") != AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"))
+		{
+			AIController->GetBlackboardComponent()->SetValueAsObject("MoveAttackAI", AIController->GetBlackboardComponent()->GetValueAsObject("NullActor"));
 		}
 		AIController->GetBlackboardComponent()->SetValueAsInt("ID_Number", AddIndex);
 		AIController->GetBlackboardComponent()->SetValueAsBool("AI_Active", true);
@@ -420,10 +456,14 @@ void AAICommander::TargetTickSet()
 				}
 				if (AIController->GetBlackboardComponent()->GetValueAsBool("Simple_Run") == false)
 				{
-					if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+					if (AIController->GetBlackboardComponent()->GetValueAsBool("AI_Active") == true)
 					{
-						AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+						if (AIController->GetBlackboardComponent()->GetValueAsObject("Target") == nullptr)
+						{
+							AIController->GetBlackboardComponent()->SetValueAsObject("Target", Blackboard->GetValueAsObject("Cmd_Target"));
+						}
 					}
+					
 				}
 
 			}
@@ -508,14 +548,20 @@ void AAICommander::CoverPointEnemy()
 	{
 		FCollisionQueryParams collisionParams;
 		collisionParams.AddIgnoredActor(this);
-		if (GetWorld()->LineTraceSingleByChannel(result, subencover, player->GetActorLocation(), ECC_Visibility, collisionParams))
+		FVector targertlocation = player->GetActorLocation();
+		if (subencover.Z > targertlocation.Z)
+		{
+			subencover.Z += 10.0f;
+			targertlocation.Z = subencover.Z;
+		}
+		if (GetWorld()->LineTraceSingleByChannel(result, subencover, targertlocation, ECC_Visibility, collisionParams))
 		{
 			if (!result.GetActor()->ActorHasTag("Cover"))
 			{
 				continue;
 			}
 
-			if (FVector::Distance(subencover, result.ImpactPoint) > 100.0f)
+			if (FVector::Distance(subencover, result.ImpactPoint) > 150.0f)
 			{
 				continue;
 			}

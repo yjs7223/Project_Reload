@@ -7,6 +7,7 @@
 #include "InteractiveComponent.h"
 #include "PlayerWeaponComponent.h"
 #include "PlayerInputComponent.h"
+//#include "GameFramework/CharacterMovementComponent.h"
 
 
 UPlayerStatComponent::UPlayerStatComponent()
@@ -21,6 +22,7 @@ void UPlayerStatComponent::BeginPlay()
 	diePlay.__Internal_AddDynamic(this, &UPlayerStatComponent::Revive, FName("Revive"));
 
 	revivePos = GetOwner()->GetActorLocation();
+	revivePos.Z += 50.0f;
 }
 
 void UPlayerStatComponent::BeginDestroy()
@@ -167,9 +169,14 @@ void UPlayerStatComponent::Revive()
 	if (inputComp)
 	{
 		inputComp->SetInputEnable(false);
+		inputComp->StopFire();
+		inputComp->StopAiming();
+		inputComp->StopReload();
+		inputComp->StopFire();
+		inputComp->getInput()->movevec = FVector::ZeroVector;
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([&]()
+	GetWorld()->GetTimerManager().SetTimer(dieTimer, FTimerDelegate::CreateLambda([=]()
 		{
 			bDie = false;
 			RecoverHP(10000);
@@ -177,7 +184,9 @@ void UPlayerStatComponent::Revive()
 			if (inputComp)
 			{
 				inputComp->SetInputEnable(true);
+				
 			}
+			
 			GetOwner()->SetActorLocation(revivePos);
 
 		}), 2.f, false);

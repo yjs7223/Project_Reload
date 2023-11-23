@@ -9,6 +9,7 @@
 #include "PlayerWeaponComponent.h"
 #include "PlayerStatComponent.h"
 #include "PlayerInputComponent.h"
+#include "Components/SceneComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Player_HP_Widget.h"
@@ -53,6 +54,28 @@ APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer) 
 	//m_FollowSpringArm->SetupAttachment(RootComponent);
 	m_FollowSpringArm->bUsePawnControlRotation = true;
 	m_FollowSpringArm->SetupAttachment(GetMesh(), TEXT("root"));
+
+	//드론 스프링 컴포넌트 추가 부분 CreateDefaultSubobject<USceneComponent>(TEXT("Empcmp"));
+	m_DroneScene = CreateDefaultSubobject<USceneComponent>(TEXT("DroneScene"));
+	m_DroneScene->SetupAttachment(GetMesh(), TEXT("root"));
+	m_DroneScene->SetRelativeLocation(FVector(40, 35, 200));
+
+
+	m_DroneSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("DroneSpringArm"));
+	m_DroneSpringArm->bUsePawnControlRotation = true;
+	m_DroneSpringArm->SetupAttachment(m_DroneScene);
+	m_DroneSpringArm->bDoCollisionTest = false;
+	m_DroneSpringArm->bEnableCameraLag = true;
+	m_DroneSpringArm->bEnableCameraRotationLag = true;
+	m_DroneSpringArm->CameraLagSpeed = 3.0f;
+	m_DroneSpringArm->CameraRotationLagSpeed = 1;
+	m_DroneSpringArm->bClampToMaxPhysicsDeltaTime = true;
+	m_DroneSpringArm->TargetArmLength = 10;
+
+
+
+
+
 
 	m_FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_FollowCamera->SetupAttachment(m_FollowSpringArm, USpringArmComponent::SocketName);
@@ -114,6 +137,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 		};
 	//temp(GetMesh());
 	//temp(weapon->WeaponMesh);
+
+	/*FVector DroneDefLoc = FVector(40, 35, 200);
+	m_DroneSpringArm->SetRelativeLocation(FVector(40, 35, 200));*/
 }
 
 bool APlayerCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const

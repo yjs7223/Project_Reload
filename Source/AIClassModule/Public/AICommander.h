@@ -32,9 +32,11 @@ class AICLASSMODULE_API AAICommander : public AAIController
 
 		//using KEY = int32;
 
+
 public:
 	// Sets default values for this actor's properties
 	AAICommander();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -118,7 +120,8 @@ public:
 		int AddIndex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		bool MapList_Start;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
+		FString level_name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)
 		float s_time;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AICommander)

@@ -33,6 +33,8 @@
 #include "EmptyShellSpawnable.h"
 #include "PlayerWeaponDataAsset.h"
 #include "CharacterSoundDataAsset.h"
+#include "Pakurable.h"
+#include "BaseCharacterMovementComponent.h"
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
@@ -61,6 +63,7 @@ void UPlayerWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	m_Movement = Cast<UBaseCharacterMovementComponent>(owner->GetCharacterMovement());
 	if (UStatComponent* statComp = GetOwner()->FindComponentByClass<UStatComponent>())
 	{
 		statComp->diePlay.__Internal_AddDynamic(this, &UPlayerWeaponComponent::InitData, FName("InitData"));
@@ -97,8 +100,14 @@ void UPlayerWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	if (bAiming || bFire)
 	{
-		if (!owner->FindComponentByClass<UCoverComponent>()->IsCover())
+		bool bIsRolling = false;
+		if (m_PakurComp && m_PakurComp->GetClass()->ImplementsInterface(UPakurable::StaticClass())) 
 		{
+			bIsRolling = IPakurable::Execute_IsRolling(m_PakurComp);
+		}
+		if (!m_Cover->IsCover() && !bIsRolling && !m_Movement->isRuning())
+		{
+
 			owner->FindComponentByClass<UPlayerMoveComponent>()->Turn();
 		}
 	}
@@ -148,13 +157,6 @@ void UPlayerWeaponComponent::InitData()
 				meshcomp->SetStaticMesh(item.Value);
 				meshcomp->RegisterComponentWithWorld(owner->GetWorld());
 			}
-			/*MuzzleFireParticle = WeaponDataAsset->MuzzleFireParticle;
-			BulletTracerParticle = WeaponDataAsset->BulletTracerParticle;
-			shotFXNiagara = WeaponDataAsset->BulletTrailFXNiagara;*/
-
-			//ShotSounds = WeaponDataAsset->ShotSounds;
-
-			//Decal = WeaponDataAsset->Decals[0];
 		}
 		
 		maxAmmo = dataTable->MaxAmmo_num;
@@ -196,6 +198,7 @@ void UPlayerWeaponComponent::Fire()
 {
 	Super::Fire();
 	if (!m_CanShooting) return;
+	bIsWantShoot = false;
 	if (curAmmo <= 0)
 	{
 		StopFire();
@@ -405,6 +408,7 @@ void UPlayerWeaponComponent::StartFire()
 
 	StopRcovery();
 	Super::StartFire();
+	bIsWantShoot = true;
 	if (weapontype == EWeaponType::Rifle || weapontype == EWeaponType::Heavy)
 	{
 		owner->GetWorldTimerManager().SetTimer(fHandle, this, &UPlayerWeaponComponent::Fire, m_firerate, true);
@@ -643,13 +647,13 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 	{
 		RecoveryTime += p_deltatime * 2.0f;
 		TickCount += 2;
-		if (FMath::Abs(yawRecoveryValue) > 3.0f)
+		if (FMath::Abs(yawRecoveryValue) > 10.0f)
 		{
-			TickCount += 30;
+			yawRecoveryValue = 0;
 		}
 
 		//아래로 당긴거 확인
-		if (FMath::Abs(pitchRecoveryValue) > 5.0f)
+		if (FMath::Abs(pitchRecoveryValue) > 10.0f)
 		{
 			TickCount += 10;
 		}
@@ -660,7 +664,7 @@ void UPlayerWeaponComponent::RecoveryTick(float p_deltatime)
 		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
 		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
 
-		if (RecoveryTime >= 0.8f)
+		if (RecoveryTime >= 0.85f)
 		{
 			StopRcovery();
 		}
@@ -672,15 +676,7 @@ void UPlayerWeaponComponent::StartRecovery()
 	bRecovery = true;
 	StopRecoil();
 	FRotator nowrot = owner->GetController()->GetControlRotation();
-	//recoveryRot = nowrot - startRot;
-	if (startRot.Yaw <= 90)
-	{
-		startRot.Yaw += 360;
-	}
-	if (nowrot.Yaw <= 90)
-	{
-		nowrot.Yaw += 360;
-	}
+	
 	if (startRot.Pitch <= 90)
 	{
 		startRot.Pitch += 360;
@@ -689,10 +685,24 @@ void UPlayerWeaponComponent::StartRecovery()
 	{
 		nowrot.Pitch += 360;
 	}
+
 	yawRecoveryValue = startRot.Yaw - nowrot.Yaw;
+	if (abs(yawRecoveryValue) >= 180.f)
+	{
+		if (yawRecoveryValue >= 0)
+		{
+			yawRecoveryValue = abs(yawRecoveryValue) - 360.f;
+		}
+		else
+		{
+			yawRecoveryValue = 360.f - abs(yawRecoveryValue);
+		}
+	}
+
 	pitchRecoveryValue = startRot.Pitch - nowrot.Pitch;
-	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(yawRecoveryValue));
-	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::SanitizeFloat(pitchRecoveryValue));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw - 180));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::SanitizeFloat(nowrot.Yaw));
 	//StopRcovery();
 
 }

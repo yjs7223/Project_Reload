@@ -39,7 +39,8 @@ void UAISensingComponent::BeginPlay()
 	Super::BeginPlay();
 
 	GetOwner()->GetWorldTimerManager().ClearTimer(sensingTimer);
-	GetOwner()->GetWorldTimerManager().SetTimer(sensingTimer, this, &UAISensingComponent::ShotSenseRange, 0.5f, true, 0.0f);
+	GetOwner()->GetWorldTimerManager().SetTimer(sensingTimer, this, &UAISensingComponent::ShotSenseRange, 0.5f, true);
+
 }	
 
 
@@ -77,6 +78,7 @@ void UAISensingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanAngle, FVector FanDirection)
 {
+
 	FVector playerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	FVector centerLocation = GetOwner()->GetActorLocation();
 	FVector locationToPlayer = playerLocation - centerLocation;
@@ -91,11 +93,21 @@ bool UAISensingComponent::IsPlayerInsideFanArea(float LocationRadius, float FanA
 	}
 
 	return false;
+
+
 }
 
 void UAISensingComponent::ShotSenseRange()
 {
 	//DrawSense();
+	if (GetWorld()->GetFirstPlayerController() == nullptr)
+	{
+		return;
+	}
+	if (GetWorld()->GetFirstPlayerController()->GetPawn() == nullptr)
+	{
+		return;
+	}
 	if (IsPlayerInsideFanArea(AimFwd_Radius, AimFwd_Angle, GetOwner()->GetActorForwardVector()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Sense")));

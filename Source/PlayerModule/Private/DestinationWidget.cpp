@@ -39,6 +39,7 @@ void UDestinationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	SetTranslation();
+	SetDesText();
 }
 
 void UDestinationWidget::ArraySorting()
@@ -56,6 +57,16 @@ void UDestinationWidget::ArraySorting()
 	}
 }
 
+void UDestinationWidget::SetDesText()
+{
+	if (nowDes)
+	{
+		FVector dis = GetOwningPlayerPawn()->GetActorLocation() - nowDes->GetActorLocation();
+
+		Des_Text->SetText(FText::FromString(FString::FromInt((int)dis.Length()) + FString("m")));
+	}
+}
+
 void UDestinationWidget::SetTranslation()
 {
 	if (nowDes)
@@ -63,12 +74,12 @@ void UDestinationWidget::SetTranslation()
 		FVector2D loc;
 		if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), nowDes->GetActorLocation(), loc, true))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("In screen"));
+			//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("In screen"));
 			Des_Overlay->SetRenderTranslation(loc);
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("Out screen"));
+			//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("Out screen"));
 		}
 	}
 }

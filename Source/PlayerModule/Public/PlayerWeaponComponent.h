@@ -97,81 +97,84 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UDataTable* PlayerWeaponDataTable;
+	class UDataTable* PlayerWeaponDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPlayerWeaponDataAsset* PlayerWeaponDataAsset;
+	class UPlayerWeaponDataAsset* PlayerWeaponDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FHitResult m_result;
+	FHitResult m_result;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float head_mag;
+	float head_mag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool headhit;
+	bool headhit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool ammoinfinite;
+	bool ammoinfinite;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_spreadPower;
+	float m_spreadPower;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_turnValue;
+	float m_turnValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_lookupValue;
+	float m_lookupValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_IturnValue;
+	float m_IturnValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float m_IlookupValue;
+	float m_IlookupValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FTimerHandle fHandle;
+	FTimerHandle fHandle;
 
 	FTimerHandle AimingTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bRecoil;
+	bool bRecoil;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float recoilTime;
+	bool bIsWantShoot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float yawRecoilValue;
+	float recoilTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float pitchRecoilValue;
+	float yawRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxPitchRecoilValue;
+	float pitchRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float TotalPitchRecoilValue;
+	float MaxPitchRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float AimingRecoilValue;
+	float TotalPitchRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector2D yawRange;
+	float AimingRecoilValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector2D pitchRange;
+	FVector2D yawRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float recoilAlpha;
+	FVector2D pitchRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float recoilAlpha;
 
 	float TickCount;
 	float reloadCount;
 	int reloadvalue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bRecovery;
+	bool bRecovery;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float RecoveryTime;
+	float RecoveryTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float yawRecoveryValue;
+	float yawRecoveryValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float pitchRecoveryValue;
+	float pitchRecoveryValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FRotator startRot;
+	FRotator startRot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FRotator recoveryRot;
+	FRotator recoveryRot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UMatineeCameraShake> fireShake;
+	TSubclassOf<class UMatineeCameraShake> fireShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TObjectPtr<UBlueprint> fieldActor;
+	TObjectPtr<UBlueprint> fieldActor;
 
+	TObjectPtr<class UBaseCharacterMovementComponent> m_Movement;
 };

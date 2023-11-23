@@ -19,6 +19,7 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
 	void SetDelegate(class APawn* character);
 
 	UFUNCTION(BlueprintCallable)
@@ -32,9 +33,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void startWarning();
 
+	bool CheckDistance(float p_dis);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAIStatComponent* stat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+		class UCanvasPanel* HP_Canvas;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
 		class UOverlay* HP_Overlay_s;

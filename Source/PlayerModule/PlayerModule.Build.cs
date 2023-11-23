@@ -16,10 +16,13 @@ public class PlayerModule : ModuleRules
             "AIModule", 
             "InputCore", 
             "UMG",
-            //"UMGEditor",
-
+            "UMGEditor",
+            "MediaAssets",
+            "AsyncLoadingScreen",
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+
+        //PublicIncludePaths.AddRange(new string[] { "AsyncLoadingScreen/Public", "AsyncLoadingScreen/Private" });
     }
 }

@@ -63,6 +63,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	class USpringArmComponent* m_FollowSpringArm;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+		class USpringArmComponent* m_DroneSpringArm;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+		class USceneComponent* m_DroneScene;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Compoenet)
 	class UPlayerMoveComponent* m_PlayerMove;

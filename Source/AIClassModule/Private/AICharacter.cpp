@@ -25,6 +25,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AI_HP_Widget.h"
+#include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIPatrolComponent.h"
 #include "AISensingComponent.h"
@@ -110,7 +111,14 @@ void AAICharacter::BeginPlay()
 	if (AIStat)
 	{
 		AIStat->SetHP(ai_HP); ////
-		Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", AIStat->maxHP);
+		if (GetController() != nullptr)
+		{
+			if (Cast<AAI_Controller>(GetController())->GetBlackboardComponent() != nullptr)
+			{
+				Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsFloat("AI_HP", AIStat->maxHP);
+			}
+		}
+		
 	}
 	if (!player)
 	{
@@ -128,7 +136,8 @@ void AAICharacter::BeginPlay()
 	// Init
 	SetActorHiddenInGame(true);
 	SetActorTickEnabled(false);
-
+	Cast<AAI_Controller>(GetController())->SetActorTickEnabled(false);
+	
 	AIPatrol->SetComponentTickEnabled(false);
 	AISensing->SetComponentTickEnabled(false);
 	AIMovement->SetComponentTickEnabled(false);
@@ -250,7 +259,11 @@ void AAICharacter::Init()
 {
 	SetActorHiddenInGame(false);
 	SetActorTickEnabled(true);
-
+	Cast<AAI_Controller>(GetController())->SetActorTickEnabled(true);
+	if (Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->GetValueAsBool("Sight_In") == false)
+	{
+		Cast<AAI_Controller>(GetController())->GetBlackboardComponent()->SetValueAsObject("Target", NULL);
+	}
 	AIPatrol->SetComponentTickEnabled(true);
 	AISensing->SetComponentTickEnabled(true);
 	AIMovement->SetComponentTickEnabled(true);
@@ -265,7 +278,6 @@ void AAICharacter::Dead()
 	SetActorTickEnabled(false);
 
 	AIPatrol->SetComponentTickEnabled(false);
-
 	AISensing->SetComponentTickEnabled(false);
 	AISensing->GetOwner()->GetWorldTimerManager().ClearTimer(AISensing->sensingTimer);
 
